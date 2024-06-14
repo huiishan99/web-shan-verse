@@ -1,5 +1,2 @@
 theme: jekyll-theme-hacker
 author: HuiShan
-plugins:
-  - jekyll-feed
-  - jekyll-seo-tag
