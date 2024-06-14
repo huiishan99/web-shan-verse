@@ -1,5 +1,4 @@
 ---
-title: Welcome to my blog
+title: Welcome
 ---
 
-I am Hui Shan.
