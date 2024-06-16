@@ -1,9 +1,7 @@
 ---
 title: "Integrating Inworld AI and Ready Player Me with Meta Quest 3 in Unity Development"
-date: 2024-06-14
+date: 2024-06-16
 ---
-
-# Integrating Inworld AI, Ready Player Me, and Meta Quest 3 in Unity Development
 
 ## Introduction
 
@@ -22,4 +20,4 @@ This tutorial integrating Inworld AI, Ready Player Me, and Meta Quest 3 in Unity
 
 Download and install Unity on [download site][1].
 
-[1]:https://unity.com/download
+[1]: https://unity.com/download
