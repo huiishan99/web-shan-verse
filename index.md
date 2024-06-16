@@ -2,6 +2,6 @@
 title: Home
 ---
 
-This is the home page.
+This is my home page.
 
-You can click [here](about.md) to see my details.
+You can click **[Here](about.md)** to see my details.
