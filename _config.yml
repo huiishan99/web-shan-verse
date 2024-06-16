@@ -1,5 +1,1 @@
 theme: minima
-
-include:
-  - _includes
-  - assets/css
