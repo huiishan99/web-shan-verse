@@ -1,10 +1,9 @@
 ---
 title: "Post: Notice"
 categories:
-  - Blog
+  - BlogFormat
 tags:
-  - Post Formats
-  - notice
+  - BlogFormat
 ---
 
 A notice displays information that explains nearby content. Often used to call attention to a particular detail.
