@@ -2,9 +2,10 @@
 title: "Integrating Inworld AI and Ready Player Me with Meta Quest 3 in Unity Development"
 date: 2024-06-16
 categories:
-- Development
-  tags:
-- Development
+  - Development
+tags:
+  - Development
+
 ---
 
 ## Introduction
