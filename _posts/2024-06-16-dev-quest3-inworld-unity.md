@@ -23,6 +23,10 @@ This tutorial integrating Inworld AI, Ready Player Me, and Meta Quest 3 in Unity
 
 ### Unity Installation
 
-Download and install Unity on [download site][1].
+1. Download and install Unity on [download site][1].
+2. Choose the 2022.3.31f1`LTS` version to download.  
+> ![Unity Version](/assets/img/unity-lts.png)
+3. 
+
 
 [1]: https://unity.com/download
