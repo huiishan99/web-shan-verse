@@ -5,16 +5,18 @@ categories:
   - Development
 tags:
   - Development
-
 ---
 
-## Introduction
-
-This tutorial integrating Inworld AI, Ready Player Me, and Meta Quest 3 in Unity Development.
+This tutorial is used to integrating Inworld AI, Ready Player Me, and Meta Quest 3 in Unity Development.
 
 ### Hardware description
 
-### Version Description
+- 12th Gen Intel(R) Core(TM) i5-12500H
+- NVDIA GeForce RTX 3050 Ti Laptop GPU
+- 16GB RAM
+- Meta Quest 3 128GB
+
+### Software Version Description
 
 - Windows : Windows 11 23H2
 - Unity : 2022.3.31f1`LTS`
@@ -23,10 +25,13 @@ This tutorial integrating Inworld AI, Ready Player Me, and Meta Quest 3 in Unity
 
 ### Unity Installation
 
-1. Download and install Unity on [download site][1].
-2. Choose the 2022.3.31f1`LTS` version to download.  
- ![Unity Version](https://github.com/huiishan99/BlogPage/blob/main/assets/images/unity-lts.png?raw=true)
-3. 
+- Download and install the [UnityHubSetup][1].
+- Download and install the Unity 2022.3.31f1`LTS` version.
 
+### Meta Quest Link
 
-[1]: https://unity.com/download
+- Download and install the [OculusSetUp][2]
+- Log into a Meta Account.
+
+[1]:https://public-cdn.cloud.unity3d.com/hub/prod/UnityHubSetup.exe
+[2]:https://www.oculus.com/download_app/?id=1582076955407037
