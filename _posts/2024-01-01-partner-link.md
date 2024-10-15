@@ -1,8 +1,8 @@
 ---
-title: "My Partner's Website"
+title: "Link: Partner Website"
 tags:
   - Link
 link: https://github.com
 ---
 
-Check out my boyfriend's personal website for more insights and projects.
+Check out my partner's personal website for more insights and projects.
