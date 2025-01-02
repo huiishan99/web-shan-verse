@@ -3,7 +3,46 @@ main:
     url: /about/
   - title: "Posts"
     url: /posts/
+  - title: "Projects"
+    url: /projects/
   - title: "Categories"
     url: /categories/
   - title: "Tags"
     url: /tags/
+
+about:
+  - title: About
+    children:
+      - title: "Skills"
+        url: /about/#skills
+      - title: "Languages"
+        url: /about/#skills
+      - title: "Interested"
+        url: /about/#skills
+
+  - title: Timeline
+    children:
+      - title: "2024"
+        url: /about/#year-2024
+      - title: "2023"
+        url: /about/#year-2023
+      - title: "2022"
+        url: /about/#year-2022
+      - title: "2021"
+        url: /about/#year-2021
+      - title: "2020"
+        url: /about/#year-2020
+      - title: "2018"
+        url: /about/#year-2018
+      - title: "2017"
+        url: /about/#year-2017
+      - title: "2015"
+        url: /about/#year-2015
+      - title: "2012"
+        url: /about/#year-2012
+      - title: "2011"
+        url: /about/#year-2011
+      - title: "2006"
+        url: /about/#year-2006
+      - title: "1999"
+        url: /about/#year-1999
