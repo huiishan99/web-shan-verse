@@ -13,7 +13,7 @@
 # you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
-title: Home
+title: Coding the Stars
 email:
 description: >- # this means to ignore newlines until "baseurl:"
   Write an awesome description for your new site here. You can edit this
@@ -61,9 +61,9 @@ author:
   name   : "Lai HuiShan"
   avatar : "/assets/images/bio-photo.jpg"
   bio    : "Malaysian."
-  location : "Somewhere, USA"
+  location : "Aizu-Wakamatsu, Japan"
   links:
-    - label: "Website"
+    - label: "中文站点"
       icon: "fas fa-fw fa-link"
       url: "https://huiishan99.github.io/web-blog/"
     - label: "Twitter"

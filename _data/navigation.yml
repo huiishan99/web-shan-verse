@@ -13,12 +13,14 @@ main:
 about:
   - title: About
     children:
+      - title: "Education"
+        url: /about/#education
       - title: "Skills"
         url: /about/#skills
       - title: "Languages"
-        url: /about/#skills
+        url: /about/#languages
       - title: "Interested"
-        url: /about/#skills
+        url: /about/#interested
 
   - title: Timeline
     children:
