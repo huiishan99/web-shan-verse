@@ -27,6 +27,8 @@ about:
     children:
       - title: "Unity"
         url: /about/#unity
+      - title: "HTML+CSS+JS"
+        url: /about/#htmlcssjs
   - title: Timeline
     children:
       - title: "Year: 2024"
