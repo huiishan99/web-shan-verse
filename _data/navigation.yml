@@ -15,13 +15,18 @@ about:
     children:
       - title: "Education"
         url: /about/#education
+      - title: "Experience"
+        url: /about/#experience
       - title: "Skills"
         url: /about/#skills
       - title: "Languages"
         url: /about/#languages
       - title: "Interested"
         url: /about/#interested
-
+  - title: Projects
+    children:
+      - title: "Unity"
+        url: /about/#unity
   - title: Timeline
     children:
       - title: "Year: 2024"
