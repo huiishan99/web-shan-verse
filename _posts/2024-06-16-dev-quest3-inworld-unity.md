@@ -7,6 +7,8 @@ tags:
   - Development
 ---
 
+``This tutorial was scrapped because Inworld AI is no longer freely available to the public.``
+
 This tutorial is used to integrating Inworld AI, Ready Player Me, and Meta Quest 3 in Unity Development.
 
 ### Hardware description
