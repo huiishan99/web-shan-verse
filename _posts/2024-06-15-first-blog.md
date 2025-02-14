@@ -22,8 +22,6 @@ Currently, I am pursuing my master's degree at the University of Aizu in Japan. 
 
 ![uoa]({{ "/assets/images/pic-uoa.jpg" | relative_url }}){: .align-center style="width: 800px; height: auto;"}
 
-On a personal note, my Socionics type is SLI, though I know MBTI is more popular these days (for reference, my MBTI aligns closely with ISTP). Like other SLIs, I strive to improve myself and develop my abilities to protect and support the people I care about. As part of the Delta Quadra, I value harmony and prefer to avoid unnecessary conflicts. However, I am equally passionate about taking on challenges, acquiring knowledge, and pushing my limits.
-
 My ultimate goal is to contribute to making the world a better place. I am committed to spreading a sense of love and support, solving problems for others, and promoting mental well-being. I believe that through learning, compassion, and resilience, we can build a brighter and healthier future for everyone.
 
 Thank you for stopping by, and I hope you enjoy exploring my blog!
