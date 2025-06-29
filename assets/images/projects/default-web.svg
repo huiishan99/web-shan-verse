@@ -1,0 +1,11 @@
+<svg width="400" height="200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="webGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="200" fill="url(#webGrad)"/>
+  <rect x="50" y="50" width="300" height="100" fill="#ffffff" opacity="0.2" rx="5"/>
+  <text x="200" y="150" font-family="Arial, sans-serif" font-size="16" fill="#ffffff" text-anchor="middle">Web Project</text>
+</svg>
