@@ -1,0 +1,369 @@
+/* Timeline Styles */
+.timeline {
+  position: relative;
+  margin: 0 auto;
+  padding: 1.5rem 0; /* 减小整体内边距 */
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, #41B4F7 0%, #2E8BC0 100%);
+  transform: translateX(-50%);
+}
+
+.timeline-year {
+  position: relative;
+  margin: 3rem 0; /* 恢复原始年份间距 */
+}
+
+.timeline-year-header {
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.timeline-year-title {
+  display: inline-block;
+  background: linear-gradient(135deg, #41B4F7, #2E8BC0);
+  color: white;
+  padding: 1rem 2rem; /* 恢复原始内边距 */
+  border-radius: 50px;
+  font-size: 1.5rem; /* 恢复原始字体大小 */
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(65, 180, 247, 0.3);
+  margin-bottom: 2rem; /* 恢复原始间距 */
+}
+
+.timeline-event {
+  position: relative;
+  margin: 2rem 0; /* 恢复原始事件间距 */
+  opacity: 0;
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+.timeline-event:nth-child(odd) .timeline-content {
+  margin-left: 0;
+  margin-right: 52%; /* 减小右边距，让内容更靠近中心线 */
+  text-align: right;
+}
+
+.timeline-event:nth-child(even) .timeline-content {
+  margin-left: 52%; /* 减小左边距，让内容更靠近中心线 */
+  margin-right: 0;
+  text-align: left;
+}
+
+.timeline-content {
+  background: white;
+  padding: 1.2rem 1.5rem; /* 减小内边距 */
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.timeline-content:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.timeline-content::before {
+  content: '';
+  position: absolute;
+  top: 15px; /* 对应调整箭头位置 */
+  width: 0;
+  height: 0;
+  border: 8px solid transparent; /* 稍微减小箭头大小 */
+}
+
+.timeline-event:nth-child(odd) .timeline-content::before {
+  right: -16px;
+  border-left-color: white;
+}
+
+.timeline-event:nth-child(even) .timeline-content::before {
+  left: -16px;
+  border-right-color: white;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: 50%;
+  top: 15px; /* 稍微上移 */
+  width: 14px; /* 稍微减小 */
+  height: 14px;
+  background: #41B4F7;
+  border: 3px solid white;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 2px 10px rgba(65, 180, 247, 0.3);
+  z-index: 2;
+}
+
+.timeline-month {
+  display: inline-block;
+  background: linear-gradient(135deg, #6c757d, #495057);
+  color: white;
+  padding: 0.25rem 0.7rem; /* 减小内边距 */
+  border-radius: 20px;
+  font-size: 0.8rem; /* 减小字体 */
+  font-weight: 600;
+  margin-bottom: 0.6rem; /* 减小底部间距 */
+}
+
+.timeline-title {
+  font-size: 1.2rem; /* 恢复原始标题字体 */
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 0.8rem; /* 恢复原始间距 */
+  line-height: 1.4;
+}
+
+.timeline-description {
+  color: #6c757d;
+  line-height: 1.6; /* 恢复原始行高 */
+  margin-bottom: 1rem; /* 恢复原始间距 */
+  /* 移除字体大小设置，使用默认 */
+}
+
+.timeline-logo {
+  display: inline-block;
+  margin: 0.4rem 0; /* 减小上下间距 */
+}
+
+.timeline-logo img {
+  width: 50px; /* 减小 logo 尺寸 */
+  height: auto;
+  max-height: 50px;
+  object-fit: contain;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.timeline-link {
+  color: #41B4F7;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.timeline-link:hover {
+  color: #2E8BC0;
+  text-decoration: underline;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .timeline::before {
+    left: 30px;
+  }
+  
+  .timeline-event:nth-child(odd) .timeline-content,
+  .timeline-event:nth-child(even) .timeline-content {
+    margin-left: 50px; /* 减小移动端左边距 */
+    margin-right: 0;
+    text-align: left;
+  }
+  
+  .timeline-event:nth-child(odd) .timeline-content::before,
+  .timeline-event:nth-child(even) .timeline-content::before {
+    left: -20px;
+    right: auto;
+    border-right-color: white;
+    border-left-color: transparent;
+  }
+  
+  .timeline-dot {
+    left: 30px;
+  }
+  
+  .timeline-year-title {
+    font-size: 1.5rem; /* 移动端也恢复原始大小 */
+    padding: 1rem 2rem; /* 恢复原始内边距 */
+  }
+  
+  .timeline-event {
+    margin: 2rem 0; /* 移动端也恢复原始间距 */
+  }
+  
+  .timeline-content {
+    padding: 1.5rem 2rem; /* 移动端恢复原始内边距 */
+  }
+  
+  /* 移动端统一 logo 位置 */
+  .timeline-event:nth-child(odd) .timeline-logo,
+  .timeline-event:nth-child(even) .timeline-logo {
+    float: left; /* 移动端统一左浮动 */
+    margin: 0.5rem 0.8rem 0.5rem 0; /* 统一右边距 */
+  }
+}
+
+/* About page timeline highlights */
+.timeline-highlights {
+  background: #f8f9fa;
+  padding: 2rem;
+  border-radius: 12px;
+  margin: 2rem 0;
+  border-left: 4px solid #41B4F7;
+}
+
+.timeline-highlights h4 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.timeline-highlights ul {
+  list-style: none;
+  padding: 0;
+}
+
+.timeline-highlights li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.timeline-highlights li:last-child {
+  border-bottom: none;
+}
+
+.timeline-highlights strong {
+  color: #41B4F7;
+  font-weight: 600;
+}
+
+/* 更紧凑的 Timeline 布局优化 */
+
+/* 进一步减小时间线整体间距 */
+.timeline {
+  position: relative;
+  margin: 0 auto;
+  padding: 1.5rem 0; /* 减小整体内边距 */
+}
+
+/* 恢复原始月份标签样式 */
+.timeline-month {
+  display: inline-block;
+  background: linear-gradient(135deg, #6c757d, #495057);
+  color: white;
+  padding: 0.3rem 0.8rem; /* 恢复原始内边距 */
+  border-radius: 20px;
+  font-size: 0.85rem; /* 恢复原始字体 */
+  font-weight: 600;
+  margin-bottom: 0.8rem; /* 恢复原始间距 */
+}
+
+/* Timeline Logo 和文字布局 - 左右对称 */
+.timeline-logo {
+  display: block;
+  margin: 0.5rem 0.8rem 0.5rem 0; /* 默认右边距 */
+  float: left; /* 默认左浮动（用于右侧事件） */
+}
+
+/* 左侧事件（奇数）- Logo 在右侧，文字在左侧 */
+.timeline-event:nth-child(odd) .timeline-logo {
+  float: right; /* 右浮动 */
+  margin: 0.5rem 0 0.5rem 0.8rem; /* 左边距 */
+}
+
+/* 右侧事件（偶数）- Logo 在左侧，文字在右侧 */
+.timeline-event:nth-child(even) .timeline-logo {
+  float: left; /* 左浮动 */
+  margin: 0.5rem 0.8rem 0.5rem 0; /* 右边距 */
+}
+
+.timeline-logo img {
+  width: 55px;
+  height: auto;
+  max-height: 55px;
+  object-fit: contain;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 确保文字不被浮动影响 */
+.timeline-content {
+  background: white;
+  padding: 1.5rem 2rem; /* 恢复原始内边距 */
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+  position: relative;
+  transition: all 0.3s ease;
+  overflow: hidden; /* 清除浮动 */
+}
+
+.timeline-content::after {
+  content: "";
+  display: table;
+  clear: both; /* 清除浮动 */
+}
+
+/* 优化时间线点的位置 */
+.timeline-dot {
+  position: absolute;
+  left: 50%;
+  top: 15px; /* 稍微上移 */
+  width: 14px; /* 稍微减小 */
+  height: 14px;
+  background: #41B4F7;
+  border: 3px solid white;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 2px 10px rgba(65, 180, 247, 0.3);
+  z-index: 2;
+}
+
+/* 优化箭头位置 */
+.timeline-content::before {
+  content: '';
+  position: absolute;
+  top: 15px; /* 对应调整箭头位置 */
+  width: 0;
+  height: 0;
+  border: 8px solid transparent; /* 稍微减小箭头大小 */
+}
+
+.timeline-event:nth-child(odd) .timeline-content::before {
+  right: -16px;
+  border-left-color: white;
+}
+
+.timeline-event:nth-child(even) .timeline-content::before {
+  left: -16px;
+  border-right-color: white;
+}
+
+/* 紧凑模式的额外优化 */
+@media (min-width: 1200px) {
+  /* 在大屏幕上进一步优化布局 */
+  .timeline-event:nth-child(odd) .timeline-content {
+    margin-right: 50.5%; /* 更靠近中心线 */
+  }
+
+  .timeline-event:nth-child(even) .timeline-content {
+    margin-left: 50.5%; /* 更靠近中心线 */
+  }
+  
+  .timeline {
+    max-width: 1200px; /* 稍微增加最大宽度 */
+    margin: 0 auto;
+  }
+}

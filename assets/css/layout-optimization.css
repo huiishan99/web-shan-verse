@@ -1,0 +1,81 @@
+/* Global Layout Optimization */
+
+/* 1. 保持原始字体大小，只优化页面宽度 */
+/* 移除字体大小修改，保持默认 16px */
+
+/* 2. 优化页面宽度，最大化利用空间 */
+.page {
+  max-width: 1600px !important; /* 进一步增加最大宽度 */
+}
+
+.page__inner-wrap {
+  max-width: none !important;
+  padding-left: 1.5rem !important;
+  padding-right: 1.5rem !important;
+}
+
+/* 3. 优化主要内容区域 */
+.layout--single.wide #main {
+  max-width: 1500px !important; /* 增加主内容区域最大宽度 */
+  margin: 0 auto;
+}
+
+.layout--single.wide .page__content {
+  max-width: none !important;
+  margin-right: 0 !important;
+}
+
+/* 4. 优化侧边栏宽度 */
+.sidebar {
+  width: 280px !important; /* 稍微增加侧边栏宽度以平衡布局 */
+}
+
+@media (min-width: 80em) {
+  .layout--single.wide .sidebar {
+    width: 280px !important;
+  }
+  
+  .layout--single.wide .page {
+    width: calc(100% - 300px) !important;
+    padding-left: 1rem !important;
+  }
+}
+
+/* 5. 保持原始标题字体大小 */
+/* 移除标题字体修改，使用默认大小 */
+
+/* 6. 保持原始段落样式 */
+/* 移除段落字体修改，使用默认样式 */
+
+/* 7. 保持原始列表样式 */
+/* 移除列表字体修改，使用默认样式 */
+
+/* 8. 保持原始作者资料样式 */
+/* 移除作者资料字体修改，使用默认样式 */
+
+/* 9. 保持原始导航栏样式 */
+/* 移除导航栏字体修改，使用默认样式 */
+
+/* 10. 保持原始页面头部样式 */
+/* 移除页面头部字体修改，使用默认样式 */
+
+/* 11. 保持原始技能图标大小 */
+/* 移除技能图标大小修改，使用默认样式 */
+
+/* 12. 移除额外的字体设置 */
+/* 保持原始字体大小 */
+
+/* 13. 响应式优化 - 只保留页面宽度优化 */
+@media (max-width: 1400px) {
+  .page__inner-wrap {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .page__inner-wrap {
+    padding-left: 0.8rem !important;
+    padding-right: 0.8rem !important;
+  }
+}
