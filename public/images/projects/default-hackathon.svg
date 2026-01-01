@@ -1,0 +1,11 @@
+<svg width="400" height="200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="hackGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f39c12;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e74c3c;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="200" fill="url(#hackGrad)"/>
+  <polygon points="200,50 220,90 260,90 230,115 240,155 200,135 160,155 170,115 140,90 180,90" fill="#ffffff" opacity="0.8"/>
+  <text x="200" y="180" font-family="Arial, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">Hackathon Project</text>
+</svg>
