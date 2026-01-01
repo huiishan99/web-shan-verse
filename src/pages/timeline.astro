@@ -1,49 +1,5 @@
----
+﻿---
 import BaseLayout from '../layouts/BaseLayout.astro';
-
-// 从 _data/timeline.yml 读取数据会在后续完善，先用硬编码展示
-const timelineData = [
-  {
-    year: 2024,
-    events: [
-      {
-        month: "October",
-        title: "JPHACKS Hackathon Participation",
-        description: "Participated in the JPHACKS hackathon at the Sendai venue, where our team project received the third-highest number of votes."
-      },
-      {
-        month: "September",
-        title: "Alps Alpine Corporation Internship",
-        description: "Participated in a two weeks internship at Alps Alpine Corporation. Developed a VR car scene prototype with Unity."
-      },
-      {
-        month: "April",
-        title: "University of Aizu Enrollment",
-        description: "Enrolled in The University of Aizu. Pursuing a master's degree in Graduate Department of Computer and Information Systems."
-      }
-    ]
-  },
-  {
-    year: 2023,
-    events: [
-      {
-        month: "March",
-        title: "ABK College Enrollment",
-        description: "Enrolled in ABK College to study Japanese language."
-      }
-    ]
-  },
-  {
-    year: 2022,
-    events: [
-      {
-        month: "June",
-        title: "Northwestern Polytechnical University Graduation",
-        description: "Graduated with a Bachelor's degree in E-Commerce Engineering."
-      }
-    ]
-  }
-];
 ---
 
 <BaseLayout title="Timeline">
@@ -54,165 +10,286 @@ const timelineData = [
     </header>
     
     <div class="timeline">
-      {timelineData.map((yearGroup) => (
-        <div class="timeline-year">
-          <div class="year-marker">
-            <span class="year-label">{yearGroup.year}</span>
+      
+      <div class="timeline-year">
+        <div class="year-marker"><span class="year-label">2024</span></div>
+        <div class="year-events">
+          <div class="timeline-event">
+            <div class="event-content card">
+              <span class="event-month">October</span>
+              <h3 class="event-title">JPHACKS Hackathon Participation</h3>
+              <p class="event-desc">Participated in the JPHACKS hackathon at the Sendai venue, where our team project received the third-highest number of votes at the venue.</p>
+            </div>
           </div>
-          
-          <div class="year-events">
-            {yearGroup.events.map((event) => (
-              <div class="timeline-event">
-                <div class="event-connector">
-                  <div class="connector-line"></div>
-                  <div class="connector-dot"></div>
-                </div>
-                <div class="event-content card">
-                  <span class="event-month">{event.month}</span>
-                  <h3 class="event-title">{event.title}</h3>
-                  <p class="event-desc">{event.description}</p>
-                </div>
-              </div>
-            ))}
+          <div class="timeline-event">
+            <div class="event-content card">
+              <span class="event-month">September</span>
+              <h3 class="event-title">Alps Alpine Corporation Internship</h3>
+              <p class="event-desc">Participated in a two weeks internship at Alps Alpine Corporation. During this period, mainly developed a VR car scene prototype with Unity.</p>
+            </div>
+          </div>
+          <div class="timeline-event">
+            <div class="event-content card">
+              <span class="event-month">August</span>
+              <h3 class="event-title">Alps Alpine Workshop</h3>
+              <p class="event-desc">Participated in a workshop organized by Alps Alpine Corporation under the recommendation of the supervisor, where the group won first grade and I received an internship opportunity.</p>
+            </div>
+          </div>
+          <div class="timeline-event">
+            <div class="event-content card">
+              <span class="event-month">April</span>
+              <h3 class="event-title">University of Aizu Enrollment</h3>
+              <p class="event-desc">Enrolled in The University of Aizu. Pursuing a master's degree in Graduate Department of Computer and Information Systems. The university is part of Top Global University Project in Japan.</p>
+            </div>
+          </div>
+          <div class="timeline-event">
+            <div class="event-content card">
+              <span class="event-month">March</span>
+              <h3 class="event-title">ABK College Graduation and Relocation</h3>
+              <p class="event-desc">Graduated from ABK College. Moved to Aizuwakamatsu, a city in Fukushima.</p>
+            </div>
+          </div>
+          <div class="timeline-event">
+            <div class="event-content card">
+              <span class="event-month">February</span>
+              <h3 class="event-title">Hamazushi Job End</h3>
+              <p class="event-desc">Ended the part-time job at Hamasushi.</p>
+            </div>
+          </div>
+          <div class="timeline-event">
+            <div class="event-content card">
+              <span class="event-month">January</span>
+              <h3 class="event-title">CoCo ICHIBANYA Job End</h3>
+              <p class="event-desc">Ended the part-time job at Curry House CoCo ICHIBANYA.</p>
+            </div>
           </div>
         </div>
-      ))}
+      </div>
+
+      <div class="timeline-year">
+        <div class="year-marker"><span class="year-label">2023</span></div>
+        <div class="year-events">
+          <div class="timeline-event">
+            <div class="event-content card">
+              <span class="event-month">March</span>
+              <h3 class="event-title">Hamazushi Part-time Job</h3>
+              <p class="event-desc">Started the second part-time job at Hamazushi.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-year">
+        <div class="year-marker"><span class="year-label">2022</span></div>
+        <div class="year-events">
+          <div class="timeline-event">
+            <div class="event-content card">
+              <span class="event-month">December</span>
+              <h3 class="event-title">CoCo ICHIBANYA Part-time Job</h3>
+              <p class="event-desc">Started a part-time job at Curry House CoCo ICHIBANYA.</p>
+            </div>
+          </div>
+          <div class="timeline-event">
+            <div class="event-content card">
+              <span class="event-month">October</span>
+              <h3 class="event-title">Arrival in Japan</h3>
+              <p class="event-desc">Arrived in Tokyo, Japan. Enrolled in ABK College. A Japanese Language School in Tokyo, in order to learn Japanese.</p>
+            </div>
+          </div>
+          <div class="timeline-event">
+            <div class="event-content card">
+              <span class="event-month">June</span>
+              <h3 class="event-title">NWPU Graduation</h3>
+              <p class="event-desc">Graduated from Northwestern Polytechnical University with bachelor degree in engineering. Began studying basic Japanese at Mikasano Academic Centre in preparation for studying in Japan.</p>
+            </div>
+          </div>
+          <div class="timeline-event">
+            <div class="event-content card">
+              <span class="event-month">January</span>
+              <h3 class="event-title">UEA Internship Completion</h3>
+              <p class="event-desc">Completed the internship in University Enterprises Alliance (UEA) internship programme.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-year">
+        <div class="year-marker"><span class="year-label">2021</span></div>
+        <div class="year-events">
+          <div class="timeline-event">
+            <div class="event-content card">
+              <span class="event-month">November</span>
+              <h3 class="event-title">UEA Internship Program</h3>
+              <p class="event-desc">Started the internship in University Enterprises Alliance (UEA) internship programme. Co-developed by China Campus Network and Alibaba GDT Team.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-year">
+        <div class="year-marker"><span class="year-label">2020</span></div>
+        <div class="year-events">
+          <div class="timeline-event">
+            <div class="event-content card">
+              <span class="event-month">August</span>
+              <h3 class="event-title">Competition Awards</h3>
+              <p class="event-desc">Won the provincial second prize of China National College Student Innovation, Originality and Entrepreneurship Challenge. Won the school second prize of China International College Student Internet+ Innovation and Entrepreneurship Competition.</p>
+            </div>
+          </div>
+          <div class="timeline-event">
+            <div class="event-content card">
+              <span class="event-month">July</span>
+              <h3 class="event-title">A-Project Team Formation</h3>
+              <p class="event-desc">Formed a team with friends which call A-Project. Started a project called ACGN Project. Mainly engaged in ACG self-media content production.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-year">
+        <div class="year-marker"><span class="year-label">2018</span></div>
+        <div class="year-events">
+          <div class="timeline-event">
+            <div class="event-content card">
+              <span class="event-month">October</span>
+              <h3 class="event-title">University Activities</h3>
+              <p class="event-desc">Become a member of the NPU Students Association Union in Northwestern Polytechnical University. Become a member of the school chinese debate team in Northwestern Polytechnical University.</p>
+            </div>
+          </div>
+          <div class="timeline-event">
+            <div class="event-content card">
+              <span class="event-month">September</span>
+              <h3 class="event-title">Northwestern Polytechnical University Enrollment</h3>
+              <p class="event-desc">Enrolled in Northwestern Polytechnical University. Majoring in E-commerce in the School of Computer Science. The university is part of Project 985, Project 211, and the Double First-Class Construction in China. Won the first level scholarship of the NPU President Scholarship included tuition fee, accommodation fee, and living allowances.</p>
+            </div>
+          </div>
+          <div class="timeline-event">
+            <div class="event-content card">
+              <span class="event-month">August</span>
+              <h3 class="event-title">IFP Graduation</h3>
+              <p class="event-desc">Graduated from the International Foundation Program (IFP) of Northwestern Polytechnical University with an average score of over 90 points (full score is 100).</p>
+            </div>
+          </div>
+          <div class="timeline-event">
+            <div class="event-content card">
+              <span class="event-month">March</span>
+              <h3 class="event-title">Arrival in Xian and IFP Enrollment</h3>
+              <p class="event-desc">Arrived in Xian, the capital of Shaanxi Province in China. Began studying in the International Foundation Programme (IFP) in Northwestern Polytechnical University.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-year">
+        <div class="year-marker"><span class="year-label">2017</span></div>
+        <div class="year-events">
+          <div class="timeline-event">
+            <div class="event-content card">
+              <span class="event-month">December</span>
+              <h3 class="event-title">Beaufort Middle School Graduation</h3>
+              <p class="event-desc">Graduated from Beaufort Middle School.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-year">
+        <div class="year-marker"><span class="year-label">2015</span></div>
+        <div class="year-events">
+          <div class="timeline-event">
+            <div class="event-content card">
+              <span class="event-month">June</span>
+              <h3 class="event-title">Transfer to Beaufort Middle School</h3>
+              <p class="event-desc">Transferred to Beaufort Middle School. A private secondary school in Beaufort.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-year">
+        <div class="year-marker"><span class="year-label">2012</span></div>
+        <div class="year-events">
+          <div class="timeline-event">
+            <div class="event-content card">
+              <span class="event-month">February</span>
+              <h3 class="event-title">Transfer to Yu Yuan Secondary School</h3>
+              <p class="event-desc">Transferred to Yu Yuan Secondary School. A private secondary school in Sandakan.</p>
+            </div>
+          </div>
+          <div class="timeline-event">
+            <div class="event-content card">
+              <span class="event-month">January</span>
+              <h3 class="event-title">St Cecilia Convent Secondary School Enrollment</h3>
+              <p class="event-desc">Enrolled St Cecilia Convent Secondary School. A national secondary school in Sandakan.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-year">
+        <div class="year-marker"><span class="year-label">2011</span></div>
+        <div class="year-events">
+          <div class="timeline-event">
+            <div class="event-content card">
+              <span class="event-month">November</span>
+              <h3 class="event-title">SJK(C) Tai Tong Graduation</h3>
+              <p class="event-desc">Graduated from SJK(C) Tai Tong.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-year">
+        <div class="year-marker"><span class="year-label">2006</span></div>
+        <div class="year-events">
+          <div class="timeline-event">
+            <div class="event-content card">
+              <span class="event-month">January</span>
+              <h3 class="event-title">Primary School Enrollment</h3>
+              <p class="event-desc">Enrolled in SJK(C) Tai Tong. A primary school in Sandakan.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-year">
+        <div class="year-marker"><span class="year-label">1999</span></div>
+        <div class="year-events">
+          <div class="timeline-event">
+            <div class="event-content card">
+              <span class="event-month">June</span>
+              <h3 class="event-title">Birth</h3>
+              <p class="event-desc">Born in Sandakan. The 2nd largest city in Sabah state of Malaysia.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
     
     <div class="timeline-end">
-      <span class="divider-icon">✧ The journey continues ✧</span>
+      <span>The journey continues...</span>
     </div>
   </div>
 </BaseLayout>
 
 <style>
-  .page-header {
-    text-align: center;
-    margin-bottom: var(--space-xl);
-  }
-  
-  .subtitle {
-    color: var(--color-text-secondary);
-    font-style: italic;
-    margin-top: var(--space-sm);
-  }
-  
-  .timeline {
-    max-width: 800px;
-    margin: 0 auto;
-  }
-  
-  .timeline-year {
-    margin-bottom: var(--space-xl);
-  }
-  
-  .year-marker {
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-    margin-bottom: var(--space-lg);
-  }
-  
-  .year-label {
-    font-family: var(--font-display);
-    font-size: 2rem;
-    color: var(--color-brass);
-    letter-spacing: 0.1em;
-  }
-  
-  .year-marker::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, var(--color-brass-dark), transparent);
-  }
-  
-  .year-events {
-    padding-left: var(--space-lg);
-  }
-  
-  .timeline-event {
-    display: flex;
-    gap: var(--space-md);
-    margin-bottom: var(--space-lg);
-  }
-  
-  .event-connector {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: var(--space-md);
-  }
-  
-  .connector-dot {
-    width: 12px;
-    height: 12px;
-    background: var(--color-bg-primary);
-    border: 2px solid var(--color-brass);
-    border-radius: 50%;
-    z-index: 1;
-  }
-  
-  .connector-line {
-    width: 1px;
-    flex: 1;
-    background: var(--color-border);
-    margin-top: var(--space-sm);
-  }
-  
-  .timeline-event:last-child .connector-line {
-    display: none;
-  }
-  
-  .event-content {
-    flex: 1;
-    padding: var(--space-md) var(--space-lg);
-  }
-  
-  .event-month {
-    font-family: var(--font-mono);
-    font-size: 0.85rem;
-    color: var(--color-text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-  }
-  
-  .event-title {
-    font-size: 1.2rem;
-    font-family: var(--font-body);
-    font-weight: 600;
-    margin: var(--space-xs) 0 var(--space-sm);
-    color: var(--color-text-primary);
-  }
-  
-  .event-desc {
-    color: var(--color-text-secondary);
-    font-size: 1rem;
-    line-height: 1.7;
-  }
-  
-  .timeline-end {
-    text-align: center;
-    padding: var(--space-xl) 0;
-    color: var(--color-text-muted);
-    font-style: italic;
-  }
-  
-  .timeline-end .divider-icon {
-    color: var(--color-brass-dark);
-  }
-  
+  .page-header { text-align: center; margin-bottom: var(--space-xl); }
+  .subtitle { color: var(--color-text-secondary); font-style: italic; margin-top: var(--space-sm); }
+  .timeline { max-width: 800px; margin: 0 auto; }
+  .timeline-year { margin-bottom: var(--space-xl); }
+  .year-marker { display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-lg); }
+  .year-label { font-family: var(--font-display); font-size: 2rem; color: var(--color-brass); letter-spacing: 0.1em; }
+  .year-marker::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--color-brass-dark), transparent); }
+  .year-events { padding-left: var(--space-lg); display: flex; flex-direction: column; gap: var(--space-md); }
+  .event-content { padding: var(--space-md) var(--space-lg); }
+  .event-month { font-family: var(--font-mono); font-size: 0.85rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .event-title { font-size: 1.2rem; font-family: var(--font-body); font-weight: 600; margin: var(--space-xs) 0 var(--space-sm); color: var(--color-text-primary); }
+  .event-desc { color: var(--color-text-secondary); font-size: 1rem; line-height: 1.7; }
+  .timeline-end { text-align: center; padding: var(--space-xl) 0; color: var(--color-brass-dark); font-style: italic; }
   @media (max-width: 768px) {
-    .year-events {
-      padding-left: 0;
-    }
-    
-    .event-connector {
-      display: none;
-    }
-    
-    .year-label {
-      font-size: 1.5rem;
-    }
+    .year-events { padding-left: 0; }
+    .year-label { font-size: 1.5rem; }
+    .event-content { padding: var(--space-md); }
   }
 </style>
