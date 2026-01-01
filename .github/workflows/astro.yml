@@ -2,9 +2,9 @@
 name: Deploy Astro site to Pages
 
 on:
-  # 在推送到 main 分支时运行
+  # 在推送到 dev 分支时运行
   push:
-    branches: ["main"]
+    branches: ["dev"]
 
   # 允许从 Actions 选项卡手动运行此工作流
   workflow_dispatch:
