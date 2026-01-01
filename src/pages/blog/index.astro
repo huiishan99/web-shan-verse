@@ -1,0 +1,248 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+// 后续会从 content collection 获取博客文章
+---
+
+<BaseLayout title="Blog">
+  <div class="container">
+    <header class="page-header">
+      <h1>Blog</h1>
+      <p class="subtitle">Thoughts, tutorials, and discoveries</p>
+    </header>
+    
+    <div class="blog-layout">
+      <main class="posts-list">
+        <!-- 临时占位 - 后续会动态生成 -->
+        <article class="post-card">
+          <div class="post-meta">
+            <time class="post-date">2025-01-01</time>
+            <span class="post-category">Life</span>
+          </div>
+          <h2 class="post-title">
+            <a href="/blog/2025-01-01-happy-new-year">Happy New Year!</a>
+          </h2>
+          <p class="post-excerpt">
+            Welcoming the new year with new goals and aspirations...
+          </p>
+          <div class="post-tags">
+            <span class="tag">Life</span>
+          </div>
+        </article>
+        
+        <article class="post-card">
+          <div class="post-meta">
+            <time class="post-date">2024-06-16</time>
+            <span class="post-category">Development</span>
+          </div>
+          <h2 class="post-title">
+            <a href="/blog/2024-06-16-dev-quest3-inworld-unity">Integrating Inworld AI with Meta Quest 3 in Unity</a>
+          </h2>
+          <p class="post-excerpt">
+            Tutorial for integrating Inworld AI, Ready Player Me, and Meta Quest 3 in Unity Development...
+          </p>
+          <div class="post-tags">
+            <span class="tag">Unity</span>
+            <span class="tag">VR</span>
+            <span class="tag">AI</span>
+          </div>
+        </article>
+        
+        <article class="post-card">
+          <div class="post-meta">
+            <time class="post-date">2024-06-15</time>
+            <span class="post-category">Life</span>
+          </div>
+          <h2 class="post-title">
+            <a href="/blog/2024-06-15-first-blog">First Blog</a>
+          </h2>
+          <p class="post-excerpt">
+            Welcome to my blog! This is where I'll share my journey...
+          </p>
+          <div class="post-tags">
+            <span class="tag">Introduction</span>
+          </div>
+        </article>
+      </main>
+      
+      <aside class="blog-sidebar">
+        <div class="sidebar-section gear-border">
+          <h3>Categories</h3>
+          <ul class="category-list">
+            <li><a href="/blog/category/development">Development</a></li>
+            <li><a href="/blog/category/life">Life</a></li>
+          </ul>
+        </div>
+        
+        <div class="sidebar-section gear-border">
+          <h3>Tags</h3>
+          <div class="tag-cloud">
+            <a href="/blog/tag/unity" class="tag">Unity</a>
+            <a href="/blog/tag/vr" class="tag">VR</a>
+            <a href="/blog/tag/ai" class="tag">AI</a>
+            <a href="/blog/tag/life" class="tag">Life</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-header {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+  }
+  
+  .subtitle {
+    color: var(--color-text-secondary);
+    font-style: italic;
+    margin-top: var(--space-sm);
+  }
+  
+  .blog-layout {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: var(--space-xl);
+    align-items: start;
+  }
+  
+  .posts-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+  
+  .post-card {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    padding: var(--space-lg);
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  }
+  
+  .post-card:hover {
+    border-color: rgba(201, 162, 39, 0.35);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  }
+  
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-sm);
+  }
+  
+  .post-date {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+  }
+  
+  .post-category {
+    font-size: 0.85rem;
+    color: var(--color-brass);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .post-title {
+    font-size: 1.35rem;
+    font-family: var(--font-body);
+    font-weight: 600;
+    margin-bottom: var(--space-sm);
+  }
+  
+  .post-title a {
+    color: var(--color-text-primary);
+    text-decoration: none;
+  }
+  
+  .post-title a:hover {
+    color: var(--color-brass-light);
+  }
+  
+  .post-excerpt {
+    color: var(--color-text-secondary);
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: var(--space-md);
+  }
+  
+  .post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+  
+  /* Sidebar */
+  .blog-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    position: sticky;
+    top: 100px;
+  }
+  
+  .sidebar-section {
+    padding: var(--space-md);
+  }
+  
+  .sidebar-section h3 {
+    font-size: 1rem;
+    color: var(--color-brass);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: var(--space-md);
+  }
+  
+  .category-list {
+    list-style: none;
+  }
+  
+  .category-list li {
+    margin-bottom: var(--space-xs);
+  }
+  
+  .category-list a {
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+  }
+  
+  .category-list a:hover {
+    color: var(--color-text-primary);
+  }
+  
+  .tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+  
+  .tag-cloud .tag {
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .tag-cloud .tag:hover {
+    border-color: var(--color-brass);
+    color: var(--color-brass);
+  }
+  
+  @media (max-width: 900px) {
+    .blog-layout {
+      grid-template-columns: 1fr;
+    }
+    
+    .blog-sidebar {
+      position: static;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+    
+    .sidebar-section {
+      flex: 1;
+      min-width: 200px;
+    }
+  }
+</style>

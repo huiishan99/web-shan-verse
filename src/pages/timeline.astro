@@ -1,0 +1,218 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// 从 _data/timeline.yml 读取数据会在后续完善，先用硬编码展示
+const timelineData = [
+  {
+    year: 2024,
+    events: [
+      {
+        month: "October",
+        title: "JPHACKS Hackathon Participation",
+        description: "Participated in the JPHACKS hackathon at the Sendai venue, where our team project received the third-highest number of votes."
+      },
+      {
+        month: "September",
+        title: "Alps Alpine Corporation Internship",
+        description: "Participated in a two weeks internship at Alps Alpine Corporation. Developed a VR car scene prototype with Unity."
+      },
+      {
+        month: "April",
+        title: "University of Aizu Enrollment",
+        description: "Enrolled in The University of Aizu. Pursuing a master's degree in Graduate Department of Computer and Information Systems."
+      }
+    ]
+  },
+  {
+    year: 2023,
+    events: [
+      {
+        month: "March",
+        title: "ABK College Enrollment",
+        description: "Enrolled in ABK College to study Japanese language."
+      }
+    ]
+  },
+  {
+    year: 2022,
+    events: [
+      {
+        month: "June",
+        title: "Northwestern Polytechnical University Graduation",
+        description: "Graduated with a Bachelor's degree in E-Commerce Engineering."
+      }
+    ]
+  }
+];
+---
+
+<BaseLayout title="Timeline">
+  <div class="container">
+    <header class="page-header">
+      <h1>Timeline</h1>
+      <p class="subtitle">A chronicle of my journey</p>
+    </header>
+    
+    <div class="timeline">
+      {timelineData.map((yearGroup) => (
+        <div class="timeline-year">
+          <div class="year-marker">
+            <span class="year-label">{yearGroup.year}</span>
+          </div>
+          
+          <div class="year-events">
+            {yearGroup.events.map((event) => (
+              <div class="timeline-event">
+                <div class="event-connector">
+                  <div class="connector-line"></div>
+                  <div class="connector-dot"></div>
+                </div>
+                <div class="event-content card">
+                  <span class="event-month">{event.month}</span>
+                  <h3 class="event-title">{event.title}</h3>
+                  <p class="event-desc">{event.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+    
+    <div class="timeline-end">
+      <span class="divider-icon">✧ The journey continues ✧</span>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-header {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+  }
+  
+  .subtitle {
+    color: var(--color-text-secondary);
+    font-style: italic;
+    margin-top: var(--space-sm);
+  }
+  
+  .timeline {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .timeline-year {
+    margin-bottom: var(--space-xl);
+  }
+  
+  .year-marker {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+  }
+  
+  .year-label {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    color: var(--color-brass);
+    letter-spacing: 0.1em;
+  }
+  
+  .year-marker::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--color-brass-dark), transparent);
+  }
+  
+  .year-events {
+    padding-left: var(--space-lg);
+  }
+  
+  .timeline-event {
+    display: flex;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+  }
+  
+  .event-connector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: var(--space-md);
+  }
+  
+  .connector-dot {
+    width: 12px;
+    height: 12px;
+    background: var(--color-bg-primary);
+    border: 2px solid var(--color-brass);
+    border-radius: 50%;
+    z-index: 1;
+  }
+  
+  .connector-line {
+    width: 1px;
+    flex: 1;
+    background: var(--color-border);
+    margin-top: var(--space-sm);
+  }
+  
+  .timeline-event:last-child .connector-line {
+    display: none;
+  }
+  
+  .event-content {
+    flex: 1;
+    padding: var(--space-md) var(--space-lg);
+  }
+  
+  .event-month {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  
+  .event-title {
+    font-size: 1.2rem;
+    font-family: var(--font-body);
+    font-weight: 600;
+    margin: var(--space-xs) 0 var(--space-sm);
+    color: var(--color-text-primary);
+  }
+  
+  .event-desc {
+    color: var(--color-text-secondary);
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+  
+  .timeline-end {
+    text-align: center;
+    padding: var(--space-xl) 0;
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+  
+  .timeline-end .divider-icon {
+    color: var(--color-brass-dark);
+  }
+  
+  @media (max-width: 768px) {
+    .year-events {
+      padding-left: 0;
+    }
+    
+    .event-connector {
+      display: none;
+    }
+    
+    .year-label {
+      font-size: 1.5rem;
+    }
+  }
+</style>

@@ -1,0 +1,251 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Projects">
+  <div class="container">
+    <header class="page-header">
+      <h1>Projects</h1>
+      <p class="subtitle">A collection of things I've built</p>
+    </header>
+    
+    <!-- Unity Projects -->
+    <section class="project-section" id="unity">
+      <h2>
+        <span class="section-icon">🎮</span>
+        Unity Projects
+      </h2>
+      
+      <div class="projects-grid">
+        <article class="project-card">
+          <div class="project-header">
+            <h3>Solar System</h3>
+            <a href="https://github.com/huiishan99/unity-solar-system" target="_blank" class="project-link">
+              GitHub →
+            </a>
+          </div>
+          <p class="project-desc">
+            Interactive 3D solar system simulation with realistic planetary orbits and physics.
+          </p>
+          <div class="project-tags">
+            <span class="tag">Unity</span>
+            <span class="tag">C#</span>
+            <span class="tag">3D</span>
+            <span class="tag">Physics</span>
+          </div>
+        </article>
+        
+        <article class="project-card">
+          <div class="project-header">
+            <h3>2D Platformer</h3>
+            <a href="https://github.com/huiishan99/unity-2d-platformer" target="_blank" class="project-link">
+              GitHub →
+            </a>
+          </div>
+          <p class="project-desc">
+            Classic side-scrolling platformer with smooth controls and level progression.
+          </p>
+          <div class="project-tags">
+            <span class="tag">Unity</span>
+            <span class="tag">C#</span>
+            <span class="tag">2D</span>
+            <span class="tag">Game Dev</span>
+          </div>
+        </article>
+        
+        <article class="project-card">
+          <div class="project-header">
+            <h3>2D Shooter Game</h3>
+            <a href="https://github.com/huiishan99/unity-2d-shooter-game" target="_blank" class="project-link">
+              GitHub →
+            </a>
+          </div>
+          <p class="project-desc">
+            Fast-paced 2D shooter with enemy AI and power-up systems.
+          </p>
+          <div class="project-tags">
+            <span class="tag">Unity</span>
+            <span class="tag">C#</span>
+            <span class="tag">AI</span>
+          </div>
+        </article>
+        
+        <article class="project-card">
+          <div class="project-header">
+            <h3>Kitchen Chaos</h3>
+            <a href="https://github.com/huiishan99/unity-kitchen-chaos" target="_blank" class="project-link">
+              GitHub →
+            </a>
+          </div>
+          <p class="project-desc">
+            Cooking simulation game with time management and order fulfillment mechanics.
+          </p>
+          <div class="project-tags">
+            <span class="tag">Unity</span>
+            <span class="tag">C#</span>
+            <span class="tag">Simulation</span>
+          </div>
+        </article>
+      </div>
+    </section>
+    
+    <!-- VR/XR Projects -->
+    <section class="project-section" id="vr">
+      <h2>
+        <span class="section-icon">🥽</span>
+        VR/XR Projects
+      </h2>
+      
+      <div class="projects-grid">
+        <article class="project-card featured">
+          <div class="featured-badge">Featured</div>
+          <div class="project-header">
+            <h3>VR Car Scene Prototype</h3>
+          </div>
+          <p class="project-desc">
+            VR car scene prototype developed during ALPS ALPINE internship using Unity and Meta Quest.
+          </p>
+          <div class="project-tags">
+            <span class="tag">Unity</span>
+            <span class="tag">VR</span>
+            <span class="tag">Meta Quest</span>
+          </div>
+        </article>
+      </div>
+    </section>
+    
+    <!-- Web Projects -->
+    <section class="project-section" id="web">
+      <h2>
+        <span class="section-icon">🌐</span>
+        Web Projects
+      </h2>
+      
+      <div class="projects-grid">
+        <article class="project-card">
+          <div class="project-header">
+            <h3>SHAN-VERSE</h3>
+            <a href="https://github.com/huiishan99/web-blog" target="_blank" class="project-link">
+              GitHub →
+            </a>
+          </div>
+          <p class="project-desc">
+            This personal website - built with Astro, featuring a unique steampunk aesthetic.
+          </p>
+          <div class="project-tags">
+            <span class="tag">Astro</span>
+            <span class="tag">TypeScript</span>
+            <span class="tag">CSS</span>
+          </div>
+        </article>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-header {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+  }
+  
+  .subtitle {
+    color: var(--color-text-secondary);
+    font-style: italic;
+    margin-top: var(--space-sm);
+  }
+  
+  .project-section {
+    margin-bottom: var(--space-xl);
+  }
+  
+  .project-section h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+  
+  .section-icon {
+    font-size: 1.25rem;
+  }
+  
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--space-lg);
+    margin-top: var(--space-lg);
+  }
+  
+  .project-card {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    padding: var(--space-lg);
+    position: relative;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  }
+  
+  .project-card:hover {
+    border-color: rgba(201, 162, 39, 0.35);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  }
+  
+  .project-card.featured {
+    border-color: rgba(201, 162, 39, 0.3);
+  }
+  
+  .featured-badge {
+    position: absolute;
+    top: var(--space-sm);
+    right: var(--space-sm);
+    background: var(--color-brass);
+    color: var(--color-bg-primary);
+    padding: 2px 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  
+  .project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-sm);
+  }
+  
+  .project-header h3 {
+    font-size: 1.2rem;
+    font-family: var(--font-body);
+    font-weight: 600;
+  }
+  
+  .project-link {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+  }
+  
+  .project-link:hover {
+    color: var(--color-brass);
+  }
+  
+  .project-desc {
+    color: var(--color-text-secondary);
+    font-size: 1rem;
+    margin-bottom: var(--space-md);
+    line-height: 1.6;
+  }
+  
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+  
+  @media (max-width: 768px) {
+    .projects-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

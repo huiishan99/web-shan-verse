@@ -1,0 +1,280 @@
+/* ═══════════════════════════════════════════════════════════
+   SHAN-VERSE - 深空星尘 × 蒸汽朋克 主题
+   ═══════════════════════════════════════════════════════════ */
+
+/* --- 基础变量 --- */
+:root {
+  /* 深空背景色 */
+  --color-bg-primary: #0a0a0f;
+  --color-bg-secondary: #121218;
+  --color-bg-card: #16161e;
+  --color-bg-hover: #1e1e28;
+  
+  /* 黄铜/金属强调色 - 蒸汽朋克 */
+  --color-brass: #c9a227;
+  --color-brass-light: #d4a84b;
+  --color-brass-dark: #8b6914;
+  --color-copper: #b87333;
+  
+  /* 文字颜色 - 更亮更清晰 */
+  --color-text-primary: #f5f5f5;
+  --color-text-secondary: #c8c8c8;
+  --color-text-muted: #888888;
+  
+  /* 交互色 - 克制的赛博蓝 */
+  --color-link: #6aabff;
+  --color-link-hover: #a0c8ff;
+  
+  /* 边框和装饰 - 柔和的边框 */
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-accent: rgba(255, 255, 255, 0.12);
+  
+  /* 字体 */
+  --font-display: 'Cinzel', 'Georgia', serif;
+  --font-body: 'Crimson Pro', 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  
+  /* 间距 */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 2rem;
+  --space-xl: 4rem;
+}
+
+/* --- 全局样式 --- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  line-height: 1.8;
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-size: 1.1rem;
+  letter-spacing: 0.01em;
+}
+
+/* --- 星空背景 --- */
+.starfield {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.stars {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.3), transparent),
+    radial-gradient(1px 1px at 40% 70%, rgba(255,255,255,0.2), transparent),
+    radial-gradient(1px 1px at 50% 20%, rgba(255,255,255,0.25), transparent),
+    radial-gradient(1.5px 1.5px at 60% 50%, rgba(255,255,255,0.35), transparent),
+    radial-gradient(1px 1px at 70% 80%, rgba(255,255,255,0.2), transparent),
+    radial-gradient(1px 1px at 80% 10%, rgba(255,255,255,0.3), transparent),
+    radial-gradient(1.5px 1.5px at 90% 40%, rgba(255,255,255,0.25), transparent),
+    radial-gradient(1px 1px at 10% 60%, rgba(255,255,255,0.2), transparent),
+    radial-gradient(1px 1px at 30% 90%, rgba(255,255,255,0.3), transparent),
+    radial-gradient(1.5px 1.5px at 85% 65%, rgba(255,255,255,0.2), transparent);
+  background-size: 550px 550px;
+  animation: drift 120s linear infinite;
+}
+
+.stars-2 {
+  background-image: 
+    radial-gradient(1px 1px at 15% 25%, rgba(201, 162, 39, 0.2), transparent),
+    radial-gradient(1.5px 1.5px at 35% 65%, rgba(255,255,255,0.15), transparent),
+    radial-gradient(1px 1px at 55% 15%, rgba(201, 162, 39, 0.15), transparent),
+    radial-gradient(1px 1px at 75% 45%, rgba(255,255,255,0.2), transparent),
+    radial-gradient(1.5px 1.5px at 25% 85%, rgba(255,255,255,0.15), transparent);
+  background-size: 350px 350px;
+  animation: drift 90s linear infinite reverse;
+}
+
+@keyframes drift {
+  from { transform: translateY(0); }
+  to { transform: translateY(-550px); }
+}
+
+/* --- 链接样式 --- */
+a {
+  color: var(--color-link);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--color-link-hover);
+}
+
+/* --- 蒸汽朋克装饰边框 --- */
+.gear-border {
+  position: relative;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-card);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.gear-border::before,
+.gear-border::after {
+  content: '◈';
+  position: absolute;
+  color: var(--color-brass);
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
+.gear-border::before {
+  top: -0.5rem;
+  left: -0.5rem;
+}
+
+.gear-border::after {
+  bottom: -0.5rem;
+  right: -0.5rem;
+}
+
+/* --- 标题样式 --- */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--color-text-primary);
+}
+
+h1 {
+  font-size: 2.5rem;
+  letter-spacing: 0.05em;
+}
+
+h2 {
+  font-size: 1.75rem;
+  color: var(--color-brass-light);
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+h3 {
+  font-size: 1.35rem;
+}
+
+/* --- 容器 --- */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+}
+
+/* --- 按钮 --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: transparent;
+  border: 1px solid var(--color-brass);
+  color: var(--color-brass);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.btn:hover {
+  background: var(--color-brass);
+  color: var(--color-bg-primary);
+}
+
+/* --- 卡片 --- */
+.card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  padding: var(--space-lg);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+.card:hover {
+  border-color: rgba(201, 162, 39, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+/* --- 标签 --- */
+.tag {
+  display: inline-block;
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  font-family: var(--font-mono);
+}
+
+/* --- 分隔线 --- */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  color: var(--color-text-muted);
+  margin: var(--space-lg) 0;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-border), transparent);
+}
+
+.divider-icon {
+  color: var(--color-brass);
+  font-size: 0.875rem;
+}
+
+/* --- 代码块 --- */
+pre {
+  background: var(--color-bg-secondary) !important;
+  border: 1px solid var(--color-border);
+  padding: var(--space-md);
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+}
+
+code {
+  font-family: var(--font-mono);
+  background: var(--color-bg-secondary);
+  padding: 0.1em 0.3em;
+  font-size: 0.875em;
+}
+
+pre code {
+  background: transparent;
+  padding: 0;
+}
+
+/* --- 响应式 --- */
+@media (max-width: 768px) {
+  h1 { font-size: 1.75rem; }
+  h2 { font-size: 1.4rem; }
+  .container { padding: 0 var(--space-md); }
+}

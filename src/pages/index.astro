@@ -1,0 +1,280 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Home">
+  <div class="container">
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-content">
+        <p class="hero-greeting">Welcome to</p>
+        <h1 class="hero-title">
+          <span class="title-line">SHAN</span>
+          <span class="title-decoration">— ✦ —</span>
+          <span class="title-line">VERSE</span>
+        </h1>
+        <p class="hero-tagline">Curiosity fuels the journey, code lights the way.</p>
+        
+        <div class="hero-intro">
+          <p>
+            Hi, I'm <span class="highlight">Lai HuiShan</span> — a game developer and master's student 
+            exploring the intersection of technology and creativity.
+          </p>
+        </div>
+        
+        <div class="hero-actions">
+          <a href="/about" class="btn">
+            <span>⚙</span> About Me
+          </a>
+          <a href="/projects" class="btn">
+            <span>◈</span> View Projects
+          </a>
+        </div>
+      </div>
+      
+      <aside class="hero-status">
+        <div class="status-card gear-border">
+          <h3 class="status-title">Current Status</h3>
+          <ul class="status-list">
+            <li>
+              <span class="status-icon">🎓</span>
+              <span>Master's @ University of Aizu</span>
+            </li>
+            <li>
+              <span class="status-icon">📍</span>
+              <span>Aizu-Wakamatsu, Japan</span>
+            </li>
+            <li>
+              <span class="status-icon">🎮</span>
+              <span>Unity Game Development</span>
+            </li>
+          </ul>
+        </div>
+      </aside>
+    </section>
+    
+    <!-- Featured Section -->
+    <section class="featured">
+      <div class="divider">
+        <span class="divider-icon">◈</span>
+      </div>
+      
+      <h2>Featured Works</h2>
+      
+      <div class="featured-grid">
+        <a href="/projects#unity" class="featured-card">
+          <div class="featured-icon">🎮</div>
+          <h3>Unity Projects</h3>
+          <p>3D simulations, 2D platformers, and game prototypes</p>
+        </a>
+        
+        <a href="/projects#web" class="featured-card">
+          <div class="featured-icon">🌐</div>
+          <h3>Web Development</h3>
+          <p>Full-stack applications and interactive experiences</p>
+        </a>
+        
+        <a href="/blog" class="featured-card">
+          <div class="featured-icon">✎</div>
+          <h3>Tech Blog</h3>
+          <p>Development tutorials and learning notes</p>
+        </a>
+      </div>
+    </section>
+    
+    <!-- Latest Posts Preview -->
+    <section class="latest">
+      <div class="divider">
+        <span class="divider-icon">⚙</span>
+      </div>
+      
+      <h2>Latest Posts</h2>
+      
+      <div class="posts-preview">
+        <p class="coming-soon">Blog posts coming soon...</p>
+        <a href="/blog" class="btn">
+          <span>→</span> View All Posts
+        </a>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--space-xl);
+    align-items: start;
+    padding: var(--space-xl) 0;
+  }
+  
+  .hero-greeting {
+    color: var(--color-text-secondary);
+    font-size: 1rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: var(--space-sm);
+  }
+  
+  .hero-title {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: var(--space-md);
+  }
+  
+  .title-line {
+    font-size: 4rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    line-height: 1.1;
+  }
+  
+  .title-decoration {
+    color: var(--color-brass);
+    font-size: 1.5rem;
+    margin: var(--space-xs) 0;
+    letter-spacing: 0.5em;
+  }
+  
+  .hero-tagline {
+    font-style: italic;
+    color: var(--color-text-secondary);
+    font-size: 1.15rem;
+    margin-bottom: var(--space-lg);
+    padding-left: var(--space-md);
+    border-left: 2px solid var(--color-brass-dark);
+  }
+  
+  .hero-intro {
+    max-width: 500px;
+    margin-bottom: var(--space-lg);
+  }
+  
+  .hero-intro p {
+    color: var(--color-text-secondary);
+    line-height: 1.8;
+  }
+  
+  .highlight {
+    color: var(--color-brass-light);
+    font-weight: 500;
+  }
+  
+  .hero-actions {
+    display: flex;
+    gap: var(--space-md);
+  }
+  
+  .hero-status {
+    width: 280px;
+  }
+  
+  .status-card {
+    padding: var(--space-lg);
+  }
+  
+  .status-title {
+    font-size: 1rem;
+    color: var(--color-brass);
+    letter-spacing: 0.1em;
+    margin-bottom: var(--space-md);
+    text-transform: uppercase;
+  }
+  
+  .status-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+  
+  .status-list li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+  }
+  
+  .status-icon {
+    width: 24px;
+    text-align: center;
+  }
+  
+  /* Featured Section */
+  .featured, .latest {
+    padding: var(--space-xl) 0;
+  }
+  
+  .featured-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-lg);
+    margin-top: var(--space-lg);
+  }
+  
+  .featured-card {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    padding: var(--space-lg);
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  }
+  
+  .featured-card:hover {
+    border-color: rgba(201, 162, 39, 0.35);
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  }
+  
+  .featured-icon {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-md);
+  }
+  
+  .featured-card h3 {
+    color: var(--color-text-primary);
+    font-size: 1.2rem;
+    margin-bottom: var(--space-sm);
+  }
+  
+  .featured-card p {
+    color: var(--color-text-secondary);
+    font-size: 0.95rem;
+  }
+  
+  /* Latest Posts */
+  .posts-preview {
+    text-align: center;
+    padding: var(--space-xl) 0;
+  }
+  
+  .coming-soon {
+    color: var(--color-text-muted);
+    font-style: italic;
+    margin-bottom: var(--space-lg);
+  }
+  
+  /* Responsive */
+  @media (max-width: 900px) {
+    .hero {
+      grid-template-columns: 1fr;
+    }
+    
+    .hero-status {
+      width: 100%;
+    }
+    
+    .title-line {
+      font-size: 2.5rem;
+    }
+    
+    .featured-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

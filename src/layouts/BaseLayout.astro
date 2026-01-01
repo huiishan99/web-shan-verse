@@ -1,0 +1,215 @@
+---
+import StarField from '../components/StarField.astro';
+
+export interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { 
+  title = 'SHAN-VERSE', 
+  description = 'Curiosity fuels the journey, code lights the way.' 
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content={description}>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <title>{title} | SHAN-VERSE</title>
+</head>
+<body>
+  <!-- 互动式星空背景 -->
+  <StarField />
+  
+  <div class="page-wrapper">
+    <slot name="header">
+      <header class="site-header">
+        <div class="container">
+          <nav class="nav">
+            <a href="/" class="logo">
+              <span class="logo-symbol">✧</span>
+              <span class="logo-text">SHAN-VERSE</span>
+              <span class="logo-symbol">✧</span>
+            </a>
+            <ul class="nav-links">
+              <li><a href="/about">About</a></li>
+              <li><a href="/projects">Projects</a></li>
+              <li><a href="/timeline">Timeline</a></li>
+              <li><a href="/blog">Blog</a></li>
+            </ul>
+          </nav>
+        </div>
+      </header>
+    </slot>
+    
+    <main class="main-content">
+      <slot />
+    </main>
+    
+    <footer class="site-footer">
+      <div class="container">
+        <div class="divider">
+          <span class="divider-icon">⚙</span>
+        </div>
+        <div class="footer-content">
+          <p class="footer-text">
+            <span class="brass">◈</span> 
+            Crafted with curiosity · © 2024-2026 Lai HuiShan 
+            <span class="brass">◈</span>
+          </p>
+          <div class="footer-links">
+            <a href="https://github.com/huiishan99" target="_blank" rel="noopener">GitHub</a>
+            <span class="footer-sep">·</span>
+            <a href="https://linkedin.com/in/laihuishan/" target="_blank" rel="noopener">LinkedIn</a>
+            <span class="footer-sep">·</span>
+            <a href="https://instagram.com/huii.shan.9/" target="_blank" rel="noopener">Instagram</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
+
+<style is:global>
+  @import '../styles/global.css';
+</style>
+
+<style>
+  .page-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  .site-header {
+    padding: var(--space-md) 0;
+    border-bottom: 1px solid var(--color-border);
+    background: rgba(10, 10, 15, 0.8);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--color-text-primary);
+    text-decoration: none;
+    letter-spacing: 0.1em;
+  }
+  
+  .logo:hover {
+    color: var(--color-text-primary);
+  }
+  
+  .logo-symbol {
+    color: var(--color-brass);
+    font-size: 0.875rem;
+  }
+  
+  .nav-links {
+    display: flex;
+    gap: var(--space-lg);
+    list-style: none;
+  }
+  
+  .nav-links a {
+    color: var(--color-text-secondary);
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+    padding: var(--space-xs) 0;
+    position: relative;
+  }
+  
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--color-brass);
+    transition: width 0.3s ease;
+  }
+  
+  .nav-links a:hover {
+    color: var(--color-text-primary);
+  }
+  
+  .nav-links a:hover::after {
+    width: 100%;
+  }
+  
+  .main-content {
+    flex: 1;
+    padding: var(--space-xl) 0;
+  }
+  
+  .site-footer {
+    padding: var(--space-lg) 0;
+    margin-top: auto;
+  }
+  
+  .footer-content {
+    text-align: center;
+  }
+  
+  .footer-text {
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+  }
+  
+  .footer-text .brass {
+    color: var(--color-brass);
+    opacity: 0.5;
+  }
+  
+  .footer-links {
+    margin-top: var(--space-sm);
+    display: flex;
+    justify-content: center;
+    gap: var(--space-sm);
+    font-size: 0.9rem;
+  }
+  
+  .footer-links a {
+    color: var(--color-text-secondary);
+  }
+  
+  .footer-sep {
+    color: var(--color-text-muted);
+  }
+  
+  /* 移动端 */
+  @media (max-width: 768px) {
+    .nav {
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+    
+    .nav-links {
+      gap: var(--space-md);
+    }
+  }
+</style>
