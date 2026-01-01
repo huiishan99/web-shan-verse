@@ -1,7 +1,30 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
 
-// 后续会从 content collection 获取博客文章
+// 从 content collection 获取博客文章
+const posts = await getCollection('blog', ({ data }) => {
+  // 在生产环境中排除草稿
+  return import.meta.env.PROD ? data.draft !== true : true;
+});
+
+// 按日期排序（最新在前）
+const sortedPosts = posts.sort((a, b) => 
+  b.data.date.valueOf() - a.data.date.valueOf()
+);
+
+// 收集所有分类和标签
+const allCategories = [...new Set(posts.flatMap(post => post.data.categories || []))];
+const allTags = [...new Set(posts.flatMap(post => post.data.tags || []))];
+
+// 格式化日期的辅助函数
+function formatDate(date: Date) {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+}
 ---
 
 <BaseLayout title="Blog">
@@ -13,80 +36,91 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     
     <div class="blog-layout">
       <main class="posts-list">
-        <!-- 临时占位 - 后续会动态生成 -->
-        <article class="post-card">
-          <div class="post-meta">
-            <time class="post-date">2025-01-01</time>
-            <span class="post-category">Life</span>
-          </div>
-          <h2 class="post-title">
-            <a href="/blog/2025-01-01-happy-new-year">Happy New Year!</a>
-          </h2>
-          <p class="post-excerpt">
-            Welcoming the new year with new goals and aspirations...
-          </p>
-          <div class="post-tags">
-            <span class="tag">Life</span>
-          </div>
-        </article>
+        {sortedPosts.map((post) => (
+          <article class="post-card" data-href={`/blog/${post.slug}`}>
+            <div class="post-meta">
+              <time class="post-date" datetime={post.data.date.toISOString()}>
+                {formatDate(post.data.date)}
+              </time>
+              {post.data.categories && post.data.categories[0] && (
+                <a href={`/blog/category/${post.data.categories[0].toLowerCase().replace(/\s+/g, '-')}`} 
+                   class="post-category" 
+                   onclick="event.stopPropagation()">
+                  {post.data.categories[0]}
+                </a>
+              )}
+              {post.data.draft && (
+                <span class="draft-badge">Draft</span>
+              )}
+              {post.data.deprecated && (
+                <span class="deprecated-badge">Deprecated</span>
+              )}
+            </div>
+            <h2 class="post-title">{post.data.title}</h2>
+            {post.data.description && (
+              <p class="post-excerpt">{post.data.description}</p>
+            )}
+            {post.data.tags && post.data.tags.length > 0 && (
+              <div class="post-tags">
+                {post.data.tags.map((tag: string) => (
+                  <a href={`/blog/tag/${tag.toLowerCase().replace(/\s+/g, '-')}`} 
+                     class="tag-in-card"
+                     onclick="event.stopPropagation()">
+                    #{tag}
+                  </a>
+                ))}
+              </div>
+            )}
+          </article>
+        ))}
         
-        <article class="post-card">
-          <div class="post-meta">
-            <time class="post-date">2024-06-16</time>
-            <span class="post-category">Development</span>
-          </div>
-          <h2 class="post-title">
-            <a href="/blog/2024-06-16-dev-quest3-inworld-unity">Integrating Inworld AI with Meta Quest 3 in Unity</a>
-          </h2>
-          <p class="post-excerpt">
-            Tutorial for integrating Inworld AI, Ready Player Me, and Meta Quest 3 in Unity Development...
-          </p>
-          <div class="post-tags">
-            <span class="tag">Unity</span>
-            <span class="tag">VR</span>
-            <span class="tag">AI</span>
-          </div>
-        </article>
-        
-        <article class="post-card">
-          <div class="post-meta">
-            <time class="post-date">2024-06-15</time>
-            <span class="post-category">Life</span>
-          </div>
-          <h2 class="post-title">
-            <a href="/blog/2024-06-15-first-blog">First Blog</a>
-          </h2>
-          <p class="post-excerpt">
-            Welcome to my blog! This is where I'll share my journey...
-          </p>
-          <div class="post-tags">
-            <span class="tag">Introduction</span>
-          </div>
-        </article>
+        {sortedPosts.length === 0 && (
+          <p class="no-posts">No blog posts yet. Check back soon!</p>
+        )}
       </main>
       
       <aside class="blog-sidebar">
         <div class="sidebar-section gear-border">
           <h3>Categories</h3>
           <ul class="category-list">
-            <li><a href="/blog/category/development">Development</a></li>
-            <li><a href="/blog/category/life">Life</a></li>
+            {allCategories.map((category) => (
+              <li>
+                <a href={`/blog/category/${category.toLowerCase().replace(/\s+/g, '-')}`} class="category-link">
+                  {category}
+                </a>
+              </li>
+            ))}
           </ul>
         </div>
         
         <div class="sidebar-section gear-border">
           <h3>Tags</h3>
           <div class="tag-cloud">
-            <a href="/blog/tag/unity" class="tag">Unity</a>
-            <a href="/blog/tag/vr" class="tag">VR</a>
-            <a href="/blog/tag/ai" class="tag">AI</a>
-            <a href="/blog/tag/life" class="tag">Life</a>
+            {allTags.map((tag) => (
+              <a href={`/blog/tag/${tag.toLowerCase().replace(/\s+/g, '-')}`} class="tag-link">
+                #{tag}
+              </a>
+            ))}
           </div>
         </div>
       </aside>
     </div>
   </div>
 </BaseLayout>
+
+<script>
+  // 让整个卡片可点击，但标签链接可以独立点击
+  document.querySelectorAll('.post-card[data-href]').forEach(card => {
+    card.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      // 如果点击的是链接，让链接自己处理
+      if (target.tagName === 'A') return;
+      // 否则跳转到文章
+      const href = card.getAttribute('data-href');
+      if (href) window.location.href = href;
+    });
+  });
+</script>
 
 <style>
   .page-header {
@@ -119,11 +153,13 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     padding: var(--space-lg);
     transition: all 0.3s ease;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
   }
   
   .post-card:hover {
     border-color: rgba(201, 162, 39, 0.35);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    transform: translateY(-2px);
   }
   
   .post-meta {
@@ -144,6 +180,32 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     color: var(--color-brass);
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  
+  .post-category:hover {
+    color: var(--color-accent-gold);
+  }
+  
+  .draft-badge {
+    background: rgba(255, 100, 100, 0.2);
+    color: #ff9999;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .deprecated-badge {
+    background: rgba(255, 160, 60, 0.2);
+    color: #ffa03c;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
   
   .post-title {
@@ -151,15 +213,12 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     font-family: var(--font-body);
     font-weight: 600;
     margin-bottom: var(--space-sm);
-  }
-  
-  .post-title a {
     color: var(--color-text-primary);
-    text-decoration: none;
+    transition: color 0.2s ease;
   }
   
-  .post-title a:hover {
-    color: var(--color-brass-light);
+  .post-card:hover .post-title {
+    color: var(--color-accent-gold);
   }
   
   .post-excerpt {
@@ -173,6 +232,36 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-xs);
+  }
+  
+  .post-tags .tag {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+  }
+  
+  .tag-in-card {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    padding: 0.15rem 0.4rem;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    transition: all 0.2s ease;
+  }
+  
+  .tag-in-card:hover {
+    color: var(--color-accent-gold);
+    border-color: var(--color-accent-gold);
+    background: rgba(201, 162, 39, 0.1);
+  }
+  
+  .no-posts {
+    color: var(--color-text-muted);
+    text-align: center;
+    padding: var(--space-xl);
+    font-style: italic;
   }
   
   /* Sidebar */
@@ -204,13 +293,15 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     margin-bottom: var(--space-xs);
   }
   
-  .category-list a {
+  .category-link {
     color: var(--color-text-secondary);
     font-size: 0.9rem;
+    text-decoration: none;
+    transition: color 0.2s ease;
   }
   
-  .category-list a:hover {
-    color: var(--color-text-primary);
+  .category-link:hover {
+    color: var(--color-accent-gold);
   }
   
   .tag-cloud {
@@ -219,14 +310,21 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     gap: var(--space-xs);
   }
   
-  .tag-cloud .tag {
-    cursor: pointer;
+  .tag-link {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    padding: 0.2rem 0.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
     transition: all 0.2s ease;
   }
   
-  .tag-cloud .tag:hover {
-    border-color: var(--color-brass);
-    color: var(--color-brass);
+  .tag-link:hover {
+    border-color: var(--color-accent-gold);
+    color: var(--color-accent-gold);
+    background: rgba(201, 162, 39, 0.1);
   }
   
   @media (max-width: 900px) {
