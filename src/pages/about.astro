@@ -1,0 +1,441 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="About">
+  <div class="container">
+    <header class="page-header">
+      <h1>About Me</h1>
+      <p class="subtitle">The story behind the code</p>
+    </header>
+    
+    <div class="about-layout">
+      <section class="about-main">
+        <!-- Intro -->
+        <div class="intro-section">
+          <p class="intro-text">
+            Hi! Nice to meet you. I'm originally from the vibrant city of 
+            <span class="highlight">Sandakan, Sabah in Malaysia</span> — home to the 
+            enchanting Rafflesia flowers, intriguing proboscis monkeys, and majestic orangutans.
+          </p>
+          <p class="intro-text">
+            Now, I'm immersing myself in the world of Computer and Information Systems 
+            as a <span class="highlight">Master's student at University of Aizu</span> in Japan.
+          </p>
+        </div>
+        
+        <!-- Education -->
+        <div class="section">
+          <h2>
+            <span class="section-icon">🎓</span>
+            Education
+          </h2>
+          
+          <div class="timeline-list">
+            <div class="timeline-item">
+              <div class="timeline-marker"></div>
+              <div class="timeline-content card">
+                <div class="timeline-header">
+                  <h3>University of Aizu</h3>
+                  <span class="timeline-location">Aizu-Wakamatsu, Japan</span>
+                </div>
+                <p class="timeline-role">Master's in Computer and Information Systems</p>
+                <p class="timeline-date">2024 - Present</p>
+              </div>
+            </div>
+            
+            <div class="timeline-item">
+              <div class="timeline-marker"></div>
+              <div class="timeline-content card">
+                <div class="timeline-header">
+                  <h3>Northwestern Polytechnical University</h3>
+                  <span class="timeline-location">Xi'an, China</span>
+                </div>
+                <p class="timeline-role">Bachelor's in E-Commerce Engineering</p>
+                <p class="timeline-date">2019 - 2023</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Experience -->
+        <div class="section">
+          <h2>
+            <span class="section-icon">💼</span>
+            Experience
+          </h2>
+          
+          <div class="timeline-list">
+            <div class="timeline-item">
+              <div class="timeline-marker"></div>
+              <div class="timeline-content card">
+                <div class="timeline-header">
+                  <h3>ALPS ALPINE</h3>
+                </div>
+                <p class="timeline-role">Engineer Internship</p>
+                <p class="timeline-desc">Developed VR car scene prototype with Unity</p>
+                <p class="timeline-date">2 weeks</p>
+              </div>
+            </div>
+            
+            <div class="timeline-item">
+              <div class="timeline-marker"></div>
+              <div class="timeline-content card">
+                <div class="timeline-header">
+                  <h3>Alibaba GDT Network</h3>
+                </div>
+                <p class="timeline-role">Student Internship</p>
+                <p class="timeline-date">3 months</p>
+              </div>
+            </div>
+            
+            <div class="timeline-item">
+              <div class="timeline-marker"></div>
+              <div class="timeline-content card">
+                <div class="timeline-header">
+                  <h3>University of Aizu</h3>
+                </div>
+                <p class="timeline-role">Teaching Assistant - MATLAB</p>
+                <p class="timeline-date">5 months</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Skills -->
+        <div class="section">
+          <h2>
+            <span class="section-icon">⚙</span>
+            Skills
+          </h2>
+          
+          <div class="skills-grid">
+            <div class="skill-category">
+              <h3>Languages</h3>
+              <div class="skill-tags">
+                <span class="tag">C#</span>
+                <span class="tag">Python</span>
+                <span class="tag">JavaScript</span>
+                <span class="tag">TypeScript</span>
+                <span class="tag">Java</span>
+              </div>
+            </div>
+            
+            <div class="skill-category">
+              <h3>Game Development</h3>
+              <div class="skill-tags">
+                <span class="tag">Unity</span>
+                <span class="tag">VR/XR</span>
+                <span class="tag">Meta Quest</span>
+              </div>
+            </div>
+            
+            <div class="skill-category">
+              <h3>Web & Tools</h3>
+              <div class="skill-tags">
+                <span class="tag">Git</span>
+                <span class="tag">React</span>
+                <span class="tag">Node.js</span>
+                <span class="tag">MATLAB</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Languages -->
+        <div class="section">
+          <h2>
+            <span class="section-icon">🌐</span>
+            Languages
+          </h2>
+          
+          <div class="languages-list">
+            <div class="language-item">
+              <span class="language-name">Chinese (Mandarin)</span>
+              <span class="language-level">Native</span>
+            </div>
+            <div class="language-item">
+              <span class="language-name">English</span>
+              <span class="language-level">Fluent</span>
+            </div>
+            <div class="language-item">
+              <span class="language-name">Japanese</span>
+              <span class="language-level">Intermediate</span>
+            </div>
+            <div class="language-item">
+              <span class="language-name">Malay</span>
+              <span class="language-level">Native</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Sidebar -->
+      <aside class="about-sidebar">
+        <div class="profile-card gear-border">
+          <div class="profile-avatar">
+            <div class="avatar-placeholder">HS</div>
+          </div>
+          <h3 class="profile-name">Lai HuiShan</h3>
+          <p class="profile-title">Game Developer & Researcher</p>
+          
+          <div class="profile-links">
+            <a href="https://github.com/huiishan99" target="_blank" class="profile-link">
+              GitHub
+            </a>
+            <a href="https://linkedin.com/in/laihuishan/" target="_blank" class="profile-link">
+              LinkedIn
+            </a>
+            <a href="https://instagram.com/huii.shan.9/" target="_blank" class="profile-link">
+              Instagram
+            </a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-header {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+  }
+  
+  .subtitle {
+    color: var(--color-text-secondary);
+    font-style: italic;
+    margin-top: var(--space-sm);
+  }
+  
+  .about-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: var(--space-xl);
+    align-items: start;
+  }
+  
+  .intro-section {
+    margin-bottom: var(--space-xl);
+    padding: var(--space-lg);
+    background: var(--color-bg-card);
+    border-left: 3px solid var(--color-brass);
+  }
+  
+  .intro-text {
+    color: var(--color-text-secondary);
+    line-height: 1.9;
+    margin-bottom: var(--space-md);
+  }
+  
+  .intro-text:last-child {
+    margin-bottom: 0;
+  }
+  
+  .highlight {
+    color: var(--color-brass-light);
+  }
+  
+  .section {
+    margin-bottom: var(--space-xl);
+  }
+  
+  .section h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+  
+  .section-icon {
+    font-size: 1.25rem;
+  }
+  
+  /* Timeline */
+  .timeline-list {
+    position: relative;
+    padding-left: var(--space-lg);
+  }
+  
+  .timeline-list::before {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--color-border);
+  }
+  
+  .timeline-item {
+    position: relative;
+    margin-bottom: var(--space-md);
+  }
+  
+  .timeline-marker {
+    position: absolute;
+    left: calc(-1 * var(--space-lg) + 2px);
+    top: var(--space-lg);
+    width: 9px;
+    height: 9px;
+    background: var(--color-brass);
+    border-radius: 50%;
+  }
+  
+  .timeline-content {
+    padding: var(--space-md);
+  }
+  
+  .timeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xs);
+  }
+  
+  .timeline-header h3 {
+    font-size: 1.1rem;
+    color: var(--color-text-primary);
+  }
+  
+  .timeline-location {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+  }
+  
+  .timeline-role {
+    color: var(--color-brass-light);
+    font-size: 1rem;
+  }
+  
+  .timeline-desc {
+    color: var(--color-text-secondary);
+    font-size: 0.95rem;
+    margin-top: var(--space-xs);
+  }
+  
+  .timeline-date {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    font-family: var(--font-mono);
+    margin-top: var(--space-xs);
+  }
+  
+  /* Skills */
+  .skills-grid {
+    display: grid;
+    gap: var(--space-lg);
+  }
+  
+  .skill-category h3 {
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-sm);
+  }
+  
+  .skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+  
+  /* Languages */
+  .languages-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+  }
+  
+  .language-item {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+  }
+  
+  .language-name {
+    color: var(--color-text-primary);
+  }
+  
+  .language-level {
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+  }
+  
+  /* Sidebar */
+  .profile-card {
+    padding: var(--space-lg);
+    text-align: center;
+    position: sticky;
+    top: 100px;
+  }
+  
+  .profile-avatar {
+    margin-bottom: var(--space-md);
+  }
+  
+  .avatar-placeholder {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+    background: var(--color-bg-secondary);
+    border: 2px solid var(--color-brass);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--color-brass);
+  }
+  
+  .profile-name {
+    font-size: 1.2rem;
+    margin-bottom: var(--space-xs);
+  }
+  
+  .profile-title {
+    color: var(--color-text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: var(--space-lg);
+  }
+  
+  .profile-links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+  
+  .profile-link {
+    padding: var(--space-sm);
+    border: 1px solid var(--color-border);
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+  }
+  
+  .profile-link:hover {
+    border-color: var(--color-brass);
+    color: var(--color-brass);
+  }
+  
+  /* Responsive */
+  @media (max-width: 900px) {
+    .about-layout {
+      grid-template-columns: 1fr;
+    }
+    
+    .about-sidebar {
+      order: -1;
+    }
+    
+    .profile-card {
+      position: static;
+    }
+    
+    .languages-list {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

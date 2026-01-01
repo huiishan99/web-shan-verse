@@ -1,0 +1,27 @@
+{
+  "name": "shan-verse",
+  "version": "2.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/huiishan99/web-blog.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/huiishan99/web-blog/issues"
+  },
+  "homepage": "https://github.com/huiishan99/web-blog#readme",
+  "description": "",
+  "dependencies": {
+    "@astrojs/mdx": "^4.3.13",
+    "@astrojs/sitemap": "^3.6.0",
+    "astro": "^5.16.6"
+  }
+}
