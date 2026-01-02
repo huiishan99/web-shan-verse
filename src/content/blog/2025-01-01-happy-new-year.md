@@ -8,4 +8,4 @@ tags:
   - Happy New Year
 ---
 
-2025 is here — let's do our best this year!  你好！こんばんは！
+2026 is here — let's do our best this year!  你好！こんばんは！

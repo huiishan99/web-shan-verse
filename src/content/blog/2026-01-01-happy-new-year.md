@@ -1,0 +1,27 @@
+---
+title: "Happy New Year!"
+date: 2026-01-01
+description: "Reflecting on my early graduation, traveling with my mom, and my new chapter starting in 2026."
+categories:
+  - Blog
+tags:
+  - Happy New Year
+---
+
+Happy New Year 2026!
+
+Looking back at 2025, I feel like I’ve lived through several years' worth of experiences in just twelve months. It was a year of finishing chapters and starting brand new ones.
+
+The biggest highlight was definitely my graduation. I was originally supposed to graduate in February 2026, but I managed to finish early in September 2025. I officially received my Master of Science in Computer Science and Engineering from the University of Aizu. My research was in Applied Information Technologies, focusing on VR and HCI. I want to give a huge thanks to my supervisor, Alaeddin. To me, he was more than just a professor. He was a mentor, a real Shifu who taught me the scientific methods of research. I wouldn’t be where I am today without his guidance.
+
+My mom came to Japan for my graduation ceremony. Although my dad couldn't make it because of his surgery, I felt his support from afar. After graduation, I took my mom to Tokyo and Disneyland. Seeing her so happy, literally like a child, was the best feeling. It felt like I was helping her reclaim a bit of the childhood she might have missed. I’m determined to grow stronger so I can always protect my parents and my future family.
+
+On the academic side, I had two full papers accepted last year. I was the first author for IEEE GEM 2025 and the second author for ISPEC 2025. Going to Taiwan in July for IEEE GEM was my first time attending an international conference. I learned so much, met many new friends, and even won a Presentation Award.
+
+After graduating, my partner and I went on a big trip to China. We visited Tianjin, Beijing, Harbin, Shuangyashan, Guangzhou, Hong Kong, and Macau. It was such high-intensity travel that my physical strength eventually gave out, and I couldn't finish the whole plan. But I believe I’ll visit those remaining places in the future.
+
+After the trip to China, we went to Osaka. The moment I arrived back in Osaka, I felt my pace finally slow down. It felt like coming home. Even though Japan isn't my birth country, it has undoubtedly left a deep impression on me and feels like a place where I belong.
+
+Looking ahead to 2026, I’m excited to start my job at ALPS ALPINE this April. I’m really grateful they believe in me, and I look forward to developing my talents there. For my personal goals, I plan to get my driver’s license in Japan this year. I also hope to travel to more places within Japan if I get the chance. Most importantly, I want to use my abilities to help others whenever I can.
+
+2025 taught me that hard work pays off and that family is everything. Cheers to a brilliant 2026!
