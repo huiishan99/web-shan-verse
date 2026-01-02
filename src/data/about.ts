@@ -186,6 +186,11 @@ export const interests: InterestCategory[] = [
     name: "Foods",
     icon: "coffee",
     items: ["Ramen", "Sushi"]
+  },
+  {
+    name: "Interests",
+    icon: "lightbulb",
+    items: ["Psychology", "Philosophy"]
   }
   // 添加更多分类：
   // {
