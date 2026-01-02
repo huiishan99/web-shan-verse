@@ -1,28 +1,23 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Icon from '../components/Icon.astro';
+import { pageHeader, intro, profile, education, experience, skills, languages, interests } from '../data/about';
 ---
 
 <BaseLayout title="About">
   <div class="container">
     <header class="page-header">
-      <h1>About Me</h1>
-      <p class="subtitle">The story behind the code</p>
+      <h1>{pageHeader.title}</h1>
+      <p class="subtitle">{pageHeader.subtitle}</p>
     </header>
     
     <div class="about-layout">
       <section class="about-main">
         <!-- Intro -->
         <div class="intro-section">
-          <p class="intro-text">
-            Hi! Nice to meet you. I'm originally from the vibrant city of 
-            <span class="highlight">Sandakan, Sabah in Malaysia</span> — home to the 
-            enchanting Rafflesia flowers, intriguing proboscis monkeys, and majestic orangutans.
-          </p>
-          <p class="intro-text">
-            Now, I'm immersing myself in the world of Computer and Information Systems 
-            as a <span class="highlight">Master's student at University of Aizu</span> in Japan.
-          </p>
+          {intro.map((paragraph) => (
+            <p class="intro-text" set:html={paragraph}></p>
+          ))}
         </div>
         
         <!-- Education -->
@@ -33,29 +28,19 @@ import Icon from '../components/Icon.astro';
           </h2>
           
           <div class="timeline-list">
-            <div class="timeline-item">
-              <div class="timeline-marker"></div>
-              <div class="timeline-content card">
-                <div class="timeline-header">
-                  <h3>University of Aizu</h3>
-                  <span class="timeline-location">Aizu-Wakamatsu, Japan</span>
+            {education.map((item) => (
+              <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content card">
+                  <div class="timeline-header">
+                    <h3>{item.school}</h3>
+                    <span class="timeline-location">{item.location}</span>
+                  </div>
+                  <p class="timeline-role">{item.degree}</p>
+                  <p class="timeline-date">{item.period}</p>
                 </div>
-                <p class="timeline-role">Master's in Computer and Information Systems</p>
-                <p class="timeline-date">2024 - Present</p>
               </div>
-            </div>
-            
-            <div class="timeline-item">
-              <div class="timeline-marker"></div>
-              <div class="timeline-content card">
-                <div class="timeline-header">
-                  <h3>Northwestern Polytechnical University</h3>
-                  <span class="timeline-location">Xi'an, China</span>
-                </div>
-                <p class="timeline-role">Bachelor's in E-Commerce Engineering</p>
-                <p class="timeline-date">2019 - 2023</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
         
@@ -67,39 +52,19 @@ import Icon from '../components/Icon.astro';
           </h2>
           
           <div class="timeline-list">
-            <div class="timeline-item">
-              <div class="timeline-marker"></div>
-              <div class="timeline-content card">
-                <div class="timeline-header">
-                  <h3>ALPS ALPINE</h3>
+            {experience.map((item) => (
+              <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content card">
+                  <div class="timeline-header">
+                    <h3>{item.company}</h3>
+                  </div>
+                  <p class="timeline-role">{item.role}</p>
+                  {item.description && <p class="timeline-desc">{item.description}</p>}
+                  <p class="timeline-date">{item.period}</p>
                 </div>
-                <p class="timeline-role">Engineer Internship</p>
-                <p class="timeline-desc">Developed VR car scene prototype with Unity</p>
-                <p class="timeline-date">2 weeks</p>
               </div>
-            </div>
-            
-            <div class="timeline-item">
-              <div class="timeline-marker"></div>
-              <div class="timeline-content card">
-                <div class="timeline-header">
-                  <h3>Alibaba GDT Network</h3>
-                </div>
-                <p class="timeline-role">Student Internship</p>
-                <p class="timeline-date">3 months</p>
-              </div>
-            </div>
-            
-            <div class="timeline-item">
-              <div class="timeline-marker"></div>
-              <div class="timeline-content card">
-                <div class="timeline-header">
-                  <h3>University of Aizu</h3>
-                </div>
-                <p class="timeline-role">Teaching Assistant - MATLAB</p>
-                <p class="timeline-date">5 months</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
         
@@ -111,35 +76,16 @@ import Icon from '../components/Icon.astro';
           </h2>
           
           <div class="skills-grid">
-            <div class="skill-category">
-              <h3>Languages</h3>
-              <div class="skill-tags">
-                <span class="tag">C#</span>
-                <span class="tag">Python</span>
-                <span class="tag">JavaScript</span>
-                <span class="tag">TypeScript</span>
-                <span class="tag">Java</span>
+            {skills.map((category) => (
+              <div class="skill-category">
+                <h3>{category.name}</h3>
+                <div class="skill-tags">
+                  {category.skills.map((skill) => (
+                    <span class="tag">{skill}</span>
+                  ))}
+                </div>
               </div>
-            </div>
-            
-            <div class="skill-category">
-              <h3>Game Development</h3>
-              <div class="skill-tags">
-                <span class="tag">Unity</span>
-                <span class="tag">VR/XR</span>
-                <span class="tag">Meta Quest</span>
-              </div>
-            </div>
-            
-            <div class="skill-category">
-              <h3>Web & Tools</h3>
-              <div class="skill-tags">
-                <span class="tag">Git</span>
-                <span class="tag">React</span>
-                <span class="tag">Node.js</span>
-                <span class="tag">MATLAB</span>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
         
@@ -151,22 +97,36 @@ import Icon from '../components/Icon.astro';
           </h2>
           
           <div class="languages-list">
-            <div class="language-item">
-              <span class="language-name">Chinese (Mandarin)</span>
-              <span class="language-level">Native</span>
-            </div>
-            <div class="language-item">
-              <span class="language-name">English</span>
-              <span class="language-level">Fluent</span>
-            </div>
-            <div class="language-item">
-              <span class="language-name">Japanese</span>
-              <span class="language-level">Intermediate</span>
-            </div>
-            <div class="language-item">
-              <span class="language-name">Malay</span>
-              <span class="language-level">Native</span>
-            </div>
+            {languages.map((lang) => (
+              <div class="language-item">
+                <span class="language-name">{lang.name}</span>
+                <span class="language-level">{lang.level}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        <!-- Interests / Beyond Code -->
+        <div class="section">
+          <h2>
+            <Icon name="heart" size={22} />
+            Beyond Code
+          </h2>
+          
+          <div class="interests-grid">
+            {interests.map((category) => (
+              <div class="interest-category">
+                <h3>
+                  <Icon name={category.icon} size={18} />
+                  {category.name}
+                </h3>
+                <div class="interest-items">
+                  {category.items.map((item) => (
+                    <span class="interest-tag">{item}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -175,21 +135,21 @@ import Icon from '../components/Icon.astro';
       <aside class="about-sidebar">
         <div class="profile-card gear-border">
           <div class="profile-avatar">
-            <div class="avatar-placeholder">HS</div>
+            {profile.avatar ? (
+              <img src={profile.avatar} alt={profile.name} class="avatar-image" />
+            ) : (
+              <div class="avatar-placeholder">{profile.initials}</div>
+            )}
           </div>
-          <h3 class="profile-name">Lai HuiShan</h3>
-          <p class="profile-title">Game Developer & Researcher</p>
+          <h3 class="profile-name">{profile.name}</h3>
+          <p class="profile-title">{profile.title}</p>
           
           <div class="profile-links">
-            <a href="https://github.com/huiishan99" target="_blank" class="profile-link">
-              GitHub
-            </a>
-            <a href="https://linkedin.com/in/laihuishan/" target="_blank" class="profile-link">
-              LinkedIn
-            </a>
-            <a href="https://instagram.com/huii.shan.9/" target="_blank" class="profile-link">
-              Instagram
-            </a>
+            {profile.links.map((link) => (
+              <a href={link.url} target="_blank" class="profile-link">
+                {link.name}
+              </a>
+            ))}
           </div>
         </div>
       </aside>
@@ -361,6 +321,42 @@ import Icon from '../components/Icon.astro';
     font-size: 0.95rem;
   }
   
+  /* Interests / Beyond Code */
+  .interests-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-lg);
+  }
+  
+  .interest-category h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-sm);
+  }
+  
+  .interest-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+  
+  .interest-tag {
+    padding: 4px 10px;
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    transition: all 0.2s ease;
+  }
+  
+  .interest-tag:hover {
+    border-color: var(--color-brass);
+    color: var(--color-brass-light);
+  }
+  
   /* Sidebar */
   .profile-card {
     padding: var(--space-lg);
@@ -386,6 +382,15 @@ import Icon from '../components/Icon.astro';
     font-family: var(--font-display);
     font-size: 1.5rem;
     color: var(--color-brass);
+  }
+  
+  .avatar-image {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+    border: 2px solid var(--color-brass);
+    border-radius: 50%;
+    object-fit: cover;
   }
   
   .profile-name {
@@ -432,6 +437,10 @@ import Icon from '../components/Icon.astro';
     }
     
     .languages-list {
+      grid-template-columns: 1fr;
+    }
+    
+    .interests-grid {
       grid-template-columns: 1fr;
     }
   }
