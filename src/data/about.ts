@@ -25,13 +25,13 @@ export const profile = {
   name: "Lai HuiShan",
   initials: "HS",           // 头像占位符显示的文字
   title: "Game Developer & Researcher",
-  avatar: "",               // 头像图片路径，留空则显示 initials
+  avatar: "/images/bio-photo.jpg",               // 头像图片路径，留空则显示 initials
   
   // 社交链接 - 添加或删除都很容易
   links: [
     { name: "GitHub", url: "https://github.com/huiishan99", icon: "github" },
     { name: "LinkedIn", url: "https://linkedin.com/in/laihuishan/", icon: "linkedin" },
-    { name: "Instagram", url: "https://instagram.com/huii.shan.9/", icon: "link" },
+    { name: "Instagram", url: "https://instagram.com/huii.shan.9/", icon: "instagram" },
     // 添加更多链接示例：
     // { name: "YouTube", url: "https://youtube.com/@xxx", icon: "link" },
     // { name: "Twitter", url: "https://twitter.com/xxx", icon: "twitter" },

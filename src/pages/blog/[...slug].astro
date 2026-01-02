@@ -84,9 +84,16 @@ const formattedDate = post.data.date.toLocaleDateString('en-US', {
 
 <style>
   .blog-post {
-    max-width: 800px;
+    max-width: 880px;
     margin: 0 auto;
-    padding: 0 1rem;
+    padding: 2.5rem 3rem;
+    /* 半透明磨砂背景 */
+    background: rgba(13, 13, 18, 0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 8px;
+    margin-top: 1.5rem;
+    margin-bottom: 2.5rem;
   }
 
   .post-header {
@@ -299,7 +306,10 @@ const formattedDate = post.data.date.toLocaleDateString('en-US', {
   /* 手机端响应式布局 */
   @media (max-width: 768px) {
     .blog-post {
-      padding: 0 1.25rem;
+      padding: 1.5rem 1.25rem;
+      margin-top: 0.75rem;
+      margin-bottom: 1.5rem;
+      border-radius: 0;
     }
 
     .post-header h1 {

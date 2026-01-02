@@ -1,6 +1,29 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Icon from '../components/Icon.astro';
+import { currentStatus } from '../data/status';
+import { getCollection } from 'astro:content';
+
+// 获取最新3篇博客文章
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const latestPosts = allPosts
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .slice(0, 3);
+
+// 提取文章第一段内容
+function getExcerpt(body: string, maxLength: number = 100): string {
+  // 移除 markdown 语法，提取纯文本
+  const cleanText = body
+    .replace(/^---[\s\S]*?---/m, '')  // 移除 frontmatter
+    .replace(/!\[.*?\]\(.*?\)/g, '')  // 移除图片
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')  // 链接只保留文字
+    .replace(/[#*`>\-]/g, '')  // 移除 markdown 符号
+    .replace(/\n+/g, ' ')  // 换行变空格
+    .trim();
+  
+  if (cleanText.length <= maxLength) return cleanText;
+  return cleanText.slice(0, maxLength).trim() + '...';
+}
 ---
 
 <BaseLayout title="Home">
@@ -34,21 +57,16 @@ import Icon from '../components/Icon.astro';
       </div>
       
       <aside class="hero-status">
-        <div class="status-card gear-border">
-          <h3 class="status-title">Current Status</h3>
+        <div class="status-card">
+          <h3 class="status-title">{currentStatus.title}</h3>
+          <div class="status-badge">{currentStatus.badge}</div>
           <ul class="status-list">
-            <li>
-              <Icon name="graduation" size={18} />
-              <span>Master's @ University of Aizu</span>
-            </li>
-            <li>
-              <Icon name="map" size={18} />
-              <span>Aizu-Wakamatsu, Japan</span>
-            </li>
-            <li>
-              <Icon name="gamepad" size={18} />
-              <span>Unity Game Development</span>
-            </li>
+            {currentStatus.items.map((item) => (
+              <li>
+                <Icon name={item.icon} size={16} />
+                <span>{item.text}</span>
+              </li>
+            ))}
           </ul>
         </div>
       </aside>
@@ -91,8 +109,23 @@ import Icon from '../components/Icon.astro';
       
       <h2>Latest Posts</h2>
       
-      <div class="posts-preview">
-        <p class="coming-soon">Blog posts coming soon...</p>
+      <div class="posts-grid">
+        {latestPosts.map((post) => (
+          <a href={`/blog/${post.slug}`} class="post-card">
+            <div class="post-date">
+              {new Date(post.data.date).toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+              })}
+            </div>
+            <h3 class="post-title">{post.data.title}</h3>
+            <p class="post-excerpt">{getExcerpt(post.body)}</p>
+          </a>
+        ))}
+      </div>
+      
+      <div class="posts-action">
         <a href="/blog" class="btn">
           <span>→</span> View All Posts
         </a>
@@ -169,39 +202,80 @@ import Icon from '../components/Icon.astro';
   }
   
   .hero-status {
-    width: 280px;
+    width: auto;
+    min-width: 200px;
   }
   
   .status-card {
+    position: relative;
     padding: var(--space-lg);
+    background: rgba(13, 13, 18, 0.6);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid var(--color-border);
+  }
+  
+  /* 星星装饰 */
+  .status-card::before,
+  .status-card::after {
+    content: '◈';
+    position: absolute;
+    color: var(--color-brass);
+    font-size: 0.75rem;
+    opacity: 0.6;
+  }
+  
+  .status-card::before {
+    top: -0.4rem;
+    left: -0.4rem;
+  }
+  
+  .status-card::after {
+    bottom: -0.4rem;
+    right: -0.4rem;
   }
   
   .status-title {
-    font-size: 1rem;
+    font-size: 0.85rem;
     color: var(--color-brass);
-    letter-spacing: 0.1em;
-    margin-bottom: var(--space-md);
+    letter-spacing: 0.15em;
     text-transform: uppercase;
+    margin-bottom: var(--space-md);
+  }
+  
+  .status-badge {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--color-brass-light);
+    letter-spacing: 0.05em;
+    margin-bottom: var(--space-sm);
+    padding-bottom: var(--space-sm);
+    border-bottom: 1px solid var(--color-border);
   }
   
   .status-list {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: var(--space-sm);
+    gap: 6px;
   }
   
   .status-list li {
     display: flex;
     align-items: center;
     gap: var(--space-sm);
-    font-size: 1rem;
+    font-size: 0.85rem;
     color: var(--color-text-secondary);
+  }
+  
+  .status-list li svg {
+    color: var(--color-text-muted);
+    flex-shrink: 0;
   }
   
   /* Featured Section */
   .featured, .latest {
-    padding: var(--space-xl) 0;
+    padding: var(--space-lg) 0;
   }
   
   .featured-grid {
@@ -245,9 +319,57 @@ import Icon from '../components/Icon.astro';
   }
   
   /* Latest Posts */
-  .posts-preview {
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-lg);
+    margin-bottom: var(--space-lg);
+  }
+  
+  .post-card {
+    display: block;
+    padding: var(--space-lg);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  
+  .post-card:hover {
+    border-color: var(--color-brass);
+    transform: translateY(-2px);
+  }
+  
+  .post-date {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-sm);
+  }
+  
+  .post-title {
+    font-size: 1.1rem;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-sm);
+    line-height: 1.4;
+  }
+  
+  .post-card:hover .post-title {
+    color: var(--color-brass-light);
+  }
+  
+  .post-excerpt {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .posts-action {
     text-align: center;
-    padding: var(--space-xl) 0;
+    padding-top: var(--space-md);
   }
   
   .coming-soon {
@@ -270,7 +392,8 @@ import Icon from '../components/Icon.astro';
       font-size: 2.5rem;
     }
     
-    .featured-grid {
+    .featured-grid,
+    .posts-grid {
       grid-template-columns: 1fr;
     }
   }

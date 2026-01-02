@@ -31,8 +31,11 @@
   
   /* 字体 */
   --font-display: 'Cinzel', 'Georgia', serif;
-  --font-body: 'Crimson Pro', 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+  --font-body: 'Crimson Pro', 'LXGW WenKai', 'LXGW WenKai TC', 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  
+  /* 中日文字体 */
+  --font-cjk: 'LXGW WenKai', 'LXGW WenKai TC', serif;
   
   /* 间距 */
   --space-xs: 0.25rem;
