@@ -77,6 +77,19 @@ export const projectCategories: ProjectCategory[] = [
         tags: ["Astro", "TypeScript", "CSS"]
       }
     ]
+  },
+  {
+    id: "publications",
+    title: "Publications",
+    icon: "publication",
+    items: [
+      {
+        title: "Your Paper Title Here",
+        description: "Add your publication abstract or description here.",
+        website: "https://doi.org/xxx",
+        tags: ["Research", "2024"]
+      }
+    ]
   }
   // 添加新类别示例：
   // {
