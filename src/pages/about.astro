@@ -147,7 +147,8 @@ import { pageHeader, intro, profile, education, experience, skills, languages, i
           <div class="profile-links">
             {profile.links.map((link) => (
               <a href={link.url} target="_blank" class="profile-link">
-                {link.name}
+                <Icon name={link.icon} size={18} />
+                <span>{link.name}</span>
               </a>
             ))}
           </div>
@@ -411,15 +412,27 @@ import { pageHeader, intro, profile, education, experience, skills, languages, i
   }
   
   .profile-link {
-    padding: var(--space-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
     border: 1px solid var(--color-border);
+    border-radius: 4px;
     font-size: 0.95rem;
+    color: var(--color-text-primary);
+    text-decoration: none;
     transition: all 0.3s ease;
   }
   
   .profile-link:hover {
     border-color: var(--color-brass);
     color: var(--color-brass);
+    background: rgba(201, 162, 39, 0.08);
+  }
+  
+  .profile-link svg {
+    flex-shrink: 0;
+    color: var(--color-brass-light);
   }
   
   /* Responsive */
