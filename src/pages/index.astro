@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
 ---
 
 <BaseLayout title="Home">
@@ -24,10 +25,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         
         <div class="hero-actions">
           <a href="/about" class="btn">
-            <span>⚙</span> About Me
+            <Icon name="gear" size={16} /> About Me
           </a>
           <a href="/projects" class="btn">
-            <span>◈</span> View Projects
+            <Icon name="layers" size={16} /> View Projects
           </a>
         </div>
       </div>
@@ -37,15 +38,15 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           <h3 class="status-title">Current Status</h3>
           <ul class="status-list">
             <li>
-              <span class="status-icon">🎓</span>
+              <Icon name="graduation" size={18} />
               <span>Master's @ University of Aizu</span>
             </li>
             <li>
-              <span class="status-icon">📍</span>
+              <Icon name="map" size={18} />
               <span>Aizu-Wakamatsu, Japan</span>
             </li>
             <li>
-              <span class="status-icon">🎮</span>
+              <Icon name="gamepad" size={18} />
               <span>Unity Game Development</span>
             </li>
           </ul>
@@ -63,19 +64,19 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       
       <div class="featured-grid">
         <a href="/projects#unity" class="featured-card">
-          <div class="featured-icon">🎮</div>
+          <div class="featured-icon"><Icon name="gamepad" size={28} /></div>
           <h3>Unity Projects</h3>
           <p>3D simulations, 2D platformers, and game prototypes</p>
         </a>
         
         <a href="/projects#web" class="featured-card">
-          <div class="featured-icon">🌐</div>
+          <div class="featured-icon"><Icon name="globe" size={28} /></div>
           <h3>Web Development</h3>
           <p>Full-stack applications and interactive experiences</p>
         </a>
         
         <a href="/blog" class="featured-card">
-          <div class="featured-icon">✎</div>
+          <div class="featured-icon"><Icon name="pen" size={28} /></div>
           <h3>Tech Blog</h3>
           <p>Development tutorials and learning notes</p>
         </a>
@@ -85,7 +86,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <!-- Latest Posts Preview -->
     <section class="latest">
       <div class="divider">
-        <span class="divider-icon">⚙</span>
+        <Icon name="gear" size={20} class="divider-icon" />
       </div>
       
       <h2>Latest Posts</h2>
@@ -198,11 +199,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     color: var(--color-text-secondary);
   }
   
-  .status-icon {
-    width: 24px;
-    text-align: center;
-  }
-  
   /* Featured Section */
   .featured, .latest {
     padding: var(--space-xl) 0;
@@ -232,8 +228,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   }
   
   .featured-icon {
-    font-size: 2.5rem;
     margin-bottom: var(--space-md);
+    display: flex;
+    justify-content: center;
   }
   
   .featured-card h3 {

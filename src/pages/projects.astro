@@ -1,5 +1,7 @@
----
+﻿---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import { projectCategories } from '../data/projects';
 ---
 
 <BaseLayout title="Projects">
@@ -9,137 +11,60 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <p class="subtitle">A collection of things I've built</p>
     </header>
     
-    <!-- Unity Projects -->
-    <section class="project-section" id="unity">
-      <h2>
-        <span class="section-icon">🎮</span>
-        Unity Projects
-      </h2>
-      
-      <div class="projects-grid">
-        <article class="project-card">
-          <div class="project-header">
-            <h3>Solar System</h3>
-            <a href="https://github.com/huiishan99/unity-solar-system" target="_blank" class="project-link">
-              GitHub →
-            </a>
-          </div>
-          <p class="project-desc">
-            Interactive 3D solar system simulation with realistic planetary orbits and physics.
-          </p>
-          <div class="project-tags">
-            <span class="tag">Unity</span>
-            <span class="tag">C#</span>
-            <span class="tag">3D</span>
-            <span class="tag">Physics</span>
-          </div>
-        </article>
+    {projectCategories.map((category) => (
+      <section class="project-section" id={category.id}>
+        <h2>
+          <Icon name={category.icon} size={24} />
+          {category.title}
+        </h2>
         
-        <article class="project-card">
-          <div class="project-header">
-            <h3>2D Platformer</h3>
-            <a href="https://github.com/huiishan99/unity-2d-platformer" target="_blank" class="project-link">
-              GitHub →
-            </a>
-          </div>
-          <p class="project-desc">
-            Classic side-scrolling platformer with smooth controls and level progression.
-          </p>
-          <div class="project-tags">
-            <span class="tag">Unity</span>
-            <span class="tag">C#</span>
-            <span class="tag">2D</span>
-            <span class="tag">Game Dev</span>
-          </div>
-        </article>
-        
-        <article class="project-card">
-          <div class="project-header">
-            <h3>2D Shooter Game</h3>
-            <a href="https://github.com/huiishan99/unity-2d-shooter-game" target="_blank" class="project-link">
-              GitHub →
-            </a>
-          </div>
-          <p class="project-desc">
-            Fast-paced 2D shooter with enemy AI and power-up systems.
-          </p>
-          <div class="project-tags">
-            <span class="tag">Unity</span>
-            <span class="tag">C#</span>
-            <span class="tag">AI</span>
-          </div>
-        </article>
-        
-        <article class="project-card">
-          <div class="project-header">
-            <h3>Kitchen Chaos</h3>
-            <a href="https://github.com/huiishan99/unity-kitchen-chaos" target="_blank" class="project-link">
-              GitHub →
-            </a>
-          </div>
-          <p class="project-desc">
-            Cooking simulation game with time management and order fulfillment mechanics.
-          </p>
-          <div class="project-tags">
-            <span class="tag">Unity</span>
-            <span class="tag">C#</span>
-            <span class="tag">Simulation</span>
-          </div>
-        </article>
-      </div>
-    </section>
-    
-    <!-- VR/XR Projects -->
-    <section class="project-section" id="vr">
-      <h2>
-        <span class="section-icon">🥽</span>
-        VR/XR Projects
-      </h2>
-      
-      <div class="projects-grid">
-        <article class="project-card featured">
-          <div class="featured-badge">Featured</div>
-          <div class="project-header">
-            <h3>VR Car Scene Prototype</h3>
-          </div>
-          <p class="project-desc">
-            VR car scene prototype developed during ALPS ALPINE internship using Unity and Meta Quest.
-          </p>
-          <div class="project-tags">
-            <span class="tag">Unity</span>
-            <span class="tag">VR</span>
-            <span class="tag">Meta Quest</span>
-          </div>
-        </article>
-      </div>
-    </section>
-    
-    <!-- Web Projects -->
-    <section class="project-section" id="web">
-      <h2>
-        <span class="section-icon">🌐</span>
-        Web Projects
-      </h2>
-      
-      <div class="projects-grid">
-        <article class="project-card">
-          <div class="project-header">
-            <h3>SHAN-VERSE</h3>
-            <a href="https://github.com/huiishan99/web-blog" target="_blank" class="project-link">
-              GitHub →
-            </a>
-          </div>
-          <p class="project-desc">
-            This personal website - built with Astro, featuring a unique steampunk aesthetic.
-          </p>
-          <div class="project-tags">
-            <span class="tag">Astro</span>
-            <span class="tag">TypeScript</span>
-            <span class="tag">CSS</span>
-          </div>
-        </article>
-      </div>
-    </section>
+        <div class="projects-grid">
+          {category.items.map((project) => (
+            <article class={`project-card ${project.featured ? 'featured' : ''}`}>
+              {project.featured && <div class="featured-banner">Featured</div>}
+              
+              {project.image && (
+                <div class="project-image">
+                  <img src={project.image} alt={project.title} />
+                </div>
+              )}
+              
+              <div class="project-content">
+                <div class="project-header">
+                  <h3>{project.title}</h3>
+                  <div class="project-links">
+                    {project.github && (
+                      <a href={project.github} target="_blank" class="icon-link" title="View Source">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                        </svg>
+                      </a>
+                    )}
+                    {project.website && (
+                      <a href={project.website} target="_blank" class="icon-link" title="Visit Site">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>
+                        </svg>
+                      </a>
+                    )}
+                  </div>
+                </div>
+                
+                <p class="project-desc">{project.description}</p>
+                
+                {project.tags && project.tags.length > 0 && (
+                  <div class="project-tags">
+                    {project.tags.map((tag) => (
+                      <span class="tag">{tag}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    ))}
   </div>
 </BaseLayout>
 
@@ -165,13 +90,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     gap: var(--space-sm);
   }
   
-  .section-icon {
-    font-size: 1.25rem;
-  }
-  
   .projects-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: var(--space-lg);
     margin-top: var(--space-lg);
   }
@@ -179,68 +100,111 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   .project-card {
     background: var(--color-bg-card);
     border: 1px solid var(--color-border);
-    padding: var(--space-lg);
     position: relative;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
   
   .project-card:hover {
-    border-color: rgba(201, 162, 39, 0.35);
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    border-color: rgba(201, 162, 39, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Featured 顶部高亮边框 + 居中文字 */
+  .featured-banner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(90deg, transparent, rgba(201, 162, 39, 0.15), transparent);
+    border-top: 2px solid var(--color-brass);
+    color: var(--color-brass);
+    text-align: center;
+    padding: 4px 0;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    z-index: 1;
   }
   
   .project-card.featured {
-    border-color: rgba(201, 162, 39, 0.3);
+    border-color: rgba(201, 162, 39, 0.25);
   }
   
-  .featured-badge {
-    position: absolute;
-    top: var(--space-sm);
-    right: var(--space-sm);
-    background: var(--color-brass);
-    color: var(--color-bg-primary);
-    padding: 2px 8px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
+  .project-image {
+    overflow: hidden;
+  }
+  
+  .project-image img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  
+  .project-card:hover .project-image img {
+    transform: scale(1.03);
+  }
+  
+  .project-content {
+    padding: var(--space-lg);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
   }
   
   .project-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+    gap: var(--space-sm);
     margin-bottom: var(--space-sm);
   }
   
   .project-header h3 {
-    font-size: 1.2rem;
+    font-size: 1.15rem;
     font-family: var(--font-body);
     font-weight: 600;
+    line-height: 1.3;
   }
   
-  .project-link {
-    font-size: 0.9rem;
+  .project-links {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  
+  .icon-link {
     color: var(--color-text-muted);
-    white-space: nowrap;
+    padding: 4px;
+    transition: color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
-  .project-link:hover {
+  .icon-link:hover {
     color: var(--color-brass);
   }
   
   .project-desc {
     color: var(--color-text-secondary);
-    font-size: 1rem;
+    font-size: 0.95rem;
     margin-bottom: var(--space-md);
     line-height: 1.6;
+    flex: 1;
   }
   
   .project-tags {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-xs);
+    margin-top: auto;
   }
   
   @media (max-width: 768px) {
