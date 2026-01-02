@@ -1,5 +1,5 @@
 ---
-title: "Happy New Year!"
+title: "Happy New Year 2026!"
 date: 2026-01-01
 description: "Reflecting on my early graduation, traveling with my mom, and my new chapter starting in 2026."
 categories:
@@ -12,7 +12,7 @@ Happy New Year 2026!
 
 Looking back at 2025, I feel like I’ve lived through several years' worth of experiences in just twelve months. It was a year of finishing chapters and starting brand new ones.
 
-The biggest highlight was definitely my graduation. I was originally supposed to graduate in February 2026, but I managed to finish early in September 2025. I officially received my Master of Science in Computer Science and Engineering from the University of Aizu. My research was in Applied Information Technologies, focusing on VR and HCI. I want to give a huge thanks to my supervisor, Alaeddin. To me, he was more than just a professor. He was a mentor, a real Shifu who taught me the scientific methods of research. I wouldn’t be where I am today without his guidance.
+The biggest highlight was definitely my graduation. I was originally supposed to graduate in February 2026, but I managed to finish early in September 2025. I officially received my Master of Science in Computer Science and Engineering from the [University of Aizu](https://u-aizu.ac.jp/en/). My research was in Applied Information Technologies, focusing on VR and HCI. I want to give a huge thanks to my supervisor, Alaeddin. To me, he was more than just a professor. He was a mentor, a real Shifu who taught me the scientific methods of research. I wouldn’t be where I am today without his guidance.
 
 My mom came to Japan for my graduation ceremony. Although my dad couldn't make it because of his surgery, I felt his support from afar. After graduation, I took my mom to Tokyo and Disneyland. Seeing her so happy, literally like a child, was the best feeling. It felt like I was helping her reclaim a bit of the childhood she might have missed. I’m determined to grow stronger so I can always protect my parents and my future family.
 
