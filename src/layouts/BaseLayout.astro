@@ -1,5 +1,6 @@
 ---
 import StarField from '../components/StarField.astro';
+import CustomCursor from '../components/CustomCursor.astro';
 
 export interface Props {
   title?: string;
@@ -30,6 +31,9 @@ const {
 <body>
   <!-- 互动式星空背景 -->
   <StarField />
+  
+  <!-- 自定义鼠标 + 星星粒子 -->
+  <CustomCursor />
   
   <div class="page-wrapper">
     <slot name="header">
