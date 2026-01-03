@@ -18,9 +18,9 @@ export const currentStatus = {
   
   // 状态列表 - 添加/删除/修改都很容易
   items: [
-    { icon: "briefcase", text: "Looking for opportunities" },
+    { icon: "briefcase", text: "Vacation" },
     { icon: "map", text: "Aizu-Wakamatsu, Japan" },
-    { icon: "gamepad", text: "Unity Game Development" },
+    { icon: "gamepad", text: "VR/XR Development" },
   ] as StatusItem[]
 };
 
