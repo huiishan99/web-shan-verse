@@ -11,11 +11,10 @@ export const pageHeader = {
 
 // 简介段落 - 支持 HTML 标签如 <span class="highlight">
 export const intro = [
-  `Hi! Nice to meet you. I'm originally from the vibrant city of 
-   <span class="highlight">Sandakan, Sabah in Malaysia</span> — home to the 
-   enchanting Rafflesia flowers, intriguing proboscis monkeys, and majestic orangutans.`,
-  `Now, I'm immersing myself in the world of Computer and Information Systems 
-   as a <span class="highlight">Master's student at University of Aizu</span> in Japan.`
+  `For a long time, I lived with the belief that life had no inherent meaning and that everything we know would eventually fade into nothing. 
+  It drove me to <span class="highlight">live for myself</span> and to explore this world as an adventurer who seeks to experience every possibility.`,
+  `Coming to Japan on my own was the moment I finally let go of my past. I found a way to heal the wounds of my childhood and rediscovered the <span class="highlight">capacity to love</span>. On that day, the questions I had been asking the world for years finally found their peace.`,
+  `I no longer seek faith in things I cannot see because I have found truth in what I have lived. As Carl Jung once said: <span class="highlight">"I don't need to believe; I know."</span>`
 ];
 
 // ============================================
@@ -54,7 +53,7 @@ export const education: EducationItem[] = [
     school: "University of Aizu",
     location: "Aizu-Wakamatsu, Japan",
     degree: "Master's in Computer and Information Systems",
-    period: "2024 - Present",
+    period: "2024 - 2025",
     logo: "/images/logo-uoa.png"
   },
   {
