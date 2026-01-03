@@ -140,13 +140,13 @@ export const projectCategories: ProjectCategory[] = [
                 description: "We present VR Math Bridge, a virtual reality (VR)-based application designed to enhance calculus education by combining immersive virtual environments with artificial intelligence (AI)-driven teaching assistance. VR Math Bridge creates a virtual classroom where students interact with Khan Academy videos and a 3D AI assistant that provides real-time, personalized feedback to their questions. This system leverages a floating panel for chapter selection, a virtual blackboard for video playback, and Cognitive 3D for analyzing user engagement. To demonstrate the system’s capabilities, we developed a prototype on Quest 3, focusing on derivatives as the initial test topic. We conducted a preliminary subjective evaluation (n=2) of the prototype to collect early insights for future user study evaluation.",
                 featured: true,
                 website: "https://doi.org/10.1109/GEM66882.2025.11155841",
-                tags: ["AI-driven Education", "VR", "Embodied Agent"]
+                tags: ["AI-driven Education", "VR", "Embodied Agent","IEEE GEM 2025"]
             },
             {
                 title: "Assessing the Security of Vibe Coding: Baseline vs. Security-Oriented Prompts in LLM Code Generation",
                 description: "Large Language Models (LLMs) are increasingly used in software development through so-called “vibe coding,” where developers specify tasks in natural language and rely on the model to produce executable code. While this paradigm lowers barriers to entry and accelerates prototyping, it raises concerns about security. Prior studies show that a substantial fraction of AI-generated code contains exploitable vulnerabilities, and functional correctness does not guarantee safety. This paper investigates whether security-oriented prompting improves the security of LLM-generated code. We design ten representative Python tasks inspired by OWASP Top 10 and CWE categories, and evaluate outputs from an open-source 20B-parameter model using static analysis (Bandit) and lightweight runtime probes.",
                 website: "",
-                tags: ["Large Language Models","Vibe coding","Software security"]
+                tags: ["Large Language Models","Vibe coding","Software security","ISPEC 2025"]
             },
             {
                 title: "The Role of Embodied Avatars and Generative AI in Self Learning VR Classroom",
