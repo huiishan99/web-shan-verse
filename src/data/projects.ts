@@ -77,6 +77,41 @@ export const projectCategories: ProjectCategory[] = [
         tags: ["Astro", "TypeScript", "CSS"]
       },
       {
+        title: "Notion Next Chinese Blog",
+        description: "My other personal website.",
+        github: "https://github.com/huiishan99/web-notion-next",
+        website: "https://notion-next-huiishan99.vercel.app/",
+        tags: ["NotionNext","Notion"]
+      },
+      {
+        title: "Math-Note",
+        description: "",
+        github: "https://github.com/huiishan99/web-math-note",
+        website: "https://math-notes-clone.vercel.app/",
+        tags: ["Vite","React","TypeScript"]
+      },
+      {
+        title: "Yumemi Test",
+        description: "",
+        github: "https://github.com/huiishan99/web-yumemi-test",
+        website: "https://web-yumemi-test.vercel.app/",
+        tags: ["TypeScript"]
+      },
+      {
+        title: "Falling Sand",
+        description: "",
+        github: "https://github.com/huiishan99/web-falling-sand",
+        website: "https://huiishan99.github.io/web-falling-sand/",
+        tags: ["JavaScript"]
+      },
+      {
+        title: "Dark Light Toggle",
+        description: "",
+        github: "https://github.com/huiishan99/web-dark-light-toggle",
+        website: "https://huiishan99.github.io/web-dark-light-toggle/",
+        tags: ["JavaScript"]
+      },
+      {
         title: "DreamLight",
         description: "",
         github: "https://github.com/huiishan99/web-dreamlight",
@@ -91,10 +126,11 @@ export const projectCategories: ProjectCategory[] = [
     icon: "publication",
     items: [
       {
-        title: "Your Paper Title Here",
-        description: "Add your publication abstract or description here.",
-        website: "https://doi.org/xxx",
-        tags: ["Research", "2024"]
+        title: "VR Math Bridge: Bridging Interactivity in Online Education with AI and VR",
+        description: "We present VR Math Bridge, a virtual reality (VR)-based application designed to enhance calculus education by combining immersive virtual environments with artificial intelligence (AI)-driven teaching assistance. VR Math Bridge creates a virtual classroom where students interact with Khan Academy videos and a 3D AI assistant that provides real-time, personalized feedback to their questions. This system leverages a floating panel for chapter selection, a virtual blackboard for video playback, and Cognitive 3D for analyzing user engagement. To demonstrate the system’s capabilities, we developed a prototype on Quest 3, focusing on derivatives as the initial test topic. We conducted a preliminary subjective evaluation (n=2) of the prototype to collect early insights for future user study evaluation.",
+        featured: true,
+        website: "https://doi.org/10.1109/GEM66882.2025.11155841",
+        tags: ["AI-driven Education", "VR","Embodied Agent"]
       }
     ]
   }
