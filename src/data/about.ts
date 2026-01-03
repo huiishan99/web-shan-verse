@@ -155,12 +155,12 @@ export const interests: InterestCategory[] = [
   {
     name: "Games",
     icon: "gamepad",
-    items: ["The Legend of Zelda: Breath of the Wild", "Baldur's Gate 3", "Stardew Valley"]
+    items: ["The Legend of Zelda: Breath of the Wild", "Baldur's Gate 3", "Stardew Valley","Crusader Kings III"]
   },
   {
     name: "Movies",
     icon: "film",
-    items: ["Coco", "Flipped","Howl's Moving Castle","The Truman Show","Interstellar"]
+    items: ["Coco", "Flipped","Howl's Moving Castle","The Truman Show","Interstellar","The Lord of the Rings"]
   },
   {
     name: "Drama & Anime",
@@ -170,12 +170,12 @@ export const interests: InterestCategory[] = [
   {
     name: "Books",
     icon: "book",
-    items: ["A Thousand Splendid Suns"]
+    items: ["Les Misérables","A Thousand Splendid Suns","To Live"]
   },
   {
     name: "Music",
     icon: "music",
-    items: ["Bohemian Rhapsody", "Lemon"]
+    items: ["Bohemian Rhapsody","We Are the Champions", "Lemon"]
   },
   {
     name: "Foods",
@@ -190,7 +190,7 @@ export const interests: InterestCategory[] = [
   {
     name: "Interests",
     icon: "lightbulb",
-    items: ["Analytical psychology", "Existentialism","Cosmology"]
+    items: ["Analytical psychology", "Existentialism","Cosmology","Socionics"]
   }
   // 添加更多分类：
   // {
