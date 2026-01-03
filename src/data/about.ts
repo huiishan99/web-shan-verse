@@ -160,17 +160,17 @@ export const interests: InterestCategory[] = [
   {
     name: "Movies",
     icon: "film",
-    items: ["Coco", "Flipped", "The Truman Show"]
+    items: ["Coco", "Flipped","Howl's Moving Castle","The Truman Show","Interstellar"]
   },
   {
     name: "Drama & Anime",
     icon: "layers",
-    items: ["The Queen's Gambit", "Gin Tama"]
+    items: ["Love, Death & Robots","Cyberpunk: Edgerunners","The Queen's Gambit", "Gin Tama"]
   },
   {
     name: "Books",
     icon: "book",
-    items: ["Harry Potter"]
+    items: ["A Thousand Splendid Suns"]
   },
   {
     name: "Music",
@@ -178,19 +178,19 @@ export const interests: InterestCategory[] = [
     items: ["Bohemian Rhapsody", "Lemon"]
   },
   {
-    name: "Hobbies",
-    icon: "sparkle",
-    items: ["Traveling", "Reading"]
-  },
-  {
     name: "Foods",
     icon: "coffee",
     items: ["Ramen", "Sushi"]
   },
   {
+    name: "Hobbies",
+    icon: "sparkle",
+    items: ["Traveling", "Reading"]
+  },
+  {
     name: "Interests",
     icon: "lightbulb",
-    items: ["Psychology", "Philosophy"]
+    items: ["Analytical psychology", "Existentialism","Cosmology"]
   }
   // 添加更多分类：
   // {
