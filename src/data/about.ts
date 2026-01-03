@@ -24,7 +24,7 @@ export const intro = [
 export const profile = {
   name: "Lai HuiShan",
   initials: "HS",           // 头像占位符显示的文字
-  title: "Game Developer & Researcher",
+  title: "Developer & Researcher",
   avatar: "/images/bio-photo.jpg",               // 头像图片路径，留空则显示 initials
   
   // 社交链接 - 添加或删除都很容易
@@ -86,15 +86,27 @@ export const experience: ExperienceItem[] = [
     logo: "/images/logo-alps.png"
   },
   {
+    company: "University of Aizu",
+    role: "Part Time - Teaching Assistant",
+    period: "1 year",
+    logo: "/images/logo-uoa.png"
+  },
+  {
     company: "Alibaba GDT Network",
     role: "Student Internship",
     period: "3 months",
     logo: "/images/logo-gdt.png"
   },
   {
-    company: "University of Aizu",
-    role: "Teaching Assistant - MATLAB",
-    period: "5 months",
+    company: "Hamazushi",
+    role: "Part Time - Kitchen Staff",
+    period: "1 year",
+    logo: "/images/logo-uoa.png"
+  },
+  {
+    company: "Coco Ichibanya Curry House",
+    role: "Part Time - Food Server",
+    period: "1 year 2 months",
     logo: "/images/logo-uoa.png"
   }
 ];

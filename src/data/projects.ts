@@ -75,6 +75,13 @@ export const projectCategories: ProjectCategory[] = [
         github: "https://github.com/huiishan99/web-blog",
         website: "https://shan-verse.com",
         tags: ["Astro", "TypeScript", "CSS"]
+      },
+      {
+        title: "DreamLight",
+        description: "",
+        github: "https://github.com/huiishan99/web-dreamlight",
+        website: "https://web-dreamlight.vercel.app/",
+        tags: ["HTML","CSS"]
       }
     ]
   },
