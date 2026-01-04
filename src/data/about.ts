@@ -59,6 +59,14 @@ export const education: EducationItem[] = [
     logo: "/images/logo-uoa.png"
   },
   {
+    school: "ABK College",
+    location: "Tokyo, Japan",
+    description: "Japanese language program completed as preparation for graduate studies in Japan. Built friendships with students from Thailand, Vietnam, Myanmar, Mongolia, India, Ukraine, and France, broadening my international perspective, while working two part-time jobs in Japan.",
+    degree: "Certificate of Completion - Japanese Language Program",
+    period: "Oct 2022 - Mar 2024",
+    logo: ""
+  },
+  {
     school: "Northwestern Polytechnical University",
     location: "Xi'an, China",
     description:"Completed a Bachelor’s degree under the School of Computer Science with a thesis grade of 88/100. Undergraduate thesis focused on the simulation and control of formation flight UAV systems. Actively involved in student activities as a member of the Student Organizations Council and the university’s Chinese Debate Team.",
@@ -112,6 +120,42 @@ export const experience: ExperienceItem[] = [
     logo: "/images/logo-uoa.png"
   }
 ];
+
+// ============================================
+// 奖状
+// ============================================
+export interface AwardsItem {
+  title: string;
+  issuer: string;
+  description?: string;     // 可选：简短描述
+  period: string;
+  logo?: string;            // 可选：公司 logo 路径
+}
+
+export const awards: AwardsItem[] = [
+  {
+    title: "Presentation Award",
+    issuer: "IEEE GEM 2025",
+    description: "",
+    period: "Jul 2025",
+    logo: ""
+  },
+  {
+    title: "Second Prize (School trails) in China College Students' ·Internet+· Innovation and Entrepreneurship Competition",
+    issuer: "Ministry of Education, China",
+    description: "",
+    period: "Jan 2021",
+    logo: ""
+  },
+  {
+    title: "Second prize (Provincial trials) in China National Undergraduate ·Innovation, Creativity and Entrepreneurship· Challenge",
+    issuer: "Ministry of Education, China",
+    description: "",
+    period: "Oct 2020",
+    logo: ""
+  },
+];
+
 
 // ============================================
 // 技能
