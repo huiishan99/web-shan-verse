@@ -43,6 +43,7 @@ export const profile = {
 export interface EducationItem {
   school: string;
   location: string;
+  description?: string;  // 可选：简短描述
   degree: string;
   period: string;
   logo?: string;            // 可选：学校 logo 路径
@@ -52,15 +53,17 @@ export const education: EducationItem[] = [
   {
     school: "University of Aizu",
     location: "Aizu-Wakamatsu, Japan",
-    degree: "Master's in Computer and Information Systems",
-    period: "2024 - 2025",
+    description: "Graduated early with Grade A after completing all program and research requirements. Research focused on virtual reality (VR) and embodied AI avatars for self-learning in educational contexts. First-author paper published at IEEE GEM 2025, and a co-authored paper related to large language model–based software security published at ISPEC 2025.",
+    degree: "Master of Science - Computer Science and Engineering",
+    period: "Apr 2024 - Sep 2025",
     logo: "/images/logo-uoa.png"
   },
   {
     school: "Northwestern Polytechnical University",
     location: "Xi'an, China",
-    degree: "Bachelor's in E-Commerce Engineering",
-    period: "2019 - 2023",
+    description:"Completed a Bachelor’s degree under the School of Computer Science with a thesis grade of 88/100. Undergraduate thesis focused on the simulation and control of formation flight UAV systems. Actively involved in student activities as a member of the Student Organizations Council and the university’s Chinese Debate Team.",
+    degree: "Bachelor of Engineering - Electronic Commerce",
+    period: "Sep 2018 - Jun 2022",
     logo: "/images/logo-nwpu.png"
   }
 ];
@@ -120,16 +123,16 @@ export interface SkillCategory {
 
 export const skills: SkillCategory[] = [
   {
-    name: "Languages",
-    skills: ["C#", "Python", "JavaScript", "TypeScript", "Java"]
+    name: "Programming Languages",
+    skills: ["C", "C#", "C++","Python", "JavaScript", "TypeScript", "Java" ,"Matlab"]
   },
   {
-    name: "Game Development",
-    skills: ["Unity", "VR/XR", "Meta Quest"]
+    name: "Tools",
+    skills: ["Unity", "Git / GitHub", "Docker", "Powershell","MongoDB"]
   },
   {
-    name: "Web & Tools",
-    skills: ["Git", "React", "Node.js", "MATLAB"]
+    name: "Web Tech",
+    skills: ["React", "Next.js", "Node.js", "Flask"]
   }
   // 添加更多分类：
   // {

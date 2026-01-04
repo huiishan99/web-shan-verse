@@ -37,6 +37,7 @@ import { pageHeader, intro, profile, education, experience, skills, languages, i
                     <span class="timeline-location">{item.location}</span>
                   </div>
                   <p class="timeline-role">{item.degree}</p>
+                  {item.description && <p class="timeline-desc">{item.description}</p>}
                   <p class="timeline-date">{item.period}</p>
                 </div>
               </div>
