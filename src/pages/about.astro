@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Icon from '../components/Icon.astro';
-import { pageHeader, intro, profile, education, experience, skills, languages, interests } from '../data/about';
+import { pageHeader, intro, profile, education, experience, awards, skills, languages, interests } from '../data/about';
 ---
 
 <BaseLayout title="About">
@@ -61,6 +61,30 @@ import { pageHeader, intro, profile, education, experience, skills, languages, i
                     <h3>{item.company}</h3>
                   </div>
                   <p class="timeline-role">{item.role}</p>
+                  {item.description && <p class="timeline-desc">{item.description}</p>}
+                  <p class="timeline-date">{item.period}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- Awards -->
+        <div class="section">
+          <h2>
+            <Icon name="award" size={22} />
+            Awards
+          </h2>
+          
+          <div class="timeline-list">
+            {awards.map((item) => (
+              <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content card">
+                  <div class="timeline-header">
+                    <h3>{item.title}</h3>
+                  </div>
+                  <p class="timeline-role">{item.issuer}</p>
                   {item.description && <p class="timeline-desc">{item.description}</p>}
                   <p class="timeline-date">{item.period}</p>
                 </div>
