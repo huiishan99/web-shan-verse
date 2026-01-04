@@ -215,7 +215,7 @@ export const interests: InterestCategory[] = [
   {
     name: "Games",
     icon: "gamepad",
-    items: ["The Legend of Zelda: Breath of the Wild", "Baldur's Gate 3", "Stardew Valley","Crusader Kings III"]
+    items: ["The Legend of Zelda: Breath of the Wild", "Baldur's Gate 3", "Stardew Valley","Persona 5","Crusader Kings III","Cyberpunk 2077","Disco Elysium: The Final Cut","Uncharted Waters: New Horizons","Resident Evil 4","The Legend of Sword and Fairy 4"]
   },
   {
     name: "Movies",
@@ -240,15 +240,15 @@ export const interests: InterestCategory[] = [
   {
     name: "Foods",
     icon: "coffee",
-    items: ["Ramen", "Sushi"]
+    items: ["Ramen", "Sushi","Hot pot"]
   },
   {
     name: "Hobbies",
     icon: "sparkle",
-    items: ["Traveling", "Reading"]
+    items: ["Traveling", "Reading","Gaming","Board gaming"]
   },
   {
-    name: "Interests",
+    name: "Interests Topics",
     icon: "lightbulb",
     items: ["Analytical psychology", "Existentialism","Cosmology","Socionics"]
   }
