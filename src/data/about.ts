@@ -150,10 +150,12 @@ export interface LanguageItem {
 }
 
 export const languages: LanguageItem[] = [
-  { name: "Chinese (Mandarin)", level: "Native" },
+  { name: "Mandarin", level: "Native" },
+  { name: "Cantonese", level: "Native" },
+  { name: "Hakka", level: "Native" },
   { name: "English", level: "Fluent" },
   { name: "Japanese", level: "Intermediate" },
-  { name: "Malay", level: "Native" }
+  { name: "Malay", level: "Intermediate" }
 ];
 
 // ============================================
