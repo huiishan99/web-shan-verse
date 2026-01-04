@@ -154,6 +154,38 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["Master's thesis"]
             }
         ]
+    },
+    {
+        id: "school",
+        title: "School Project",
+        icon: "graduation",
+        items: [
+            {
+                title: "Human Activity Pattern Processing",
+                description: "This repo contains the assignments for the University of Aizu's (ITA09) Human Activity Pattern Processing course.",
+                github: "https://github.com/huiishan99/uoa-human-activity-pattern-processing",
+                tags: ["Python"]
+            }
+        ]
+    },
+    {
+        id: "other",
+        title: "Other Project",
+        icon: "menu",
+        items: [
+            {
+                title: "Tetris Clone",
+                description: "A tetris-clone game build with raylib-cpp.",
+                github: "https://github.com/huiishan99/cpp-tetris-game",
+                tags: ["tetris"]
+            },
+            {
+                title: "OpenGL Practice",
+                description: "OpenGL project.",
+                github: "https://github.com/huiishan99/opengl-vector-graphic",
+                tags: ["OpenGL"]
+            }
+        ]
     }
     // 添加新类别示例：
     // {
