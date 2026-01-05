@@ -148,11 +148,7 @@ export const projectCategories: ProjectCategory[] = [
                 website: "",
                 tags: ["Large Language Models","Vibe coding","Software security","ISPEC 2025"]
             },
-            {
-                title: "The Role of Embodied Avatars and Generative AI in Self Learning VR Classroom",
-                description: "",
-                tags: ["Master's thesis"]
-            }
+            
         ]
     },
     {
@@ -161,11 +157,18 @@ export const projectCategories: ProjectCategory[] = [
         icon: "graduation",
         items: [
             {
+                title: "The Role of Embodied Avatars and Generative AI in Self Learning VR Classroom",
+                description: "",
+                featured: true,
+                tags: ["Master's thesis"]
+            },
+            {
                 title: "Human Activity Pattern Processing",
                 description: "This repo contains the assignments for the University of Aizu's (ITA09) Human Activity Pattern Processing course.",
                 github: "https://github.com/huiishan99/uoa-human-activity-pattern-processing",
                 tags: ["Python"]
-            }
+            },
+
         ]
     },
     {
