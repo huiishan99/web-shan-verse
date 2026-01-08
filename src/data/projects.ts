@@ -68,6 +68,11 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["Unity", "AR"]
             },
             {
+                title: "Mamba Project",
+                description: "",
+                tags: ["Unity", "VR"]
+            },
+            {
                 title: "Master Project",
                 description: "",
                 tags: ["Unity", "VR"]
