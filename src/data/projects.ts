@@ -65,11 +65,13 @@ export const projectCategories: ProjectCategory[] = [
             {
                 title: "AR Image tracking",
                 description: "",
+                github: "https://github.com/huiishan99/unity-ar-image-tracking",
                 tags: ["Unity", "AR"]
             },
             {
                 title: "Mamba Project",
                 description: "",
+                github: "https://github.com/huiishan99/uoa-cfs03-manba-project",
                 tags: ["Unity", "VR"]
             },
             {
@@ -187,6 +189,12 @@ export const projectCategories: ProjectCategory[] = [
                 github: "https://github.com/huiishan99/uoa-human-activity-pattern-processing",
                 tags: ["Python"]
             },
+            {
+                title: "Advanced Robotics",
+                description: "This repo contains the assignments for the University of Aizu's (ITC03A) Advanced Robotics course.",
+                github: "https://github.com/huiishan99/uoa-advanced-robotics",
+                tags: ["MATLAB"]
+            }
 
         ]
     },
