@@ -127,6 +127,20 @@ export const projectCategories: ProjectCategory[] = [
                 github: "https://github.com/huiishan99/web-dreamlight",
                 website: "https://web-dreamlight.vercel.app/",
                 tags: ["HTML", "CSS"]
+            },
+            {
+                title: "Hexo Page",
+                description: "",
+                github: "https://github.com/huiishan99/web-hexo-page",
+                website: "https://hexo-six-green.vercel.app/",
+                tags: ["Hexo", "JavaScript"]
+            },
+            {
+                title: "Notion Resume",
+                description: "",
+                github: "",
+                website: "",
+                tags: ["Notion", "CV"]
             }
         ]
     },
@@ -187,6 +201,42 @@ export const projectCategories: ProjectCategory[] = [
                 description: "OpenGL project.",
                 github: "https://github.com/huiishan99/opengl-vector-graphic",
                 tags: ["OpenGL"]
+            },
+            {
+                title: "C# Exercises",
+                description: "C# project.",
+                github: "https://github.com/huiishan99/csharp-exercises",
+                tags: ["C#"]
+            },
+            {
+                title: "C# Snake Game",
+                description: "C# project.",
+                github: "https://github.com/huiishan99/csharp-snake-game",
+                tags: ["C#"]
+            },
+            {
+                title: "Beecrowd Practice",
+                description: "OJ project.",
+                github: "https://github.com/huiishan99/oj-beecrowd",
+                tags: ["C#"]
+            },
+            {
+                title: "PTA Practice",
+                description: "OJ project.",
+                github: "https://github.com/huiishan99/oj-pta",
+                tags: ["C#"]
+            },
+            {
+                title: "Paiza Practice",
+                description: "OJ project.",
+                github: "https://github.com/huiishan99/oj-paiza",
+                tags: ["C#"]
+            },
+            {
+                title: "Rockfall Game",
+                description: "Python project.",
+                github: "https://github.com/huiishan99/python-rockfall-game",
+                tags: ["Python"]
             }
         ]
     }
