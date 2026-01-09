@@ -172,11 +172,11 @@ export const skills: SkillCategory[] = [
   },
   {
     name: "Tools",
-    skills: ["Unity", "Git / GitHub", "Docker", "Powershell","MongoDB"]
+    skills: ["Unity","VS Code", "Git / GitHub", "Linux", "Docker", "Powershell","MongoDB"]
   },
   {
     name: "Web Tech",
-    skills: ["React", "Next.js", "Node.js", "Flask"]
+    skills: ["React", "Next.js", "Node.js", "Flask","tailwindcss"]
   }
   // 添加更多分类：
   // {
