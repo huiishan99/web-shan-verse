@@ -14,6 +14,21 @@ export interface TimelineYear {
 
 export const timelineData: TimelineYear[] = [
   {
+    year: 2025,
+    events: [
+      {
+        month: "September",
+        title: "",
+        description: ""
+      },
+      {
+        month: "July",
+        title: "",
+        description: ""
+      }
+    ]
+  },
+  {
     year: 2024,
     events: [
       {
