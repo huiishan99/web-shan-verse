@@ -17,6 +17,16 @@ export const timelineData: TimelineYear[] = [
     year: 2025,
     events: [
       {
+        month: "December",
+        title: "",
+        description: ""
+      },
+      {
+        month: "October",
+        title: "",
+        description: ""
+      },
+      {
         month: "September",
         title: "",
         description: ""
