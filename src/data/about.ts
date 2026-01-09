@@ -176,7 +176,7 @@ export const skills: SkillCategory[] = [
   },
   {
     name: "Web Tech",
-    skills: ["React", "Next.js", "Node.js", "Flask","tailwindcss"]
+    skills: ["React", "Next.js", "Node.js", "Flask","FastAPI","tailwindcss"]
   }
   // 添加更多分类：
   // {
