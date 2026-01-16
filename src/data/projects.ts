@@ -169,7 +169,12 @@ export const projectCategories: ProjectCategory[] = [
                 website: "",
                 tags: ["Large Language Models","Vibe coding","Software security","ISPEC 2025"]
             },
-            
+            {
+                title: "Enhancing VR Mandala Drawing and Natural Immersion for Attention Restoration with AI-Driven Bioadaptive Multimodal Interaction",
+                description: "Digital attention fatigue is a pervasive challenge, yet most virtual reality (VR) interventions for restoration rely on passive nature exposure that lacks responsiveness to the user's internal state. Integrating Attention Restoration Theory (ART) with physiological computing, we propose a bioadaptive VR system that combines active mandala drawing within a 360° nature scene, using real-time heart rate variability (HRV) to modulate visual fog, ambient music, and haptic feedback. In a within-subject pilot study ($N=11$), we compared an AI-driven bioadaptive multimodal condition (AI) against an otherwise identical VR condition without bioadaptive multimodal feedback (NF), using behavioral (Oddball task), neural (EEG), autonomic (HRV), and subjective measures. While both conditions supported general recovery, the bioadaptive interaction elicited distinct psychophysiological regulatory patterns. Specifically, the AI condition significantly dampened arousal-related EEG $\beta$ activity relative to NF. Furthermore, we observed a unique ``psychophysiological coupling'' in the bioadaptive condition, where participants’ subjective feelings of fascination significantly predicted their objective reaction-time recovery—a correlation absent in NF. These findings illustrate how lightweight AI-driven bioadaptation can align felt restorativeness with functional attention recovery, pointing toward VR-based micro-breaks that move from passive experiences to active, co-regulated restoration loops.",
+                website: "",
+                tags: [" VR","Multimodal Interaction","AI-Driven","AHs 2026"]
+            },
         ]
     },
     {
