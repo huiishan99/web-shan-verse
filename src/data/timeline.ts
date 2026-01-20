@@ -18,9 +18,10 @@ export const timelineData: TimelineYear[] = [
     events: [
       {
         month: "January",
-        title: "",
-        description: ""
+        title: "Driving School Intensive Camp Completion",
+        description: "Completed a two-week intensive driving school camp at Chuetsu Driving School and successfully obtained the provisional driving license."
       }
+
     ]
   },
   {
@@ -28,24 +29,56 @@ export const timelineData: TimelineYear[] = [
     events: [
       {
         month: "December",
-        title: "",
-        description: ""
-      },
+        title: "Return to Japan after Travel",
+        description: "Returned to Japan via Osaka after completing long-term travel and finally arrived back in Aizuwakamatsu."
+      }
+      ,
       {
         month: "October",
-        title: "",
-        description: ""
-      },
+        title: "Extended China Travel",
+        description: "Traveled in China for over one month with my partner, visiting Tianjin, Beijing, Harbin, Shuangyashan, Qingdao, Hong Kong, Shenzhen, Guangzhou, Foshan, Zhuhai, Macau, and Shanghai."
+      }
+      ,
+      {
+        month: "October",
+        title: "Alps Alpine Official Job Offer",
+        description: "Participated in the Alps Alpine job-offer holders meeting and received the official employment offer."
+      }
+      ,
       {
         month: "September",
-        title: "",
-        description: ""
-      },
+        title: "Early Graduation from The University of Aizu",
+        description: "Graduated six months earlier than scheduled after completing all coursework and meeting the graduation requirements through external paper publications."
+      }
+      ,
+      {
+        month: "September",
+        title: "ISPEC 2025 Full Paper Acceptance",
+        description: "A full paper was accepted by ISPEC 2025, with me as the second author."
+      }
+      ,
+      {
+        month: "August",
+        title: "Master's Thesis Recognition",
+        description: "The master's thesis received positive evaluations from external professors. Prof. Watanobe described it as excellent, and Prof. Pyshkin stated that the thesis was equivalent to doctoral-level work."
+      }
+      ,
       {
         month: "July",
-        title: "",
-        description: ""
+        title: "IEEE GEM 2025 Conference Participation",
+        description: "Attended IEEE GEM 2025 conference in Kaohsiung, Taiwan."
+      },
+      {
+        month: "May",
+        title: "IEEE GEM Full Paper Acceptance",
+        description: "A full paper was accepted by IEEE GEM 2025, with me as the first author."
+      },
+      {
+        month: "January",
+        title: "Alps Alpine Informal Job Offer",
+        description: "Received an informal (verbal) job offer from Alps Alpine Corporation."
       }
+
     ]
   },
   {
