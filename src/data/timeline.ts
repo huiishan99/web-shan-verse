@@ -63,8 +63,8 @@ export const timelineData: TimelineYear[] = [
       ,
       {
         month: "August",
-        title: "Master's Thesis Recognition",
-        description: "The master's thesis received positive evaluations from external professors. Prof. Watanobe described it as excellent, and Prof. Pyshkin stated that the thesis was equivalent to doctoral-level work."
+        title: "Master's Thesis Presentation and Recognition",
+        description: "The master's thesis received positive evaluations from other professors. Prof. Watanobe described it as excellent, and Prof. Pyshkin stated that the thesis was equivalent to doctoral-level work."
       }
       ,
       {
@@ -150,7 +150,7 @@ export const timelineData: TimelineYear[] = [
       },
       {
         month: "June",
-        title: "NWPU Graduation",
+        title: "Northwestern Polytechnical University Graduation",
         description: "Graduated from Northwestern Polytechnical University with bachelor degree in engineering. Began studying basic Japanese at Mikasano Academic Centre in preparation for studying in Japan."
       },
       {
