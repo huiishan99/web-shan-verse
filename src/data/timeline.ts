@@ -20,8 +20,12 @@ export const timelineData: TimelineYear[] = [
         month: "January",
         title: "Driving School Intensive Camp Completion",
         description: "Completed a two-week intensive driving school camp at Chuetsu Driving School and successfully obtained the provisional driving license."
+      },
+      {
+        month: "January",
+        title: "AHs 2026 Paper Acceptance",
+        description: "A research paper was accepted by Augmented Humans 2026, with me as the second author."
       }
-
     ]
   },
   {
