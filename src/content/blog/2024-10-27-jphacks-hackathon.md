@@ -1,7 +1,7 @@
 ---
-title: "Hackthon"
+title: "Hackathon"
 date: 2024-10-27
-description: "A two-week driving school accommodation trip in Japan"
+description: "Ha"
 categories:
   - Blog
 tags:
