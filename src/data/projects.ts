@@ -21,6 +21,36 @@ export interface ProjectCategory {
 
 export const projectCategories: ProjectCategory[] = [
     {
+        id: "vr",
+        title: "VR/XR Projects",
+        icon: "vr",
+        items: [
+            {
+                title: "VR Car Scene Prototype",
+                description: "VR car scene prototype developed during ALPS ALPINE internship using Unity and Meta Quest.",
+                featured: true,
+                tags: ["Unity", "VR"]
+            },
+            {
+                title: "AR Image tracking",
+                description: "",
+                github: "https://github.com/huiishan99/unity-ar-image-tracking",
+                tags: ["Unity", "AR"]
+            },
+            {
+                title: "Mamba Project",
+                description: "",
+                github: "https://github.com/huiishan99/uoa-cfs03-manba-project",
+                tags: ["Unity", "VR"]
+            },
+            {
+                title: "Master Project",
+                description: "",
+                tags: ["Unity", "VR"]
+            },
+        ]
+    },
+    {
         id: "unity",
         title: "Unity Projects",
         icon: "gamepad",
@@ -49,36 +79,6 @@ export const projectCategories: ProjectCategory[] = [
                 github: "https://github.com/huiishan99/unity-kitchen-chaos",
                 tags: ["Unity", "C#", "Simulation"]
             }
-        ]
-    },
-    {
-        id: "vr",
-        title: "VR/XR Projects",
-        icon: "vr",
-        items: [
-            {
-                title: "VR Car Scene Prototype",
-                description: "VR car scene prototype developed during ALPS ALPINE internship using Unity and Meta Quest.",
-                featured: true,
-                tags: ["Unity", "VR"]
-            },
-            {
-                title: "AR Image tracking",
-                description: "",
-                github: "https://github.com/huiishan99/unity-ar-image-tracking",
-                tags: ["Unity", "AR"]
-            },
-            {
-                title: "Mamba Project",
-                description: "",
-                github: "https://github.com/huiishan99/uoa-cfs03-manba-project",
-                tags: ["Unity", "VR"]
-            },
-            {
-                title: "Master Project",
-                description: "",
-                tags: ["Unity", "VR"]
-            },
         ]
     },
     {
