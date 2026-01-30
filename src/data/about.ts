@@ -91,35 +91,45 @@ export const experience: ExperienceItem[] = [
   {
     company: "ALPS ALPINE",
     role: "Engineer Internship",
-    description: "Developed VR car scene prototype with Unity",
     period: "2 weeks",
-    logo: "/images/logo-alps.png"
+    logo: "/images/logo-alps.png",
+    description:
+      "Developed a VR-based futuristic car HMI prototype using Unity. Built an autonomous driving scenario set on a U.S. highway with experimental next-generation HMI concepts. The prototype was designed for exhibition at CES 2025."
   },
   {
     company: "University of Aizu",
     role: "Part Time - Teaching Assistant",
     period: "1 year",
-    logo: "/images/logo-uoa.png"
+    logo: "/images/logo-uoa.png",
+    description:
+      "Assisted professors in supervising undergraduate students. Supported academic reports using MATLAB and Wolfram (2024), and guided VR application development using Unity (2025). Independently prepared and delivered one lecture session on VR development."
   },
   {
     company: "Alibaba GDT Network",
     role: "Student Internship",
     period: "3 months",
-    logo: "/images/logo-gdt.png"
+    logo: "/images/logo-gdt.png",
+    description:
+      "Worked on technical marketing operations. Conducted target user analysis and e-commerce marketing planning using Joyoung blender products as a case study, focusing on data-driven advertising strategies."
   },
   {
     company: "Hamazushi",
     role: "Part Time - Kitchen Staff",
     period: "1 year",
-    logo: "/images/logo-uoa.png"
+    logo: "/images/logo-uoa.png",
+    description:
+      "Worked in the kitchen preparing sushi, including nigiri, rolls, and gunkan. Assisted with dessert preparation, cleaning, and general kitchen operations. Averaged 16 working hours per week."
   },
   {
     company: "Coco Ichibanya Curry House",
     role: "Part Time - Food Server",
     period: "1 year 2 months",
-    logo: "/images/logo-uoa.png"
+    logo: "/images/logo-uoa.png",
+    description:
+      "Handled food preparation support, cleaning, cashier duties, order taking, and meal serving. Responsible for opening and closing tasks, including cash handling. Averaged 10 working hours per week."
   }
 ];
+
 
 // ============================================
 // 奖状
