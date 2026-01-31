@@ -164,6 +164,20 @@ export const awards: AwardsItem[] = [
     period: "Oct 2020",
     logo: ""
   },
+  {
+    title: "Consolation Prize in Dekad Bahasa 2.0 (2020) Dubbing Competition",
+    issuer: "Association of Malaysian Students in Shaanxi (AMSISX) and Association of Malaysian Students in Hubei (AMSIH)",
+    description: "",
+    period: "Jan 2020",
+    logo: ""
+  },
+  {
+    title: "NPU President Scholarship",
+    issuer: "Northwestern Polytechnical University",
+    description: "First-Level Scholarship Winner (2018) - Exempted from tuition and accommodation fees; provided living allowance of 1,500 RMB/month for 12 months.",
+    period: "Sep 2018",
+    logo: ""
+  },
 ];
 
 
