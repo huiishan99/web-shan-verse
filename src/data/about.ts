@@ -244,7 +244,7 @@ export const interests: InterestCategory[] = [
   {
     name: "Movies",
     icon: "film",
-    items: ["Coco", "Flipped","Howl's Moving Castle","The Truman Show","Interstellar","The Lord of the Rings"]
+    items: ["Coco", "Flipped","Howl's Moving Castle","The Truman Show","Interstellar","The Lord of the Rings","The Reluctant Fundamentalist","Maharaja (2024)"]
   },
   {
     name: "Drama & Anime",
