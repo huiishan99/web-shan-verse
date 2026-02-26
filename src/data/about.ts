@@ -249,12 +249,12 @@ export const interests: InterestCategory[] = [
   {
     name: "Drama & Anime",
     icon: "layers",
-    items: ["Love, Death & Robots","Cyberpunk: Edgerunners","The Queen's Gambit", "Gin Tama"]
+    items: ["Love, Death & Robots","Cyberpunk: Edgerunners","The Queen's Gambit", "Gin Tama", "Doraemon"]
   },
   {
     name: "Books",
     icon: "book",
-    items: ["Les Misérables","A Thousand Splendid Suns","To Live"]
+    items: ["Les Misérables","A Thousand Splendid Suns","To Live","Tristan and Iseult"]
   },
   {
     name: "Music",
