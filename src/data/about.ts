@@ -254,7 +254,7 @@ export const interests: InterestCategory[] = [
   {
     name: "Books",
     icon: "book",
-    items: ["Les Misérables","A Thousand Splendid Suns","To Live","Tristan and Iseult"]
+    items: ["Les Misérables","A Thousand Splendid Suns","To Live","Tristan and Iseult","Kinder- und Hausmärchen"]
   },
   {
     name: "Music",
