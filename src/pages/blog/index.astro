@@ -37,7 +37,7 @@ function formatDate(date: Date) {
     <div class="blog-layout">
       <main class="posts-list">
         {sortedPosts.map((post) => (
-          <article class="post-card" data-href={`/blog/${post.slug}`}>
+          <article class="post-card" data-href={`/blog/${post.id}`}>
             <div class="post-meta">
               <time class="post-date" datetime={post.data.date.toISOString()}>
                 {formatDate(post.data.date)}
