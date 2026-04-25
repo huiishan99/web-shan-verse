@@ -20,8 +20,8 @@
   "homepage": "https://github.com/huiishan99/web-blog#readme",
   "description": "",
   "dependencies": {
-    "@astrojs/mdx": "^4.3.13",
+    "@astrojs/mdx": "^5.0.3",
     "@astrojs/sitemap": "^3.6.0",
-    "astro": "^5.18.1"
+    "astro": "^6.1.8"
   }
 }
