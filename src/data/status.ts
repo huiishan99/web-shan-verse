@@ -14,13 +14,13 @@ export const currentStatus = {
   // 主要状态标签 - 用于快速表达当前状态
   // 可选值建议：Celebrating | Traveling | Working | Gaming 
   //            Learning | Vacation | Resting | Busy
-  badge: "Fresh Graduate",
+  badge: "New Employee",
   
   // 状态列表 - 添加/删除/修改都很容易
   items: [
-    { icon: "briefcase", text: "On vacation" },
+    { icon: "briefcase", text: "Alps Alpine Co., Ltd" },
     { icon: "map", text: "Iwaki, Japan" },
-    { icon: "gamepad", text: "VR/XR Development" },
+    { icon: "gamepad", text: "Embedded Software Development" },
   ] as StatusItem[]
 };
 
