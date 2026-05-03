@@ -5,6 +5,7 @@
 export interface StatusItem {
   icon: string;      // Icon 组件的图标名称
   text: string;      // 显示文字
+  url?: string;      // 可选的链接 URL
 }
 
 export const currentStatus = {
@@ -18,8 +19,8 @@ export const currentStatus = {
   
   // 状态列表 - 添加/删除/修改都很容易
   items: [
-    { icon: "briefcase", text: "Alps Alpine Co., Ltd" },
-    { icon: "map", text: "Iwaki, Japan" },
+    { icon: "briefcase", text: "Alps Alpine Co., Ltd", url: "https://www.alpsalpine.com" },
+    { icon: "map", text: "Iwaki, Japan", url: "https://www.google.com/maps/place/Iwaki" },
     { icon: "gamepad", text: "Embedded Software Development" },
   ] as StatusItem[]
 };
