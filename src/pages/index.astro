@@ -11,8 +11,7 @@ const latestPosts = allPosts
   .slice(0, 3);
 
 // 提取文章第一段内容
-function getExcerpt(body: string | undefined, maxLength: number = 100): string {
-  if (!body) return '';
+function getExcerpt(body: string, maxLength: number = 100): string {
   // 移除 markdown 语法，提取纯文本
   const cleanText = body
     .replace(/^---[\s\S]*?---/m, '')  // 移除 frontmatter
@@ -64,7 +63,13 @@ function getExcerpt(body: string | undefined, maxLength: number = 100): string {
             {currentStatus.items.map((item) => (
               <li>
                 <Icon name={item.icon} size={16} />
-                <span>{item.text}</span>
+                {item.url ? (
+                  <a href={item.url} target="_blank" rel="noopener noreferrer">
+                    {item.text}
+                  </a>
+                ) : (
+                  <span>{item.text}</span>
+                )}
               </li>
             ))}
           </ul>
@@ -271,6 +276,16 @@ function getExcerpt(body: string | undefined, maxLength: number = 100): string {
   .status-list li svg {
     color: var(--color-text-muted);
     flex-shrink: 0;
+  }
+
+  .status-list li a {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .status-list li a:hover {
+    color: #d4af37;
   }
   
   /* Featured Section */
