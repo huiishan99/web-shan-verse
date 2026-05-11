@@ -90,6 +90,14 @@ export interface ExperienceItem {
 export const experience: ExperienceItem[] = [
   {
     company: "ALPS ALPINE",
+    role: "Engineer (New Graduate)",
+    period: "Current",
+    logo: "/images/logo-alps.png",
+    description:
+      "Currently working as a new graduate engineer in the Development & Design Division, 4th Software Engineering Department (開発設計部第４ソフト技術部). The team focuses on embedded software development with PoC-style prototyping. I am learning the department's development workflow and strengthening my embedded software engineering fundamentals through daily project work."
+  },
+  {
+    company: "ALPS ALPINE",
     role: "Engineer Internship",
     period: "2 weeks",
     logo: "/images/logo-alps.png",
