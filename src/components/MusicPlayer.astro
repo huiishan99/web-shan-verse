@@ -164,12 +164,17 @@ const audioSrc = '/audio/bgm.mp3';
   .music-toggle.is-playing {
     border-color: var(--color-brass);
     background: var(--color-brass);
-    color: var(--color-bg-primary);
+    color: var(--color-text-primary);
   }
 
   .music-toggle.has-error {
     transform: translateX(-1px);
     border-color: #d08b73;
+  }
+
+  .music-toggle :global(.icon) {
+    color: inherit;
+    transform: translateX(-0.06rem);
   }
 
   .volume-control {
