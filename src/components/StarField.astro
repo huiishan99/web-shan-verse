@@ -1,5 +1,5 @@
 ---
-// 互动式星空背景组件
+// Interactive starfield background.
 ---
 
 <div class="starfield-interactive">
@@ -7,15 +7,6 @@
 </div>
 
 <script>
-  const canvas = document.getElementById('starCanvas') as HTMLCanvasElement;
-  const ctx = canvas.getContext('2d')!;
-  
-  let width = window.innerWidth;
-  let height = window.innerHeight;
-  let mouseX = width / 2;
-  let mouseY = height / 2;
-  
-  // 星星数组
   interface Star {
     x: number;
     y: number;
@@ -29,149 +20,177 @@
     color: string;
     glowColor: string;
   }
-  
-  const stars: Star[] = [];
-  const STAR_COUNT = 200; // 更多星星
-  
-  // 颜色选项 - 更丰富的星星颜色
-  const starTypes = [
-    { color: 'rgba(255, 255, 255,', glow: 'rgba(200, 220, 255,' },      // 白色偏蓝
-    { color: 'rgba(255, 250, 240,', glow: 'rgba(255, 250, 240,' },      // 暖白
-    { color: 'rgba(180, 200, 255,', glow: 'rgba(150, 180, 255,' },      // 蓝白色
-    { color: 'rgba(255, 220, 180,', glow: 'rgba(255, 200, 150,' },      // 橙白色
-    { color: 'rgba(220, 180, 255,', glow: 'rgba(200, 150, 255,' },      // 淡紫色
-    { color: 'rgba(255, 215, 100,', glow: 'rgba(255, 200, 80,' },       // 金色
-  ];
-  
-  function initStars() {
-    stars.length = 0;
-    for (let i = 0; i < STAR_COUNT; i++) {
-      const starType = starTypes[Math.floor(Math.random() * starTypes.length)];
-      // 大部分是小星星，少数大星星
-      const isBrightStar = Math.random() < 0.13;
-      
-      stars.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        baseX: Math.random() * width,
-        baseY: Math.random() * height,
-        size: isBrightStar ? Math.random() * 1.8 + 1.2 : Math.random() * 1 + 0.25,
-        opacity: isBrightStar ? Math.random() * 0.35 + 0.5 : Math.random() * 0.4 + 0.2,
-        twinkleSpeed: Math.random() * 0.03 + 0.01,
-        twinkleOffset: Math.random() * Math.PI * 2,
-        depth: Math.random() * 0.5 + 0.1,
-        color: starType.color,
-        glowColor: starType.glow
+
+  interface StarFieldState {
+    frameId?: number;
+    cleanup?: () => void;
+    bootstrapped?: boolean;
+  }
+
+  const globalWindow = window as typeof window & { __shanStarField?: StarFieldState };
+  const state = globalWindow.__shanStarField ??= {};
+
+  function setupStarField() {
+    state.cleanup?.();
+
+    const canvas = document.getElementById('starCanvas') as HTMLCanvasElement | null;
+    const ctx = canvas?.getContext('2d');
+    if (!canvas || !ctx) return;
+
+    let active = true;
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    let mouseX = width / 2;
+    let mouseY = height / 2;
+
+    const stars: Star[] = [];
+    const STAR_COUNT = 200;
+    const starTypes = [
+      { color: 'rgba(255, 255, 255,', glow: 'rgba(200, 220, 255,' },
+      { color: 'rgba(255, 250, 240,', glow: 'rgba(255, 250, 240,' },
+      { color: 'rgba(180, 200, 255,', glow: 'rgba(150, 180, 255,' },
+      { color: 'rgba(255, 220, 180,', glow: 'rgba(255, 200, 150,' },
+      { color: 'rgba(220, 180, 255,', glow: 'rgba(200, 150, 255,' },
+      { color: 'rgba(255, 215, 100,', glow: 'rgba(255, 200, 80,' },
+    ];
+
+    function initStars() {
+      stars.length = 0;
+      for (let i = 0; i < STAR_COUNT; i++) {
+        const starType = starTypes[Math.floor(Math.random() * starTypes.length)];
+        const isBrightStar = Math.random() < 0.13;
+
+        stars.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          baseX: Math.random() * width,
+          baseY: Math.random() * height,
+          size: isBrightStar ? Math.random() * 1.8 + 1.2 : Math.random() * 1 + 0.25,
+          opacity: isBrightStar ? Math.random() * 0.35 + 0.5 : Math.random() * 0.4 + 0.2,
+          twinkleSpeed: Math.random() * 0.03 + 0.01,
+          twinkleOffset: Math.random() * Math.PI * 2,
+          depth: Math.random() * 0.5 + 0.1,
+          color: starType.color,
+          glowColor: starType.glow,
+        });
+      }
+    }
+
+    function resize() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+
+      stars.forEach((star) => {
+        star.baseX = Math.random() * width;
+        star.baseY = Math.random() * height;
       });
     }
-  }
-  
-  function resize() {
-    width = window.innerWidth;
-    height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
-    
-    stars.forEach(star => {
-      star.baseX = Math.random() * width;
-      star.baseY = Math.random() * height;
-    });
-  }
-  
-  function drawStar(x: number, y: number, size: number, opacity: number, color: string, glowColor: string) {
-    // 外层光晕 - 大而淡
-    const gradient = ctx.createRadialGradient(x, y, 0, x, y, size * 7);
-    gradient.addColorStop(0, `${glowColor}${opacity * 0.25})`);
-    gradient.addColorStop(0.5, `${glowColor}${opacity * 0.08})`);
-    gradient.addColorStop(1, `${glowColor}0)`);
-    
-    ctx.beginPath();
-    ctx.arc(x, y, size * 7, 0, Math.PI * 2);
-    ctx.fillStyle = gradient;
-    ctx.fill();
-    
-    // 中层光晕
-    const gradient2 = ctx.createRadialGradient(x, y, 0, x, y, size * 2.8);
-    gradient2.addColorStop(0, `${color}${opacity * 0.75})`);
-    gradient2.addColorStop(0.5, `${glowColor}${opacity * 0.25})`);
-    gradient2.addColorStop(1, `${glowColor}0)`);
-    
-    ctx.beginPath();
-    ctx.arc(x, y, size * 2.8, 0, Math.PI * 2);
-    ctx.fillStyle = gradient2;
-    ctx.fill();
-    
-    // 核心 - 明亮的中心
-    ctx.beginPath();
-    ctx.arc(x, y, size, 0, Math.PI * 2);
-    ctx.fillStyle = `${color}${Math.min(opacity * 1.1, 0.95)})`; 
-    ctx.fill();
-    
-    // 十字星芒（只给较大的星星）
-    if (size > 1.5) {
-      ctx.strokeStyle = `${color}${opacity * 0.6})`;
-      ctx.lineWidth = 0.5;
-      
-      // 水平线
+
+    function drawStar(x: number, y: number, size: number, opacity: number, color: string, glowColor: string) {
+      const outerGlow = ctx.createRadialGradient(x, y, 0, x, y, size * 7);
+      outerGlow.addColorStop(0, `${glowColor}${opacity * 0.25})`);
+      outerGlow.addColorStop(0.5, `${glowColor}${opacity * 0.08})`);
+      outerGlow.addColorStop(1, `${glowColor}0)`);
+
       ctx.beginPath();
-      ctx.moveTo(x - size * 4, y);
-      ctx.lineTo(x + size * 4, y);
-      ctx.stroke();
-      
-      // 垂直线
+      ctx.arc(x, y, size * 7, 0, Math.PI * 2);
+      ctx.fillStyle = outerGlow;
+      ctx.fill();
+
+      const innerGlow = ctx.createRadialGradient(x, y, 0, x, y, size * 2.8);
+      innerGlow.addColorStop(0, `${color}${opacity * 0.75})`);
+      innerGlow.addColorStop(0.5, `${glowColor}${opacity * 0.25})`);
+      innerGlow.addColorStop(1, `${glowColor}0)`);
+
       ctx.beginPath();
-      ctx.moveTo(x, y - size * 4);
-      ctx.lineTo(x, y + size * 4);
-      ctx.stroke();
+      ctx.arc(x, y, size * 2.8, 0, Math.PI * 2);
+      ctx.fillStyle = innerGlow;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(x, y, size, 0, Math.PI * 2);
+      ctx.fillStyle = `${color}${Math.min(opacity * 1.1, 0.95)})`;
+      ctx.fill();
+
+      if (size > 1.5) {
+        ctx.strokeStyle = `${color}${opacity * 0.6})`;
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.moveTo(x - size * 4, y);
+        ctx.lineTo(x + size * 4, y);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x, y - size * 4);
+        ctx.lineTo(x, y + size * 4);
+        ctx.stroke();
+      }
     }
-  }
-  
-  function animate() {
-    ctx.clearRect(0, 0, width, height);
-    
-    const time = Date.now() * 0.001;
-    const centerX = width / 2;
-    const centerY = height / 2;
-    
-    const offsetX = (mouseX - centerX) / centerX;
-    const offsetY = (mouseY - centerY) / centerY;
-    
-    stars.forEach(star => {
-      const parallaxX = offsetX * 40 * star.depth;
-      const parallaxY = offsetY * 40 * star.depth;
-      
-      star.x += (star.baseX + parallaxX - star.x) * 0.03;
-      star.y += (star.baseY + parallaxY - star.y) * 0.03;
-      
-      // 更明显的闪烁
-      const twinkle = Math.sin(time * star.twinkleSpeed * 15 + star.twinkleOffset);
-      const twinkle2 = Math.sin(time * star.twinkleSpeed * 7 + star.twinkleOffset * 2);
-      const combinedTwinkle = (twinkle + twinkle2) / 2;
-      const currentOpacity = star.opacity * (0.6 + combinedTwinkle * 0.4);
-      
-      drawStar(star.x, star.y, star.size, currentOpacity, star.color, star.glowColor);
-    });
-    
-    requestAnimationFrame(animate);
-  }
-  
-  document.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-  });
-  
-  document.addEventListener('touchmove', (e) => {
-    if (e.touches.length > 0) {
-      mouseX = e.touches[0].clientX;
-      mouseY = e.touches[0].clientY;
+
+    function animate() {
+      if (!active) return;
+
+      ctx.clearRect(0, 0, width, height);
+
+      const time = Date.now() * 0.001;
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const offsetX = (mouseX - centerX) / centerX;
+      const offsetY = (mouseY - centerY) / centerY;
+
+      stars.forEach((star) => {
+        const parallaxX = offsetX * 40 * star.depth;
+        const parallaxY = offsetY * 40 * star.depth;
+
+        star.x += (star.baseX + parallaxX - star.x) * 0.03;
+        star.y += (star.baseY + parallaxY - star.y) * 0.03;
+
+        const twinkle = Math.sin(time * star.twinkleSpeed * 15 + star.twinkleOffset);
+        const twinkle2 = Math.sin(time * star.twinkleSpeed * 7 + star.twinkleOffset * 2);
+        const currentOpacity = star.opacity * (0.6 + ((twinkle + twinkle2) / 2) * 0.4);
+
+        drawStar(star.x, star.y, star.size, currentOpacity, star.color, star.glowColor);
+      });
+
+      state.frameId = requestAnimationFrame(animate);
     }
-  });
-  
-  window.addEventListener('resize', resize);
-  
-  resize();
-  initStars();
-  animate();
+
+    const handleMouseMove = (event: MouseEvent) => {
+      mouseX = event.clientX;
+      mouseY = event.clientY;
+    };
+
+    const handleTouchMove = (event: TouchEvent) => {
+      if (event.touches.length > 0) {
+        mouseX = event.touches[0].clientX;
+        mouseY = event.touches[0].clientY;
+      }
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('touchmove', handleTouchMove);
+    window.addEventListener('resize', resize);
+
+    resize();
+    initStars();
+    animate();
+
+    state.cleanup = () => {
+      active = false;
+      if (state.frameId) cancelAnimationFrame(state.frameId);
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('resize', resize);
+    };
+  }
+
+  setupStarField();
+
+  if (!state.bootstrapped) {
+    state.bootstrapped = true;
+    document.addEventListener('astro:page-load', setupStarField);
+  }
 </script>
 
 <style>
@@ -184,7 +203,7 @@
     pointer-events: none;
     z-index: -1;
   }
-  
+
   #starCanvas {
     display: block;
     width: 100%;
