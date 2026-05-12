@@ -83,6 +83,9 @@
 </style>
 
 <script>
+  if (!(window as any).__shanCursorReady) {
+  (window as any).__shanCursorReady = true;
+
   // 粒子系统配置
   const config = {
     particleCount: 2,
@@ -179,4 +182,5 @@
   }
   
   document.addEventListener('mousemove', handleMouseMove);
+  }
 </script>
