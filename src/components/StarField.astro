@@ -23,6 +23,7 @@
 
   interface StarFieldState {
     frameId?: number;
+    fillFrameId?: number;
     cleanup?: () => void;
     bootstrapped?: boolean;
   }
@@ -44,7 +45,7 @@
     let mouseY = height / 2;
 
     const stars: Star[] = [];
-    const STAR_COUNT = 200;
+    const STAR_COUNT = 150;
     const starTypes = [
       { color: 'rgba(255, 255, 255,', glow: 'rgba(200, 220, 255,' },
       { color: 'rgba(255, 250, 240,', glow: 'rgba(255, 250, 240,' },
@@ -54,13 +55,11 @@
       { color: 'rgba(255, 215, 100,', glow: 'rgba(255, 200, 80,' },
     ];
 
-    function initStars() {
-      stars.length = 0;
-      for (let i = 0; i < STAR_COUNT; i++) {
+    function createStar() {
         const starType = starTypes[Math.floor(Math.random() * starTypes.length)];
         const isBrightStar = Math.random() < 0.13;
 
-        stars.push({
+      stars.push({
           x: Math.random() * width,
           y: Math.random() * height,
           baseX: Math.random() * width,
@@ -73,7 +72,30 @@
           color: starType.color,
           glowColor: starType.glow,
         });
+    }
+
+    function fillStarsToTarget() {
+      if (!active || stars.length >= STAR_COUNT) return;
+
+      const nextTarget = Math.min(STAR_COUNT, stars.length + 15);
+      while (stars.length < nextTarget) {
+        createStar();
       }
+
+      if (stars.length < STAR_COUNT) {
+        state.fillFrameId = requestAnimationFrame(fillStarsToTarget);
+      }
+    }
+
+    function initStars() {
+      stars.length = 0;
+      const initialCount = Math.min(90, STAR_COUNT);
+
+      for (let i = 0; i < initialCount; i++) {
+        createStar();
+      }
+
+      state.fillFrameId = requestAnimationFrame(fillStarsToTarget);
     }
 
     function resize() {
@@ -179,6 +201,7 @@
     state.cleanup = () => {
       active = false;
       if (state.frameId) cancelAnimationFrame(state.frameId);
+      if (state.fillFrameId) cancelAnimationFrame(state.fillFrameId);
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('resize', resize);

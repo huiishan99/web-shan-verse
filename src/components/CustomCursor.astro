@@ -160,6 +160,17 @@
       particle.remove();
     }, duration * 1000);
   }
+
+  function createClickBurst(x: number, y: number) {
+    for (let i = 0; i < 12; i++) {
+      window.setTimeout(() => {
+        createParticle(
+          x + (Math.random() - 0.5) * 18,
+          y + (Math.random() - 0.5) * 18
+        );
+      }, i * 12);
+    }
+  }
   
   function handleMouseMove(e: MouseEvent) {
     const now = Date.now();
@@ -180,7 +191,15 @@
       lastTime = now;
     }
   }
+
+  function handleClick(e: MouseEvent) {
+    const target = e.target instanceof Element ? e.target.closest('a, button, [role="button"]') : null;
+    if (!target) return;
+
+    createClickBurst(e.clientX, e.clientY);
+  }
   
   document.addEventListener('mousemove', handleMouseMove);
+  document.addEventListener('click', handleClick);
   }
 </script>
