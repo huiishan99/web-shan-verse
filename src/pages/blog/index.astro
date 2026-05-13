@@ -109,17 +109,27 @@ function formatDate(date: Date) {
 </BaseLayout>
 
 <script>
+  import { navigate } from 'astro:transitions/client';
+
   // 让整个卡片可点击，但标签链接可以独立点击
-  document.querySelectorAll('.post-card[data-href]').forEach(card => {
-    card.addEventListener('click', (e) => {
-      const target = e.target as HTMLElement;
+  function setupPostCards() {
+    document.querySelectorAll<HTMLElement>('.post-card[data-href]').forEach((card) => {
+      if (card.dataset.clickReady === 'true') return;
+      card.dataset.clickReady = 'true';
+
+      card.addEventListener('click', (event) => {
+        const target = event.target;
       // 如果点击的是链接，让链接自己处理
-      if (target.tagName === 'A') return;
+        if (target instanceof Element && target.closest('a')) return;
       // 否则跳转到文章
-      const href = card.getAttribute('data-href');
-      if (href) window.location.href = href;
+        const href = card.getAttribute('data-href');
+        if (href) navigate(href);
+      });
     });
-  });
+  }
+
+  setupPostCards();
+  document.addEventListener('astro:page-load', setupPostCards);
 </script>
 
 <style>
