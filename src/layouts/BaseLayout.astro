@@ -89,6 +89,31 @@ const {
 </body>
 </html>
 
+<script>
+  import { navigate } from 'astro:transitions/client';
+
+  const globalWindow = window as typeof window & { __shanDelegatedNavigationReady?: boolean };
+
+  if (!globalWindow.__shanDelegatedNavigationReady) {
+    globalWindow.__shanDelegatedNavigationReady = true;
+
+    document.addEventListener('click', (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+
+      const card = target.closest<HTMLElement>('[data-href]');
+      if (!card) return;
+      if (target.closest('a, button, input, select, textarea, label')) return;
+
+      const href = card.dataset.href;
+      if (!href) return;
+
+      event.preventDefault();
+      navigate(href);
+    });
+  }
+</script>
+
 <style is:global>
   @import '../styles/global.css';
 </style>
