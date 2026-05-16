@@ -28,7 +28,9 @@ const monthIndex: Record<string, number> = {
 
 type ActivitySignal = {
   date: Date;
+  datetime: string;
   displayDate: string;
+  dateSource: 'blog date' | 'timeline month';
   href: string;
   title: string;
   type: 'post' | 'milestone';
@@ -36,21 +38,29 @@ type ActivitySignal = {
 
 const postSignals: ActivitySignal[] = allPosts.map((post) => ({
   date: post.data.date,
+  datetime: toDateKey(post.data.date),
   displayDate: formatActivityDate(post.data.date),
+  dateSource: 'blog date',
   href: `/blog/${post.id}`,
   title: post.data.title,
   type: 'post',
 }));
 
 const timelineSignals: ActivitySignal[] = timelineData.flatMap((yearData) =>
-  yearData.events.map((event) => ({
-    // Timeline entries are month-level, so place them at mid-month for the grid.
-    date: new Date(Date.UTC(yearData.year, monthIndex[event.month] ?? 0, 15)),
-    displayDate: `${event.month} ${yearData.year}`,
-    href: '/timeline',
-    title: event.title,
-    type: 'milestone' as const,
-  }))
+  yearData.events.map((event) => {
+    const eventMonthIndex = monthIndex[event.month] ?? 0;
+
+    return {
+      // Timeline entries are month-level, so place them at mid-month for the grid.
+      date: new Date(Date.UTC(yearData.year, eventMonthIndex, 15)),
+      datetime: `${yearData.year}-${String(eventMonthIndex + 1).padStart(2, '0')}`,
+      displayDate: `${event.month} ${yearData.year}`,
+      dateSource: 'timeline month' as const,
+      href: '/timeline',
+      title: event.title,
+      type: 'milestone' as const,
+    };
+  })
 );
 
 const activitySignals = [...postSignals, ...timelineSignals];
@@ -78,9 +88,18 @@ function formatActivityDate(date: Date): string {
   });
 }
 
+function formatActivityMonthYear(date: Date): string {
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+}
+
 const today = startOfDay(new Date());
 const gridEnd = addDays(today, 6 - today.getUTCDay());
 const gridStart = addDays(gridEnd, -(52 * 7 - 1));
+const activityRangeLabel = `${formatActivityMonthYear(gridStart)} - ${formatActivityMonthYear(gridEnd)}`;
 
 const signalsByDay = activitySignals.reduce<Record<string, ActivitySignal[]>>((acc, signal) => {
   const key = toDateKey(startOfDay(signal.date));
@@ -112,6 +131,13 @@ const activityMonthLabels = activityWeeks.map((week, weekIndex) => {
     : '';
 });
 
+const activityYearLabels = activityWeeks.map((week, weekIndex) => {
+  const firstOfYear = week.find((day) => day.date.getUTCMonth() === 0 && day.date.getUTCDate() === 1);
+  const labelDate = firstOfYear?.date || (weekIndex === 0 ? week[0].date : null);
+
+  return labelDate ? String(labelDate.getUTCFullYear()) : '';
+});
+
 const visibleSignals = activitySignals
   .filter((signal) => {
     const signalDate = startOfDay(signal.date);
@@ -121,7 +147,7 @@ const visibleSignals = activitySignals
 
 const activeDays = new Set(visibleSignals.map((signal) => toDateKey(startOfDay(signal.date)))).size;
 const totalSignals = visibleSignals.length;
-const activityLabel = `Activity constellation: ${totalSignals} signals across ${activeDays} active days.`;
+const activityLabel = `Signal map for ${activityRangeLabel}: ${totalSignals} signals across ${activeDays} active days. Blog dates are exact; milestones use timeline months.`;
 const recentSignals = visibleSignals.slice(0, 6);
 const postSignalCount = visibleSignals.filter((signal) => signal.type === 'post').length;
 const milestoneSignalCount = visibleSignals.filter((signal) => signal.type === 'milestone').length;
@@ -198,7 +224,8 @@ function getExcerpt(body: string, maxLength: number = 100): string {
       <div class="activity-header">
         <div>
           <p class="section-kicker">Activity Constellation</p>
-          <h2>Recent Signals</h2>
+          <h2>Signal Map</h2>
+          <p class="activity-range">{activityRangeLabel}</p>
         </div>
         <div class="activity-stats">
           <span>{postSignalCount} posts</span>
@@ -209,39 +236,57 @@ function getExcerpt(body: string, maxLength: number = 100): string {
 
       <div class="activity-panel">
         <div class="activity-chart">
-          <div class="activity-months" aria-hidden="true">
-            {activityMonthLabels.map((month) => (
-              <span>{month}</span>
-            ))}
-          </div>
+          <div class="activity-map">
+            <div class="activity-years" aria-hidden="true">
+              {activityYearLabels.map((year) => (
+                <span>{year}</span>
+              ))}
+            </div>
 
-          <div class="activity-grid" role="img" aria-label={activityLabel}>
-            {activityWeeks.map((week) => (
-              <div class="activity-week">
-                {week.map((day) => {
-                  const titles = day.signals.map((signal) => signal.title).join(' / ');
-                  const signalTypes = new Set(day.signals.map((signal) => signal.type));
-                  const typeClass = signalTypes.size > 1
-                    ? 'mixed'
-                    : signalTypes.has('post')
-                      ? 'post'
-                      : signalTypes.has('milestone')
-                        ? 'milestone'
-                        : 'quiet';
-                  const label = day.signals.length > 0
-                    ? `${formatActivityDate(day.date)}: ${titles}`
-                    : `${formatActivityDate(day.date)}: no signal`;
+            <div class="activity-months" aria-hidden="true">
+              {activityMonthLabels.map((month) => (
+                <span>{month}</span>
+              ))}
+            </div>
 
-                  return (
-                    <span
-                      class={`activity-dot activity-dot--${day.intensity} activity-dot--${typeClass}`}
-                      title={label}
-                      aria-label={label}
-                    />
-                  );
-                })}
+            <div class="activity-calendar">
+              <div class="activity-weekdays" aria-hidden="true">
+                {['', 'Mon', '', 'Wed', '', 'Fri', ''].map((day) => (
+                  <span>{day}</span>
+                ))}
               </div>
-            ))}
+
+              <div class="activity-grid" role="img" aria-label={activityLabel}>
+                {activityWeeks.map((week) => (
+                  <div class="activity-week">
+                    {week.map((day) => {
+                      const titles = day.signals
+                        .map((signal) => `${signal.displayDate} (${signal.dateSource}): ${signal.title}`)
+                        .join(' / ');
+                      const signalTypes = new Set(day.signals.map((signal) => signal.type));
+                      const typeClass = signalTypes.size > 1
+                        ? 'mixed'
+                        : signalTypes.has('post')
+                          ? 'post'
+                          : signalTypes.has('milestone')
+                            ? 'milestone'
+                            : 'quiet';
+                      const label = day.signals.length > 0
+                        ? titles
+                        : `${formatActivityDate(day.date)}: no signal`;
+
+                      return (
+                        <span
+                          class={`activity-dot activity-dot--${day.intensity} activity-dot--${typeClass}`}
+                          title={label}
+                          aria-label={label}
+                        />
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           <div class="activity-legend" aria-label="Activity signal types">
@@ -249,6 +294,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
             <span><i class="activity-dot activity-dot--1 activity-dot--milestone"></i> Milestone</span>
             <span><i class="activity-dot activity-dot--2 activity-dot--mixed"></i> Mixed</span>
           </div>
+          <p class="activity-source">Blog dates are exact; milestones use timeline months.</p>
         </div>
 
         <aside class="activity-log" aria-label="Recent activity signals">
@@ -261,7 +307,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
                     {signal.type === 'post' ? 'Blog' : 'Milestone'}
                   </span>
                   <span class="activity-log-main">
-                    <time datetime={signal.date.toISOString()}>{signal.displayDate}</time>
+                    <time datetime={signal.datetime}>{signal.displayDate}</time>
                     <strong>{signal.title}</strong>
                   </span>
                 </a>
@@ -508,6 +554,13 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     margin-bottom: 0;
   }
 
+  .activity-range {
+    margin: 0.35rem 0 0;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+  }
+
   .activity-stats {
     display: flex;
     gap: var(--space-md);
@@ -519,8 +572,8 @@ function getExcerpt(body: string, maxLength: number = 100): string {
 
   .activity-panel {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
-    gap: var(--space-lg);
+    grid-template-columns: minmax(0, 1.45fr) minmax(240px, 300px);
+    gap: var(--space-md);
     align-items: start;
     padding: var(--space-lg);
     background:
@@ -531,49 +584,85 @@ function getExcerpt(body: string, maxLength: number = 100): string {
   }
 
   .activity-chart {
+    --activity-cell: 9px;
+    --activity-gap: 3px;
     min-width: 0;
     max-width: 100%;
     overflow-x: auto;
     padding-bottom: var(--space-xs);
   }
 
+  .activity-map {
+    width: max-content;
+  }
+
+  .activity-years,
   .activity-months {
     display: grid;
-    grid-template-columns: repeat(52, 8px);
-    gap: 3px;
-    margin-bottom: 0.45rem;
+    grid-template-columns: repeat(52, var(--activity-cell));
+    gap: var(--activity-gap);
     width: max-content;
+    padding-left: 1.9rem;
     color: var(--color-text-muted);
     font-family: var(--font-mono);
-    font-size: 0.68rem;
     line-height: 1;
+  }
+
+  .activity-years {
+    margin-bottom: 0.3rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+
+  .activity-months {
+    margin-bottom: 0.5rem;
+    color: var(--color-text-muted);
+    font-size: 0.68rem;
   }
 
   .activity-months span {
     min-height: 0.7rem;
   }
 
+  .activity-calendar {
+    display: grid;
+    grid-template-columns: 1.45rem max-content;
+    gap: 0.45rem;
+    align-items: start;
+  }
+
+  .activity-weekdays {
+    display: grid;
+    grid-template-rows: repeat(7, var(--activity-cell));
+    gap: var(--activity-gap);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    line-height: var(--activity-cell);
+  }
+
   .activity-grid {
     display: grid;
-    grid-template-columns: repeat(52, 8px);
-    gap: 3px;
+    grid-template-columns: repeat(52, var(--activity-cell));
+    gap: var(--activity-gap);
     width: max-content;
-    padding: 0 0 var(--space-sm);
+    padding: 0 0 var(--space-xs);
   }
 
   .activity-week {
     display: grid;
-    grid-template-rows: repeat(7, 1fr);
-    gap: 3px;
+    grid-template-rows: repeat(7, var(--activity-cell));
+    gap: var(--activity-gap);
   }
 
   .activity-dot {
     display: block;
-    width: 8px;
-    height: 8px;
+    width: var(--activity-cell, 9px);
+    height: var(--activity-cell, 9px);
+    box-sizing: border-box;
     border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.045);
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.035);
     transition:
       background 0.2s ease,
       border-color 0.2s ease,
@@ -602,12 +691,11 @@ function getExcerpt(body: string, maxLength: number = 100): string {
   .activity-dot--2,
   .activity-dot--3,
   .activity-dot--4 {
-    width: 9px;
-    height: 9px;
+    border-color: rgba(245, 245, 245, 0.28);
   }
 
   .activity-dot:hover {
-    transform: scale(1.7);
+    transform: scale(1.35);
     border-color: var(--color-brass-light);
   }
 
@@ -626,6 +714,13 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     display: inline-flex;
     align-items: center;
     gap: 6px;
+  }
+
+  .activity-source {
+    margin: 0.55rem 0 0;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
   }
 
   .activity-log {
@@ -853,6 +948,25 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     .activity-stats {
       gap: var(--space-sm);
       font-size: 0.72rem;
+    }
+
+    .activity-chart {
+      --activity-cell: 8px;
+      --activity-gap: 3px;
+    }
+
+    .activity-years,
+    .activity-months {
+      padding-left: 1.85rem;
+    }
+
+    .activity-calendar {
+      grid-template-columns: 1.4rem max-content;
+      gap: 0.45rem;
+    }
+
+    .activity-weekdays {
+      font-size: 0.58rem;
     }
 
     .activity-panel {
