@@ -335,8 +335,8 @@ function getExcerpt(body: string, maxLength: number = 100): string {
             <p class="github-activity-note">Live chart from GitHub contribution data.</p>
             <div class="repository-weather" data-repository-weather aria-live="polite">
               <div class="repository-weather-meter" aria-hidden="true">
-                {Array.from({ length: 12 }).map(() => (
-                  <span></span>
+                {Array.from({ length: 14 }).map(() => (
+                  <span class="repository-weather-segment"></span>
                 ))}
               </div>
               <div class="repository-weather-copy">
@@ -551,51 +551,65 @@ function getExcerpt(body: string, maxLength: number = 100): string {
       root.replaceChildren(years, months, body);
     }
 
-    function contributionCountSince(contributions, days) {
+    function recentContributionDays(contributions, days) {
       const today = new Date();
       const end = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
       const start = addDays(end, -(days - 1));
+      const contributionByDate = new Map(
+        contributions.map((item) => [item.date, item])
+      );
+      const recentDays = [];
 
-      return contributions.reduce((total, contribution) => {
-        const date = parseUTCDate(contribution.date);
-        if (date < start || date > end) return total;
-        return total + (Number(contribution.count) || 0);
-      }, 0);
+      for (let date = start; date <= end; date = addDays(date, 1)) {
+        const key = toDateKey(date);
+        const contribution = contributionByDate.get(key);
+        recentDays.push({
+          date: new Date(date),
+          key,
+          count: Number(contribution?.count) || 0,
+        });
+      }
+
+      return recentDays;
     }
 
-    function getWeatherTone(fortnightCount) {
-      if (fortnightCount === 0) {
+    function getWeatherTone(fortnightCount, activeDays, trend) {
+      if (fortnightCount === 0 || activeDays === 0) {
         return {
           tone: 'quiet',
           title: 'Quiet Sky',
           description: 'Public repository signals are calm this fortnight.',
-          segments: 2,
         };
       }
 
-      if (fortnightCount < 6) {
+      if (activeDays <= 3) {
         return {
           tone: 'light',
-          title: 'Light Signal',
-          description: 'A few public sparks passed through the observatory.',
-          segments: 4,
+          title: 'Scattered Sparks',
+          description: 'A few public GitHub signals appeared across recent days.',
         };
       }
 
-      if (fortnightCount < 18) {
+      if (trend === 'rising') {
+        return {
+          tone: 'bright',
+          title: 'Rising Signal',
+          description: 'Recent public contribution signals are climbing.',
+        };
+      }
+
+      if (fortnightCount < 18 || trend === 'steady') {
         return {
           tone: 'steady',
           title: 'Steady Signal',
           description: 'Public GitHub activity is moving at a steady pace.',
-          segments: 7,
         };
       }
 
       return {
         tone: 'bright',
         title: 'Bright Passage',
-        description: 'Public contribution signals are bright across recent days.',
-        segments: 10,
+        description: 'Public contribution signals are bright, with visible daily variation.',
       };
     }
 
@@ -603,20 +617,41 @@ function getExcerpt(body: string, maxLength: number = 100): string {
       const weather = activity.querySelector('[data-repository-weather]');
       if (!weather) return;
 
-      const fortnightCount = contributionCountSince(contributions, 14);
-      const monthCount = contributionCountSince(contributions, 30);
-      const tone = getWeatherTone(fortnightCount);
+      const recent14 = recentContributionDays(contributions, 14);
+      const recent30 = recentContributionDays(contributions, 30);
+      const fortnightCount = recent14.reduce((total, day) => total + day.count, 0);
+      const monthCount = recent30.reduce((total, day) => total + day.count, 0);
+      const activeDays = recent14.filter((day) => day.count > 0).length;
+      const firstWeekCount = recent14.slice(0, 7).reduce((total, day) => total + day.count, 0);
+      const secondWeekCount = recent14.slice(7).reduce((total, day) => total + day.count, 0);
+      const trend = secondWeekCount > firstWeekCount * 1.18
+        ? 'rising'
+        : secondWeekCount < firstWeekCount * 0.72
+          ? 'cooling'
+          : 'steady';
+      const peakDay = recent14.reduce((peak, day) => day.count > peak.count ? day : peak, recent14[0]);
+      const maxCount = Math.max(...recent14.map((day) => day.count), 1);
+      const tone = getWeatherTone(fortnightCount, activeDays, trend);
       const meter = weather.querySelector('.repository-weather-meter');
 
       weather.dataset.tone = tone.tone;
       weather.querySelector('.repository-weather-title').textContent = tone.title;
-      weather.querySelector('.repository-weather-description').textContent = tone.description;
+      weather.querySelector('.repository-weather-description').textContent =
+        `${tone.description} Peak ${peakDay.count} on ${dateFormatter.format(peakDay.date)}.`;
       weather.querySelector('.repository-weather-count').textContent = `${fortnightCount} / 14d`;
-      weather.title = `${monthCount} public GitHub contributions in the last 30 days.`;
+      weather.title = `${monthCount} public GitHub contributions in the last 30 days. Trend: ${trend}.`;
 
       if (meter) {
-        [...meter.children].forEach((segment, index) => {
-          segment.classList.toggle('is-lit', index < tone.segments);
+        meter.replaceChildren();
+        recent14.forEach((day) => {
+          const segment = document.createElement('span');
+          segment.className = 'repository-weather-segment';
+          const level = day.count === 0
+            ? 0
+            : Math.max(1, Math.min(4, Math.ceil((day.count / maxCount) * 4)));
+          segment.dataset.level = String(level);
+          segment.title = `${dateFormatter.format(day.date)}: ${day.count} public contribution${day.count === 1 ? '' : 's'}`;
+          meter.append(segment);
         });
       }
     }
@@ -1217,25 +1252,57 @@ function getExcerpt(body: string, maxLength: number = 100): string {
 
   .repository-weather-meter {
     display: grid;
-    grid-template-columns: repeat(6, 5px);
-    grid-auto-rows: 5px;
+    grid-template-columns: repeat(14, 5px);
     gap: 3px;
     width: max-content;
   }
 
-  .repository-weather-meter span {
+  .repository-weather-meter :global(.repository-weather-segment) {
     display: block;
     width: 5px;
-    height: 5px;
+    height: 18px;
     border-radius: 2px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.045);
+    transform-origin: bottom;
   }
 
-  .repository-weather-meter span.is-lit {
+  .repository-weather-meter :global(.repository-weather-segment[data-level="1"]),
+  .repository-weather-meter :global(.repository-weather-segment[data-level="2"]),
+  .repository-weather-meter :global(.repository-weather-segment[data-level="3"]),
+  .repository-weather-meter :global(.repository-weather-segment[data-level="4"]) {
     background: var(--weather-color);
     border-color: rgba(245, 225, 162, 0.24);
     box-shadow: 0 0 8px var(--weather-glow);
+  }
+
+  .repository-weather-meter :global(.repository-weather-segment[data-level="0"]) {
+    height: 6px;
+    align-self: end;
+  }
+
+  .repository-weather-meter :global(.repository-weather-segment[data-level="1"]) {
+    height: 8px;
+    align-self: end;
+    opacity: 0.42;
+  }
+
+  .repository-weather-meter :global(.repository-weather-segment[data-level="2"]) {
+    height: 11px;
+    align-self: end;
+    opacity: 0.58;
+  }
+
+  .repository-weather-meter :global(.repository-weather-segment[data-level="3"]) {
+    height: 15px;
+    align-self: end;
+    opacity: 0.78;
+  }
+
+  .repository-weather-meter :global(.repository-weather-segment[data-level="4"]) {
+    height: 18px;
+    align-self: end;
+    opacity: 0.96;
   }
 
   .repository-weather[data-tone="quiet"] {
