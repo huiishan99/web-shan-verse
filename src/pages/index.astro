@@ -221,15 +221,20 @@ function getExcerpt(body: string, maxLength: number = 100): string {
         </div>
 
         <div class="observatory-companion" aria-label="Observatory companion">
-          <div class="companion-orbit" aria-hidden="true">
-            <span class="companion-star companion-star--one"></span>
-            <span class="companion-star companion-star--two"></span>
-            <div class="companion-device">
-              <span class="companion-lens"></span>
-              <span class="companion-ring"></span>
-              <span class="companion-needle"></span>
-            </div>
-            <span class="companion-base"></span>
+          <div class="companion-avatar" aria-hidden="true">
+            <span class="companion-backlight"></span>
+            <span class="companion-hat companion-hat--crown"></span>
+            <span class="companion-hat companion-hat--brim"></span>
+            <span class="companion-face">
+              <span class="companion-eye companion-eye--left"></span>
+              <span class="companion-eye companion-eye--right"></span>
+              <span class="companion-mouth"></span>
+            </span>
+            <span class="companion-collar companion-collar--left"></span>
+            <span class="companion-collar companion-collar--right"></span>
+            <span class="companion-coat"></span>
+            <span class="companion-spark companion-spark--one"></span>
+            <span class="companion-spark companion-spark--two"></span>
           </div>
           <div class="companion-copy">
             <span>Observatory online</span>
@@ -776,103 +781,191 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     transform: translateX(40%);
   }
 
-  .companion-orbit {
+  .companion-avatar {
     position: relative;
-    width: 4.2rem;
-    height: 4.2rem;
-    display: grid;
-    place-items: center;
+    width: 4.35rem;
+    height: 4.55rem;
     isolation: isolate;
+    filter: drop-shadow(0 0 14px rgba(106, 171, 255, 0.12));
+    animation: companion-idle 5.6s ease-in-out infinite;
   }
 
-  .companion-orbit::before {
+  .companion-backlight {
+    position: absolute;
+    inset: 0.1rem 0.35rem 0.25rem;
+    border: 1px solid rgba(201, 162, 39, 0.18);
+    border-radius: 45% 45% 50% 50%;
+    background:
+      radial-gradient(circle at 66% 38%, rgba(106, 171, 255, 0.16), transparent 22%),
+      linear-gradient(180deg, rgba(201, 162, 39, 0.1), transparent 58%);
+    transform: skewX(-4deg);
+  }
+
+  .companion-hat {
+    position: absolute;
+    left: 50%;
+    z-index: 4;
+    transform: translateX(-50%) rotate(-4deg);
+  }
+
+  .companion-hat--crown {
+    top: 0.45rem;
+    width: 1.9rem;
+    height: 0.95rem;
+    border: 1px solid rgba(201, 162, 39, 0.42);
+    border-bottom: 0;
+    border-radius: 0.42rem 0.42rem 0.12rem 0.12rem;
+    background:
+      linear-gradient(90deg, rgba(106, 171, 255, 0.12), transparent 32%),
+      linear-gradient(180deg, #22202a, #0b0b11 76%);
+    box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.04);
+  }
+
+  .companion-hat--crown::after {
     content: '';
     position: absolute;
-    inset: 0.35rem;
-    border: 1px solid rgba(201, 162, 39, 0.26);
-    border-radius: 50%;
-    animation: companion-spin 12s linear infinite;
-  }
-
-  .companion-device {
-    position: relative;
-    width: 2.4rem;
-    height: 2.4rem;
-    border: 1px solid rgba(201, 162, 39, 0.54);
-    border-radius: 50%;
-    background:
-      radial-gradient(circle at 50% 50%, rgba(106, 171, 255, 0.18), transparent 34%),
-      rgba(10, 10, 15, 0.86);
-    box-shadow:
-      0 0 18px rgba(106, 171, 255, 0.12),
-      inset 0 0 18px rgba(201, 162, 39, 0.08);
-    animation: companion-breathe 4.8s ease-in-out infinite;
-  }
-
-  .companion-lens {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0.62rem;
-    height: 0.62rem;
-    border-radius: 50%;
-    background: rgba(160, 200, 255, 0.9);
-    box-shadow:
-      0 0 10px rgba(106, 171, 255, 0.8),
-      0 0 22px rgba(106, 171, 255, 0.32);
-    transform: translate(-50%, -50%);
-  }
-
-  .companion-ring {
-    position: absolute;
-    inset: 0.38rem;
-    border: 1px dashed rgba(201, 162, 39, 0.42);
-    border-radius: 50%;
-    animation: companion-spin 9s linear infinite reverse;
-  }
-
-  .companion-needle {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 1.8rem;
+    left: 0.22rem;
+    right: 0.22rem;
+    bottom: 0.18rem;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(201, 162, 39, 0.95));
-    transform-origin: left center;
-    animation: companion-scan 5.6s ease-in-out infinite;
+    background: rgba(201, 162, 39, 0.5);
   }
 
-  .companion-base {
-    position: absolute;
-    bottom: 0.24rem;
-    left: 50%;
-    width: 2.25rem;
-    height: 0.28rem;
+  .companion-hat--brim {
+    top: 1.16rem;
+    width: 3.35rem;
+    height: 0.36rem;
+    border: 1px solid rgba(201, 162, 39, 0.46);
     border-radius: 999px;
-    background: rgba(201, 162, 39, 0.22);
-    box-shadow: 0 0 12px rgba(201, 162, 39, 0.16);
+    background:
+      linear-gradient(90deg, transparent, rgba(201, 162, 39, 0.24), transparent),
+      #111119;
+    box-shadow:
+      0 0 10px rgba(201, 162, 39, 0.12),
+      0 0.22rem 0 rgba(0, 0, 0, 0.32);
+  }
+
+  .companion-face {
+    position: absolute;
+    top: 1.28rem;
+    left: 50%;
+    z-index: 3;
+    width: 1.78rem;
+    height: 1.62rem;
+    border: 1px solid rgba(245, 225, 162, 0.24);
+    border-radius: 44% 44% 46% 46%;
+    background:
+      radial-gradient(circle at 68% 38%, rgba(106, 171, 255, 0.2), transparent 19%),
+      linear-gradient(180deg, #c7c0aa, #6b665f 82%);
+    box-shadow:
+      inset 0 -0.42rem 0 rgba(20, 18, 21, 0.32),
+      0 0 14px rgba(201, 162, 39, 0.1);
     transform: translateX(-50%);
   }
 
-  .companion-star {
+  .companion-face::before {
+    content: '';
     position: absolute;
-    width: 0.24rem;
-    height: 0.24rem;
+    inset: 0.2rem 0.18rem auto;
+    height: 0.22rem;
+    border-radius: 999px;
+    background: rgba(17, 17, 22, 0.62);
+    filter: blur(0.5px);
+  }
+
+  .companion-eye {
+    position: absolute;
+    top: 0.66rem;
+    height: 2px;
+    border-radius: 999px;
+    background: #211c18;
+  }
+
+  .companion-eye--left {
+    left: 0.4rem;
+    width: 0.34rem;
+    animation: companion-blink 6.8s ease-in-out infinite;
+  }
+
+  .companion-eye--right {
+    right: 0.36rem;
+    width: 0.42rem;
+    background: rgba(142, 198, 255, 0.92);
+    box-shadow:
+      0 0 7px rgba(106, 171, 255, 0.75),
+      0 0 16px rgba(106, 171, 255, 0.3);
+    animation: companion-eye-glow 3.2s ease-in-out infinite;
+  }
+
+  .companion-mouth {
+    position: absolute;
+    left: 50%;
+    bottom: 0.45rem;
+    width: 0.46rem;
+    height: 1px;
+    border-radius: 999px;
+    background: rgba(33, 28, 24, 0.62);
+    transform: translateX(-50%);
+  }
+
+  .companion-collar {
+    position: absolute;
+    top: 2.74rem;
+    z-index: 3;
+    width: 0.9rem;
+    height: 0.75rem;
+    border: 1px solid rgba(201, 162, 39, 0.28);
+    background: #15141b;
+  }
+
+  .companion-collar--left {
+    left: 1.28rem;
+    border-radius: 0.08rem 0.08rem 0.34rem 0.08rem;
+    transform: skewY(20deg) rotate(10deg);
+  }
+
+  .companion-collar--right {
+    right: 1.28rem;
+    border-radius: 0.08rem 0.08rem 0.08rem 0.34rem;
+    transform: skewY(-20deg) rotate(-10deg);
+  }
+
+  .companion-coat {
+    position: absolute;
+    left: 50%;
+    bottom: 0.26rem;
+    z-index: 2;
+    width: 2.6rem;
+    height: 1.55rem;
+    border: 1px solid rgba(201, 162, 39, 0.34);
+    border-radius: 0.35rem 0.35rem 0.95rem 0.95rem;
+    background:
+      linear-gradient(90deg, transparent 47%, rgba(201, 162, 39, 0.28) 48%, rgba(201, 162, 39, 0.28) 52%, transparent 53%),
+      linear-gradient(180deg, #1a1922, #07070b);
+    box-shadow: inset 0 0 16px rgba(106, 171, 255, 0.06);
+    transform: translateX(-50%);
+  }
+
+  .companion-spark {
+    position: absolute;
+    z-index: 5;
+    width: 0.22rem;
+    height: 0.22rem;
     border-radius: 50%;
-    background: rgba(245, 225, 162, 0.8);
-    box-shadow: 0 0 10px rgba(201, 162, 39, 0.5);
+    background: rgba(245, 225, 162, 0.88);
+    box-shadow: 0 0 10px rgba(201, 162, 39, 0.55);
   }
 
-  .companion-star--one {
-    top: 0.45rem;
-    right: 0.55rem;
-    animation: companion-twinkle 2.6s ease-in-out infinite;
+  .companion-spark--one {
+    top: 0.72rem;
+    right: 0.42rem;
+    animation: companion-twinkle 2.8s ease-in-out infinite;
   }
 
-  .companion-star--two {
-    left: 0.62rem;
-    bottom: 1.05rem;
-    animation: companion-twinkle 3.4s ease-in-out infinite 0.7s;
+  .companion-spark--two {
+    left: 0.55rem;
+    bottom: 1.24rem;
+    animation: companion-twinkle 3.6s ease-in-out infinite 0.7s;
   }
 
   .companion-copy {
@@ -895,29 +988,33 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     font-size: 0.64rem;
   }
 
-  @keyframes companion-spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  @keyframes companion-breathe {
+  @keyframes companion-idle {
     0%, 100% {
-      transform: scale(1);
+      transform: translateY(0);
     }
 
     50% {
-      transform: scale(1.04);
+      transform: translateY(-0.1rem);
     }
   }
 
-  @keyframes companion-scan {
+  @keyframes companion-blink {
+    0%, 93%, 100% {
+      transform: scaleY(1);
+    }
+
+    95% {
+      transform: scaleY(0.15);
+    }
+  }
+
+  @keyframes companion-eye-glow {
     0%, 100% {
-      transform: rotate(-24deg);
+      opacity: 0.7;
     }
 
     50% {
-      transform: rotate(42deg);
+      opacity: 1;
     }
   }
 
