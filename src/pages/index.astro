@@ -220,7 +220,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
           </ul>
         </div>
 
-        <div class="observatory-companion" aria-label="Observatory companion">
+        <div class="observatory-companion" aria-label="Observatory pet">
           <div class="companion-pet" aria-hidden="true">
             <svg class="companion-sprite" viewBox="0 0 80 80" focusable="false" shape-rendering="crispEdges">
               <g class="sprite-aura">
@@ -253,10 +253,6 @@ function getExcerpt(body: string, maxLength: number = 100): string {
                 <rect class="sprite-spark sprite-spark--two" x="12" y="24" width="4" height="4" fill="#8ec6ff" />
               </g>
             </svg>
-          </div>
-          <div class="companion-copy">
-            <span>Observatory online</span>
-            <small>Public signals calibrated</small>
           </div>
         </div>
       </aside>
@@ -772,31 +768,23 @@ function getExcerpt(body: string, maxLength: number = 100): string {
   .observatory-companion {
     position: relative;
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    align-items: center;
-    gap: var(--space-md);
-    padding: var(--space-md);
-    background:
-      radial-gradient(circle at 24% 24%, rgba(106, 171, 255, 0.08), transparent 34%),
-      rgba(13, 13, 18, 0.5);
-    border: 1px solid var(--color-border);
-    overflow: hidden;
+    place-items: center;
+    justify-self: center;
+    width: max-content;
+    padding: 0.25rem;
+    background: transparent;
+    border: 0;
+    overflow: visible;
   }
 
   .observatory-companion::before {
     content: '';
     position: absolute;
-    inset: 0;
-    background:
-      linear-gradient(90deg, transparent, rgba(201, 162, 39, 0.08), transparent);
-    opacity: 0;
-    transform: translateX(-40%);
-    transition: opacity 0.3s ease, transform 0.8s ease;
-  }
-
-  .observatory-companion:hover::before {
-    opacity: 1;
-    transform: translateX(40%);
+    inset: 0.55rem;
+    border-radius: 50%;
+    background: rgba(106, 171, 255, 0.08);
+    filter: blur(14px);
+    opacity: 0.75;
   }
 
   .companion-pet {
@@ -852,26 +840,6 @@ function getExcerpt(body: string, maxLength: number = 100): string {
 
   .sprite-spark--two {
     animation-delay: 0.8s;
-  }
-
-  .companion-copy {
-    position: relative;
-    display: grid;
-    gap: 0.05rem;
-    min-width: 0;
-  }
-
-  .companion-copy span {
-    color: var(--color-text-secondary);
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    text-transform: uppercase;
-  }
-
-  .companion-copy small {
-    color: var(--color-text-muted);
-    font-family: var(--font-mono);
-    font-size: 0.64rem;
   }
 
   @keyframes companion-float {
