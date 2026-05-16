@@ -1,0 +1,96 @@
+---
+type ImageSize = 'small' | 'normal' | 'wide' | 'full';
+
+type Props = {
+  src: string;
+  alt: string;
+  caption?: string;
+  size?: ImageSize;
+  href?: string;
+};
+
+const { src, alt, caption, size = 'normal', href } = Astro.props;
+const className = `blog-media-image blog-media-image--${size}`;
+---
+
+<figure class={className}>
+  {
+    href ? (
+      <a class="blog-media-image__link" href={href}>
+        <img class="blog-media-image__img" src={src} alt={alt} loading="lazy" decoding="async" />
+      </a>
+    ) : (
+      <img class="blog-media-image__img" src={src} alt={alt} loading="lazy" decoding="async" />
+    )
+  }
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+  .blog-media-image {
+    margin: 2rem auto;
+    max-width: 720px;
+    text-align: center;
+  }
+
+  .blog-media-image__link {
+    display: block;
+  }
+
+  .blog-media-image__img {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0 auto;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.2);
+  }
+
+  figcaption {
+    margin-top: 0.65rem;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  .blog-media-image--small {
+    max-width: 520px;
+  }
+
+  .blog-media-image--wide {
+    width: calc(100% + 3rem);
+    max-width: calc(100% + 3rem);
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+  }
+
+  .blog-media-image--full {
+    width: calc(100% + 6rem);
+    max-width: calc(100% + 6rem);
+    margin-left: -3rem;
+    margin-right: -3rem;
+  }
+
+  @media (max-width: 768px) {
+    .blog-media-image,
+    .blog-media-image--small,
+    .blog-media-image--normal,
+    .blog-media-image--wide,
+    .blog-media-image--full {
+      width: calc(100% + 1rem);
+      max-width: calc(100% + 1rem);
+      margin: 1.5rem -0.5rem;
+    }
+
+    .blog-media-image__img {
+      border-radius: 0;
+    }
+
+    figcaption {
+      padding: 0 0.5rem;
+      font-size: 0.85rem;
+    }
+  }
+</style>

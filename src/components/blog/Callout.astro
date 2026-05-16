@@ -1,0 +1,64 @@
+---
+type CalloutType = 'note' | 'tip' | 'warning' | 'danger';
+
+type Props = {
+  type?: CalloutType;
+  title?: string;
+};
+
+const { type = 'note', title } = Astro.props;
+const labels: Record<CalloutType, string> = {
+  note: 'Note',
+  tip: 'Tip',
+  warning: 'Warning',
+  danger: 'Important',
+};
+---
+
+<aside class={`blog-callout blog-callout--${type}`}>
+  <strong>{title || labels[type]}</strong>
+  <div class="blog-callout__body">
+    <slot />
+  </div>
+</aside>
+
+<style>
+  .blog-callout {
+    --callout-color: var(--color-accent-gold);
+    margin: 1.75rem 0;
+    padding: 1rem 1.15rem;
+    border: 1px solid color-mix(in srgb, var(--callout-color), transparent 65%);
+    border-left: 4px solid var(--callout-color);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--callout-color), transparent 92%);
+  }
+
+  .blog-callout--tip {
+    --callout-color: #62c68f;
+  }
+
+  .blog-callout--warning {
+    --callout-color: #ffa03c;
+  }
+
+  .blog-callout--danger {
+    --callout-color: #ff6b6b;
+  }
+
+  strong {
+    display: block;
+    margin-bottom: 0.45rem;
+    color: var(--callout-color);
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+  }
+
+  .blog-callout__body {
+    color: var(--color-text-secondary);
+    line-height: 1.65;
+  }
+
+  .blog-callout__body :global(:last-child) {
+    margin-bottom: 0;
+  }
+</style>

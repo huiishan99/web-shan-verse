@@ -1,0 +1,81 @@
+---
+type Props = {
+  href: string;
+  title: string;
+  description?: string;
+  site?: string;
+  label?: string;
+  newTab?: boolean;
+};
+
+const { href, title, description, site, label = 'Open link', newTab } = Astro.props;
+const isExternal = /^https?:\/\//i.test(href);
+const openInNewTab = newTab ?? isExternal;
+
+function getHostname(value: string) {
+  try {
+    return new URL(value).hostname.replace(/^www\./, '');
+  } catch {
+    return value;
+  }
+}
+
+const source = site || (isExternal ? getHostname(href) : 'shan-verse.com');
+---
+
+<a class="blog-link-card" href={href} target={openInNewTab ? '_blank' : undefined} rel={openInNewTab ? 'noreferrer' : undefined}>
+  <span class="blog-link-card__source">{source}</span>
+  <strong>{title}</strong>
+  {description && <span class="blog-link-card__description">{description}</span>}
+  <span class="blog-link-card__label">{label}</span>
+</a>
+
+<style>
+  .blog-link-card {
+    display: grid;
+    gap: 0.45rem;
+    margin: 1.75rem 0;
+    padding: 1rem 1.15rem;
+    color: var(--color-text-primary);
+    text-decoration: none;
+    border: 1px solid var(--color-border);
+    border-left: 4px solid var(--color-accent-gold);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    transition:
+      border-color 0.2s ease,
+      background 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .blog-link-card:hover {
+    color: var(--color-text-primary);
+    background: rgba(201, 162, 39, 0.08);
+    border-color: rgba(201, 162, 39, 0.55);
+    transform: translateY(-1px);
+  }
+
+  .blog-link-card__source,
+  .blog-link-card__label {
+    color: var(--color-accent-gold);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+  }
+
+  strong {
+    color: var(--color-text-primary);
+    font-family: var(--font-display);
+    font-size: 1.08rem;
+    line-height: 1.35;
+  }
+
+  .blog-link-card__description {
+    color: var(--color-text-secondary);
+    line-height: 1.55;
+  }
+
+  .blog-link-card__label {
+    justify-self: start;
+    text-transform: uppercase;
+  }
+</style>
