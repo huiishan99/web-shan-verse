@@ -3,7 +3,7 @@ import { defineCollection, z } from 'astro:content';
 
 // Blog 文章的 schema
 const blogCollection = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/blog' }),
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/blog' }),
   schema: z.object({
     title: z.string(),
     date: z.date(),
