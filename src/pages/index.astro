@@ -795,7 +795,6 @@ function getExcerpt(body: string, maxLength: number = 100): string {
 
   .companion-sprite--lucy {
     background-image: url('/pets/lucy/spritesheet.webp');
-    animation: companion-lucy-idle 1.35s steps(7, end) infinite;
   }
 
   @keyframes companion-float {
@@ -805,16 +804,6 @@ function getExcerpt(body: string, maxLength: number = 100): string {
 
     50% {
       transform: translateY(-0.08rem);
-    }
-  }
-
-  @keyframes companion-lucy-idle {
-    from {
-      background-position: 0 0;
-    }
-
-    to {
-      background-position: 100% 0;
     }
   }
 
