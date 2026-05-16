@@ -221,20 +221,38 @@ function getExcerpt(body: string, maxLength: number = 100): string {
         </div>
 
         <div class="observatory-companion" aria-label="Observatory companion">
-          <div class="companion-avatar" aria-hidden="true">
-            <span class="companion-backlight"></span>
-            <span class="companion-hat companion-hat--crown"></span>
-            <span class="companion-hat companion-hat--brim"></span>
-            <span class="companion-face">
-              <span class="companion-eye companion-eye--left"></span>
-              <span class="companion-eye companion-eye--right"></span>
-              <span class="companion-mouth"></span>
-            </span>
-            <span class="companion-collar companion-collar--left"></span>
-            <span class="companion-collar companion-collar--right"></span>
-            <span class="companion-coat"></span>
-            <span class="companion-spark companion-spark--one"></span>
-            <span class="companion-spark companion-spark--two"></span>
+          <div class="companion-pet" aria-hidden="true">
+            <svg class="companion-sprite" viewBox="0 0 80 80" focusable="false" shape-rendering="crispEdges">
+              <g class="sprite-aura">
+                <rect x="20" y="18" width="40" height="44" fill="rgba(106, 171, 255, 0.08)" />
+                <rect x="24" y="14" width="32" height="8" fill="rgba(201, 162, 39, 0.1)" />
+              </g>
+              <g class="sprite-body">
+                <rect x="24" y="68" width="32" height="4" fill="rgba(0, 0, 0, 0.45)" />
+                <rect x="32" y="8" width="16" height="4" fill="#c9a227" />
+                <rect x="36" y="12" width="8" height="4" fill="#16151d" />
+                <rect x="24" y="16" width="32" height="4" fill="#07070b" />
+                <rect x="20" y="20" width="40" height="8" fill="#10131d" />
+                <rect x="16" y="28" width="48" height="12" fill="#171b28" />
+                <rect x="20" y="40" width="40" height="8" fill="#10131d" />
+                <rect x="24" y="48" width="32" height="16" fill="#090a10" />
+                <rect x="28" y="24" width="24" height="24" fill="#202638" />
+                <rect x="32" y="28" width="16" height="12" fill="#06080d" />
+                <rect class="sprite-visor" x="32" y="32" width="16" height="4" fill="#8ec6ff" />
+                <rect x="28" y="44" width="28" height="4" fill="#c9a227" />
+                <rect x="52" y="48" width="4" height="8" fill="#9f7d20" />
+                <rect x="12" y="44" width="8" height="12" fill="#0f121c" />
+                <rect x="60" y="44" width="8" height="12" fill="#0f121c" />
+                <rect x="16" y="56" width="8" height="4" fill="#c9a227" />
+                <rect x="56" y="56" width="8" height="4" fill="#8ec6ff" />
+                <rect x="28" y="64" width="8" height="4" fill="#1b2030" />
+                <rect x="44" y="64" width="8" height="4" fill="#1b2030" />
+              </g>
+              <g class="sprite-sparks">
+                <rect class="sprite-spark sprite-spark--one" x="64" y="18" width="4" height="4" fill="#f5e1a2" />
+                <rect class="sprite-spark sprite-spark--two" x="12" y="24" width="4" height="4" fill="#8ec6ff" />
+              </g>
+            </svg>
           </div>
           <div class="companion-copy">
             <span>Observatory online</span>
@@ -781,191 +799,59 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     transform: translateX(40%);
   }
 
-  .companion-avatar {
+  .companion-pet {
     position: relative;
     width: 4.35rem;
-    height: 4.55rem;
+    height: 4.35rem;
+    display: grid;
+    place-items: center;
     isolation: isolate;
-    filter: drop-shadow(0 0 14px rgba(106, 171, 255, 0.12));
-    animation: companion-idle 5.6s ease-in-out infinite;
+    image-rendering: pixelated;
+    filter:
+      drop-shadow(0 0 12px rgba(106, 171, 255, 0.12))
+      drop-shadow(0 0 10px rgba(201, 162, 39, 0.08));
+    animation: companion-float 5.2s ease-in-out infinite;
   }
 
-  .companion-backlight {
-    position: absolute;
-    inset: 0.1rem 0.35rem 0.25rem;
-    border: 1px solid rgba(201, 162, 39, 0.18);
-    border-radius: 45% 45% 50% 50%;
-    background:
-      radial-gradient(circle at 66% 38%, rgba(106, 171, 255, 0.16), transparent 22%),
-      linear-gradient(180deg, rgba(201, 162, 39, 0.1), transparent 58%);
-    transform: skewX(-4deg);
-  }
-
-  .companion-hat {
-    position: absolute;
-    left: 50%;
-    z-index: 4;
-    transform: translateX(-50%) rotate(-4deg);
-  }
-
-  .companion-hat--crown {
-    top: 0.45rem;
-    width: 1.9rem;
-    height: 0.95rem;
-    border: 1px solid rgba(201, 162, 39, 0.42);
-    border-bottom: 0;
-    border-radius: 0.42rem 0.42rem 0.12rem 0.12rem;
-    background:
-      linear-gradient(90deg, rgba(106, 171, 255, 0.12), transparent 32%),
-      linear-gradient(180deg, #22202a, #0b0b11 76%);
-    box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.04);
-  }
-
-  .companion-hat--crown::after {
+  .companion-pet::before {
     content: '';
     position: absolute;
-    left: 0.22rem;
-    right: 0.22rem;
-    bottom: 0.18rem;
-    height: 1px;
-    background: rgba(201, 162, 39, 0.5);
-  }
-
-  .companion-hat--brim {
-    top: 1.16rem;
-    width: 3.35rem;
-    height: 0.36rem;
-    border: 1px solid rgba(201, 162, 39, 0.46);
-    border-radius: 999px;
+    inset: 0.55rem;
     background:
-      linear-gradient(90deg, transparent, rgba(201, 162, 39, 0.24), transparent),
-      #111119;
-    box-shadow:
-      0 0 10px rgba(201, 162, 39, 0.12),
-      0 0.22rem 0 rgba(0, 0, 0, 0.32);
+      radial-gradient(circle at 50% 48%, rgba(106, 171, 255, 0.16), transparent 52%),
+      radial-gradient(circle at 50% 80%, rgba(201, 162, 39, 0.1), transparent 44%);
+    opacity: 0.9;
+    filter: blur(8px);
   }
 
-  .companion-face {
-    position: absolute;
-    top: 1.28rem;
-    left: 50%;
-    z-index: 3;
-    width: 1.78rem;
-    height: 1.62rem;
-    border: 1px solid rgba(245, 225, 162, 0.24);
-    border-radius: 44% 44% 46% 46%;
-    background:
-      radial-gradient(circle at 68% 38%, rgba(106, 171, 255, 0.2), transparent 19%),
-      linear-gradient(180deg, #c7c0aa, #6b665f 82%);
-    box-shadow:
-      inset 0 -0.42rem 0 rgba(20, 18, 21, 0.32),
-      0 0 14px rgba(201, 162, 39, 0.1);
-    transform: translateX(-50%);
+  .companion-sprite {
+    position: relative;
+    z-index: 1;
+    width: 4.35rem;
+    height: 4.35rem;
+    overflow: visible;
   }
 
-  .companion-face::before {
-    content: '';
-    position: absolute;
-    inset: 0.2rem 0.18rem auto;
-    height: 0.22rem;
-    border-radius: 999px;
-    background: rgba(17, 17, 22, 0.62);
-    filter: blur(0.5px);
+  .sprite-aura {
+    animation: companion-aura 4.6s steps(2, end) infinite;
   }
 
-  .companion-eye {
-    position: absolute;
-    top: 0.66rem;
-    height: 2px;
-    border-radius: 999px;
-    background: #211c18;
+  .sprite-body {
+    animation: companion-idle 1.8s steps(2, end) infinite;
   }
 
-  .companion-eye--left {
-    left: 0.4rem;
-    width: 0.34rem;
-    animation: companion-blink 6.8s ease-in-out infinite;
+  .sprite-visor {
+    filter: drop-shadow(0 0 5px rgba(142, 198, 255, 0.88));
+    animation: companion-visor 2.8s ease-in-out infinite;
   }
 
-  .companion-eye--right {
-    right: 0.36rem;
-    width: 0.42rem;
-    background: rgba(142, 198, 255, 0.92);
-    box-shadow:
-      0 0 7px rgba(106, 171, 255, 0.75),
-      0 0 16px rgba(106, 171, 255, 0.3);
-    animation: companion-eye-glow 3.2s ease-in-out infinite;
+  .sprite-spark {
+    transform-origin: center;
+    animation: companion-twinkle 2.8s steps(2, end) infinite;
   }
 
-  .companion-mouth {
-    position: absolute;
-    left: 50%;
-    bottom: 0.45rem;
-    width: 0.46rem;
-    height: 1px;
-    border-radius: 999px;
-    background: rgba(33, 28, 24, 0.62);
-    transform: translateX(-50%);
-  }
-
-  .companion-collar {
-    position: absolute;
-    top: 2.74rem;
-    z-index: 3;
-    width: 0.9rem;
-    height: 0.75rem;
-    border: 1px solid rgba(201, 162, 39, 0.28);
-    background: #15141b;
-  }
-
-  .companion-collar--left {
-    left: 1.28rem;
-    border-radius: 0.08rem 0.08rem 0.34rem 0.08rem;
-    transform: skewY(20deg) rotate(10deg);
-  }
-
-  .companion-collar--right {
-    right: 1.28rem;
-    border-radius: 0.08rem 0.08rem 0.08rem 0.34rem;
-    transform: skewY(-20deg) rotate(-10deg);
-  }
-
-  .companion-coat {
-    position: absolute;
-    left: 50%;
-    bottom: 0.26rem;
-    z-index: 2;
-    width: 2.6rem;
-    height: 1.55rem;
-    border: 1px solid rgba(201, 162, 39, 0.34);
-    border-radius: 0.35rem 0.35rem 0.95rem 0.95rem;
-    background:
-      linear-gradient(90deg, transparent 47%, rgba(201, 162, 39, 0.28) 48%, rgba(201, 162, 39, 0.28) 52%, transparent 53%),
-      linear-gradient(180deg, #1a1922, #07070b);
-    box-shadow: inset 0 0 16px rgba(106, 171, 255, 0.06);
-    transform: translateX(-50%);
-  }
-
-  .companion-spark {
-    position: absolute;
-    z-index: 5;
-    width: 0.22rem;
-    height: 0.22rem;
-    border-radius: 50%;
-    background: rgba(245, 225, 162, 0.88);
-    box-shadow: 0 0 10px rgba(201, 162, 39, 0.55);
-  }
-
-  .companion-spark--one {
-    top: 0.72rem;
-    right: 0.42rem;
-    animation: companion-twinkle 2.8s ease-in-out infinite;
-  }
-
-  .companion-spark--two {
-    left: 0.55rem;
-    bottom: 1.24rem;
-    animation: companion-twinkle 3.6s ease-in-out infinite 0.7s;
+  .sprite-spark--two {
+    animation-delay: 0.8s;
   }
 
   .companion-copy {
@@ -988,29 +874,39 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     font-size: 0.64rem;
   }
 
+  @keyframes companion-float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-0.08rem);
+    }
+  }
+
   @keyframes companion-idle {
     0%, 100% {
       transform: translateY(0);
     }
 
     50% {
-      transform: translateY(-0.1rem);
+      transform: translateY(2px);
     }
   }
 
-  @keyframes companion-blink {
-    0%, 93%, 100% {
-      transform: scaleY(1);
-    }
-
-    95% {
-      transform: scaleY(0.15);
-    }
-  }
-
-  @keyframes companion-eye-glow {
+  @keyframes companion-aura {
     0%, 100% {
-      opacity: 0.7;
+      opacity: 0.72;
+    }
+
+    50% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes companion-visor {
+    0%, 100% {
+      opacity: 0.72;
     }
 
     50% {
