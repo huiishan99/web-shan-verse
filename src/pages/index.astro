@@ -14,6 +14,7 @@ const latestPosts = allPosts
 type HomepagePetMood = 'idle' | 'waving' | 'failed';
 
 // Change this to 'waving' or 'failed' when you want the homepage pet to react.
+// The pet uses a stable frame from each row; full-row playback flashes on some Codex Pet atlases.
 const homepagePetMood: HomepagePetMood = 'idle';
 const homepagePetRows: Record<HomepagePetMood, number> = {
   idle: 0,
@@ -809,7 +810,6 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     background-size: 800% 900%;
     background-position: 0 var(--pet-row-offset);
     image-rendering: pixelated;
-    animation: companion-pet-action 1.4s steps(7, end) infinite;
   }
 
   .companion-sprite--yorha {
@@ -823,16 +823,6 @@ function getExcerpt(body: string, maxLength: number = 100): string {
 
     50% {
       transform: translateY(-0.08rem);
-    }
-  }
-
-  @keyframes companion-pet-action {
-    from {
-      background-position: 0 var(--pet-row-offset);
-    }
-
-    to {
-      background-position: 100% var(--pet-row-offset);
     }
   }
 
