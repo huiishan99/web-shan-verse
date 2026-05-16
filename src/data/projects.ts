@@ -5,6 +5,7 @@ export interface ProjectItem {
     title: string;
     description: string;
     tags?: string[];
+    status?: ProjectStatus;
     // 可选字段
     github?: string;        // GitHub 链接
     website?: string;       // 网站/演示链接
@@ -18,6 +19,15 @@ export interface ProjectCategory {
     icon: string;           // 图标名称: 'gamepad' | 'vr' | 'globe' | 'file' | 'gear'
     items: ProjectItem[];
 }
+
+export type ProjectStatus =
+    | "live"
+    | "prototype"
+    | "coursework"
+    | "practice"
+    | "publication"
+    | "private"
+    | "archive";
 
 export const projectCategories: ProjectCategory[] = [
     {
