@@ -11,6 +11,17 @@ const latestPosts = allPosts
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
   .slice(0, 3);
 
+type HomepagePetMood = 'idle' | 'waving' | 'failed';
+
+// Change this to 'waving' or 'failed' when you want the homepage pet to react.
+const homepagePetMood: HomepagePetMood = 'idle';
+const homepagePetRows: Record<HomepagePetMood, number> = {
+  idle: 0,
+  waving: 1,
+  failed: 8,
+};
+const homepagePetRowOffset = `${homepagePetRows[homepagePetMood] * 12.5}%`;
+
 const monthIndex: Record<string, number> = {
   January: 0,
   February: 1,
@@ -220,9 +231,14 @@ function getExcerpt(body: string, maxLength: number = 100): string {
           </ul>
         </div>
 
-        <div class="observatory-companion" aria-label="Observatory pet">
+        <div
+          class="observatory-companion"
+          aria-label={`YoRHa companion pet, ${homepagePetMood}`}
+          data-pet-mood={homepagePetMood}
+          style={`--pet-row-offset: ${homepagePetRowOffset};`}
+        >
           <div class="companion-pet" aria-hidden="true">
-            <span class="companion-sprite companion-sprite--lucy"></span>
+            <span class="companion-sprite companion-sprite--yorha"></span>
           </div>
         </div>
       </aside>
@@ -791,11 +807,13 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     height: 100%;
     background-repeat: no-repeat;
     background-size: 800% 900%;
+    background-position: 0 var(--pet-row-offset);
     image-rendering: pixelated;
+    animation: companion-pet-action 1.4s steps(7, end) infinite;
   }
 
-  .companion-sprite--lucy {
-    background-image: url('/pets/lucy/spritesheet.webp');
+  .companion-sprite--yorha {
+    background-image: url('/pets/yorha-sit-2b/spritesheet.webp');
   }
 
   @keyframes companion-float {
@@ -805,6 +823,16 @@ function getExcerpt(body: string, maxLength: number = 100): string {
 
     50% {
       transform: translateY(-0.08rem);
+    }
+  }
+
+  @keyframes companion-pet-action {
+    from {
+      background-position: 0 var(--pet-row-offset);
+    }
+
+    to {
+      background-position: 100% var(--pet-row-offset);
     }
   }
 
