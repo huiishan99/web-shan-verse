@@ -64,7 +64,7 @@ export const projectCategories: ProjectCategory[] = [
             {
                 title: "2D Platformer",
                 description: "Classic side-scrolling platformer with smooth controls and level progression.",
-                github: "https://github.com/huiishan99/unity-2d-platformer",
+                github: "",
                 tags: ["Unity", "C#", "2D", "Game Dev"]
             },
             {
@@ -216,13 +216,13 @@ export const projectCategories: ProjectCategory[] = [
             {
                 title: "PTA Practice",
                 description: "OJ project.",
-                github: "https://github.com/huiishan99/oj-pta",
+                github: "",
                 tags: ["C#"]
             },
             {
                 title: "Paiza Practice",
                 description: "OJ project.",
-                github: "https://github.com/huiishan99/oj-paiza",
+                github: "",
                 tags: ["C#"]
             },
             {
