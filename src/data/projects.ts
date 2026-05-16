@@ -19,60 +19,6 @@ export interface ProjectCategory {
     items: ProjectItem[];
 }
 
-export type ProjectPulseStatus = "active" | "research" | "paused" | "archived";
-
-export interface ProjectPulseItem {
-    title: string;
-    status: ProjectPulseStatus;
-    moment: string;
-    summary: string;
-    href: string;
-    tags: string[];
-}
-
-export const projectPulseItems: ProjectPulseItem[] = [
-    {
-        title: "SHAN-VERSE",
-        status: "active",
-        moment: "May 2026",
-        summary: "Portfolio and blog system currently being polished with MDX posts, project data, and live activity views.",
-        href: "/projects#web",
-        tags: ["Astro", "MDX", "TypeScript"]
-    },
-    {
-        title: "VR Math Bridge",
-        status: "research",
-        moment: "IEEE GEM 2025",
-        summary: "Published VR learning prototype connected to the master research codebase and embodied AI classroom work.",
-        href: "/projects#publications",
-        tags: ["VR", "AI", "Unity"]
-    },
-    {
-        title: "Vibe Security Experiment",
-        status: "research",
-        moment: "ISPEC 2025",
-        summary: "LLM code-security experiment comparing baseline prompts with security-oriented generation prompts.",
-        href: "/projects#publications",
-        tags: ["LLM", "Security", "Python"]
-    },
-    {
-        title: "Math-Note",
-        status: "paused",
-        moment: "Prototype",
-        summary: "AI canvas experiment with drawn-equation recognition and a React/FastAPI application split.",
-        href: "/projects#web",
-        tags: ["React", "FastAPI", "Gemini"]
-    },
-    {
-        title: "VR Car Scene Prototype",
-        status: "archived",
-        moment: "Internship",
-        summary: "ALPS ALPINE internship prototype kept as a VR HMI concept archive for Meta Quest testing.",
-        href: "/projects#vr",
-        tags: ["Unity", "VR", "Quest"]
-    }
-];
-
 export const projectCategories: ProjectCategory[] = [
     {
         id: "vr",
