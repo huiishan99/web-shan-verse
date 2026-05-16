@@ -151,6 +151,9 @@ const activityLabel = `Signal map for ${activityRangeLabel}: ${totalSignals} sig
 const recentSignals = visibleSignals.slice(0, 6);
 const postSignalCount = visibleSignals.filter((signal) => signal.type === 'post').length;
 const milestoneSignalCount = visibleSignals.filter((signal) => signal.type === 'milestone').length;
+const githubUsername = 'huiishan99';
+const githubProfileUrl = `https://github.com/${githubUsername}`;
+const githubContributionChartUrl = `https://ghchart.rshah.org/40C463/${githubUsername}`;
 
 // 提取文章第一段内容
 function getExcerpt(body: string, maxLength: number = 100): string {
@@ -295,6 +298,25 @@ function getExcerpt(body: string, maxLength: number = 100): string {
             <span><i class="activity-dot activity-dot--2 activity-dot--mixed"></i> Mixed</span>
           </div>
           <p class="activity-source">Blog dates are exact; milestones use timeline months.</p>
+
+          <div class="github-activity" aria-label="Live GitHub contribution chart">
+            <div class="github-activity-header">
+              <span><Icon name="github" size={14} /> GitHub Contributions</span>
+              <a href={githubProfileUrl} target="_blank" rel="noopener noreferrer">@{githubUsername}</a>
+            </div>
+            <a class="github-activity-frame" href={githubProfileUrl} target="_blank" rel="noopener noreferrer">
+              <img
+                src={githubContributionChartUrl}
+                alt={`${githubUsername}'s GitHub contribution calendar`}
+                width="663"
+                height="104"
+                loading="lazy"
+                decoding="async"
+                referrerpolicy="no-referrer"
+              />
+            </a>
+            <p class="github-activity-note">Live chart from GitHub contribution data.</p>
+          </div>
         </div>
 
         <aside class="activity-log" aria-label="Recent activity signals">
@@ -723,6 +745,62 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     font-size: 0.68rem;
   }
 
+  .github-activity {
+    margin-top: var(--space-md);
+    padding-top: var(--space-md);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .github-activity-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xs);
+    color: var(--color-text-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+  }
+
+  .github-activity-header span,
+  .github-activity-header a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .github-activity-header a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+  }
+
+  .github-activity-header a:hover {
+    color: var(--color-link-hover);
+  }
+
+  .github-activity-frame {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    padding: 0.35rem 0 0.15rem;
+  }
+
+  .github-activity-frame img {
+    display: block;
+    width: 100%;
+    min-width: 560px;
+    max-width: none;
+    min-height: 90px;
+    opacity: 0.92;
+  }
+
+  .github-activity-note {
+    margin: 0.35rem 0 0;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+  }
+
   .activity-log {
     min-width: 0;
     padding-left: var(--space-lg);
@@ -967,6 +1045,15 @@ function getExcerpt(body: string, maxLength: number = 100): string {
 
     .activity-weekdays {
       font-size: 0.58rem;
+    }
+
+    .github-activity-header {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .github-activity-frame img {
+      min-width: 520px;
     }
 
     .activity-panel {
