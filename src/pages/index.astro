@@ -333,6 +333,18 @@ function getExcerpt(body: string, maxLength: number = 100): string {
               />
             </a>
             <p class="github-activity-note">Live chart from GitHub contribution data.</p>
+            <div class="repository-weather" data-repository-weather aria-live="polite">
+              <div class="repository-weather-meter" aria-hidden="true">
+                {Array.from({ length: 12 }).map(() => (
+                  <span></span>
+                ))}
+              </div>
+              <div class="repository-weather-copy">
+                <span class="repository-weather-title">Observatory Weather</span>
+                <span class="repository-weather-description">Reading public GitHub signals...</span>
+              </div>
+              <span class="repository-weather-count">--</span>
+            </div>
           </div>
         </div>
 
@@ -539,6 +551,86 @@ function getExcerpt(body: string, maxLength: number = 100): string {
       root.replaceChildren(years, months, body);
     }
 
+    function contributionCountSince(contributions, days) {
+      const today = new Date();
+      const end = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
+      const start = addDays(end, -(days - 1));
+
+      return contributions.reduce((total, contribution) => {
+        const date = parseUTCDate(contribution.date);
+        if (date < start || date > end) return total;
+        return total + (Number(contribution.count) || 0);
+      }, 0);
+    }
+
+    function getWeatherTone(fortnightCount) {
+      if (fortnightCount === 0) {
+        return {
+          tone: 'quiet',
+          title: 'Quiet Sky',
+          description: 'Public repository signals are calm this fortnight.',
+          segments: 2,
+        };
+      }
+
+      if (fortnightCount < 6) {
+        return {
+          tone: 'light',
+          title: 'Light Signal',
+          description: 'A few public sparks passed through the observatory.',
+          segments: 4,
+        };
+      }
+
+      if (fortnightCount < 18) {
+        return {
+          tone: 'steady',
+          title: 'Steady Signal',
+          description: 'Public GitHub activity is moving at a steady pace.',
+          segments: 7,
+        };
+      }
+
+      return {
+        tone: 'bright',
+        title: 'Bright Passage',
+        description: 'Public contribution signals are bright across recent days.',
+        segments: 10,
+      };
+    }
+
+    function renderRepositoryWeather(activity, contributions) {
+      const weather = activity.querySelector('[data-repository-weather]');
+      if (!weather) return;
+
+      const fortnightCount = contributionCountSince(contributions, 14);
+      const monthCount = contributionCountSince(contributions, 30);
+      const tone = getWeatherTone(fortnightCount);
+      const meter = weather.querySelector('.repository-weather-meter');
+
+      weather.dataset.tone = tone.tone;
+      weather.querySelector('.repository-weather-title').textContent = tone.title;
+      weather.querySelector('.repository-weather-description').textContent = tone.description;
+      weather.querySelector('.repository-weather-count').textContent = `${fortnightCount} / 14d`;
+      weather.title = `${monthCount} public GitHub contributions in the last 30 days.`;
+
+      if (meter) {
+        [...meter.children].forEach((segment, index) => {
+          segment.classList.toggle('is-lit', index < tone.segments);
+        });
+      }
+    }
+
+    function renderRepositoryWeatherFallback(activity) {
+      const weather = activity.querySelector('[data-repository-weather]');
+      if (!weather) return;
+
+      weather.dataset.tone = 'quiet';
+      weather.querySelector('.repository-weather-title').textContent = 'Signal Offline';
+      weather.querySelector('.repository-weather-description').textContent = 'Public GitHub weather is temporarily unavailable.';
+      weather.querySelector('.repository-weather-count').textContent = '--';
+    }
+
     async function setupGithubCalendar(root) {
       if (root.dataset.ready === 'true') return;
       root.dataset.ready = 'true';
@@ -557,11 +649,13 @@ function getExcerpt(body: string, maxLength: number = 100): string {
 
         const weeks = buildWeeks(start, end, data.contributions);
         renderCalendar(root, weeks);
+        renderRepositoryWeather(activity, data.contributions);
         activity.classList.add('is-enhanced');
       } catch (error) {
         console.warn('GitHub contribution calendar fallback:', error);
         root.dataset.ready = 'false';
         activity.classList.remove('is-enhanced');
+        renderRepositoryWeatherFallback(activity);
       }
     }
 
@@ -1110,6 +1204,84 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     font-size: 0.65rem;
   }
 
+  .repository-weather {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-top: var(--space-sm);
+    padding: 0.8rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    color: var(--color-text-muted);
+  }
+
+  .repository-weather-meter {
+    display: grid;
+    grid-template-columns: repeat(6, 5px);
+    grid-auto-rows: 5px;
+    gap: 3px;
+    width: max-content;
+  }
+
+  .repository-weather-meter span {
+    display: block;
+    width: 5px;
+    height: 5px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.045);
+  }
+
+  .repository-weather-meter span.is-lit {
+    background: var(--weather-color);
+    border-color: rgba(245, 225, 162, 0.24);
+    box-shadow: 0 0 8px var(--weather-glow);
+  }
+
+  .repository-weather[data-tone="quiet"] {
+    --weather-color: rgba(136, 136, 136, 0.68);
+    --weather-glow: rgba(136, 136, 136, 0.18);
+  }
+
+  .repository-weather[data-tone="light"] {
+    --weather-color: rgba(184, 115, 51, 0.84);
+    --weather-glow: rgba(184, 115, 51, 0.22);
+  }
+
+  .repository-weather[data-tone="steady"] {
+    --weather-color: rgba(201, 162, 39, 0.88);
+    --weather-glow: rgba(201, 162, 39, 0.28);
+  }
+
+  .repository-weather[data-tone="bright"] {
+    --weather-color: rgba(212, 168, 75, 0.95);
+    --weather-glow: rgba(212, 168, 75, 0.34);
+  }
+
+  .repository-weather-copy {
+    display: grid;
+    gap: 0.1rem;
+    min-width: 0;
+  }
+
+  .repository-weather-title {
+    color: var(--color-text-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+  }
+
+  .repository-weather-description,
+  .repository-weather-count {
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+  }
+
+  .repository-weather-count {
+    white-space: nowrap;
+  }
+
   .activity-log {
     min-width: 0;
     padding-left: var(--space-lg);
@@ -1363,6 +1535,14 @@ function getExcerpt(body: string, maxLength: number = 100): string {
 
     .github-activity-frame img {
       min-width: 520px;
+    }
+
+    .repository-weather {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .repository-weather-count {
+      grid-column: 2;
     }
 
     .github-calendar {
