@@ -28,12 +28,16 @@ const monthIndex: Record<string, number> = {
 
 type ActivitySignal = {
   date: Date;
+  displayDate: string;
+  href: string;
   title: string;
   type: 'post' | 'milestone';
 };
 
 const postSignals: ActivitySignal[] = allPosts.map((post) => ({
   date: post.data.date,
+  displayDate: formatActivityDate(post.data.date),
+  href: `/blog/${post.id}`,
   title: post.data.title,
   type: 'post',
 }));
@@ -42,6 +46,8 @@ const timelineSignals: ActivitySignal[] = timelineData.flatMap((yearData) =>
   yearData.events.map((event) => ({
     // Timeline entries are month-level, so place them at mid-month for the grid.
     date: new Date(Date.UTC(yearData.year, monthIndex[event.month] ?? 0, 15)),
+    displayDate: `${event.month} ${yearData.year}`,
+    href: '/timeline',
     title: event.title,
     type: 'milestone' as const,
   }))
@@ -97,6 +103,15 @@ const activityWeeks = Array.from({ length: 52 }, (_, weekIndex) =>
   })
 );
 
+const activityMonthLabels = activityWeeks.map((week, weekIndex) => {
+  const firstOfMonth = week.find((day) => day.date.getUTCDate() === 1);
+  const labelDate = firstOfMonth?.date || (weekIndex === 0 ? week[0].date : null);
+
+  return labelDate
+    ? labelDate.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' })
+    : '';
+});
+
 const visibleSignals = activitySignals
   .filter((signal) => {
     const signalDate = startOfDay(signal.date);
@@ -106,8 +121,10 @@ const visibleSignals = activitySignals
 
 const activeDays = new Set(visibleSignals.map((signal) => toDateKey(startOfDay(signal.date)))).size;
 const totalSignals = visibleSignals.length;
-const latestSignal = visibleSignals[0];
 const activityLabel = `Activity constellation: ${totalSignals} signals across ${activeDays} active days.`;
+const recentSignals = visibleSignals.slice(0, 6);
+const postSignalCount = visibleSignals.filter((signal) => signal.type === 'post').length;
+const milestoneSignalCount = visibleSignals.filter((signal) => signal.type === 'milestone').length;
 
 // 提取文章第一段内容
 function getExcerpt(body: string, maxLength: number = 100): string {
@@ -184,48 +201,74 @@ function getExcerpt(body: string, maxLength: number = 100): string {
           <h2>Recent Signals</h2>
         </div>
         <div class="activity-stats">
+          <span>{postSignalCount} posts</span>
+          <span>{milestoneSignalCount} milestones</span>
           <span>{activeDays} active days</span>
-          <span>{totalSignals} signals</span>
         </div>
       </div>
 
       <div class="activity-panel">
-        <div class="activity-grid" role="img" aria-label={activityLabel}>
-          {activityWeeks.map((week) => (
-            <div class="activity-week">
-              {week.map((day) => {
-                const titles = day.signals.map((signal) => signal.title).join(' / ');
-                const label = day.signals.length > 0
-                  ? `${formatActivityDate(day.date)}: ${titles}`
-                  : `${formatActivityDate(day.date)}: no signal`;
+        <div class="activity-chart">
+          <div class="activity-months" aria-hidden="true">
+            {activityMonthLabels.map((month) => (
+              <span>{month}</span>
+            ))}
+          </div>
 
-                return (
-                  <span
-                    class={`activity-dot activity-dot--${day.intensity}`}
-                    title={label}
-                    aria-label={label}
-                  />
-                );
-              })}
-            </div>
-          ))}
-        </div>
+          <div class="activity-grid" role="img" aria-label={activityLabel}>
+            {activityWeeks.map((week) => (
+              <div class="activity-week">
+                {week.map((day) => {
+                  const titles = day.signals.map((signal) => signal.title).join(' / ');
+                  const signalTypes = new Set(day.signals.map((signal) => signal.type));
+                  const typeClass = signalTypes.size > 1
+                    ? 'mixed'
+                    : signalTypes.has('post')
+                      ? 'post'
+                      : signalTypes.has('milestone')
+                        ? 'milestone'
+                        : 'quiet';
+                  const label = day.signals.length > 0
+                    ? `${formatActivityDate(day.date)}: ${titles}`
+                    : `${formatActivityDate(day.date)}: no signal`;
 
-        <div class="activity-footer">
-          <p>
-            Latest signal:
-            <span>{latestSignal ? latestSignal.title : 'Quiet orbit'}</span>
-          </p>
-          <div class="activity-legend" aria-label="Activity intensity">
-            <span>Less</span>
-            <i class="activity-dot activity-dot--0"></i>
-            <i class="activity-dot activity-dot--1"></i>
-            <i class="activity-dot activity-dot--2"></i>
-            <i class="activity-dot activity-dot--3"></i>
-            <i class="activity-dot activity-dot--4"></i>
-            <span>More</span>
+                  return (
+                    <span
+                      class={`activity-dot activity-dot--${day.intensity} activity-dot--${typeClass}`}
+                      title={label}
+                      aria-label={label}
+                    />
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+
+          <div class="activity-legend" aria-label="Activity signal types">
+            <span><i class="activity-dot activity-dot--1 activity-dot--post"></i> Blog</span>
+            <span><i class="activity-dot activity-dot--1 activity-dot--milestone"></i> Milestone</span>
+            <span><i class="activity-dot activity-dot--2 activity-dot--mixed"></i> Mixed</span>
           </div>
         </div>
+
+        <aside class="activity-log" aria-label="Recent activity signals">
+          <p class="activity-log-title">Latest Signals</p>
+          <ol>
+            {recentSignals.map((signal) => (
+              <li>
+                <a href={signal.href}>
+                  <span class={`activity-type activity-type--${signal.type}`}>
+                    {signal.type === 'post' ? 'Blog' : 'Milestone'}
+                  </span>
+                  <span class="activity-log-main">
+                    <time datetime={signal.date.toISOString()}>{signal.displayDate}</time>
+                    <strong>{signal.title}</strong>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        </aside>
       </div>
     </section>
     
@@ -475,6 +518,9 @@ function getExcerpt(body: string, maxLength: number = 100): string {
   }
 
   .activity-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+    gap: var(--space-lg);
     padding: var(--space-lg);
     background:
       linear-gradient(135deg, rgba(201, 162, 39, 0.08), transparent 36%),
@@ -483,12 +529,33 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
   }
 
+  .activity-chart {
+    min-width: 0;
+  }
+
+  .activity-months {
+    display: grid;
+    grid-template-columns: repeat(52, 1fr);
+    gap: 4px;
+    margin-bottom: 0.45rem;
+    min-width: 680px;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    line-height: 1;
+  }
+
+  .activity-months span {
+    min-height: 0.7rem;
+  }
+
   .activity-grid {
     display: grid;
     grid-template-columns: repeat(52, 1fr);
     gap: 4px;
     overflow-x: auto;
-    padding: var(--space-xs) 0 var(--space-sm);
+    min-width: 680px;
+    padding: 0 0 var(--space-sm);
   }
 
   .activity-week {
@@ -511,26 +578,29 @@ function getExcerpt(body: string, maxLength: number = 100): string {
       transform 0.2s ease;
   }
 
-  .activity-dot--1 {
-    background: rgba(139, 105, 20, 0.9);
-    border-color: rgba(201, 162, 39, 0.22);
+  .activity-dot--post {
+    background: rgba(106, 171, 255, 0.72);
+    border-color: rgba(160, 200, 255, 0.34);
+    box-shadow: 0 0 8px rgba(106, 171, 255, 0.2);
   }
 
-  .activity-dot--2 {
-    background: rgba(201, 162, 39, 0.74);
+  .activity-dot--milestone {
+    background: rgba(201, 162, 39, 0.78);
     border-color: rgba(212, 168, 75, 0.36);
+    box-shadow: 0 0 8px rgba(201, 162, 39, 0.22);
   }
 
-  .activity-dot--3 {
-    background: rgba(212, 168, 75, 0.92);
+  .activity-dot--mixed {
+    background: conic-gradient(from 90deg, rgba(106, 171, 255, 0.85), rgba(241, 213, 122, 0.95), rgba(106, 171, 255, 0.85));
     border-color: rgba(245, 245, 245, 0.22);
-    box-shadow: 0 0 8px rgba(201, 162, 39, 0.34);
+    box-shadow: 0 0 10px rgba(212, 168, 75, 0.4);
   }
 
+  .activity-dot--2,
+  .activity-dot--3,
   .activity-dot--4 {
-    background: #f1d57a;
-    border-color: rgba(245, 245, 245, 0.36);
-    box-shadow: 0 0 12px rgba(212, 168, 75, 0.55);
+    width: 10px;
+    height: 10px;
   }
 
   .activity-dot:hover {
@@ -538,32 +608,91 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     border-color: var(--color-brass-light);
   }
 
-  .activity-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-lg);
-    margin-top: var(--space-md);
-    color: var(--color-text-muted);
-    font-size: 0.9rem;
-  }
-
-  .activity-footer p {
-    margin: 0;
-  }
-
-  .activity-footer p span {
-    color: var(--color-brass-light);
-    margin-left: var(--space-xs);
-  }
-
   .activity-legend {
     display: flex;
     align-items: center;
-    gap: 6px;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    margin-top: var(--space-sm);
     color: var(--color-text-muted);
     font-family: var(--font-mono);
     font-size: 0.72rem;
+  }
+
+  .activity-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .activity-log {
+    min-width: 0;
+    padding-left: var(--space-lg);
+    border-left: 1px solid var(--color-border);
+  }
+
+  .activity-log-title {
+    margin: 0 0 var(--space-sm);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .activity-log ol {
+    list-style: none;
+    display: grid;
+    gap: 0.65rem;
+  }
+
+  .activity-log a {
+    display: grid;
+    grid-template-columns: 5.8rem minmax(0, 1fr);
+    gap: var(--space-sm);
+    align-items: start;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+  }
+
+  .activity-log a:hover strong {
+    color: var(--color-brass-light);
+  }
+
+  .activity-type {
+    padding-top: 0.1rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+  }
+
+  .activity-type--post {
+    color: var(--color-link-hover);
+  }
+
+  .activity-type--milestone {
+    color: var(--color-brass);
+  }
+
+  .activity-log-main {
+    display: grid;
+    gap: 0.1rem;
+    min-width: 0;
+  }
+
+  .activity-log time {
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+  }
+
+  .activity-log strong {
+    color: var(--color-text-secondary);
+    font-size: 0.86rem;
+    font-weight: 500;
+    line-height: 1.35;
+    transition: color 0.2s ease;
   }
   
   /* Featured Section */
@@ -690,8 +819,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
       grid-template-columns: 1fr;
     }
 
-    .activity-header,
-    .activity-footer {
+    .activity-header {
       align-items: flex-start;
       flex-direction: column;
     }
@@ -702,7 +830,20 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     }
 
     .activity-panel {
+      grid-template-columns: 1fr;
       padding: var(--space-md);
+    }
+
+    .activity-chart {
+      overflow-x: auto;
+      padding-bottom: var(--space-xs);
+    }
+
+    .activity-log {
+      padding-left: 0;
+      padding-top: var(--space-md);
+      border-left: 0;
+      border-top: 1px solid var(--color-border);
     }
   }
 </style>
