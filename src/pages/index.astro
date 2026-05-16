@@ -222,37 +222,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
 
         <div class="observatory-companion" aria-label="Observatory pet">
           <div class="companion-pet" aria-hidden="true">
-            <svg class="companion-sprite" viewBox="0 0 80 80" focusable="false" shape-rendering="crispEdges">
-              <g class="sprite-aura">
-                <rect x="20" y="18" width="40" height="44" fill="rgba(106, 171, 255, 0.08)" />
-                <rect x="24" y="14" width="32" height="8" fill="rgba(201, 162, 39, 0.1)" />
-              </g>
-              <g class="sprite-body">
-                <rect x="24" y="68" width="32" height="4" fill="rgba(0, 0, 0, 0.45)" />
-                <rect x="32" y="8" width="16" height="4" fill="#c9a227" />
-                <rect x="36" y="12" width="8" height="4" fill="#16151d" />
-                <rect x="24" y="16" width="32" height="4" fill="#07070b" />
-                <rect x="20" y="20" width="40" height="8" fill="#10131d" />
-                <rect x="16" y="28" width="48" height="12" fill="#171b28" />
-                <rect x="20" y="40" width="40" height="8" fill="#10131d" />
-                <rect x="24" y="48" width="32" height="16" fill="#090a10" />
-                <rect x="28" y="24" width="24" height="24" fill="#202638" />
-                <rect x="32" y="28" width="16" height="12" fill="#06080d" />
-                <rect class="sprite-visor" x="32" y="32" width="16" height="4" fill="#8ec6ff" />
-                <rect x="28" y="44" width="28" height="4" fill="#c9a227" />
-                <rect x="52" y="48" width="4" height="8" fill="#9f7d20" />
-                <rect x="12" y="44" width="8" height="12" fill="#0f121c" />
-                <rect x="60" y="44" width="8" height="12" fill="#0f121c" />
-                <rect x="16" y="56" width="8" height="4" fill="#c9a227" />
-                <rect x="56" y="56" width="8" height="4" fill="#8ec6ff" />
-                <rect x="28" y="64" width="8" height="4" fill="#1b2030" />
-                <rect x="44" y="64" width="8" height="4" fill="#1b2030" />
-              </g>
-              <g class="sprite-sparks">
-                <rect class="sprite-spark sprite-spark--one" x="64" y="18" width="4" height="4" fill="#f5e1a2" />
-                <rect class="sprite-spark sprite-spark--two" x="12" y="24" width="4" height="4" fill="#8ec6ff" />
-              </g>
-            </svg>
+            <span class="companion-sprite companion-sprite--lucy"></span>
           </div>
         </div>
       </aside>
@@ -789,15 +759,15 @@ function getExcerpt(body: string, maxLength: number = 100): string {
 
   .companion-pet {
     position: relative;
-    width: 4.35rem;
-    height: 4.35rem;
+    width: clamp(5.25rem, 8vw, 6.25rem);
+    aspect-ratio: 192 / 208;
     display: grid;
     place-items: center;
     isolation: isolate;
     image-rendering: pixelated;
     filter:
-      drop-shadow(0 0 12px rgba(106, 171, 255, 0.12))
-      drop-shadow(0 0 10px rgba(201, 162, 39, 0.08));
+      drop-shadow(0 0 14px rgba(106, 171, 255, 0.18))
+      drop-shadow(0 0 12px rgba(201, 162, 39, 0.08));
     animation: companion-float 5.2s ease-in-out infinite;
   }
 
@@ -815,31 +785,17 @@ function getExcerpt(body: string, maxLength: number = 100): string {
   .companion-sprite {
     position: relative;
     z-index: 1;
-    width: 4.35rem;
-    height: 4.35rem;
-    overflow: visible;
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-size: 800% 900%;
+    image-rendering: pixelated;
   }
 
-  .sprite-aura {
-    animation: companion-aura 4.6s steps(2, end) infinite;
-  }
-
-  .sprite-body {
-    animation: companion-idle 1.8s steps(2, end) infinite;
-  }
-
-  .sprite-visor {
-    filter: drop-shadow(0 0 5px rgba(142, 198, 255, 0.88));
-    animation: companion-visor 2.8s ease-in-out infinite;
-  }
-
-  .sprite-spark {
-    transform-origin: center;
-    animation: companion-twinkle 2.8s steps(2, end) infinite;
-  }
-
-  .sprite-spark--two {
-    animation-delay: 0.8s;
+  .companion-sprite--lucy {
+    background-image: url('/pets/lucy/spritesheet.webp');
+    animation: companion-lucy-idle 1.35s steps(7, end) infinite;
   }
 
   @keyframes companion-float {
@@ -852,45 +808,13 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     }
   }
 
-  @keyframes companion-idle {
-    0%, 100% {
-      transform: translateY(0);
+  @keyframes companion-lucy-idle {
+    from {
+      background-position: 0 0;
     }
 
-    50% {
-      transform: translateY(2px);
-    }
-  }
-
-  @keyframes companion-aura {
-    0%, 100% {
-      opacity: 0.72;
-    }
-
-    50% {
-      opacity: 1;
-    }
-  }
-
-  @keyframes companion-visor {
-    0%, 100% {
-      opacity: 0.72;
-    }
-
-    50% {
-      opacity: 1;
-    }
-  }
-
-  @keyframes companion-twinkle {
-    0%, 100% {
-      opacity: 0.35;
-      transform: scale(0.85);
-    }
-
-    50% {
-      opacity: 1;
-      transform: scale(1.25);
+    to {
+      background-position: 100% 0;
     }
   }
 
