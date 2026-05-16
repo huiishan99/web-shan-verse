@@ -521,6 +521,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
     gap: var(--space-lg);
+    align-items: start;
     padding: var(--space-lg);
     background:
       linear-gradient(135deg, rgba(201, 162, 39, 0.08), transparent 36%),
@@ -531,14 +532,17 @@ function getExcerpt(body: string, maxLength: number = 100): string {
 
   .activity-chart {
     min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+    padding-bottom: var(--space-xs);
   }
 
   .activity-months {
     display: grid;
-    grid-template-columns: repeat(52, 1fr);
-    gap: 4px;
+    grid-template-columns: repeat(52, 8px);
+    gap: 3px;
     margin-bottom: 0.45rem;
-    min-width: 680px;
+    width: max-content;
     color: var(--color-text-muted);
     font-family: var(--font-mono);
     font-size: 0.68rem;
@@ -551,23 +555,22 @@ function getExcerpt(body: string, maxLength: number = 100): string {
 
   .activity-grid {
     display: grid;
-    grid-template-columns: repeat(52, 1fr);
-    gap: 4px;
-    overflow-x: auto;
-    min-width: 680px;
+    grid-template-columns: repeat(52, 8px);
+    gap: 3px;
+    width: max-content;
     padding: 0 0 var(--space-sm);
   }
 
   .activity-week {
     display: grid;
     grid-template-rows: repeat(7, 1fr);
-    gap: 4px;
+    gap: 3px;
   }
 
   .activity-dot {
     display: block;
-    width: 9px;
-    height: 9px;
+    width: 8px;
+    height: 8px;
     border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.045);
@@ -599,8 +602,8 @@ function getExcerpt(body: string, maxLength: number = 100): string {
   .activity-dot--2,
   .activity-dot--3,
   .activity-dot--4 {
-    width: 10px;
-    height: 10px;
+    width: 9px;
+    height: 9px;
   }
 
   .activity-dot:hover {
@@ -834,16 +837,47 @@ function getExcerpt(body: string, maxLength: number = 100): string {
       padding: var(--space-md);
     }
 
-    .activity-chart {
-      overflow-x: auto;
-      padding-bottom: var(--space-xs);
-    }
-
     .activity-log {
       padding-left: 0;
       padding-top: var(--space-md);
       border-left: 0;
       border-top: 1px solid var(--color-border);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .activity {
+      padding: var(--space-md) 0 var(--space-lg);
+    }
+
+    .activity-stats {
+      gap: var(--space-sm);
+      font-size: 0.72rem;
+    }
+
+    .activity-panel {
+      margin-left: calc(var(--space-lg) * -1);
+      margin-right: calc(var(--space-lg) * -1);
+      padding: var(--space-md) var(--space-lg);
+      border-left: 0;
+      border-right: 0;
+    }
+
+    .activity-log a {
+      grid-template-columns: 1fr;
+      gap: 0.15rem;
+    }
+
+    .activity-type {
+      padding-top: 0;
+    }
+
+    .activity-log strong {
+      font-size: 0.92rem;
+    }
+
+    .activity-dot:hover {
+      transform: scale(1.25);
     }
   }
 </style>
