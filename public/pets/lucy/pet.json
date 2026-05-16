@@ -1,0 +1,7 @@
+{
+  "id": "lucy",
+  "displayName": "Lucy",
+  "description": "A tiny chibi cyberpunk netrunner inspired by Lucy from Cyberpunk Edgerunners.",
+  "spritesheetPath": "spritesheet.webp",
+  "kind": "person"
+}
