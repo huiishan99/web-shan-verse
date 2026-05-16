@@ -301,13 +301,28 @@ function getExcerpt(body: string, maxLength: number = 100): string {
           </div>
           <p class="activity-source">Blog dates are exact; milestones use timeline months.</p>
 
-          <div class="github-activity" aria-label="Live GitHub contribution chart">
+          <div class="github-activity" aria-label="Live GitHub contribution chart" data-github-activity>
             <div class="github-activity-header">
               <span><Icon name="github" size={14} /> GitHub Contributions</span>
               <a href={githubProfileUrl} target="_blank" rel="noopener noreferrer">@{githubUsername}</a>
             </div>
-            <a class="github-activity-frame" href={githubProfileUrl} target="_blank" rel="noopener noreferrer">
+            <a
+              class="github-activity-frame"
+              href={githubProfileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div
+                class="github-calendar"
+                data-github-calendar
+                data-username={githubUsername}
+                data-start={toDateKey(gridStart)}
+                data-end={toDateKey(gridEnd)}
+                role="img"
+                aria-label={`${githubUsername}'s GitHub contribution calendar`}
+              ></div>
               <img
+                class="github-activity-fallback"
                 src={githubContributionChartUrl}
                 alt={`${githubUsername}'s GitHub contribution calendar`}
                 width="663"
@@ -403,6 +418,163 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     </section>
   </div>
 </BaseLayout>
+
+<script is:inline>
+  (() => {
+    if (window.__shanGithubCalendarReady) return;
+    window.__shanGithubCalendarReady = true;
+
+    const API_ROOT = 'https://github-contributions-api.jogruber.de/v4/';
+    const WEEKDAYS = ['', 'Mon', '', 'Wed', '', 'Fri', ''];
+    const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', timeZone: 'UTC' });
+    const dateFormatter = new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      timeZone: 'UTC',
+    });
+
+    function parseUTCDate(dateKey) {
+      const [year, month, day] = dateKey.split('-').map(Number);
+      return new Date(Date.UTC(year, month - 1, day));
+    }
+
+    function addDays(date, days) {
+      const nextDate = new Date(date);
+      nextDate.setUTCDate(nextDate.getUTCDate() + days);
+      return nextDate;
+    }
+
+    function toDateKey(date) {
+      return date.toISOString().slice(0, 10);
+    }
+
+    function buildWeeks(startKey, endKey, contributions) {
+      const start = parseUTCDate(startKey);
+      const end = parseUTCDate(endKey);
+      const contributionByDate = new Map(
+        contributions.map((item) => [item.date, item])
+      );
+      const days = [];
+
+      for (let date = start; date <= end; date = addDays(date, 1)) {
+        const key = toDateKey(date);
+        days.push({
+          date: new Date(date),
+          key,
+          contribution: contributionByDate.get(key) || { count: 0, level: 0 },
+        });
+      }
+
+      const weeks = [];
+      for (let index = 0; index < days.length; index += 7) {
+        weeks.push(days.slice(index, index + 7));
+      }
+
+      return weeks;
+    }
+
+    function createLabelRow(className, weeks, getLabelDate) {
+      const row = document.createElement('div');
+      row.className = className;
+      row.setAttribute('aria-hidden', 'true');
+
+      weeks.forEach((week, weekIndex) => {
+        const labelDate = getLabelDate(week, weekIndex);
+        const label = document.createElement('span');
+        label.textContent = labelDate ? labelDate : '';
+        row.append(label);
+      });
+
+      return row;
+    }
+
+    function renderCalendar(root, weeks) {
+      const years = createLabelRow('github-calendar-years', weeks, (week, weekIndex) => {
+        const firstOfYear = week.find((day) => (
+          day.date.getUTCMonth() === 0 && day.date.getUTCDate() === 1
+        ));
+        const labelDate = firstOfYear?.date || (weekIndex === 0 ? week[0]?.date : null);
+        return labelDate ? String(labelDate.getUTCFullYear()) : '';
+      });
+
+      const months = createLabelRow('github-calendar-months', weeks, (week, weekIndex) => {
+        const firstOfMonth = week.find((day) => day.date.getUTCDate() === 1);
+        const labelDate = firstOfMonth?.date || (weekIndex === 0 ? week[0]?.date : null);
+        return labelDate ? monthFormatter.format(labelDate) : '';
+      });
+
+      const weekdays = document.createElement('div');
+      weekdays.className = 'github-calendar-weekdays';
+      weekdays.setAttribute('aria-hidden', 'true');
+      WEEKDAYS.forEach((weekday) => {
+        const label = document.createElement('span');
+        label.textContent = weekday;
+        weekdays.append(label);
+      });
+
+      const grid = document.createElement('div');
+      grid.className = 'github-calendar-grid';
+      weeks.forEach((week) => {
+        const weekEl = document.createElement('div');
+        weekEl.className = 'github-calendar-week';
+
+        week.forEach((day) => {
+          const count = Number(day.contribution.count) || 0;
+          const level = Math.max(0, Math.min(4, Number(day.contribution.level) || 0));
+          const cell = document.createElement('span');
+          cell.className = `github-calendar-day github-calendar-day--${level}`;
+          cell.title = `${dateFormatter.format(day.date)}: ${count} GitHub contribution${count === 1 ? '' : 's'}`;
+          cell.setAttribute('aria-label', cell.title);
+          weekEl.append(cell);
+        });
+
+        grid.append(weekEl);
+      });
+
+      const body = document.createElement('div');
+      body.className = 'github-calendar-body';
+      body.append(weekdays, grid);
+
+      root.replaceChildren(years, months, body);
+    }
+
+    async function setupGithubCalendar(root) {
+      if (root.dataset.ready === 'true') return;
+      root.dataset.ready = 'true';
+
+      const username = root.dataset.username;
+      const start = root.dataset.start;
+      const end = root.dataset.end;
+      const activity = root.closest('[data-github-activity]');
+      if (!username || !start || !end || !activity) return;
+
+      try {
+        const response = await fetch(`${API_ROOT}${encodeURIComponent(username)}?y=last`);
+        if (!response.ok) throw new Error(`GitHub contribution API returned ${response.status}`);
+        const data = await response.json();
+        if (!Array.isArray(data.contributions)) throw new Error('Invalid contribution payload');
+
+        const weeks = buildWeeks(start, end, data.contributions);
+        renderCalendar(root, weeks);
+        activity.classList.add('is-enhanced');
+      } catch (error) {
+        console.warn('GitHub contribution calendar fallback:', error);
+        root.dataset.ready = 'false';
+        activity.classList.remove('is-enhanced');
+      }
+    }
+
+    function setupGithubCalendars() {
+      document
+        .querySelectorAll('[data-github-calendar]')
+        .forEach((root) => setupGithubCalendar(root));
+    }
+
+    setupGithubCalendars();
+    document.addEventListener('astro:page-load', setupGithubCalendars);
+  })();
+</script>
 
 <style>
   .hero {
@@ -819,6 +991,105 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     padding: 0.35rem 0 0.15rem;
     scrollbar-color: rgba(201, 162, 39, 0.46) rgba(255, 255, 255, 0.05);
     scrollbar-width: thin;
+    text-decoration: none;
+  }
+
+  .github-calendar {
+    --github-cell: 9px;
+    --github-gap: 3px;
+    display: none;
+    width: max-content;
+    min-width: 560px;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+  }
+
+  .github-activity.is-enhanced .github-calendar {
+    display: block;
+  }
+
+  .github-activity.is-enhanced .github-activity-fallback {
+    display: none;
+  }
+
+  :global(.github-calendar-years),
+  :global(.github-calendar-months) {
+    display: grid;
+    grid-template-columns: repeat(52, var(--github-cell));
+    gap: var(--github-gap);
+    width: max-content;
+    padding-left: 1.9rem;
+    line-height: 1;
+  }
+
+  :global(.github-calendar-years) {
+    margin-bottom: 0.3rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+
+  :global(.github-calendar-months) {
+    margin-bottom: 0.5rem;
+    font-size: 0.68rem;
+  }
+
+  :global(.github-calendar-body) {
+    display: grid;
+    grid-template-columns: 1.45rem max-content;
+    gap: 0.45rem;
+    align-items: start;
+  }
+
+  :global(.github-calendar-weekdays) {
+    display: grid;
+    grid-template-rows: repeat(7, var(--github-cell));
+    gap: var(--github-gap);
+    line-height: var(--github-cell);
+  }
+
+  :global(.github-calendar-grid) {
+    display: grid;
+    grid-template-columns: repeat(52, var(--github-cell));
+    gap: var(--github-gap);
+    width: max-content;
+    padding-bottom: var(--space-xs);
+  }
+
+  :global(.github-calendar-week) {
+    display: grid;
+    grid-template-rows: repeat(7, var(--github-cell));
+    gap: var(--github-gap);
+  }
+
+  :global(.github-calendar-day) {
+    display: block;
+    width: var(--github-cell);
+    height: var(--github-cell);
+    border: 1px solid rgba(255, 255, 255, 0.055);
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.035);
+  }
+
+  :global(.github-calendar-day--1) {
+    background: rgba(201, 162, 39, 0.24);
+    border-color: rgba(201, 162, 39, 0.18);
+  }
+
+  :global(.github-calendar-day--2) {
+    background: rgba(201, 162, 39, 0.42);
+    border-color: rgba(201, 162, 39, 0.24);
+  }
+
+  :global(.github-calendar-day--3) {
+    background: rgba(212, 168, 75, 0.68);
+    border-color: rgba(212, 168, 75, 0.32);
+  }
+
+  :global(.github-calendar-day--4) {
+    background: rgba(212, 168, 75, 0.9);
+    border-color: rgba(245, 225, 162, 0.45);
+    box-shadow: 0 0 8px rgba(201, 162, 39, 0.24);
   }
 
   .github-activity-frame img {
@@ -828,7 +1099,8 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     max-width: none;
     min-height: 90px;
     opacity: 0.9;
-    filter: sepia(0.42) saturate(0.95) brightness(0.72) contrast(1.18);
+    border-radius: 4px;
+    filter: sepia(0.48) saturate(0.9) brightness(0.58) contrast(1.25);
   }
 
   .github-activity-note {
@@ -1091,6 +1363,26 @@ function getExcerpt(body: string, maxLength: number = 100): string {
 
     .github-activity-frame img {
       min-width: 520px;
+    }
+
+    .github-calendar {
+      --github-cell: 8px;
+      --github-gap: 3px;
+      min-width: 520px;
+    }
+
+    :global(.github-calendar-years),
+    :global(.github-calendar-months) {
+      padding-left: 1.85rem;
+    }
+
+    :global(.github-calendar-body) {
+      grid-template-columns: 1.4rem max-content;
+      gap: 0.45rem;
+    }
+
+    :global(.github-calendar-weekdays) {
+      font-size: 0.58rem;
     }
 
     .activity-panel {
