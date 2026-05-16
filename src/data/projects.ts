@@ -27,26 +27,27 @@ export const projectCategories: ProjectCategory[] = [
         items: [
             {
                 title: "VR Car Scene Prototype",
-                description: "VR car scene prototype developed during ALPS ALPINE internship using Unity and Meta Quest.",
+                description: "Unity VR car-scene prototype built during my ALPS ALPINE internship for Meta Quest testing.",
                 featured: true,
-                tags: ["Unity", "VR"]
+                tags: ["Unity", "VR", "Meta Quest"]
             },
             {
                 title: "AR Image tracking",
-                description: "First Unity AR Foundation prototype for detecting reference images and placing interactive 3D content in an augmented reality scene.",
+                description: "Unity AR image-tracking practice project that places and controls 3D dragon assets in an AR scene.",
                 github: "https://github.com/huiishan99/unity-ar-image-tracking",
-                tags: ["Unity", "AR"]
+                tags: ["Unity", "C#", "AR Foundation"]
             },
             {
                 title: "Mamba Project",
-                description: "Unity VR project for the University of Aizu CFS03 Creative Factor Seminar, built around an Oculus/XR scene and human anatomy model assets.",
+                description: "University of Aizu CFS03 Unity VR project using an Oculus/XR scene and human anatomy model assets.",
                 github: "https://github.com/huiishan99/uoa-cfs03-manba-project",
-                tags: ["Unity", "VR"]
+                tags: ["Unity", "C#", "VR", "Oculus"]
             },
             {
                 title: "Master Project",
-                description: "Unity VR prototype connected to my master's research workflow, focused on experimenting with immersive learning interactions.",
-                tags: ["Unity", "VR"]
+                description: "Unity VR classroom research prototype with an embodied avatar, speech services, and a Python backend.",
+                github: "https://github.com/huiishan99/uoa-master-research-unity",
+                tags: ["Unity", "C#", "Python", "VR"]
             },
         ]
     },
@@ -57,27 +58,28 @@ export const projectCategories: ProjectCategory[] = [
         items: [
             {
                 title: "Solar System",
-                description: "Interactive 3D solar system simulation with realistic planetary orbits and physics.",
+                description: "Unity practice scene simulating the rotation and revolution of the Sun, Earth, and Moon.",
                 github: "https://github.com/huiishan99/unity-solar-system",
-                tags: ["Unity", "C#", "3D", "Physics"]
+                tags: ["Unity", "C#", "3D"]
             },
             {
                 title: "2D Platformer",
-                description: "Classic side-scrolling platformer with smooth controls and level progression.",
+                description: "Unity 2D platformer practice project; the repository is not currently public.",
                 github: "",
-                tags: ["Unity", "C#", "2D", "Game Dev"]
+                tags: ["Unity", "C#", "2D"]
             },
             {
                 title: "2D Shooter Game",
-                description: "Fast-paced 2D shooter with enemy AI and power-up systems.",
+                description: "Unity 2D spaceship shooter with enemies, projectiles, level scenes, score UI, and menu flow.",
                 github: "https://github.com/huiishan99/unity-2d-shooter-game",
-                tags: ["Unity", "C#", "AI"]
+                website: "https://huiishan99.itch.io/2d-shooter",
+                tags: ["Unity", "C#", "2D", "Game UI"]
             },
             {
                 title: "Kitchen Chaos",
-                description: "Cooking simulation game with time management and order fulfillment mechanics.",
+                description: "Overcooked-style Unity cooking practice project with counters, ingredients, cutting recipes, and player input.",
                 github: "https://github.com/huiishan99/unity-kitchen-chaos",
-                tags: ["Unity", "C#", "Simulation"]
+                tags: ["Unity", "C#", "Input System"]
             }
         ]
     },
@@ -88,66 +90,86 @@ export const projectCategories: ProjectCategory[] = [
         items: [
             {
                 title: "SHAN-VERSE",
-                description: "This personal website - built with Astro, featuring a unique steampunk aesthetic.",
+                description: "My personal portfolio and blog built with Astro, MDX, custom styling, sitemap, and project data tooling.",
                 github: "https://github.com/huiishan99/web-blog",
                 website: "https://shan-verse.com",
-                tags: ["Astro", "TypeScript", "CSS"]
+                tags: ["Astro", "MDX", "TypeScript", "CSS"]
             },
             {
                 title: "Notion Next Chinese Blog",
-                description: "My other personal website.",
+                description: "Forked NotionNext deployment for a Notion-powered blog using Next.js and the Notion API.",
                 github: "https://github.com/huiishan99/web-notion-next",
                 website: "https://notion-next-huiishan99.vercel.app/",
-                tags: ["NotionNext", "Notion"]
+                tags: ["Next.js", "Notion API", "JavaScript"]
             },
             {
                 title: "Math-Note",
-                description: "Full-stack AI math note prototype with a React/Vite frontend and FastAPI backend that analyzes handwritten or drawn math images with Gemini.",
+                description: "AI math canvas app with a React/Vite frontend and FastAPI backend that sends drawn equations to Gemini.",
                 github: "https://github.com/huiishan99/web-math-note",
                 website: "https://math-notes-clone.vercel.app/",
-                tags: ["Vite", "React", "TypeScript"]
+                tags: ["React", "Vite", "TypeScript", "FastAPI", "Gemini"]
             },
             {
                 title: "Yumemi Test",
-                description: "React + Vite SPA for the Yumemi frontend coding test, visualizing Japanese prefecture population trends with Highcharts, API data, theme switching, and tests.",
+                description: "Yumemi frontend test SPA that visualizes Japanese prefecture population trends with charts and filters.",
                 github: "https://github.com/huiishan99/web-yumemi-test",
                 website: "https://web-yumemi-test.vercel.app/",
-                tags: ["TypeScript"]
+                tags: ["React", "Vite", "TypeScript", "Highcharts", "Vitest"]
+            },
+            {
+                title: "Weather App",
+                description: "Static weather lookup app using OpenWeather data, city search, and weather-specific UI illustrations.",
+                github: "https://github.com/huiishan99/web-weather-app",
+                website: "https://js-weather-app-nine-wine.vercel.app",
+                tags: ["HTML", "CSS", "JavaScript", "OpenWeather API"]
             },
             {
                 title: "Falling Sand",
-                description: "Interactive falling-sand sandbox built with p5.js and Vite, featuring modular material simulation, draggable controls, pause/step tools, tests, and GitHub Pages deployment.",
+                description: "Interactive falling-sand sandbox with p5-style rendering, material rules, draggable controls, and pause/step tools.",
                 github: "https://github.com/huiishan99/web-falling-sand",
                 website: "https://huiishan99.github.io/web-falling-sand/",
-                tags: ["JavaScript"]
+                tags: ["JavaScript", "p5.js", "Vite"]
             },
             {
                 title: "Dark Light Toggle",
-                description: "Small HTML, CSS, and JavaScript UI experiment implementing a dark/light mode toggle with a custom animated switch.",
+                description: "Small HTML, CSS, and JavaScript UI experiment for an animated dark/light mode toggle.",
                 github: "https://github.com/huiishan99/web-dark-light-toggle",
                 website: "https://huiishan99.github.io/web-dark-light-toggle/",
-                tags: ["JavaScript"]
+                tags: ["HTML", "CSS", "JavaScript"]
             },
             {
                 title: "DreamLight",
-                description: "Static promotional site for a BitSummit 2024 light-show and drone game concept, presenting the project idea, team, and contact information.",
+                description: "Static promotional site for a BitSummit 2024 light-show and drone game concept.",
                 github: "https://github.com/huiishan99/web-dreamlight",
                 website: "https://web-dreamlight.vercel.app/",
-                tags: ["HTML", "CSS"]
+                tags: ["HTML", "SCSS", "JavaScript"]
             },
             {
                 title: "Hexo Page",
-                description: "Default Hexo 5 blog deployment experiment on Vercel, used to test static blog generation, archives, RSS, and theme structure.",
+                description: "Hexo blog deployment experiment on Vercel for testing static blog generation and theme structure.",
                 github: "",
                 website: "https://hexo-six-green.vercel.app/",
                 tags: ["Hexo", "JavaScript"]
             },
             {
                 title: "Notion Resume",
-                description: "Minimal Notion-based personal page and resume hub for organizing thoughts, projects, and resources.",
+                description: "Minimal Notion-based personal page and resume hub linking to my public Notion home.",
                 github: "https://github.com/huiishan99/web-notion-resume",
                 website: "",
                 tags: ["Notion", "CV"]
+            },
+            {
+                title: "Silver Game",
+                description: "Hackathon frontend for an elderly-focused social platform with realtime multimodal emotion analysis.",
+                github: "https://github.com/huiishan99/web-ai-in-action-frontend",
+                website: "https://web-ai-in-action-frontend.vercel.app",
+                tags: ["Next.js", "React", "TypeScript", "FastAPI", "PyTorch"]
+            },
+            {
+                title: "AI-ImageForge",
+                description: "Streamlit AI image-generation app with Hugging Face models, style prompts, and GPU detection.",
+                github: "https://github.com/huiishan99/web-genAI",
+                tags: ["Python", "Streamlit", "Hugging Face", "Diffusers"]
             }
         ]
     },
@@ -158,22 +180,46 @@ export const projectCategories: ProjectCategory[] = [
         items: [
             {
                 title: "The Role of Embodied Avatars and Generative AI in Self Learning VR Classroom",
-                description: "The unity project of my master's thesis at University of Aizu, including the python backend code.",
+                description: "Unity 2022.3 master's thesis project with VR classroom scenes, Convai avatar components, speech services, and a Python backend.",
                 featured: true,
                 github: "https://github.com/huiishan99/uoa-master-research-unity",
-                tags: ["Master's Thesis", "Unity", "C#", "Python"]
+                tags: ["Master's Thesis", "Unity", "C#", "Python", "VR"]
             },
             {
                 title: "Human Activity Pattern Processing",
-                description: "This repo contains the assignments for the University of Aizu's (ITA09) Human Activity Pattern Processing course.",
+                description: "University of Aizu ITA09 coursework with Python scripts and Jupyter notebooks for activity-pattern processing.",
                 github: "https://github.com/huiishan99/uoa-human-activity-pattern-processing",
-                tags: ["Python", "Machine Learning"]
+                tags: ["Python", "Jupyter Notebook", "Machine Learning"]
             },
             {
                 title: "Advanced Robotics",
-                description: "This repo contains the assignments for the University of Aizu's (ITC03A) Advanced Robotics course.",
+                description: "University of Aizu ITC03A Advanced Robotics coursework implemented mainly with MATLAB scripts.",
                 github: "https://github.com/huiishan99/uoa-advanced-robotics",
                 tags: ["MATLAB", "Robotics"]
+            },
+            {
+                title: "Biosignal Processing and Data Mining",
+                description: "University of Aizu ITA25 coursework with MATLAB assignments for biosignal processing and data mining.",
+                github: "https://github.com/huiishan99/uoa-biosignal-processing-and-data-mining",
+                tags: ["MATLAB", "Biosignal Processing", "Data Mining"]
+            },
+            {
+                title: "Applied Statistics",
+                description: "University of Aizu CSC03F applied statistics coursework notes and assignment records.",
+                github: "https://github.com/huiishan99/uoa-applied-statistics",
+                tags: ["Statistics", "Coursework"]
+            },
+            {
+                title: "Software Engineering",
+                description: "University of Aizu SEC01F software engineering coursework notes and assignment records.",
+                github: "https://github.com/huiishan99/uoa-software-engineering",
+                tags: ["Software Engineering", "Coursework"]
+            },
+            {
+                title: "NWPU Undergraduate Thesis",
+                description: "Undergraduate thesis records for a quadrotor UAV formation digital-twin system using AirSim/PX4 references.",
+                github: "https://github.com/huiishan99/nwpu-undergraduate-thesis",
+                tags: ["Digital Twin", "UAV", "AirSim", "PX4"]
             }
 
         ]
@@ -185,51 +231,57 @@ export const projectCategories: ProjectCategory[] = [
         items: [
             {
                 title: "Tetris Clone",
-                description: "A tetris-clone game build with raylib-cpp.",
+                description: "Native Windows C++ Tetris clone with scoring, hold piece, ghost preview, levels, and best-score tracking.",
                 github: "https://github.com/huiishan99/cpp-tetris-game",
-                tags: ["tetris"]
+                tags: ["C++", "Win32", "Game Dev"]
             },
             {
                 title: "OpenGL Practice",
-                description: "OpenGL project.",
+                description: "OpenGL learning project covering windows, triangles, buffers, shaders, textures, and basic 3D rendering.",
                 github: "https://github.com/huiishan99/opengl-vector-graphic",
-                tags: ["OpenGL"]
+                tags: ["C++", "OpenGL", "GLFW"]
             },
             {
                 title: "C# Exercises",
-                description: "C# project.",
+                description: "Collection of C#/.NET practice projects, including console, WPF, MVC, and Azure-style samples.",
                 github: "https://github.com/huiishan99/csharp-exercises",
-                tags: ["C#"]
+                tags: ["C#", ".NET", "WPF"]
             },
             {
                 title: "C# Snake Game",
-                description: "C# project.",
+                description: "Classic Windows C# Snake game with keyboard controls and a simple desktop executable.",
                 github: "https://github.com/huiishan99/csharp-snake-game",
-                tags: ["C#"]
+                tags: ["C#", ".NET Framework", "WinForms"]
             },
             {
                 title: "Beecrowd Practice",
-                description: "OJ project.",
+                description: "C# solutions archive for Beecrowd online judge problems, organized by problem number.",
                 github: "https://github.com/huiishan99/oj-beecrowd",
-                tags: ["C#"]
+                tags: ["C#", ".NET", "OJ"]
             },
             {
                 title: "PTA Practice",
-                description: "OJ project.",
+                description: "PTA online judge practice record; the repository is not currently public.",
                 github: "",
-                tags: ["C#"]
+                tags: ["C#", "OJ"]
             },
             {
                 title: "Paiza Practice",
-                description: "OJ project.",
+                description: "Paiza online judge practice record; the repository is not currently public.",
                 github: "",
-                tags: ["C#"]
+                tags: ["C#", "OJ"]
             },
             {
                 title: "Rockfall Game",
-                description: "Python project.",
+                description: "Pygame avoidance game with data collection, Random Forest training, and AI-controlled play mode.",
                 github: "https://github.com/huiishan99/python-rockfall-game",
-                tags: ["Python"]
+                tags: ["Python", "Pygame", "scikit-learn"]
+            },
+            {
+                title: "Go 11 Projects",
+                description: "Go learning repo following a project-based course, including a web server, CRUD API, MySQL app, and Slack bots.",
+                github: "https://github.com/huiishan99/go-11-projects",
+                tags: ["Go", "API", "MySQL", "Slack Bot"]
             }
         ]
     },
