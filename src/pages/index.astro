@@ -773,6 +773,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     background: rgba(106, 171, 255, 0.08);
     filter: blur(14px);
     opacity: 0.75;
+    animation: companion-glow 3.4s ease-in-out infinite;
   }
 
   .companion-pet {
@@ -786,7 +787,9 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     filter:
       drop-shadow(0 0 14px rgba(106, 171, 255, 0.18))
       drop-shadow(0 0 12px rgba(201, 162, 39, 0.08));
-    animation: companion-float 5.2s ease-in-out infinite;
+    transform-origin: 50% 92%;
+    will-change: transform;
+    animation: companion-float 4.4s ease-in-out infinite;
   }
 
   .companion-pet::before {
@@ -798,6 +801,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
       radial-gradient(circle at 50% 80%, rgba(201, 162, 39, 0.1), transparent 44%);
     opacity: 0.9;
     filter: blur(8px);
+    animation: companion-aura 3.8s ease-in-out infinite;
   }
 
   .companion-sprite {
@@ -810,6 +814,9 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     background-size: 800% 900%;
     background-position: 0 var(--pet-row-offset);
     image-rendering: pixelated;
+    transform-origin: 50% 92%;
+    will-change: transform;
+    animation: companion-breathe 2.8s ease-in-out infinite;
   }
 
   .companion-sprite--yorha {
@@ -818,11 +825,43 @@ function getExcerpt(body: string, maxLength: number = 100): string {
 
   @keyframes companion-float {
     0%, 100% {
-      transform: translateY(0);
+      transform: translateY(0) rotate(-0.6deg);
     }
 
     50% {
-      transform: translateY(-0.08rem);
+      transform: translateY(-0.28rem) rotate(0.7deg);
+    }
+  }
+
+  @keyframes companion-breathe {
+    0%, 100% {
+      transform: scale(1);
+    }
+
+    50% {
+      transform: scale(1.035);
+    }
+  }
+
+  @keyframes companion-aura {
+    0%, 100% {
+      opacity: 0.72;
+      transform: scale(0.96);
+    }
+
+    50% {
+      opacity: 1;
+      transform: scale(1.08);
+    }
+  }
+
+  @keyframes companion-glow {
+    0%, 100% {
+      opacity: 0.55;
+    }
+
+    50% {
+      opacity: 0.9;
     }
   }
 
