@@ -160,11 +160,18 @@ const audioSrc = '/audio/bgm.mp3';
       transform 0.2s ease;
   }
 
-  .music-toggle:hover,
   .music-toggle.is-playing {
     border-color: var(--color-brass);
     background: var(--color-brass);
     color: var(--color-text-primary);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .music-toggle:hover {
+      border-color: var(--color-brass);
+      background: var(--color-brass);
+      color: var(--color-text-primary);
+    }
   }
 
   .music-toggle.has-error {

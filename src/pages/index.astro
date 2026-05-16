@@ -153,7 +153,7 @@ const postSignalCount = visibleSignals.filter((signal) => signal.type === 'post'
 const milestoneSignalCount = visibleSignals.filter((signal) => signal.type === 'milestone').length;
 const githubUsername = 'huiishan99';
 const githubProfileUrl = `https://github.com/${githubUsername}`;
-const githubContributionChartUrl = `https://ghchart.rshah.org/40C463/${githubUsername}`;
+const githubContributionChartUrl = `https://ghchart.rshah.org/C9A227/${githubUsername}`;
 
 // 提取文章第一段内容
 function getExcerpt(body: string, maxLength: number = 100): string {
@@ -239,55 +239,57 @@ function getExcerpt(body: string, maxLength: number = 100): string {
 
       <div class="activity-panel">
         <div class="activity-chart">
-          <div class="activity-map">
-            <div class="activity-years" aria-hidden="true">
-              {activityYearLabels.map((year) => (
-                <span>{year}</span>
-              ))}
-            </div>
-
-            <div class="activity-months" aria-hidden="true">
-              {activityMonthLabels.map((month) => (
-                <span>{month}</span>
-              ))}
-            </div>
-
-            <div class="activity-calendar">
-              <div class="activity-weekdays" aria-hidden="true">
-                {['', 'Mon', '', 'Wed', '', 'Fri', ''].map((day) => (
-                  <span>{day}</span>
+          <div class="activity-map-frame">
+            <div class="activity-map">
+              <div class="activity-years" aria-hidden="true">
+                {activityYearLabels.map((year) => (
+                  <span>{year}</span>
                 ))}
               </div>
 
-              <div class="activity-grid" role="img" aria-label={activityLabel}>
-                {activityWeeks.map((week) => (
-                  <div class="activity-week">
-                    {week.map((day) => {
-                      const titles = day.signals
-                        .map((signal) => `${signal.displayDate} (${signal.dateSource}): ${signal.title}`)
-                        .join(' / ');
-                      const signalTypes = new Set(day.signals.map((signal) => signal.type));
-                      const typeClass = signalTypes.size > 1
-                        ? 'mixed'
-                        : signalTypes.has('post')
-                          ? 'post'
-                          : signalTypes.has('milestone')
-                            ? 'milestone'
-                            : 'quiet';
-                      const label = day.signals.length > 0
-                        ? titles
-                        : `${formatActivityDate(day.date)}: no signal`;
-
-                      return (
-                        <span
-                          class={`activity-dot activity-dot--${day.intensity} activity-dot--${typeClass}`}
-                          title={label}
-                          aria-label={label}
-                        />
-                      );
-                    })}
-                  </div>
+              <div class="activity-months" aria-hidden="true">
+                {activityMonthLabels.map((month) => (
+                  <span>{month}</span>
                 ))}
+              </div>
+
+              <div class="activity-calendar">
+                <div class="activity-weekdays" aria-hidden="true">
+                  {['', 'Mon', '', 'Wed', '', 'Fri', ''].map((day) => (
+                    <span>{day}</span>
+                  ))}
+                </div>
+
+                <div class="activity-grid" role="img" aria-label={activityLabel}>
+                  {activityWeeks.map((week) => (
+                    <div class="activity-week">
+                      {week.map((day) => {
+                        const titles = day.signals
+                          .map((signal) => `${signal.displayDate} (${signal.dateSource}): ${signal.title}`)
+                          .join(' / ');
+                        const signalTypes = new Set(day.signals.map((signal) => signal.type));
+                        const typeClass = signalTypes.size > 1
+                          ? 'mixed'
+                          : signalTypes.has('post')
+                            ? 'post'
+                            : signalTypes.has('milestone')
+                              ? 'milestone'
+                              : 'quiet';
+                        const label = day.signals.length > 0
+                          ? titles
+                          : `${formatActivityDate(day.date)}: no signal`;
+
+                        return (
+                          <span
+                            class={`activity-dot activity-dot--${day.intensity} activity-dot--${typeClass}`}
+                            title={label}
+                            aria-label={label}
+                          />
+                        );
+                      })}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -553,6 +555,8 @@ function getExcerpt(body: string, maxLength: number = 100): string {
 
   .activity {
     padding: var(--space-lg) 0 var(--space-xl);
+    overflow-x: hidden;
+    overflow-x: clip;
   }
 
   .activity-header {
@@ -603,15 +607,44 @@ function getExcerpt(body: string, maxLength: number = 100): string {
       rgba(13, 13, 18, 0.64);
     border: 1px solid var(--color-border);
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+    min-width: 0;
   }
 
   .activity-chart {
     --activity-cell: 9px;
     --activity-gap: 3px;
     min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    padding-bottom: var(--space-xs);
+  }
+
+  .activity-map-frame {
+    display: block;
+    width: 100%;
     max-width: 100%;
     overflow-x: auto;
-    padding-bottom: var(--space-xs);
+    overflow-y: visible;
+    overscroll-behavior-x: contain;
+    padding: 0.15rem 0 var(--space-xs);
+    scrollbar-color: rgba(201, 162, 39, 0.46) rgba(255, 255, 255, 0.05);
+    scrollbar-width: thin;
+  }
+
+  .activity-map-frame::-webkit-scrollbar,
+  .github-activity-frame::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  .activity-map-frame::-webkit-scrollbar-track,
+  .github-activity-frame::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .activity-map-frame::-webkit-scrollbar-thumb,
+  .github-activity-frame::-webkit-scrollbar-thumb {
+    background: rgba(201, 162, 39, 0.42);
+    border-radius: 999px;
   }
 
   .activity-map {
@@ -782,7 +815,10 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     display: block;
     max-width: 100%;
     overflow-x: auto;
+    overscroll-behavior-x: contain;
     padding: 0.35rem 0 0.15rem;
+    scrollbar-color: rgba(201, 162, 39, 0.46) rgba(255, 255, 255, 0.05);
+    scrollbar-width: thin;
   }
 
   .github-activity-frame img {
@@ -791,7 +827,8 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     min-width: 560px;
     max-width: none;
     min-height: 90px;
-    opacity: 0.92;
+    opacity: 0.9;
+    filter: sepia(0.42) saturate(0.95) brightness(0.72) contrast(1.18);
   }
 
   .github-activity-note {
@@ -1057,9 +1094,9 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     }
 
     .activity-panel {
-      margin-left: calc(var(--space-lg) * -1);
-      margin-right: calc(var(--space-lg) * -1);
-      padding: var(--space-md) var(--space-lg);
+      margin-left: calc(var(--space-md) * -1);
+      margin-right: calc(var(--space-md) * -1);
+      padding: var(--space-md);
       border-left: 0;
       border-right: 0;
     }
