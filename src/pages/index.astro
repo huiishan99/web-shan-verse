@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Icon from '../components/Icon.astro';
 import { currentStatus } from '../data/status';
+import { timelineData } from '../data/timeline';
 import { getCollection } from 'astro:content';
 
 // 获取最新3篇博客文章
@@ -9,6 +10,104 @@ const allPosts = await getCollection('blog', ({ data }) => !data.draft);
 const latestPosts = allPosts
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
   .slice(0, 3);
+
+const monthIndex: Record<string, number> = {
+  January: 0,
+  February: 1,
+  March: 2,
+  April: 3,
+  May: 4,
+  June: 5,
+  July: 6,
+  August: 7,
+  September: 8,
+  October: 9,
+  November: 10,
+  December: 11,
+};
+
+type ActivitySignal = {
+  date: Date;
+  title: string;
+  type: 'post' | 'milestone';
+};
+
+const postSignals: ActivitySignal[] = allPosts.map((post) => ({
+  date: post.data.date,
+  title: post.data.title,
+  type: 'post',
+}));
+
+const timelineSignals: ActivitySignal[] = timelineData.flatMap((yearData) =>
+  yearData.events.map((event) => ({
+    // Timeline entries are month-level, so place them at mid-month for the grid.
+    date: new Date(Date.UTC(yearData.year, monthIndex[event.month] ?? 0, 15)),
+    title: event.title,
+    type: 'milestone' as const,
+  }))
+);
+
+const activitySignals = [...postSignals, ...timelineSignals];
+
+function toDateKey(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}
+
+function startOfDay(date: Date): Date {
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+}
+
+function addDays(date: Date, days: number): Date {
+  const nextDate = new Date(date);
+  nextDate.setUTCDate(nextDate.getUTCDate() + days);
+  return nextDate;
+}
+
+function formatActivityDate(date: Date): string {
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+}
+
+const today = startOfDay(new Date());
+const gridEnd = addDays(today, 6 - today.getUTCDay());
+const gridStart = addDays(gridEnd, -(52 * 7 - 1));
+
+const signalsByDay = activitySignals.reduce<Record<string, ActivitySignal[]>>((acc, signal) => {
+  const key = toDateKey(startOfDay(signal.date));
+  acc[key] = [...(acc[key] || []), signal];
+  return acc;
+}, {});
+
+const activityWeeks = Array.from({ length: 52 }, (_, weekIndex) =>
+  Array.from({ length: 7 }, (_, dayIndex) => {
+    const date = addDays(gridStart, weekIndex * 7 + dayIndex);
+    const signals = signalsByDay[toDateKey(date)] || [];
+    const intensity = Math.min(signals.length, 4);
+
+    return {
+      date,
+      key: toDateKey(date),
+      signals,
+      intensity,
+    };
+  })
+);
+
+const visibleSignals = activitySignals
+  .filter((signal) => {
+    const signalDate = startOfDay(signal.date);
+    return signalDate >= gridStart && signalDate <= gridEnd;
+  })
+  .sort((a, b) => b.date.getTime() - a.date.getTime());
+
+const activeDays = new Set(visibleSignals.map((signal) => toDateKey(startOfDay(signal.date)))).size;
+const totalSignals = visibleSignals.length;
+const latestSignal = visibleSignals[0];
+const activityLabel = `Activity constellation: ${totalSignals} signals across ${activeDays} active days.`;
 
 // 提取文章第一段内容
 function getExcerpt(body: string, maxLength: number = 100): string {
@@ -75,6 +174,59 @@ function getExcerpt(body: string, maxLength: number = 100): string {
           </ul>
         </div>
       </aside>
+    </section>
+
+    <!-- Activity Constellation -->
+    <section class="activity">
+      <div class="activity-header">
+        <div>
+          <p class="section-kicker">Activity Constellation</p>
+          <h2>Recent Signals</h2>
+        </div>
+        <div class="activity-stats">
+          <span>{activeDays} active days</span>
+          <span>{totalSignals} signals</span>
+        </div>
+      </div>
+
+      <div class="activity-panel">
+        <div class="activity-grid" role="img" aria-label={activityLabel}>
+          {activityWeeks.map((week) => (
+            <div class="activity-week">
+              {week.map((day) => {
+                const titles = day.signals.map((signal) => signal.title).join(' / ');
+                const label = day.signals.length > 0
+                  ? `${formatActivityDate(day.date)}: ${titles}`
+                  : `${formatActivityDate(day.date)}: no signal`;
+
+                return (
+                  <span
+                    class={`activity-dot activity-dot--${day.intensity}`}
+                    title={label}
+                    aria-label={label}
+                  />
+                );
+              })}
+            </div>
+          ))}
+        </div>
+
+        <div class="activity-footer">
+          <p>
+            Latest signal:
+            <span>{latestSignal ? latestSignal.title : 'Quiet orbit'}</span>
+          </p>
+          <div class="activity-legend" aria-label="Activity intensity">
+            <span>Less</span>
+            <i class="activity-dot activity-dot--0"></i>
+            <i class="activity-dot activity-dot--1"></i>
+            <i class="activity-dot activity-dot--2"></i>
+            <i class="activity-dot activity-dot--3"></i>
+            <i class="activity-dot activity-dot--4"></i>
+            <span>More</span>
+          </div>
+        </div>
+      </div>
     </section>
     
     <!-- Featured Section -->
@@ -287,6 +439,132 @@ function getExcerpt(body: string, maxLength: number = 100): string {
   .status-list li a:hover {
     color: #d4af37;
   }
+
+  .activity {
+    padding: var(--space-lg) 0 var(--space-xl);
+  }
+
+  .activity-header {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-md);
+  }
+
+  .section-kicker {
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: var(--space-xs);
+  }
+
+  .activity-header h2 {
+    margin-bottom: 0;
+  }
+
+  .activity-stats {
+    display: flex;
+    gap: var(--space-md);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    white-space: nowrap;
+  }
+
+  .activity-panel {
+    padding: var(--space-lg);
+    background:
+      linear-gradient(135deg, rgba(201, 162, 39, 0.08), transparent 36%),
+      rgba(13, 13, 18, 0.64);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+  }
+
+  .activity-grid {
+    display: grid;
+    grid-template-columns: repeat(52, 1fr);
+    gap: 4px;
+    overflow-x: auto;
+    padding: var(--space-xs) 0 var(--space-sm);
+  }
+
+  .activity-week {
+    display: grid;
+    grid-template-rows: repeat(7, 1fr);
+    gap: 4px;
+  }
+
+  .activity-dot {
+    display: block;
+    width: 9px;
+    height: 9px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.045);
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .activity-dot--1 {
+    background: rgba(139, 105, 20, 0.9);
+    border-color: rgba(201, 162, 39, 0.22);
+  }
+
+  .activity-dot--2 {
+    background: rgba(201, 162, 39, 0.74);
+    border-color: rgba(212, 168, 75, 0.36);
+  }
+
+  .activity-dot--3 {
+    background: rgba(212, 168, 75, 0.92);
+    border-color: rgba(245, 245, 245, 0.22);
+    box-shadow: 0 0 8px rgba(201, 162, 39, 0.34);
+  }
+
+  .activity-dot--4 {
+    background: #f1d57a;
+    border-color: rgba(245, 245, 245, 0.36);
+    box-shadow: 0 0 12px rgba(212, 168, 75, 0.55);
+  }
+
+  .activity-dot:hover {
+    transform: scale(1.7);
+    border-color: var(--color-brass-light);
+  }
+
+  .activity-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    margin-top: var(--space-md);
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+  }
+
+  .activity-footer p {
+    margin: 0;
+  }
+
+  .activity-footer p span {
+    color: var(--color-brass-light);
+    margin-left: var(--space-xs);
+  }
+
+  .activity-legend {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+  }
   
   /* Featured Section */
   .featured, .latest {
@@ -410,6 +688,21 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     .featured-grid,
     .posts-grid {
       grid-template-columns: 1fr;
+    }
+
+    .activity-header,
+    .activity-footer {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .activity-stats {
+      flex-wrap: wrap;
+      white-space: normal;
+    }
+
+    .activity-panel {
+      padding: var(--space-md);
     }
   }
 </style>
