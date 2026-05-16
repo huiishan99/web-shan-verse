@@ -24,7 +24,7 @@
   "description": "",
   "dependencies": {
     "@astrojs/mdx": "^5.0.3",
-    "@astrojs/sitemap": "^3.6.0",
+    "@astrojs/sitemap": "^3.7.2",
     "astro": "^6.3.1"
   }
 }

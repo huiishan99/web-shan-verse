@@ -33,19 +33,19 @@ export const projectCategories: ProjectCategory[] = [
             },
             {
                 title: "AR Image tracking",
-                description: "",
+                description: "First Unity AR Foundation prototype for detecting reference images and placing interactive 3D content in an augmented reality scene.",
                 github: "https://github.com/huiishan99/unity-ar-image-tracking",
                 tags: ["Unity", "AR"]
             },
             {
                 title: "Mamba Project",
-                description: "",
+                description: "Unity VR project for the University of Aizu CFS03 Creative Factor Seminar, built around an Oculus/XR scene and human anatomy model assets.",
                 github: "https://github.com/huiishan99/uoa-cfs03-manba-project",
                 tags: ["Unity", "VR"]
             },
             {
                 title: "Master Project",
-                description: "",
+                description: "Unity VR prototype connected to my master's research workflow, focused on experimenting with immersive learning interactions.",
                 tags: ["Unity", "VR"]
             },
         ]
@@ -102,50 +102,50 @@ export const projectCategories: ProjectCategory[] = [
             },
             {
                 title: "Math-Note",
-                description: "",
+                description: "Full-stack AI math note prototype with a React/Vite frontend and FastAPI backend that analyzes handwritten or drawn math images with Gemini.",
                 github: "https://github.com/huiishan99/web-math-note",
                 website: "https://math-notes-clone.vercel.app/",
                 tags: ["Vite", "React", "TypeScript"]
             },
             {
                 title: "Yumemi Test",
-                description: "",
+                description: "React + Vite SPA for the Yumemi frontend coding test, visualizing Japanese prefecture population trends with Highcharts, API data, theme switching, and tests.",
                 github: "https://github.com/huiishan99/web-yumemi-test",
                 website: "https://web-yumemi-test.vercel.app/",
                 tags: ["TypeScript"]
             },
             {
                 title: "Falling Sand",
-                description: "",
+                description: "Interactive falling-sand sandbox built with p5.js and Vite, featuring modular material simulation, draggable controls, pause/step tools, tests, and GitHub Pages deployment.",
                 github: "https://github.com/huiishan99/web-falling-sand",
                 website: "https://huiishan99.github.io/web-falling-sand/",
                 tags: ["JavaScript"]
             },
             {
                 title: "Dark Light Toggle",
-                description: "",
+                description: "Small HTML, CSS, and JavaScript UI experiment implementing a dark/light mode toggle with a custom animated switch.",
                 github: "https://github.com/huiishan99/web-dark-light-toggle",
                 website: "https://huiishan99.github.io/web-dark-light-toggle/",
                 tags: ["JavaScript"]
             },
             {
                 title: "DreamLight",
-                description: "",
+                description: "Static promotional site for a BitSummit 2024 light-show and drone game concept, presenting the project idea, team, and contact information.",
                 github: "https://github.com/huiishan99/web-dreamlight",
                 website: "https://web-dreamlight.vercel.app/",
                 tags: ["HTML", "CSS"]
             },
             {
                 title: "Hexo Page",
-                description: "",
-                github: "https://github.com/huiishan99/web-hexo-page",
+                description: "Default Hexo 5 blog deployment experiment on Vercel, used to test static blog generation, archives, RSS, and theme structure.",
+                github: "",
                 website: "https://hexo-six-green.vercel.app/",
                 tags: ["Hexo", "JavaScript"]
             },
             {
                 title: "Notion Resume",
-                description: "",
-                github: "",
+                description: "Minimal Notion-based personal page and resume hub for organizing thoughts, projects, and resources.",
+                github: "https://github.com/huiishan99/web-notion-resume",
                 website: "",
                 tags: ["Notion", "CV"]
             }
