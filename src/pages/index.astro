@@ -3,7 +3,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Icon from '../components/Icon.astro';
 import { currentStatus } from '../data/status';
 import { timelineData } from '../data/timeline';
-import { projectPulseItems } from '../data/projects';
 import { getCollection } from 'astro:content';
 
 // 获取最新3篇博客文章
@@ -155,26 +154,6 @@ const milestoneSignalCount = visibleSignals.filter((signal) => signal.type === '
 const githubUsername = 'huiishan99';
 const githubProfileUrl = `https://github.com/${githubUsername}`;
 const githubContributionChartUrl = `https://ghchart.rshah.org/C9A227/${githubUsername}`;
-
-const pulseStatusMeta = {
-  active: { label: 'Active' },
-  research: { label: 'Research' },
-  paused: { label: 'Paused' },
-  archived: { label: 'Archived' },
-} as const;
-
-const pulseStatusOrder = ['active', 'research', 'paused', 'archived'] as const;
-const pulseStatusCounts = projectPulseItems.reduce<Record<string, number>>((acc, project) => {
-  acc[project.status] = (acc[project.status] || 0) + 1;
-  return acc;
-}, {});
-const pulseSummary = pulseStatusOrder
-  .map((status) => ({
-    status,
-    label: pulseStatusMeta[status].label,
-    count: pulseStatusCounts[status] || 0,
-  }))
-  .filter((item) => item.count > 0);
 
 // 提取文章第一段内容
 function getExcerpt(body: string, maxLength: number = 100): string {
@@ -375,49 +354,6 @@ function getExcerpt(body: string, maxLength: number = 100): string {
             ))}
           </ol>
         </aside>
-      </div>
-    </section>
-
-    <!-- Project Pulse -->
-    <section class="project-pulse">
-      <div class="project-pulse-header">
-        <div>
-          <p class="section-kicker">Project Pulse</p>
-          <h2>Current Build State</h2>
-        </div>
-        <div class="pulse-overview" aria-label="Project pulse summary">
-          {pulseSummary.map((item) => (
-            <span class={`pulse-overview-item pulse-overview-item--${item.status}`}>
-              <i></i>{item.count} {item.label}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      <div class="pulse-rail" aria-label="Project status highlights">
-        {projectPulseItems.map((project) => {
-          const status = pulseStatusMeta[project.status];
-
-          return (
-            <a class={`pulse-card pulse-card--${project.status}`} href={project.href}>
-              <div class="pulse-card-top">
-                <span class="pulse-status">
-                  <i></i>{status.label}
-                </span>
-                <span class="pulse-moment">{project.moment}</span>
-              </div>
-
-              <h3>{project.title}</h3>
-              <p>{project.summary}</p>
-
-              <div class="pulse-tags">
-                {project.tags.map((tag) => (
-                  <span>{tag}</span>
-                ))}
-              </div>
-            </a>
-          );
-        })}
       </div>
     </section>
     
@@ -1243,151 +1179,6 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     line-height: 1.35;
     transition: color 0.2s ease;
   }
-
-  .project-pulse {
-    padding: var(--space-lg) 0 var(--space-xl);
-  }
-
-  .project-pulse-header {
-    display: flex;
-    align-items: end;
-    justify-content: space-between;
-    gap: var(--space-lg);
-    margin-bottom: var(--space-md);
-  }
-
-  .project-pulse-header h2 {
-    margin-bottom: 0;
-  }
-
-  .pulse-overview {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    gap: var(--space-sm);
-    color: var(--color-text-muted);
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-  }
-
-  .pulse-overview-item,
-  .pulse-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    white-space: nowrap;
-  }
-
-  .pulse-overview-item i,
-  .pulse-status i {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--pulse-color);
-    box-shadow: 0 0 10px var(--pulse-glow);
-  }
-
-  .pulse-overview-item--active,
-  .pulse-card--active {
-    --pulse-color: rgba(106, 171, 255, 0.9);
-    --pulse-glow: rgba(106, 171, 255, 0.32);
-  }
-
-  .pulse-overview-item--research,
-  .pulse-card--research {
-    --pulse-color: rgba(201, 162, 39, 0.92);
-    --pulse-glow: rgba(201, 162, 39, 0.32);
-  }
-
-  .pulse-overview-item--paused,
-  .pulse-card--paused {
-    --pulse-color: rgba(184, 115, 51, 0.88);
-    --pulse-glow: rgba(184, 115, 51, 0.26);
-  }
-
-  .pulse-overview-item--archived,
-  .pulse-card--archived {
-    --pulse-color: rgba(136, 136, 136, 0.78);
-    --pulse-glow: rgba(136, 136, 136, 0.2);
-  }
-
-  .pulse-rail {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: var(--space-md);
-  }
-
-  .pulse-card {
-    display: grid;
-    grid-template-rows: auto auto 1fr auto;
-    gap: 0.65rem;
-    min-height: 16rem;
-    padding: var(--space-md);
-    color: var(--color-text-secondary);
-    text-decoration: none;
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 54%),
-      rgba(13, 13, 18, 0.58);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-top-color: var(--pulse-color);
-    transition:
-      border-color 0.2s ease,
-      box-shadow 0.2s ease,
-      transform 0.2s ease;
-  }
-
-  .pulse-card:hover {
-    border-color: color-mix(in srgb, var(--pulse-color), transparent 45%);
-    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
-    transform: translateY(-2px);
-  }
-
-  .pulse-card-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-sm);
-    color: var(--color-text-muted);
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-  }
-
-  .pulse-status {
-    color: var(--pulse-color);
-    text-transform: uppercase;
-  }
-
-  .pulse-moment {
-    text-align: right;
-  }
-
-  .pulse-card h3 {
-    margin-bottom: 0;
-    color: var(--color-text-primary);
-    font-family: var(--font-body);
-    font-size: 1rem;
-    line-height: 1.25;
-  }
-
-  .pulse-card p {
-    margin: 0;
-    color: var(--color-text-secondary);
-    font-size: 0.85rem;
-    line-height: 1.5;
-  }
-
-  .pulse-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-    margin-top: auto;
-  }
-
-  .pulse-tags span {
-    color: var(--color-text-muted);
-    font-family: var(--font-mono);
-    font-size: 0.64rem;
-  }
   
   /* Featured Section */
   .featured, .latest {
@@ -1518,43 +1309,6 @@ function getExcerpt(body: string, maxLength: number = 100): string {
       flex-direction: column;
     }
 
-    .project-pulse-header {
-      align-items: flex-start;
-      flex-direction: column;
-    }
-
-    .pulse-overview {
-      justify-content: flex-start;
-    }
-
-    .pulse-rail {
-      display: flex;
-      gap: var(--space-md);
-      overflow-x: auto;
-      overscroll-behavior-x: contain;
-      padding-bottom: var(--space-sm);
-      scrollbar-color: rgba(201, 162, 39, 0.46) rgba(255, 255, 255, 0.05);
-      scrollbar-width: thin;
-    }
-
-    .pulse-rail::-webkit-scrollbar {
-      height: 8px;
-    }
-
-    .pulse-rail::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, 0.04);
-    }
-
-    .pulse-rail::-webkit-scrollbar-thumb {
-      background: rgba(201, 162, 39, 0.42);
-      border-radius: 999px;
-    }
-
-    .pulse-card {
-      min-width: 260px;
-      max-width: 280px;
-    }
-
     .activity-stats {
       flex-wrap: wrap;
       white-space: normal;
@@ -1578,23 +1332,9 @@ function getExcerpt(body: string, maxLength: number = 100): string {
       padding: var(--space-md) 0 var(--space-lg);
     }
 
-    .project-pulse {
-      padding: var(--space-md) 0 var(--space-lg);
-    }
-
     .activity-stats {
       gap: var(--space-sm);
       font-size: 0.72rem;
-    }
-
-    .pulse-overview {
-      gap: 0.45rem var(--space-sm);
-      font-size: 0.68rem;
-    }
-
-    .pulse-card {
-      min-width: 245px;
-      min-height: 15rem;
     }
 
     .activity-chart {
