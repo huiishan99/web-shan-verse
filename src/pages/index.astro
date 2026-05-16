@@ -219,6 +219,23 @@ function getExcerpt(body: string, maxLength: number = 100): string {
             ))}
           </ul>
         </div>
+
+        <div class="observatory-companion" aria-label="Observatory companion">
+          <div class="companion-orbit" aria-hidden="true">
+            <span class="companion-star companion-star--one"></span>
+            <span class="companion-star companion-star--two"></span>
+            <div class="companion-device">
+              <span class="companion-lens"></span>
+              <span class="companion-ring"></span>
+              <span class="companion-needle"></span>
+            </div>
+            <span class="companion-base"></span>
+          </div>
+          <div class="companion-copy">
+            <span>Observatory online</span>
+            <small>Public signals calibrated</small>
+          </div>
+        </div>
       </aside>
     </section>
 
@@ -333,18 +350,6 @@ function getExcerpt(body: string, maxLength: number = 100): string {
               />
             </a>
             <p class="github-activity-note">Live chart from GitHub contribution data.</p>
-            <div class="repository-weather" data-repository-weather aria-live="polite">
-              <div class="repository-weather-meter" aria-hidden="true">
-                {Array.from({ length: 14 }).map(() => (
-                  <span class="repository-weather-segment"></span>
-                ))}
-              </div>
-              <div class="repository-weather-copy">
-                <span class="repository-weather-title">Observatory Weather</span>
-                <span class="repository-weather-description">Reading public GitHub signals...</span>
-              </div>
-              <span class="repository-weather-count">--</span>
-            </div>
           </div>
         </div>
 
@@ -551,121 +556,6 @@ function getExcerpt(body: string, maxLength: number = 100): string {
       root.replaceChildren(years, months, body);
     }
 
-    function recentContributionDays(contributions, days) {
-      const today = new Date();
-      const end = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
-      const start = addDays(end, -(days - 1));
-      const contributionByDate = new Map(
-        contributions.map((item) => [item.date, item])
-      );
-      const recentDays = [];
-
-      for (let date = start; date <= end; date = addDays(date, 1)) {
-        const key = toDateKey(date);
-        const contribution = contributionByDate.get(key);
-        recentDays.push({
-          date: new Date(date),
-          key,
-          count: Number(contribution?.count) || 0,
-        });
-      }
-
-      return recentDays;
-    }
-
-    function getWeatherTone(fortnightCount, activeDays, trend) {
-      if (fortnightCount === 0 || activeDays === 0) {
-        return {
-          tone: 'quiet',
-          title: 'Quiet Sky',
-          description: 'Public repository signals are calm this fortnight.',
-        };
-      }
-
-      if (activeDays <= 3) {
-        return {
-          tone: 'light',
-          title: 'Scattered Sparks',
-          description: 'A few public GitHub signals appeared across recent days.',
-        };
-      }
-
-      if (trend === 'rising') {
-        return {
-          tone: 'bright',
-          title: 'Rising Signal',
-          description: 'Recent public contribution signals are climbing.',
-        };
-      }
-
-      if (fortnightCount < 18 || trend === 'steady') {
-        return {
-          tone: 'steady',
-          title: 'Steady Signal',
-          description: 'Public GitHub activity is moving at a steady pace.',
-        };
-      }
-
-      return {
-        tone: 'bright',
-        title: 'Bright Passage',
-        description: 'Public contribution signals are bright, with visible daily variation.',
-      };
-    }
-
-    function renderRepositoryWeather(activity, contributions) {
-      const weather = activity.querySelector('[data-repository-weather]');
-      if (!weather) return;
-
-      const recent14 = recentContributionDays(contributions, 14);
-      const recent30 = recentContributionDays(contributions, 30);
-      const fortnightCount = recent14.reduce((total, day) => total + day.count, 0);
-      const monthCount = recent30.reduce((total, day) => total + day.count, 0);
-      const activeDays = recent14.filter((day) => day.count > 0).length;
-      const firstWeekCount = recent14.slice(0, 7).reduce((total, day) => total + day.count, 0);
-      const secondWeekCount = recent14.slice(7).reduce((total, day) => total + day.count, 0);
-      const trend = secondWeekCount > firstWeekCount * 1.18
-        ? 'rising'
-        : secondWeekCount < firstWeekCount * 0.72
-          ? 'cooling'
-          : 'steady';
-      const peakDay = recent14.reduce((peak, day) => day.count > peak.count ? day : peak, recent14[0]);
-      const maxCount = Math.max(...recent14.map((day) => day.count), 1);
-      const tone = getWeatherTone(fortnightCount, activeDays, trend);
-      const meter = weather.querySelector('.repository-weather-meter');
-
-      weather.dataset.tone = tone.tone;
-      weather.querySelector('.repository-weather-title').textContent = tone.title;
-      weather.querySelector('.repository-weather-description').textContent =
-        `${tone.description} Peak ${peakDay.count} on ${dateFormatter.format(peakDay.date)}.`;
-      weather.querySelector('.repository-weather-count').textContent = `${fortnightCount} / 14d`;
-      weather.title = `${monthCount} public GitHub contributions in the last 30 days. Trend: ${trend}.`;
-
-      if (meter) {
-        meter.replaceChildren();
-        recent14.forEach((day) => {
-          const segment = document.createElement('span');
-          segment.className = 'repository-weather-segment';
-          const level = day.count === 0
-            ? 0
-            : Math.max(1, Math.min(4, Math.ceil((day.count / maxCount) * 4)));
-          segment.dataset.level = String(level);
-          segment.title = `${dateFormatter.format(day.date)}: ${day.count} public contribution${day.count === 1 ? '' : 's'}`;
-          meter.append(segment);
-        });
-      }
-    }
-
-    function renderRepositoryWeatherFallback(activity) {
-      const weather = activity.querySelector('[data-repository-weather]');
-      if (!weather) return;
-
-      weather.dataset.tone = 'quiet';
-      weather.querySelector('.repository-weather-title').textContent = 'Signal Offline';
-      weather.querySelector('.repository-weather-description').textContent = 'Public GitHub weather is temporarily unavailable.';
-      weather.querySelector('.repository-weather-count').textContent = '--';
-    }
-
     async function setupGithubCalendar(root) {
       if (root.dataset.ready === 'true') return;
       root.dataset.ready = 'true';
@@ -684,13 +574,13 @@ function getExcerpt(body: string, maxLength: number = 100): string {
 
         const weeks = buildWeeks(start, end, data.contributions);
         renderCalendar(root, weeks);
-        renderRepositoryWeather(activity, data.contributions);
         activity.classList.add('is-enhanced');
+        activity.classList.remove('is-fallback');
       } catch (error) {
         console.warn('GitHub contribution calendar fallback:', error);
         root.dataset.ready = 'false';
         activity.classList.remove('is-enhanced');
-        renderRepositoryWeatherFallback(activity);
+        activity.classList.add('is-fallback');
       }
     }
 
@@ -775,6 +665,8 @@ function getExcerpt(body: string, maxLength: number = 100): string {
   .hero-status {
     width: auto;
     min-width: 200px;
+    display: grid;
+    gap: var(--space-md);
   }
   
   .status-card {
@@ -852,6 +744,193 @@ function getExcerpt(body: string, maxLength: number = 100): string {
 
   .status-list li a:hover {
     color: #d4af37;
+  }
+
+  .observatory-companion {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background:
+      radial-gradient(circle at 24% 24%, rgba(106, 171, 255, 0.08), transparent 34%),
+      rgba(13, 13, 18, 0.5);
+    border: 1px solid var(--color-border);
+    overflow: hidden;
+  }
+
+  .observatory-companion::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, transparent, rgba(201, 162, 39, 0.08), transparent);
+    opacity: 0;
+    transform: translateX(-40%);
+    transition: opacity 0.3s ease, transform 0.8s ease;
+  }
+
+  .observatory-companion:hover::before {
+    opacity: 1;
+    transform: translateX(40%);
+  }
+
+  .companion-orbit {
+    position: relative;
+    width: 4.2rem;
+    height: 4.2rem;
+    display: grid;
+    place-items: center;
+    isolation: isolate;
+  }
+
+  .companion-orbit::before {
+    content: '';
+    position: absolute;
+    inset: 0.35rem;
+    border: 1px solid rgba(201, 162, 39, 0.26);
+    border-radius: 50%;
+    animation: companion-spin 12s linear infinite;
+  }
+
+  .companion-device {
+    position: relative;
+    width: 2.4rem;
+    height: 2.4rem;
+    border: 1px solid rgba(201, 162, 39, 0.54);
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 50% 50%, rgba(106, 171, 255, 0.18), transparent 34%),
+      rgba(10, 10, 15, 0.86);
+    box-shadow:
+      0 0 18px rgba(106, 171, 255, 0.12),
+      inset 0 0 18px rgba(201, 162, 39, 0.08);
+    animation: companion-breathe 4.8s ease-in-out infinite;
+  }
+
+  .companion-lens {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0.62rem;
+    height: 0.62rem;
+    border-radius: 50%;
+    background: rgba(160, 200, 255, 0.9);
+    box-shadow:
+      0 0 10px rgba(106, 171, 255, 0.8),
+      0 0 22px rgba(106, 171, 255, 0.32);
+    transform: translate(-50%, -50%);
+  }
+
+  .companion-ring {
+    position: absolute;
+    inset: 0.38rem;
+    border: 1px dashed rgba(201, 162, 39, 0.42);
+    border-radius: 50%;
+    animation: companion-spin 9s linear infinite reverse;
+  }
+
+  .companion-needle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1.8rem;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(201, 162, 39, 0.95));
+    transform-origin: left center;
+    animation: companion-scan 5.6s ease-in-out infinite;
+  }
+
+  .companion-base {
+    position: absolute;
+    bottom: 0.24rem;
+    left: 50%;
+    width: 2.25rem;
+    height: 0.28rem;
+    border-radius: 999px;
+    background: rgba(201, 162, 39, 0.22);
+    box-shadow: 0 0 12px rgba(201, 162, 39, 0.16);
+    transform: translateX(-50%);
+  }
+
+  .companion-star {
+    position: absolute;
+    width: 0.24rem;
+    height: 0.24rem;
+    border-radius: 50%;
+    background: rgba(245, 225, 162, 0.8);
+    box-shadow: 0 0 10px rgba(201, 162, 39, 0.5);
+  }
+
+  .companion-star--one {
+    top: 0.45rem;
+    right: 0.55rem;
+    animation: companion-twinkle 2.6s ease-in-out infinite;
+  }
+
+  .companion-star--two {
+    left: 0.62rem;
+    bottom: 1.05rem;
+    animation: companion-twinkle 3.4s ease-in-out infinite 0.7s;
+  }
+
+  .companion-copy {
+    position: relative;
+    display: grid;
+    gap: 0.05rem;
+    min-width: 0;
+  }
+
+  .companion-copy span {
+    color: var(--color-text-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+  }
+
+  .companion-copy small {
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+  }
+
+  @keyframes companion-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes companion-breathe {
+    0%, 100% {
+      transform: scale(1);
+    }
+
+    50% {
+      transform: scale(1.04);
+    }
+  }
+
+  @keyframes companion-scan {
+    0%, 100% {
+      transform: rotate(-24deg);
+    }
+
+    50% {
+      transform: rotate(42deg);
+    }
+  }
+
+  @keyframes companion-twinkle {
+    0%, 100% {
+      opacity: 0.35;
+      transform: scale(0.85);
+    }
+
+    50% {
+      opacity: 1;
+      transform: scale(1.25);
+    }
   }
 
   .activity {
@@ -1138,6 +1217,14 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     display: block;
   }
 
+  .github-activity-frame .github-activity-fallback {
+    display: none;
+  }
+
+  .github-activity.is-fallback .github-activity-fallback {
+    display: block;
+  }
+
   .github-activity.is-enhanced .github-activity-fallback {
     display: none;
   }
@@ -1237,116 +1324,6 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     color: var(--color-text-muted);
     font-family: var(--font-mono);
     font-size: 0.65rem;
-  }
-
-  .repository-weather {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: center;
-    gap: var(--space-sm);
-    margin-top: var(--space-sm);
-    padding: 0.8rem 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
-    color: var(--color-text-muted);
-  }
-
-  .repository-weather-meter {
-    display: grid;
-    grid-template-columns: repeat(14, 5px);
-    gap: 3px;
-    width: max-content;
-  }
-
-  .repository-weather-meter :global(.repository-weather-segment) {
-    display: block;
-    width: 5px;
-    height: 18px;
-    border-radius: 2px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.045);
-    transform-origin: bottom;
-  }
-
-  .repository-weather-meter :global(.repository-weather-segment[data-level="1"]),
-  .repository-weather-meter :global(.repository-weather-segment[data-level="2"]),
-  .repository-weather-meter :global(.repository-weather-segment[data-level="3"]),
-  .repository-weather-meter :global(.repository-weather-segment[data-level="4"]) {
-    background: var(--weather-color);
-    border-color: rgba(245, 225, 162, 0.24);
-    box-shadow: 0 0 8px var(--weather-glow);
-  }
-
-  .repository-weather-meter :global(.repository-weather-segment[data-level="0"]) {
-    height: 6px;
-    align-self: end;
-  }
-
-  .repository-weather-meter :global(.repository-weather-segment[data-level="1"]) {
-    height: 8px;
-    align-self: end;
-    opacity: 0.42;
-  }
-
-  .repository-weather-meter :global(.repository-weather-segment[data-level="2"]) {
-    height: 11px;
-    align-self: end;
-    opacity: 0.58;
-  }
-
-  .repository-weather-meter :global(.repository-weather-segment[data-level="3"]) {
-    height: 15px;
-    align-self: end;
-    opacity: 0.78;
-  }
-
-  .repository-weather-meter :global(.repository-weather-segment[data-level="4"]) {
-    height: 18px;
-    align-self: end;
-    opacity: 0.96;
-  }
-
-  .repository-weather[data-tone="quiet"] {
-    --weather-color: rgba(136, 136, 136, 0.68);
-    --weather-glow: rgba(136, 136, 136, 0.18);
-  }
-
-  .repository-weather[data-tone="light"] {
-    --weather-color: rgba(184, 115, 51, 0.84);
-    --weather-glow: rgba(184, 115, 51, 0.22);
-  }
-
-  .repository-weather[data-tone="steady"] {
-    --weather-color: rgba(201, 162, 39, 0.88);
-    --weather-glow: rgba(201, 162, 39, 0.28);
-  }
-
-  .repository-weather[data-tone="bright"] {
-    --weather-color: rgba(212, 168, 75, 0.95);
-    --weather-glow: rgba(212, 168, 75, 0.34);
-  }
-
-  .repository-weather-copy {
-    display: grid;
-    gap: 0.1rem;
-    min-width: 0;
-  }
-
-  .repository-weather-title {
-    color: var(--color-text-secondary);
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    text-transform: uppercase;
-  }
-
-  .repository-weather-description,
-  .repository-weather-count {
-    color: var(--color-text-muted);
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-  }
-
-  .repository-weather-count {
-    white-space: nowrap;
   }
 
   .activity-log {
@@ -1602,14 +1579,6 @@ function getExcerpt(body: string, maxLength: number = 100): string {
 
     .github-activity-frame img {
       min-width: 520px;
-    }
-
-    .repository-weather {
-      grid-template-columns: auto minmax(0, 1fr);
-    }
-
-    .repository-weather-count {
-      grid-column: 2;
     }
 
     .github-calendar {
