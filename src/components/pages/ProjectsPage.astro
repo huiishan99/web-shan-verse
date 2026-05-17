@@ -134,20 +134,24 @@ function getProjectStatus(project: ProjectItem, category: ProjectCategory): Proj
   }
   
   .project-card {
-    background: var(--color-bg-card);
-    border: 1px solid var(--color-border);
+    background: var(--surface-glass);
+    border: 1px solid var(--surface-border);
+    border-radius: var(--surface-radius);
     position: relative;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--surface-shadow);
+    backdrop-filter: blur(var(--surface-blur));
+    -webkit-backdrop-filter: blur(var(--surface-blur));
     display: flex;
     flex-direction: column;
     overflow: hidden;
   }
   
   .project-card:hover {
-    border-color: rgba(201, 162, 39, 0.3);
+    background: var(--surface-glass-hover);
+    border-color: var(--surface-border-hover);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--surface-shadow-hover);
   }
   
   /* Featured 顶部高亮边框 + 居中文字 */
@@ -169,7 +173,7 @@ function getProjectStatus(project: ProjectItem, category: ProjectCategory): Proj
   }
   
   .project-card.featured {
-    border-color: rgba(201, 162, 39, 0.25);
+    border-color: rgba(201, 162, 39, 0.28);
   }
 
   .project-card--live {
@@ -307,6 +311,16 @@ function getProjectStatus(project: ProjectItem, category: ProjectCategory): Proj
   @media (max-width: 768px) {
     .projects-grid {
       grid-template-columns: 1fr;
+      gap: var(--space-md);
+      margin-top: var(--space-md);
+    }
+
+    .project-content {
+      padding: var(--space-md);
+    }
+
+    .project-image img {
+      height: 140px;
     }
   }
 </style>

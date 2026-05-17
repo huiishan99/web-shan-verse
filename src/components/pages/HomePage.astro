@@ -1614,19 +1614,23 @@ function getExcerpt(body: string, maxLength: number = 100): string {
   }
   
   .featured-card {
-    background: var(--color-bg-card);
-    border: 1px solid var(--color-border);
+    background: var(--surface-glass);
+    border: 1px solid var(--surface-border);
+    border-radius: var(--surface-radius);
     padding: var(--space-lg);
     text-align: center;
     text-decoration: none;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--surface-shadow);
+    backdrop-filter: blur(var(--surface-blur));
+    -webkit-backdrop-filter: blur(var(--surface-blur));
   }
   
   .featured-card:hover {
-    border-color: rgba(201, 162, 39, 0.35);
-    transform: translateY(-4px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    background: var(--surface-glass-hover);
+    border-color: var(--surface-border-hover);
+    transform: translateY(-3px);
+    box-shadow: var(--surface-shadow-hover);
   }
   
   .featured-icon {
@@ -1657,15 +1661,21 @@ function getExcerpt(body: string, maxLength: number = 100): string {
   .post-card {
     display: block;
     padding: var(--space-lg);
-    background: var(--color-bg-card);
-    border: 1px solid var(--color-border);
+    background: var(--surface-glass);
+    border: 1px solid var(--surface-border);
+    border-radius: var(--surface-radius);
     text-decoration: none;
     transition: all 0.3s ease;
+    box-shadow: var(--surface-shadow);
+    backdrop-filter: blur(var(--surface-blur));
+    -webkit-backdrop-filter: blur(var(--surface-blur));
   }
   
   .post-card:hover {
-    border-color: var(--color-brass);
+    background: var(--surface-glass-hover);
+    border-color: var(--surface-border-hover);
     transform: translateY(-2px);
+    box-shadow: var(--surface-shadow-hover);
   }
   
   .post-date {
@@ -1749,6 +1759,36 @@ function getExcerpt(body: string, maxLength: number = 100): string {
   }
 
   @media (max-width: 600px) {
+    .hero {
+      gap: var(--space-lg);
+      padding: var(--space-lg) 0;
+    }
+
+    .hero-actions {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .hero-actions .btn {
+      justify-content: center;
+    }
+
+    .featured,
+    .latest {
+      padding: var(--space-md) 0;
+    }
+
+    .featured-grid,
+    .posts-grid {
+      gap: var(--space-md);
+      margin-top: var(--space-md);
+    }
+
+    .featured-card,
+    .post-card {
+      padding: var(--space-md);
+    }
+
     .activity {
       padding: var(--space-md) 0 var(--space-lg);
     }
