@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Icon from '../components/Icon.astro';
+import SiteStats from '../components/SiteStats.astro';
 import { currentStatus } from '../data/status';
 import { timelineData } from '../data/timeline';
 import { getCollection } from 'astro:content';
@@ -12,6 +13,9 @@ const latestPosts = allPosts
   .slice(0, 3);
 
 type HomepagePetMood = 'idle' | 'waving' | 'failed';
+
+// Keep the homepage pet available for later without rendering it now.
+const showHomepagePet = false;
 
 // Change this to 'waving' or 'failed' when you want the homepage pet to react.
 // The pet uses a stable frame from each row; full-row playback flashes on some Codex Pet atlases.
@@ -249,19 +253,23 @@ function getExcerpt(body: string, maxLength: number = 100): string {
           </ul>
         </div>
 
-        <div
-          class="observatory-companion"
-          aria-label={`YoRHa companion pet, ${homepagePetMood}`}
-          role="button"
-          tabindex="0"
-          data-pet-mood={homepagePetMood}
-          data-pet-default-mood={homepagePetMood}
-          style={`--pet-row-offset: ${homepagePetRowOffset};`}
-        >
-          <div class="companion-pet" aria-hidden="true">
-            <span class="companion-sprite companion-sprite--yorha"></span>
+        <SiteStats variant="panel" eyebrow="Site Signal" title="Live Metrics" />
+
+        {showHomepagePet && (
+          <div
+            class="observatory-companion"
+            aria-label={`YoRHa companion pet, ${homepagePetMood}`}
+            role="button"
+            tabindex="0"
+            data-pet-mood={homepagePetMood}
+            data-pet-default-mood={homepagePetMood}
+            style={`--pet-row-offset: ${homepagePetRowOffset};`}
+          >
+            <div class="companion-pet" aria-hidden="true">
+              <span class="companion-sprite companion-sprite--yorha"></span>
+            </div>
           </div>
-        </div>
+        )}
       </aside>
     </section>
 

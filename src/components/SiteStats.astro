@@ -1,20 +1,43 @@
 ---
-const statsEndpoint = import.meta.env.PUBLIC_SITE_STATS_ENDPOINT || '/api/site-stats';
+interface Props {
+  variant?: 'footer' | 'panel';
+  eyebrow?: string;
+  title?: string;
+}
+
+const {
+  variant = 'footer',
+  eyebrow = 'Site Signal',
+  title = 'Live Metrics',
+} = Astro.props;
+
+const statsEndpoint = import.meta.env.PUBLIC_SITE_STATS_ENDPOINT
+  || (import.meta.env.DEV
+    ? 'https://shan-verse-site-stats.huiishan99.workers.dev/api/site-stats'
+    : '/api/site-stats');
 ---
 
-<div class="site-stats" data-site-stats data-endpoint={statsEndpoint} aria-live="polite">
-  <span class="site-stat">
-    <span class="site-stat-value" data-site-stat="views">--</span>
-    <span class="site-stat-label">Views</span>
-  </span>
-  <span class="site-stat">
-    <span class="site-stat-value" data-site-stat="visitors">--</span>
-    <span class="site-stat-label">Visitors</span>
-  </span>
-  <span class="site-stat site-stat--online">
-    <span class="site-stat-value" data-site-stat="online">--</span>
-    <span class="site-stat-label">Online</span>
-  </span>
+<div class:list={['site-stats', `site-stats--${variant}`]} data-site-stats data-endpoint={statsEndpoint} aria-live="polite">
+  {variant === 'panel' && (
+    <div class="site-stats-header">
+      <span>{eyebrow}</span>
+      <strong>{title}</strong>
+    </div>
+  )}
+  <div class="site-stats-grid">
+    <span class="site-stat">
+      <span class="site-stat-value" data-site-stat="views">--</span>
+      <span class="site-stat-label">Views</span>
+    </span>
+    <span class="site-stat">
+      <span class="site-stat-value" data-site-stat="visitors">--</span>
+      <span class="site-stat-label">Visitors</span>
+    </span>
+    <span class="site-stat site-stat--online">
+      <span class="site-stat-value" data-site-stat="online">--</span>
+      <span class="site-stat-label">Online</span>
+    </span>
+  </div>
 </div>
 
 <script>
@@ -117,15 +140,71 @@ const statsEndpoint = import.meta.env.PUBLIC_SITE_STATS_ENDPOINT || '/api/site-s
 
 <style>
   .site-stats {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.65rem 1rem;
-    margin-top: 0.9rem;
     color: var(--color-text-muted);
     font-family: var(--font-mono);
     font-size: 0.72rem;
     line-height: 1.4;
+  }
+
+  .site-stats--footer {
+    margin-top: 0.9rem;
+  }
+
+  .site-stats-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.65rem 1rem;
+  }
+
+  .site-stats--panel {
+    position: relative;
+    padding: var(--space-md);
+    background:
+      linear-gradient(135deg, rgba(106, 171, 255, 0.08), transparent 44%),
+      rgba(13, 13, 18, 0.58);
+    border: 1px solid rgba(106, 171, 255, 0.2);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.18);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
+  .site-stats--panel::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border: 1px solid rgba(201, 162, 39, 0.16);
+    pointer-events: none;
+    transform: translate(0.28rem, 0.28rem);
+  }
+
+  .site-stats-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+    padding-bottom: var(--space-xs);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .site-stats-header span {
+    color: var(--color-brass);
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .site-stats-header strong {
+    color: var(--color-text-secondary);
+    font-size: 0.72rem;
+    font-weight: 500;
+  }
+
+  .site-stats--panel .site-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.65rem;
   }
 
   .site-stat {
@@ -135,6 +214,15 @@ const statsEndpoint = import.meta.env.PUBLIC_SITE_STATS_ENDPOINT || '/api/site-s
     min-width: 0;
   }
 
+  .site-stats--panel .site-stat {
+    display: grid;
+    gap: 0.16rem;
+    align-items: start;
+    padding: 0.4rem 0.45rem;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
   .site-stat-value {
     color: var(--color-brass-light);
     font-weight: 500;
@@ -142,10 +230,21 @@ const statsEndpoint = import.meta.env.PUBLIC_SITE_STATS_ENDPOINT || '/api/site-s
     text-align: right;
   }
 
+  .site-stats--panel .site-stat-value {
+    color: rgba(198, 221, 255, 0.95);
+    font-size: clamp(1rem, 2vw, 1.28rem);
+    text-align: left;
+  }
+
   .site-stat-label {
     color: var(--color-text-muted);
     letter-spacing: 0.04em;
     text-transform: uppercase;
+  }
+
+  .site-stats--panel .site-stat-label {
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
   }
 
   .site-stat--online .site-stat-value::before {
@@ -169,10 +268,38 @@ const statsEndpoint = import.meta.env.PUBLIC_SITE_STATS_ENDPOINT || '/api/site-s
     box-shadow: none;
   }
 
+  @media (max-width: 900px) {
+    .site-stats--panel .site-stats-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
   @media (max-width: 560px) {
     .site-stats {
-      gap: 0.5rem 0.85rem;
       font-size: 0.68rem;
+    }
+
+    .site-stats-grid {
+      gap: 0.5rem 0.85rem;
+    }
+
+    .site-stats--panel {
+      padding: var(--space-sm);
+    }
+
+    .site-stats-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.18rem;
+    }
+
+    .site-stats--panel .site-stats-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .site-stats--panel .site-stat {
+      grid-template-columns: auto 1fr;
+      align-items: baseline;
     }
   }
 </style>
