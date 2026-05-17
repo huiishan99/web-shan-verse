@@ -235,7 +235,10 @@ function getExcerpt(body: string, maxLength: number = 100): string {
         <div
           class="observatory-companion"
           aria-label={`YoRHa companion pet, ${homepagePetMood}`}
+          role="button"
+          tabindex="0"
           data-pet-mood={homepagePetMood}
+          data-pet-default-mood={homepagePetMood}
           style={`--pet-row-offset: ${homepagePetRowOffset};`}
         >
           <div class="companion-pet" aria-hidden="true">
@@ -601,6 +604,131 @@ function getExcerpt(body: string, maxLength: number = 100): string {
   })();
 </script>
 
+<script is:inline>
+  (() => {
+    if (window.__shanHomepagePetReady) return;
+    window.__shanHomepagePetReady = true;
+
+    const rowOffsets = {
+      idle: '0%',
+      waving: '12.5%',
+      failed: '100%',
+    };
+
+    function setupHomepagePet(root) {
+      if (!(root instanceof HTMLElement) || root.dataset.petReady === 'true') return;
+      root.dataset.petReady = 'true';
+
+      const defaultMood = root.dataset.petDefaultMood || 'idle';
+      let restoreTimer = 0;
+      let clickTimer = 0;
+      let dragStartX = 0;
+      let dragStartY = 0;
+      let dragX = 0;
+      let dragY = 0;
+      let moved = false;
+      let ignoredClick = false;
+
+      function setMood(mood, options = {}) {
+        const offset = rowOffsets[mood] || rowOffsets.idle;
+        root.dataset.petMood = mood;
+        root.style.setProperty('--pet-row-offset', offset);
+
+        window.clearTimeout(restoreTimer);
+        if (options.restoreAfter) {
+          restoreTimer = window.setTimeout(() => {
+            root.classList.remove('is-waving', 'is-failed');
+            setMood(defaultMood);
+          }, options.restoreAfter);
+        }
+      }
+
+      function wave() {
+        root.classList.remove('is-failed');
+        root.classList.add('is-waving');
+        setMood('waving', { restoreAfter: 1200 });
+      }
+
+      function fail() {
+        root.classList.remove('is-waving');
+        root.classList.add('is-failed');
+        setMood('failed', { restoreAfter: 1600 });
+      }
+
+      function updateDrag() {
+        root.style.setProperty('--pet-drag-x', `${dragX}px`);
+        root.style.setProperty('--pet-drag-y', `${dragY}px`);
+      }
+
+      root.addEventListener('pointerdown', (event) => {
+        if (event.button !== 0) return;
+        moved = false;
+        dragStartX = event.clientX - dragX;
+        dragStartY = event.clientY - dragY;
+        root.classList.add('is-dragging');
+        root.setPointerCapture?.(event.pointerId);
+      });
+
+      root.addEventListener('pointermove', (event) => {
+        if (!root.classList.contains('is-dragging')) return;
+
+        const nextX = event.clientX - dragStartX;
+        const nextY = event.clientY - dragStartY;
+        if (Math.abs(nextX - dragX) > 2 || Math.abs(nextY - dragY) > 2) {
+          moved = true;
+        }
+
+        dragX = nextX;
+        dragY = nextY;
+        updateDrag();
+      });
+
+      function endDrag(event) {
+        if (!root.classList.contains('is-dragging')) return;
+        root.classList.remove('is-dragging');
+        root.releasePointerCapture?.(event.pointerId);
+        ignoredClick = moved;
+      }
+
+      root.addEventListener('pointerup', endDrag);
+      root.addEventListener('pointercancel', endDrag);
+
+      root.addEventListener('click', () => {
+        if (ignoredClick) {
+          ignoredClick = false;
+          return;
+        }
+
+        window.clearTimeout(clickTimer);
+        clickTimer = window.setTimeout(wave, 180);
+      });
+
+      root.addEventListener('dblclick', () => {
+        window.clearTimeout(clickTimer);
+        fail();
+      });
+
+      root.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          wave();
+        }
+      });
+
+      setMood(defaultMood);
+    }
+
+    function setupHomepagePets() {
+      document
+        .querySelectorAll('.observatory-companion[data-pet-mood]')
+        .forEach(setupHomepagePet);
+    }
+
+    setupHomepagePets();
+    document.addEventListener('astro:page-load', setupHomepagePets);
+  })();
+</script>
+
 <style>
   .hero {
     display: grid;
@@ -762,7 +890,29 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     padding: 0.25rem;
     background: transparent;
     border: 0;
+    cursor: grab;
     overflow: visible;
+    touch-action: none;
+    transform: translate3d(var(--pet-drag-x, 0), var(--pet-drag-y, 0), 0);
+    transition: filter 0.2s ease, transform 0.18s ease;
+    user-select: none;
+    z-index: 2;
+  }
+
+  .observatory-companion:hover,
+  .observatory-companion:focus-visible {
+    filter: brightness(1.08);
+  }
+
+  .observatory-companion:focus-visible {
+    outline: 1px solid rgba(201, 162, 39, 0.55);
+    outline-offset: 0.35rem;
+  }
+
+  .observatory-companion.is-dragging {
+    cursor: grabbing;
+    transition: filter 0.2s ease;
+    z-index: 6;
   }
 
   .observatory-companion::before {
@@ -823,6 +973,23 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     background-image: url('/pets/yorha-sit-2b/spritesheet.webp');
   }
 
+  .observatory-companion:hover .companion-sprite,
+  .observatory-companion:focus-visible .companion-sprite {
+    animation-duration: 2.1s;
+  }
+
+  .observatory-companion.is-waving .companion-sprite {
+    animation: companion-wave 0.6s ease-in-out 2;
+  }
+
+  .observatory-companion.is-failed .companion-sprite {
+    animation: companion-shake 0.18s ease-in-out 7;
+  }
+
+  .observatory-companion.is-dragging .companion-sprite {
+    animation: companion-drag-bob 0.48s ease-in-out infinite;
+  }
+
   @keyframes companion-float {
     0%, 100% {
       transform: translateY(0) rotate(-0.6deg);
@@ -840,6 +1007,44 @@ function getExcerpt(body: string, maxLength: number = 100): string {
 
     50% {
       transform: scale(1.035);
+    }
+  }
+
+  @keyframes companion-wave {
+    0%, 100% {
+      transform: translateY(0) rotate(0) scale(1);
+    }
+
+    35% {
+      transform: translateY(-0.12rem) rotate(-4deg) scale(1.04);
+    }
+
+    70% {
+      transform: translateY(0.04rem) rotate(3deg) scale(1.02);
+    }
+  }
+
+  @keyframes companion-shake {
+    0%, 100% {
+      transform: translateX(0) rotate(0);
+    }
+
+    35% {
+      transform: translateX(-0.12rem) rotate(-1.8deg);
+    }
+
+    70% {
+      transform: translateX(0.12rem) rotate(1.8deg);
+    }
+  }
+
+  @keyframes companion-drag-bob {
+    0%, 100% {
+      transform: translateY(0) scale(1.02);
+    }
+
+    50% {
+      transform: translateY(-0.2rem) scale(1.04);
     }
   }
 
