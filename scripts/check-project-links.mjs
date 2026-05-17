@@ -7,6 +7,7 @@ const WARNING_STATUSES = new Set([401, 403]);
 function loadProjectCategories(source) {
   const executableSource = source
     .replace(/export interface\s+\w+\s*\{[\s\S]*?\n\}/g, '')
+    .replace(/export type\s+\w+\s*=[\s\S]*?;\n/g, '')
     .replace(
       /export const projectCategories:\s*ProjectCategory\[\]\s*=/,
       'const projectCategories ='
