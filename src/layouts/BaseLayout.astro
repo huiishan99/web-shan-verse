@@ -86,6 +86,7 @@ const currentPath = Astro.url.pathname;
                   class:list={['language-link', { 'is-active': locale === lang }]}
                   aria-label={localeNames[locale]}
                   aria-current={locale === lang ? 'page' : undefined}
+                  lang={locale}
                   title={localeNames[locale]}
                 >
                   {localeShortNames[locale]}
@@ -275,10 +276,11 @@ const currentPath = Astro.url.pathname;
     padding: 0.08rem 0.3rem;
     border-radius: 999px;
     color: rgba(207, 205, 199, 0.52);
-    font-family: var(--font-mono);
-    font-size: 0.64rem;
-    letter-spacing: 0;
-    line-height: 1;
+    font-family: var(--font-body);
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    line-height: 1.05;
     text-align: center;
     text-decoration: none;
     transition:
@@ -294,6 +296,14 @@ const currentPath = Astro.url.pathname;
   .language-link.is-active {
     color: rgba(244, 238, 222, 0.92);
     background: rgba(201, 162, 39, 0.14);
+  }
+
+  .language-link[lang='zh'],
+  .language-link[lang='ja'] {
+    font-family: var(--font-cjk);
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0;
   }
   
   .nav-links a:hover::after {
