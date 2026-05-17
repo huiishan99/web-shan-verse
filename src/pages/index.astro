@@ -108,6 +108,23 @@ function formatActivityMonthYear(date: Date): string {
   });
 }
 
+function filterCrowdedMonthLabels(labels: string[], minGap: number = 3): string[] {
+  const filteredLabels = [...labels];
+  let previousLabelIndex = -1;
+
+  labels.forEach((label, index) => {
+    if (!label) return;
+
+    if (previousLabelIndex >= 0 && index - previousLabelIndex < minGap) {
+      filteredLabels[previousLabelIndex] = '';
+    }
+
+    previousLabelIndex = index;
+  });
+
+  return filteredLabels;
+}
+
 const today = startOfDay(new Date());
 const gridEnd = addDays(today, 6 - today.getUTCDay());
 const gridStart = addDays(gridEnd, -(52 * 7 - 1));
@@ -134,14 +151,14 @@ const activityWeeks = Array.from({ length: 52 }, (_, weekIndex) =>
   })
 );
 
-const activityMonthLabels = activityWeeks.map((week, weekIndex) => {
+const activityMonthLabels = filterCrowdedMonthLabels(activityWeeks.map((week, weekIndex) => {
   const firstOfMonth = week.find((day) => day.date.getUTCDate() === 1);
   const labelDate = firstOfMonth?.date || (weekIndex === 0 ? week[0].date : null);
 
   return labelDate
     ? labelDate.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' })
     : '';
-});
+}));
 
 const activityYearLabels = activityWeeks.map((week, weekIndex) => {
   const firstOfYear = week.find((day) => day.date.getUTCMonth() === 0 && day.date.getUTCDate() === 1);
@@ -500,15 +517,37 @@ function getExcerpt(body: string, maxLength: number = 100): string {
       return weeks;
     }
 
-    function createLabelRow(className, weeks, getLabelDate) {
+    function filterCrowdedLabels(labels, minGap = 3) {
+      const filteredLabels = [...labels];
+      let previousLabelIndex = -1;
+
+      labels.forEach((label, index) => {
+        if (!label) return;
+
+        if (previousLabelIndex >= 0 && index - previousLabelIndex < minGap) {
+          filteredLabels[previousLabelIndex] = '';
+        }
+
+        previousLabelIndex = index;
+      });
+
+      return filteredLabels;
+    }
+
+    function createLabelRow(className, weeks, getLabelDate, options = {}) {
       const row = document.createElement('div');
       row.className = className;
       row.setAttribute('aria-hidden', 'true');
 
-      weeks.forEach((week, weekIndex) => {
+      const labels = weeks.map((week, weekIndex) => {
         const labelDate = getLabelDate(week, weekIndex);
+        return labelDate ? labelDate : '';
+      });
+      const visibleLabels = options.filterCrowded ? filterCrowdedLabels(labels) : labels;
+
+      visibleLabels.forEach((labelText) => {
         const label = document.createElement('span');
-        label.textContent = labelDate ? labelDate : '';
+        label.textContent = labelText;
         row.append(label);
       });
 
@@ -528,7 +567,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
         const firstOfMonth = week.find((day) => day.date.getUTCDate() === 1);
         const labelDate = firstOfMonth?.date || (weekIndex === 0 ? week[0]?.date : null);
         return labelDate ? monthFormatter.format(labelDate) : '';
-      });
+      }, { filterCrowded: true });
 
       const weekdays = document.createElement('div');
       weekdays.className = 'github-calendar-weekdays';
