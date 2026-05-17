@@ -77,7 +77,7 @@ const currentPath = Astro.url.pathname;
               <li><a href={localizePath('/about', lang)}>{t.nav.about}</a></li>
               <li><a href={localizePath('/projects', lang)}>{t.nav.projects}</a></li>
               <li><a href={localizePath('/timeline', lang)}>{t.nav.timeline}</a></li>
-              <li><a href="/blog">{t.nav.blog}</a></li>
+              <li><a href={localizePath('/blog', lang)}>{t.nav.blog}</a></li>
             </ul>
             <div class="language-switcher" aria-label={t.nav.languageSwitcher}>
               {locales.map((locale) => (

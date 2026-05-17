@@ -448,7 +448,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
           <p>{t.home.webDesc}</p>
         </a>
         
-        <a href="/blog" class="featured-card">
+        <a href={localizePath('/blog', lang)} class="featured-card">
           <div class="featured-icon"><Icon name="pen" size={28} /></div>
           <h3>{t.home.blogTitle}</h3>
           <p>{t.home.blogDesc}</p>
@@ -481,7 +481,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
       </div>
       
       <div class="posts-action">
-        <a href="/blog" class="btn">
+        <a href={localizePath('/blog', lang)} class="btn">
           <span>→</span> {t.home.viewAllPosts}
         </a>
       </div>
