@@ -21,14 +21,14 @@ export const currentStatus = {
   //            Learning | Vacation | Resting | Busy
   badge: {
     en: "New Employee",
-    zh: "新入职员工",
-    ja: "新卒エンジニア"
+    zh: "新员工",
+    ja: "新入社員"
   },
   
   // 状态列表 - 添加/删除/修改都很容易
   items: [
     { icon: "briefcase", text: "Alps Alpine Co., Ltd", url: "https://www.alpsalpine.com" },
-    { icon: "map", text: { en: "Iwaki, Japan", zh: "日本磐城市", ja: "日本・いわき市" }, url: "https://www.google.com/maps/place/Iwaki" },
+    { icon: "map", text: { en: "Iwaki, Japan", zh: "日本磐城", ja: "いわき市、日本" }, url: "https://www.google.com/maps/place/Iwaki" },
     { icon: "gamepad", text: { en: "Embedded Software Development", zh: "嵌入式软件开发", ja: "組込みソフトウェア開発" } },
   ] as StatusItem[]
 };
