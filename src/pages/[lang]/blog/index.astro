@@ -1,0 +1,15 @@
+---
+import BlogIndexPage from '../../../components/pages/BlogIndexPage.astro';
+import { translatedLocales } from '../../../i18n/config';
+
+export function getStaticPaths() {
+  return translatedLocales.map((lang) => ({
+    params: { lang },
+    props: { lang },
+  }));
+}
+
+const { lang } = Astro.props;
+---
+
+<BlogIndexPage lang={lang} />
