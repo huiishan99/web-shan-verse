@@ -5,7 +5,8 @@ const COUNTER_KEYS = {
 
 const ONLINE_CACHE_KEY = 'cache:online';
 const ACTIVE_TTL_SECONDS = 300;
-const ONLINE_CACHE_TTL_SECONDS = 180;
+const ACTIVE_REFRESH_INTERVAL_MS = 240000;
+const ONLINE_CACHE_TTL_SECONDS = 300;
 const DEFAULT_ALLOWED_ORIGINS = [
   'https://shan-verse.com',
   'https://www.shan-verse.com',
@@ -75,10 +76,25 @@ async function getCounter(kv, key) {
   return Number.isFinite(value) && value > 0 ? value : 0;
 }
 
-async function incrementCounter(kv, key) {
-  const nextValue = (await getCounter(kv, key)) + 1;
+async function incrementCounter(kv, key, currentValue) {
+  const baseValue = Number.isFinite(currentValue) && currentValue >= 0
+    ? currentValue
+    : await getCounter(kv, key);
+  const nextValue = baseValue + 1;
   await kv.put(key, String(nextValue));
   return nextValue;
+}
+
+async function refreshActiveVisitor(kv, key) {
+  const now = Date.now();
+  const lastActiveAt = Number(await kv.get(key));
+  if (Number.isFinite(lastActiveAt) && now - lastActiveAt < ACTIVE_REFRESH_INTERVAL_MS) {
+    return;
+  }
+
+  await kv.put(key, String(now), {
+    expirationTtl: ACTIVE_TTL_SECONDS,
+  });
 }
 
 async function listAllKeys(kv, prefix) {
@@ -124,7 +140,7 @@ async function handleStats(request, env) {
   let visitors = await getCounter(env.SITE_STATS, COUNTER_KEYS.visitors);
 
   if (request.method === 'POST' && eventType === 'pageview') {
-    views = await incrementCounter(env.SITE_STATS, COUNTER_KEYS.views);
+    views = await incrementCounter(env.SITE_STATS, COUNTER_KEYS.views, views);
   }
 
   const visitorSeen = await env.SITE_STATS.get(visitorKey);
@@ -132,12 +148,10 @@ async function handleStats(request, env) {
     await env.SITE_STATS.put(visitorKey, JSON.stringify({
       firstSeenAt: new Date().toISOString(),
     }));
-    visitors = await incrementCounter(env.SITE_STATS, COUNTER_KEYS.visitors);
+    visitors = await incrementCounter(env.SITE_STATS, COUNTER_KEYS.visitors, visitors);
   }
 
-  await env.SITE_STATS.put(activeKey, String(Date.now()), {
-    expirationTtl: ACTIVE_TTL_SECONDS,
-  });
+  await refreshActiveVisitor(env.SITE_STATS, activeKey);
 
   return jsonResponse({
     ok: true,
