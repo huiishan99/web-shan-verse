@@ -17,10 +17,9 @@ const {
   labels = {},
 } = Astro.props;
 
-const statsEndpoint = import.meta.env.PUBLIC_SITE_STATS_ENDPOINT
-  || (import.meta.env.DEV
-    ? 'https://shan-verse-site-stats.huiishan99.workers.dev/api/site-stats'
-    : '/api/site-stats');
+const statsEndpoint = import.meta.env.PROD
+  ? (import.meta.env.PUBLIC_SITE_STATS_ENDPOINT || '/api/site-stats')
+  : '';
 ---
 
 <div class:list={['site-stats', `site-stats--${variant}`]} data-site-stats data-endpoint={statsEndpoint} aria-live="polite">
@@ -55,7 +54,7 @@ const statsEndpoint = import.meta.env.PUBLIC_SITE_STATS_ENDPOINT
   if (!globalWindow.__shanSiteStatsReady) {
     globalWindow.__shanSiteStatsReady = true;
 
-    const heartbeatMs = 120000;
+    const heartbeatMs = 240000;
     let heartbeatTimer = 0;
     let unavailableLogged = false;
 
@@ -97,6 +96,7 @@ const statsEndpoint = import.meta.env.PUBLIC_SITE_STATS_ENDPOINT
       const root = document.querySelector<HTMLElement>('[data-site-stats]');
       const endpoint = root?.dataset.endpoint;
       if (!endpoint) return;
+      if (document.visibilityState === 'hidden') return;
 
       const path = `${window.location.pathname}${window.location.search}`;
       if (eventType === 'pageview' && globalWindow.__shanSiteStatsLastPath === path) {
@@ -140,6 +140,11 @@ const statsEndpoint = import.meta.env.PUBLIC_SITE_STATS_ENDPOINT
     }
 
     trackPageview();
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        sendStatsEvent('heartbeat');
+      }
+    });
     document.addEventListener('astro:page-load', trackPageview);
   }
 </script>

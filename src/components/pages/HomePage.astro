@@ -19,6 +19,8 @@ const dateLocale: Record<Locale, string> = {
   zh: 'zh-CN',
   ja: 'ja-JP',
 };
+const activityLabelLocale = 'en-US';
+const activityWeekdayLabels = ['', 'Mon', '', 'Wed', '', 'Fri', ''];
 
 // 获取最新3篇博客文章
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
@@ -121,7 +123,7 @@ function formatActivityDate(date: Date): string {
 }
 
 function formatActivityMonthYear(date: Date): string {
-  return date.toLocaleDateString(dateLocale[lang], {
+  return date.toLocaleDateString(activityLabelLocale, {
     month: 'short',
     year: 'numeric',
     timeZone: 'UTC',
@@ -176,7 +178,7 @@ const activityMonthLabels = filterCrowdedMonthLabels(activityWeeks.map((week, we
   const labelDate = firstOfMonth?.date || (weekIndex === 0 ? week[0].date : null);
 
   return labelDate
-    ? labelDate.toLocaleDateString(dateLocale[lang], { month: 'short', timeZone: 'UTC' })
+    ? labelDate.toLocaleDateString(activityLabelLocale, { month: 'short', timeZone: 'UTC' })
     : '';
 }));
 
@@ -325,7 +327,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
 
               <div class="activity-calendar">
                 <div class="activity-weekdays" aria-hidden="true">
-                  {t.home.weekdays.map((day) => (
+                  {activityWeekdayLabels.map((day) => (
                     <span>{day}</span>
                   ))}
                 </div>
@@ -495,15 +497,9 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     window.__shanGithubCalendarReady = true;
 
     const API_ROOT = 'https://github-contributions-api.jogruber.de/v4/';
-    const pageLocale = document.documentElement.lang || 'en';
-    const WEEKDAY_LABELS = {
-      en: ['', 'Mon', '', 'Wed', '', 'Fri', ''],
-      zh: ['', '周一', '', '周三', '', '周五', ''],
-      ja: ['', '月', '', '水', '', '金', ''],
-    };
-    const WEEKDAYS = WEEKDAY_LABELS[pageLocale] || WEEKDAY_LABELS.en;
-    const monthFormatter = new Intl.DateTimeFormat(pageLocale, { month: 'short', timeZone: 'UTC' });
-    const dateFormatter = new Intl.DateTimeFormat(pageLocale, {
+    const WEEKDAYS = ['', 'Mon', '', 'Wed', '', 'Fri', ''];
+    const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', timeZone: 'UTC' });
+    const dateFormatter = new Intl.DateTimeFormat('en-US', {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
