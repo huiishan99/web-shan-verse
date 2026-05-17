@@ -1,0 +1,312 @@
+﻿---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Icon from '../Icon.astro';
+import { projectCategories } from '../../data/projects';
+import type { ProjectCategory, ProjectItem, ProjectStatus } from '../../data/projects';
+import { defaultLocale, localizeString, type Locale } from '../../i18n/config';
+import { useTranslations } from '../../i18n/ui';
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = defaultLocale } = Astro.props;
+const t = useTranslations(lang);
+const statusMeta = Object.fromEntries(
+  Object.entries(t.projects.status).map(([status, [label, title]]) => [status, { label, title }])
+) as Record<ProjectStatus, { label: string; title: string }>;
+
+function getProjectStatus(project: ProjectItem, category: ProjectCategory): ProjectStatus {
+  if (project.status) return project.status;
+  if (category.id === 'publications') return 'publication';
+  if (!project.github && !project.website) return 'private';
+  if (category.id === 'school') return 'coursework';
+  if (category.id === 'vr') return 'prototype';
+  if (category.id === 'unity') return project.website ? 'live' : 'practice';
+  if (category.id === 'other') return 'practice';
+  if (project.website) return 'live';
+  return 'archive';
+}
+---
+
+<BaseLayout title={t.projects.title} lang={lang}>
+  <div class="container">
+    <header class="page-header">
+      <h1>{t.projects.title}</h1>
+      <p class="subtitle">{t.projects.subtitle}</p>
+    </header>
+    
+    {projectCategories.map((category) => (
+      <section class="project-section" id={category.id}>
+        <h2>
+          <Icon name={category.icon} size={24} />
+          {localizeString(category.title, lang)}
+        </h2>
+        
+        <div class="projects-grid">
+          {category.items.map((project) => {
+            const status = getProjectStatus(project, category);
+            const meta = statusMeta[status];
+
+            return (
+              <article class={`project-card project-card--${status} ${project.featured ? 'featured' : ''}`}>
+                {project.featured && <div class="featured-banner">{t.projects.featured}</div>}
+                
+                {project.image && (
+                  <div class="project-image">
+                    <img src={project.image} alt={localizeString(project.title, lang)} />
+                  </div>
+                )}
+                
+                <div class="project-content">
+                  <div class="project-meta-row">
+                    <span class={`project-status project-status--${status}`} title={meta.title}>
+                      <i></i>{meta.label}
+                    </span>
+                  </div>
+
+                  <div class="project-header">
+                    <h3>{localizeString(project.title, lang)}</h3>
+                    <div class="project-links">
+                      {project.github && (
+                        <a href={project.github} target="_blank" class="icon-link" title={t.projects.sourceTitle}>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                          </svg>
+                        </a>
+                      )}
+                      {project.website && (
+                        <a href={project.website} target="_blank" class="icon-link" title={t.projects.siteTitle}>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>
+                          </svg>
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <p class="project-desc">{localizeString(project.description, lang)}</p>
+                  
+                  {project.tags && project.tags.length > 0 && (
+                    <div class="project-tags">
+                      {project.tags.map((tag) => (
+                        <span class="tag">{localizeString(tag, lang)}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+    ))}
+  </div>
+</BaseLayout>
+
+<style>
+  .page-header {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+  }
+  
+  .subtitle {
+    color: var(--color-text-secondary);
+    font-style: italic;
+    margin-top: var(--space-sm);
+  }
+  
+  .project-section {
+    margin-bottom: var(--space-xl);
+  }
+  
+  .project-section h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+  
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--space-lg);
+    margin-top: var(--space-lg);
+  }
+  
+  .project-card {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    position: relative;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  
+  .project-card:hover {
+    border-color: rgba(201, 162, 39, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Featured 顶部高亮边框 + 居中文字 */
+  .featured-banner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(90deg, transparent, rgba(201, 162, 39, 0.15), transparent);
+    border-top: 2px solid var(--color-brass);
+    color: var(--color-brass);
+    text-align: center;
+    padding: 4px 0;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    z-index: 1;
+  }
+  
+  .project-card.featured {
+    border-color: rgba(201, 162, 39, 0.25);
+  }
+
+  .project-card--live {
+    --status-color: rgba(106, 171, 255, 0.92);
+    --status-glow: rgba(106, 171, 255, 0.28);
+  }
+
+  .project-card--prototype {
+    --status-color: rgba(201, 162, 39, 0.92);
+    --status-glow: rgba(201, 162, 39, 0.26);
+  }
+
+  .project-card--coursework {
+    --status-color: rgba(160, 200, 255, 0.86);
+    --status-glow: rgba(160, 200, 255, 0.2);
+  }
+
+  .project-card--practice {
+    --status-color: rgba(184, 115, 51, 0.9);
+    --status-glow: rgba(184, 115, 51, 0.22);
+  }
+
+  .project-card--publication {
+    --status-color: rgba(212, 168, 75, 0.94);
+    --status-glow: rgba(212, 168, 75, 0.3);
+  }
+
+  .project-card--private {
+    --status-color: rgba(136, 136, 136, 0.82);
+    --status-glow: rgba(136, 136, 136, 0.18);
+  }
+
+  .project-card--archive {
+    --status-color: rgba(150, 150, 170, 0.78);
+    --status-glow: rgba(150, 150, 170, 0.18);
+  }
+  
+  .project-image {
+    overflow: hidden;
+  }
+  
+  .project-image img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  
+  .project-card:hover .project-image img {
+    transform: scale(1.03);
+  }
+  
+  .project-content {
+    padding: var(--space-lg);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .project-meta-row {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: var(--space-sm);
+  }
+
+  .project-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--status-color);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .project-status i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--status-color);
+    box-shadow: 0 0 10px var(--status-glow);
+  }
+  
+  .project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+  }
+  
+  .project-header h3 {
+    font-size: 1.15rem;
+    font-family: var(--font-body);
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  
+  .project-links {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  
+  .icon-link {
+    color: var(--color-text-muted);
+    padding: 4px;
+    transition: color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .icon-link:hover {
+    color: var(--color-brass);
+  }
+  
+  .project-desc {
+    color: var(--color-text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: var(--space-md);
+    line-height: 1.6;
+    flex: 1;
+  }
+  
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin-top: auto;
+  }
+  
+  @media (max-width: 768px) {
+    .projects-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

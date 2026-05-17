@@ -3,12 +3,18 @@ interface Props {
   variant?: 'footer' | 'panel';
   eyebrow?: string;
   title?: string;
+  labels?: {
+    views?: string;
+    visitors?: string;
+    online?: string;
+  };
 }
 
 const {
   variant = 'footer',
   eyebrow = 'Site Signal',
   title = 'Live Metrics',
+  labels = {},
 } = Astro.props;
 
 const statsEndpoint = import.meta.env.PUBLIC_SITE_STATS_ENDPOINT
@@ -27,15 +33,15 @@ const statsEndpoint = import.meta.env.PUBLIC_SITE_STATS_ENDPOINT
   <div class="site-stats-grid">
     <span class="site-stat">
       <span class="site-stat-value" data-site-stat="views">--</span>
-      <span class="site-stat-label">Views</span>
+      <span class="site-stat-label">{labels.views || 'Views'}</span>
     </span>
     <span class="site-stat">
       <span class="site-stat-value" data-site-stat="visitors">--</span>
-      <span class="site-stat-label">Visitors</span>
+      <span class="site-stat-label">{labels.visitors || 'Visitors'}</span>
     </span>
     <span class="site-stat site-stat--online">
       <span class="site-stat-value" data-site-stat="online">--</span>
-      <span class="site-stat-label">Online</span>
+      <span class="site-stat-label">{labels.online || 'Online'}</span>
     </span>
   </div>
 </div>
