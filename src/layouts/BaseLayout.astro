@@ -3,6 +3,7 @@ import { ClientRouter } from 'astro:transitions';
 import StarField from '../components/StarField.astro';
 import CustomCursor from '../components/CustomCursor.astro';
 import MusicPlayer from '../components/MusicPlayer.astro';
+import SiteStats from '../components/SiteStats.astro';
 
 export interface Props {
   title?: string;
@@ -98,6 +99,7 @@ const previewImage = new URL('/images/header_galaxy.jpg', siteUrl).toString();
             <span class="footer-sep">·</span>
             <a href="https://instagram.com/huii.shan.9/" target="_blank" rel="noopener">Instagram</a>
           </div>
+          <SiteStats />
         </div>
       </div>
     </footer>

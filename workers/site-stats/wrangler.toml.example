@@ -1,0 +1,15 @@
+name = "shan-verse-site-stats"
+main = "./worker.js"
+compatibility_date = "2026-05-17"
+workers_dev = true
+
+routes = [
+  { pattern = "shan-verse.com/api/site-stats*", zone_name = "shan-verse.com" }
+]
+
+kv_namespaces = [
+  { binding = "SITE_STATS", id = "replace-with-cloudflare-kv-namespace-id" }
+]
+
+[vars]
+ALLOWED_ORIGINS = "https://shan-verse.com,https://www.shan-verse.com,http://127.0.0.1:4321,http://localhost:4321"

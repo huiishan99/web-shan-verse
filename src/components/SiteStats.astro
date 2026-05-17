@@ -1,0 +1,178 @@
+---
+const statsEndpoint = import.meta.env.PUBLIC_SITE_STATS_ENDPOINT || '/api/site-stats';
+---
+
+<div class="site-stats" data-site-stats data-endpoint={statsEndpoint} aria-live="polite">
+  <span class="site-stat">
+    <span class="site-stat-value" data-site-stat="views">--</span>
+    <span class="site-stat-label">Views</span>
+  </span>
+  <span class="site-stat">
+    <span class="site-stat-value" data-site-stat="visitors">--</span>
+    <span class="site-stat-label">Visitors</span>
+  </span>
+  <span class="site-stat site-stat--online">
+    <span class="site-stat-value" data-site-stat="online">--</span>
+    <span class="site-stat-label">Online</span>
+  </span>
+</div>
+
+<script>
+  const globalWindow = window as typeof window & {
+    __shanSiteStatsReady?: boolean;
+    __shanSiteStatsLastPath?: string;
+  };
+
+  if (!globalWindow.__shanSiteStatsReady) {
+    globalWindow.__shanSiteStatsReady = true;
+
+    const heartbeatMs = 120000;
+    let heartbeatTimer = 0;
+    let unavailableLogged = false;
+
+    function formatCount(value: unknown): string {
+      const numberValue = Number(value);
+      if (!Number.isFinite(numberValue) || numberValue < 0) return '--';
+
+      return new Intl.NumberFormat('en-US', {
+        notation: numberValue >= 10000 ? 'compact' : 'standard',
+        maximumFractionDigits: 1,
+      }).format(Math.round(numberValue));
+    }
+
+    function updateStats(data: Record<string, unknown>) {
+      document.querySelectorAll<HTMLElement>('[data-site-stats]').forEach((root) => {
+        root.classList.remove('is-unavailable');
+
+        root.querySelector<HTMLElement>('[data-site-stat="views"]')!.textContent = formatCount(data.views);
+        root.querySelector<HTMLElement>('[data-site-stat="visitors"]')!.textContent = formatCount(data.visitors);
+        root.querySelector<HTMLElement>('[data-site-stat="online"]')!.textContent = formatCount(data.online);
+      });
+    }
+
+    function markUnavailable(error: unknown) {
+      document.querySelectorAll<HTMLElement>('[data-site-stats]').forEach((root) => {
+        root.classList.add('is-unavailable');
+      });
+
+      window.clearInterval(heartbeatTimer);
+      heartbeatTimer = 0;
+
+      if (!unavailableLogged) {
+        console.warn('Site stats unavailable:', error);
+        unavailableLogged = true;
+      }
+    }
+
+    async function sendStatsEvent(eventType: 'pageview' | 'heartbeat') {
+      const root = document.querySelector<HTMLElement>('[data-site-stats]');
+      const endpoint = root?.dataset.endpoint;
+      if (!endpoint) return;
+
+      const path = `${window.location.pathname}${window.location.search}`;
+      if (eventType === 'pageview' && globalWindow.__shanSiteStatsLastPath === path) {
+        return;
+      }
+
+      if (eventType === 'pageview') {
+        globalWindow.__shanSiteStatsLastPath = path;
+      }
+
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            event: eventType,
+            path,
+            title: document.title,
+          }),
+          keepalive: eventType === 'heartbeat',
+        });
+
+        if (!response.ok) throw new Error(`Stats request failed with ${response.status}`);
+        updateStats(await response.json());
+        startHeartbeat();
+      } catch (error) {
+        markUnavailable(error);
+      }
+    }
+
+    function trackPageview() {
+      sendStatsEvent('pageview');
+    }
+
+    function startHeartbeat() {
+      if (heartbeatTimer) return;
+      window.clearInterval(heartbeatTimer);
+      heartbeatTimer = window.setInterval(() => {
+        sendStatsEvent('heartbeat');
+      }, heartbeatMs);
+    }
+
+    trackPageview();
+    document.addEventListener('astro:page-load', trackPageview);
+  }
+</script>
+
+<style>
+  .site-stats {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.65rem 1rem;
+    margin-top: 0.9rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    line-height: 1.4;
+  }
+
+  .site-stat {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    min-width: 0;
+  }
+
+  .site-stat-value {
+    color: var(--color-brass-light);
+    font-weight: 500;
+    min-width: 2ch;
+    text-align: right;
+  }
+
+  .site-stat-label {
+    color: var(--color-text-muted);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .site-stat--online .site-stat-value::before {
+    content: '';
+    display: inline-block;
+    width: 0.36rem;
+    height: 0.36rem;
+    margin-right: 0.35rem;
+    border-radius: 50%;
+    background: rgba(106, 171, 255, 0.85);
+    box-shadow: 0 0 8px rgba(106, 171, 255, 0.35);
+    vertical-align: 0.06rem;
+  }
+
+  .site-stats.is-unavailable .site-stat-value {
+    color: var(--color-text-muted);
+  }
+
+  .site-stats.is-unavailable .site-stat--online .site-stat-value::before {
+    background: rgba(136, 136, 136, 0.55);
+    box-shadow: none;
+  }
+
+  @media (max-width: 560px) {
+    .site-stats {
+      gap: 0.5rem 0.85rem;
+      font-size: 0.68rem;
+    }
+  }
+</style>
