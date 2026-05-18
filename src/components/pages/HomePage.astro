@@ -14,6 +14,11 @@ interface Props {
 
 const { lang = defaultLocale } = Astro.props;
 const t = useTranslations(lang);
+const aboutPath = localizePath('/about', lang);
+const introHtml = t.home.intro.replace(
+  '{aboutLink}',
+  `<a class="highlight intro-link" href="${aboutPath}">${t.home.aboutButton}</a>`
+);
 const dateLocale: Record<Locale, string> = {
   en: 'en-US',
   zh: 'zh-CN',
@@ -236,11 +241,11 @@ function getExcerpt(body: string, maxLength: number = 100): string {
         <p class="hero-tagline">{t.home.tagline}</p>
         
         <div class="hero-intro">
-          <p set:html={t.home.intro}></p>
+          <p set:html={introHtml}></p>
         </div>
         
         <div class="hero-actions">
-          <a href={localizePath('/about', lang)} class="btn">
+          <a href={aboutPath} class="btn">
             <Icon name="gear" size={16} /> {t.home.aboutButton}
           </a>
           <a href={localizePath('/projects', lang)} class="btn">
@@ -854,9 +859,24 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     line-height: 1.8;
   }
   
-  .highlight {
+  .highlight,
+  .hero-intro :global(.highlight) {
     color: var(--color-brass-light);
     font-weight: 500;
+  }
+
+  .hero-intro :global(.intro-link) {
+    border-bottom: 1px solid rgba(212, 168, 75, 0.45);
+    text-decoration: none;
+    transition:
+      border-color var(--transition-fast),
+      color var(--transition-fast);
+  }
+
+  .hero-intro :global(.intro-link:hover),
+  .hero-intro :global(.intro-link:focus-visible) {
+    border-color: var(--color-brass);
+    color: var(--color-brass);
   }
   
   .hero-actions {
