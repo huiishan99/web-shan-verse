@@ -866,16 +866,12 @@ function getExcerpt(body: string, maxLength: number = 100): string {
   }
 
   .hero-intro :global(.intro-link) {
-    border-bottom: 1px solid rgba(212, 168, 75, 0.45);
     text-decoration: none;
-    transition:
-      border-color var(--transition-fast),
-      color var(--transition-fast);
+    transition: color var(--transition-fast);
   }
 
   .hero-intro :global(.intro-link:hover),
   .hero-intro :global(.intro-link:focus-visible) {
-    border-color: var(--color-brass);
     color: var(--color-brass);
   }
   
@@ -1820,6 +1816,33 @@ function getExcerpt(body: string, maxLength: number = 100): string {
 
     .hero-actions .btn {
       justify-content: center;
+    }
+
+    .hero-actions .btn,
+    .posts-action .btn {
+      background:
+        linear-gradient(180deg, rgba(201, 162, 39, 0.11), rgba(201, 162, 39, 0.045)),
+        var(--surface-glass);
+      border: 1px solid rgba(201, 162, 39, 0.34);
+      border-radius: 4px;
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.14);
+      backdrop-filter: blur(var(--surface-blur));
+      -webkit-backdrop-filter: blur(var(--surface-blur));
+    }
+
+    .hero-actions .btn:hover,
+    .posts-action .btn:hover {
+      background:
+        linear-gradient(180deg, rgba(201, 162, 39, 0.18), rgba(201, 162, 39, 0.08)),
+        var(--surface-glass-hover);
+      border-color: rgba(212, 168, 75, 0.68);
+      color: var(--color-brass-light);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.2), 0 0 16px rgba(201, 162, 39, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .hero-actions .btn:hover :global(.icon) {
+      color: currentColor;
     }
 
     .featured,
