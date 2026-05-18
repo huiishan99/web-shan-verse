@@ -18,6 +18,8 @@ const audioSrc = '/audio/bgm.mp3';
     class="music-toggle"
     aria-label="Play background music"
     aria-pressed="false"
+    aria-expanded="false"
+    aria-controls="music-mobile-panel"
     data-music-toggle
   >
     <Icon name="music" size={18} />
@@ -33,6 +35,33 @@ const audioSrc = '/audio/bgm.mp3';
       data-music-volume
     />
   </label>
+
+  <div class="music-mobile-panel" id="music-mobile-panel" aria-hidden="true" data-music-panel>
+    <div class="music-equalizer" aria-hidden="true">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <label class="mobile-volume-control" aria-label="Background music volume">
+      <Icon name="volume" size={15} />
+      <input
+        type="range"
+        min="0"
+        max="1"
+        step="0.01"
+        value="0.35"
+        data-music-volume-mobile
+      />
+    </label>
+    <div class="mobile-music-actions">
+      <button type="button" class="music-panel-button" aria-label="Mute background music" aria-pressed="false" data-music-mute>
+        <Icon name="volumeX" size={15} />
+      </button>
+      <button type="button" class="music-panel-button" aria-label="Restart background music" data-music-restart>
+        <Icon name="rotateCcw" size={15} />
+      </button>
+    </div>
+  </div>
 </div>
 
 <script is:inline>
@@ -41,6 +70,8 @@ const audioSrc = '/audio/bgm.mp3';
     window.__shanMusicPlayerReady = true;
 
     const STORAGE_KEY = 'shan-verse:bgm';
+    const MOBILE_QUERY = '(max-width: 640px)';
+    const LONG_PRESS_DELAY = 320;
 
     function readState() {
       try {
@@ -56,6 +87,7 @@ const audioSrc = '/audio/bgm.mp3';
         ...previous,
         currentTime: audio.currentTime || 0,
         volume: audio.volume,
+        muted: audio.muted,
         playing: !audio.paused,
         ...extra,
       };
@@ -68,21 +100,107 @@ const audioSrc = '/audio/bgm.mp3';
 
       const audio = player.querySelector('[data-music-audio]');
       const toggle = player.querySelector('[data-music-toggle]');
-      const volume = player.querySelector('[data-music-volume]');
-      if (!(audio instanceof HTMLAudioElement) || !(toggle instanceof HTMLButtonElement) || !(volume instanceof HTMLInputElement)) return;
+      const panel = player.querySelector('[data-music-panel]');
+      const mute = player.querySelector('[data-music-mute]');
+      const restart = player.querySelector('[data-music-restart]');
+      const volumeInputs = [
+        ...player.querySelectorAll('[data-music-volume], [data-music-volume-mobile]'),
+      ].filter((input) => input instanceof HTMLInputElement);
+      if (
+        !(audio instanceof HTMLAudioElement) ||
+        !(toggle instanceof HTMLButtonElement) ||
+        !(panel instanceof HTMLElement) ||
+        !(mute instanceof HTMLButtonElement) ||
+        !(restart instanceof HTMLButtonElement) ||
+        volumeInputs.length === 0
+      ) return;
 
       player.dataset.ready = 'true';
 
       const saved = readState();
       const savedVolume = typeof saved.volume === 'number' ? saved.volume : 0.35;
       audio.volume = Math.min(1, Math.max(0, savedVolume));
-      volume.value = String(audio.volume);
+      audio.muted = saved.muted === true;
+      let longPressTimer = 0;
+      let longPressActive = false;
+      let suppressNextClick = false;
+
+      function isMobilePlayer() {
+        return window.matchMedia(MOBILE_QUERY).matches;
+      }
+
+      function syncVolumeInputs() {
+        volumeInputs.forEach((input) => {
+          input.value = String(audio.volume);
+        });
+      }
+
+      function syncMuteButton() {
+        mute.classList.toggle('is-muted', audio.muted);
+        mute.setAttribute('aria-pressed', String(audio.muted));
+        mute.setAttribute('aria-label', audio.muted ? 'Unmute background music' : 'Mute background music');
+      }
+
+      function setPanelOpen(isOpen) {
+        player.classList.toggle('is-panel-open', isOpen);
+        panel.classList.toggle('is-open', isOpen);
+        panel.style.opacity = isOpen ? '1' : '';
+        panel.style.pointerEvents = isOpen ? 'auto' : '';
+        panel.style.transform = isOpen ? 'translateY(0) scale(1)' : '';
+        panel.setAttribute('aria-hidden', String(!isOpen));
+        toggle.setAttribute('aria-expanded', String(isOpen));
+      }
+
+      function showMobilePanel() {
+        if (!isMobilePlayer()) return;
+        setPanelOpen(true);
+      }
+
+      function clearLongPressTimer() {
+        window.clearTimeout(longPressTimer);
+        longPressTimer = 0;
+      }
+
+      function startLongPress(event) {
+        if (!isMobilePlayer() || event.button > 0) return;
+
+        clearLongPressTimer();
+        longPressActive = false;
+
+        if ('pointerId' in event && typeof toggle.setPointerCapture === 'function') {
+          try {
+            toggle.setPointerCapture(event.pointerId);
+          } catch {
+            // Pointer capture is a small enhancement; the release handlers still work without it.
+          }
+        }
+
+        longPressTimer = window.setTimeout(() => {
+          longPressActive = true;
+          suppressNextClick = true;
+          showMobilePanel();
+        }, LONG_PRESS_DELAY);
+      }
+
+      function endLongPress() {
+        clearLongPressTimer();
+
+        if (!longPressActive) return;
+
+        longPressActive = false;
+        setPanelOpen(false);
+        window.setTimeout(() => {
+          suppressNextClick = false;
+        }, 350);
+      }
 
       function syncButton() {
         const isPlaying = !audio.paused;
+        player.classList.toggle('is-playing', isPlaying);
         toggle.classList.toggle('is-playing', isPlaying);
         toggle.setAttribute('aria-pressed', String(isPlaying));
         toggle.setAttribute('aria-label', isPlaying ? 'Pause background music' : 'Play background music');
+        syncMuteButton();
       }
 
       audio.addEventListener('loadedmetadata', () => {
@@ -91,7 +209,20 @@ const audioSrc = '/audio/bgm.mp3';
         }
       }, { once: true });
 
-      toggle.addEventListener('click', async () => {
+      toggle.addEventListener('pointerdown', startLongPress);
+      toggle.addEventListener('pointerup', endLongPress);
+      toggle.addEventListener('pointercancel', endLongPress);
+      toggle.addEventListener('pointerleave', () => {
+        if (!longPressActive) clearLongPressTimer();
+      });
+
+      toggle.addEventListener('click', async (event) => {
+        if (suppressNextClick) {
+          event.preventDefault();
+          suppressNextClick = false;
+          return;
+        }
+
         if (audio.paused) {
           try {
             await audio.play();
@@ -107,9 +238,46 @@ const audioSrc = '/audio/bgm.mp3';
         syncButton();
       });
 
-      volume.addEventListener('input', () => {
-        audio.volume = Number(volume.value);
+      volumeInputs.forEach((input) => {
+        input.addEventListener('input', () => {
+          audio.volume = Number(input.value);
+          if (audio.volume > 0) audio.muted = false;
+          syncVolumeInputs();
+          syncMuteButton();
+          showMobilePanel();
+          writeState(audio);
+        });
+      });
+
+      mute.addEventListener('click', () => {
+        audio.muted = !audio.muted;
+        syncMuteButton();
+        showMobilePanel();
         writeState(audio);
+      });
+
+      restart.addEventListener('click', async () => {
+        audio.currentTime = 0;
+        showMobilePanel();
+        if (audio.paused) {
+          try {
+            await audio.play();
+          } catch {
+            toggle.classList.add('has-error');
+            window.setTimeout(() => toggle.classList.remove('has-error'), 900);
+          }
+        }
+        writeState(audio, { playing: !audio.paused });
+      });
+
+      document.addEventListener('click', (event) => {
+        if (!isMobilePlayer() || !player.classList.contains('is-panel-open')) return;
+        if (event.target instanceof Node && player.contains(event.target)) return;
+        setPanelOpen(false);
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') setPanelOpen(false);
       });
 
       audio.addEventListener('play', syncButton);
@@ -118,6 +286,8 @@ const audioSrc = '/audio/bgm.mp3';
         if (!audio.paused) writeState(audio);
       });
 
+      syncVolumeInputs();
+      syncMuteButton();
       syncButton();
     }
 
@@ -141,6 +311,8 @@ const audioSrc = '/audio/bgm.mp3';
     background: rgba(10, 10, 15, 0.72);
     box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
     backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    user-select: none;
   }
 
   .music-toggle {
@@ -153,6 +325,7 @@ const audioSrc = '/audio/bgm.mp3';
     background: rgba(201, 162, 39, 0.08);
     color: var(--color-brass-light);
     cursor: pointer;
+    touch-action: manipulation;
     transition:
       background 0.2s ease,
       border-color 0.2s ease,
@@ -196,6 +369,10 @@ const audioSrc = '/audio/bgm.mp3';
     cursor: pointer;
   }
 
+  .music-mobile-panel {
+    display: none;
+  }
+
   @media (max-width: 640px) {
     .music-player {
       right: 0.75rem;
@@ -206,6 +383,136 @@ const audioSrc = '/audio/bgm.mp3';
 
     .volume-control {
       display: none;
+    }
+
+    .music-mobile-panel {
+      position: absolute;
+      right: 0;
+      bottom: calc(100% + 0.65rem);
+      display: grid;
+      grid-template-columns: auto minmax(7.25rem, 1fr) auto;
+      align-items: center;
+      gap: 0.55rem;
+      min-width: min(17.5rem, calc(100vw - 1.5rem));
+      padding: 0.55rem 0.6rem;
+      border: 1px solid rgba(201, 162, 39, 0.28);
+      border-radius: 999px;
+      background:
+        linear-gradient(180deg, rgba(201, 162, 39, 0.12), rgba(201, 162, 39, 0.045)),
+        rgba(10, 10, 15, 0.84);
+      box-shadow: 0 16px 34px rgba(0, 0, 0, 0.34), 0 0 22px rgba(201, 162, 39, 0.08);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(0.45rem) scale(0.97);
+      transform-origin: 90% 100%;
+      transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .music-mobile-panel.is-open,
+    .music-player.is-panel-open .music-mobile-panel {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    .music-equalizer {
+      display: inline-flex;
+      align-items: end;
+      justify-content: center;
+      gap: 0.14rem;
+      width: 1.5rem;
+      height: 1.25rem;
+      color: var(--color-brass);
+    }
+
+    .music-equalizer span {
+      width: 0.18rem;
+      height: 0.45rem;
+      border-radius: 999px;
+      background: currentColor;
+      opacity: 0.58;
+      transform-origin: center bottom;
+    }
+
+    .music-player.is-playing .music-equalizer span {
+      animation: musicBar 0.9s ease-in-out infinite;
+    }
+
+    .music-player.is-playing .music-equalizer span:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+
+    .music-player.is-playing .music-equalizer span:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    .mobile-volume-control {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      min-width: 0;
+      color: var(--color-brass-light);
+    }
+
+    .mobile-volume-control :global(.icon) {
+      color: inherit;
+    }
+
+    .mobile-volume-control input {
+      width: 100%;
+      min-width: 0;
+      accent-color: var(--color-brass);
+    }
+
+    .mobile-music-actions {
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .music-panel-button {
+      display: inline-grid;
+      place-items: center;
+      width: 2rem;
+      height: 2rem;
+      border: 1px solid rgba(201, 162, 39, 0.28);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--color-brass-light);
+      cursor: pointer;
+      transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+    }
+
+    .music-panel-button:active,
+    .music-panel-button.is-muted {
+      border-color: var(--color-brass);
+      background: rgba(201, 162, 39, 0.18);
+      color: var(--color-brass);
+      transform: translateY(1px);
+    }
+
+    .music-panel-button :global(.icon) {
+      color: inherit;
+    }
+  }
+
+  @keyframes musicBar {
+    0%,
+    100% {
+      opacity: 0.48;
+      transform: scaleY(0.7);
+    }
+
+    50% {
+      opacity: 1;
+      transform: scaleY(1.75);
     }
   }
 </style>
