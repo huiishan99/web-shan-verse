@@ -130,6 +130,7 @@ const paths = {
       };
 
       function openCli(prefill = '') {
+        root.classList.add('is-open');
         overlay.classList.add('is-open');
         overlay.setAttribute('aria-hidden', 'false');
         if (prefill) input.value = prefill;
@@ -137,6 +138,7 @@ const paths = {
       }
 
       function closeCli() {
+        root.classList.remove('is-open');
         overlay.classList.remove('is-open');
         overlay.setAttribute('aria-hidden', 'true');
         input.blur();
@@ -291,6 +293,7 @@ const paths = {
       if (wantsOpen || wantsTilde) {
         event.preventDefault();
         const input = root.querySelector('[data-cli-input]');
+        root.classList.add('is-open');
         overlay.classList.add('is-open');
         overlay.setAttribute('aria-hidden', 'false');
         window.setTimeout(() => {
@@ -299,6 +302,7 @@ const paths = {
       }
 
       if (event.key === 'Escape' && overlay.classList.contains('is-open')) {
+        root.classList.remove('is-open');
         overlay.classList.remove('is-open');
         overlay.setAttribute('aria-hidden', 'true');
       }
@@ -351,10 +355,16 @@ const paths = {
     transform: translateY(-1px);
   }
 
+  .shan-cli.is-open .cli-trigger {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(0.35rem);
+  }
+
   .cli-overlay {
     position: fixed;
     inset: 0;
-    z-index: 180;
+    z-index: 182;
     display: grid;
     place-items: start center;
     padding: 12vh var(--space-lg) var(--space-lg);
@@ -525,7 +535,7 @@ const paths = {
     .cli-overlay {
       align-items: end;
       place-items: end center;
-      padding: var(--space-md);
+      padding: var(--space-md) var(--space-md) calc(env(safe-area-inset-bottom) + 4.35rem);
       background: rgba(0, 0, 0, 0.28);
     }
 
