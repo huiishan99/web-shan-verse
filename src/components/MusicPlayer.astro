@@ -225,6 +225,22 @@ const audioSrc = '/audio/bgm.mp3';
         }
       }
 
+      async function togglePlayback() {
+        if (audio.paused) {
+          try {
+            await audio.play();
+            writeState(audio, { playing: true });
+          } catch {
+            toggle.classList.add('has-error');
+            window.setTimeout(() => toggle.classList.remove('has-error'), 900);
+          }
+        } else {
+          audio.pause();
+          writeState(audio, { playing: false });
+        }
+        syncButton();
+      }
+
       function clearLongPressTimer() {
         window.clearTimeout(longPressTimer);
         longPressTimer = 0;
@@ -233,6 +249,7 @@ const audioSrc = '/audio/bgm.mp3';
       function startLongPress(event) {
         if (!isMobilePlayer() || event.button > 0) return;
 
+        event.preventDefault();
         clearLongPressTimer();
         longPressActive = false;
 
@@ -253,9 +270,21 @@ const audioSrc = '/audio/bgm.mp3';
       }
 
       function endLongPress(event) {
+        const isMobile = isMobilePlayer();
+        if (isMobile) event.preventDefault();
+
         clearLongPressTimer();
 
-        if (!longPressActive) return;
+        if (!longPressActive) {
+          if (isMobile) {
+            suppressNextClick = true;
+            void togglePlayback();
+            window.setTimeout(() => {
+              suppressNextClick = false;
+            }, 350);
+          }
+          return;
+        }
 
         const action = getActionFromPoint(event);
         longPressActive = false;
@@ -282,9 +311,19 @@ const audioSrc = '/audio/bgm.mp3';
       }, { once: true });
 
       toggle.addEventListener('pointerdown', startLongPress);
-      toggle.addEventListener('pointermove', updateLongPressSelection);
+      toggle.addEventListener('pointermove', (event) => {
+        if (longPressActive) event.preventDefault();
+        updateLongPressSelection(event);
+      });
       toggle.addEventListener('pointerup', endLongPress);
-      toggle.addEventListener('pointercancel', endLongPress);
+      toggle.addEventListener('pointercancel', (event) => {
+        clearLongPressTimer();
+        if (longPressActive) {
+          event.preventDefault();
+          longPressActive = false;
+          setPanelOpen(false);
+        }
+      });
       toggle.addEventListener('pointerleave', () => {
         if (!longPressActive) clearLongPressTimer();
       });
@@ -296,19 +335,7 @@ const audioSrc = '/audio/bgm.mp3';
           return;
         }
 
-        if (audio.paused) {
-          try {
-            await audio.play();
-            writeState(audio, { playing: true });
-          } catch {
-            toggle.classList.add('has-error');
-            window.setTimeout(() => toggle.classList.remove('has-error'), 900);
-          }
-        } else {
-          audio.pause();
-          writeState(audio, { playing: false });
-        }
-        syncButton();
+        await togglePlayback();
       });
 
       volumeInputs.forEach((input) => {
@@ -336,6 +363,14 @@ const audioSrc = '/audio/bgm.mp3';
 
       document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') setPanelOpen(false);
+      });
+
+      player.addEventListener('contextmenu', (event) => {
+        if (isMobilePlayer()) event.preventDefault();
+      });
+
+      player.addEventListener('selectstart', (event) => {
+        if (isMobilePlayer()) event.preventDefault();
       });
 
       audio.addEventListener('play', syncButton);
@@ -370,6 +405,8 @@ const audioSrc = '/audio/bgm.mp3';
     box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
     user-select: none;
   }
 
@@ -383,7 +420,8 @@ const audioSrc = '/audio/bgm.mp3';
     background: rgba(201, 162, 39, 0.08);
     color: var(--color-brass-light);
     cursor: pointer;
-    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: none;
     transition:
       background 0.2s ease,
       border-color 0.2s ease,
@@ -432,11 +470,19 @@ const audioSrc = '/audio/bgm.mp3';
   }
 
   @media (max-width: 640px) {
+    .music-player,
+    .music-player * {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
     .music-player {
       right: 0.75rem;
       bottom: calc(env(safe-area-inset-bottom) + 0.75rem);
       gap: 0;
       padding: 0.4rem;
+      touch-action: none;
     }
 
     .volume-control {
@@ -523,6 +569,8 @@ const audioSrc = '/audio/bgm.mp3';
       background: rgba(255, 255, 255, 0.04);
       color: var(--color-brass-light);
       cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: none;
       transition:
         background 0.2s ease,
         border-color 0.2s ease,
