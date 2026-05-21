@@ -1,0 +1,542 @@
+---
+import type { Locale } from '../i18n/config';
+import { defaultLocale, localizePath } from '../i18n/config';
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = defaultLocale } = Astro.props;
+
+const paths = {
+  home: localizePath('/', lang),
+  about: localizePath('/about', lang),
+  projects: localizePath('/projects', lang),
+  timeline: localizePath('/timeline', lang),
+  blog: localizePath('/blog', lang),
+};
+---
+
+<div
+  class="shan-cli"
+  data-shan-cli
+  data-lang={lang}
+  data-home-path={paths.home}
+  data-about-path={paths.about}
+  data-projects-path={paths.projects}
+  data-timeline-path={paths.timeline}
+  data-blog-path={paths.blog}
+>
+  <button type="button" class="cli-trigger" aria-label="Open Shan CLI" data-cli-trigger>
+    <span>shan&gt;</span>
+  </button>
+
+  <div class="cli-overlay" aria-hidden="true" data-cli-overlay>
+    <section class="cli-panel" role="dialog" aria-modal="true" aria-label="Shan CLI">
+      <div class="cli-topline">
+        <span class="cli-dot"></span>
+        <span class="cli-title">SHAN CLI</span>
+        <button type="button" class="cli-close" aria-label="Close Shan CLI" data-cli-close>×</button>
+      </div>
+
+      <div class="cli-output" aria-live="polite" data-cli-output>
+        <p><span class="cli-muted">type</span> help <span class="cli-muted">or try</span> projects / blog / music</p>
+      </div>
+
+      <form class="cli-form" data-cli-form>
+        <span class="cli-prompt">shan&gt;</span>
+        <input
+          type="text"
+          autocomplete="off"
+          spellcheck="false"
+          aria-label="Shan CLI command"
+          placeholder="help"
+          data-cli-input
+        />
+      </form>
+
+      <div class="cli-hints" aria-label="Command suggestions">
+        <button type="button" data-cli-command="about">about</button>
+        <button type="button" data-cli-command="projects">projects</button>
+        <button type="button" data-cli-command="blog latest">blog latest</button>
+        <button type="button" data-cli-command="music">music</button>
+        <button type="button" data-cli-command="lang ja">lang ja</button>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script is:inline>
+  (() => {
+    if (window.__shanCliReady) return;
+    window.__shanCliReady = true;
+
+    const localizedRoutes = new Set(['/', '/about', '/projects', '/timeline', '/blog']);
+    const locales = ['en', 'zh', 'ja'];
+
+    function getCli() {
+      return document.querySelector('[data-shan-cli]');
+    }
+
+    function isTypingTarget(target) {
+      return target instanceof HTMLElement && Boolean(target.closest('input, textarea, select, [contenteditable="true"]'));
+    }
+
+    function normalizePath(pathname) {
+      const cleanPath = pathname.replace(/\/+$/, '') || '/';
+      const segments = cleanPath.split('/').filter(Boolean);
+      return locales.includes(segments[0])
+        ? `/${segments.slice(1).join('/')}`.replace(/\/+$/, '') || '/'
+        : cleanPath;
+    }
+
+    function localizeCurrentPath(locale) {
+      const basePath = normalizePath(window.location.pathname);
+
+      if (!localizedRoutes.has(basePath)) return locale === 'en' ? '/blog' : `/${locale}/blog`;
+      if (locale === 'en') return basePath;
+      return basePath === '/' ? `/${locale}` : `/${locale}${basePath}`;
+    }
+
+    function setupCli() {
+      const root = getCli();
+      if (!root || root.dataset.ready === 'true') return;
+
+      const overlay = root.querySelector('[data-cli-overlay]');
+      const trigger = root.querySelector('[data-cli-trigger]');
+      const close = root.querySelector('[data-cli-close]');
+      const form = root.querySelector('[data-cli-form]');
+      const input = root.querySelector('[data-cli-input]');
+      const output = root.querySelector('[data-cli-output]');
+      const hintButtons = [...root.querySelectorAll('[data-cli-command]')];
+
+      if (
+        !(overlay instanceof HTMLElement) ||
+        !(trigger instanceof HTMLButtonElement) ||
+        !(close instanceof HTMLButtonElement) ||
+        !(form instanceof HTMLFormElement) ||
+        !(input instanceof HTMLInputElement) ||
+        !(output instanceof HTMLElement)
+      ) return;
+
+      root.dataset.ready = 'true';
+
+      const paths = {
+        home: root.dataset.homePath || '/',
+        about: root.dataset.aboutPath || '/about',
+        projects: root.dataset.projectsPath || '/projects',
+        timeline: root.dataset.timelinePath || '/timeline',
+        blog: root.dataset.blogPath || '/blog',
+      };
+
+      function openCli(prefill = '') {
+        overlay.classList.add('is-open');
+        overlay.setAttribute('aria-hidden', 'false');
+        if (prefill) input.value = prefill;
+        window.setTimeout(() => input.focus(), 30);
+      }
+
+      function closeCli() {
+        overlay.classList.remove('is-open');
+        overlay.setAttribute('aria-hidden', 'true');
+        input.blur();
+      }
+
+      function print(html) {
+        const line = document.createElement('p');
+        line.innerHTML = html;
+        output.append(line);
+        output.scrollTop = output.scrollHeight;
+      }
+
+      function printCommand(command) {
+        print(`<span class="cli-muted">shan&gt;</span> ${escapeHtml(command)}`);
+      }
+
+      function escapeHtml(value) {
+        return value.replace(/[&<>"']/g, (char) => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#039;',
+        }[char]));
+      }
+
+      function navigateTo(path) {
+        window.location.href = path;
+      }
+
+      function runCommand(rawCommand) {
+        const command = rawCommand.trim().toLowerCase();
+        if (!command) return;
+
+        printCommand(rawCommand.trim());
+
+        if (command === 'help' || command === '?') {
+          print('commands: <span class="cli-accent">about</span>, projects, timeline, blog, status, music, lang en/zh/ja, github, contact, clear');
+          return;
+        }
+
+        if (command === 'clear') {
+          output.innerHTML = '<p><span class="cli-muted">cleared.</span></p>';
+          return;
+        }
+
+        if (command === 'home') {
+          print('opening home...');
+          navigateTo(paths.home);
+          return;
+        }
+
+        if (command === 'about') {
+          print('opening about...');
+          navigateTo(paths.about);
+          return;
+        }
+
+        if (command === 'projects' || command === 'project') {
+          print('opening projects...');
+          navigateTo(paths.projects);
+          return;
+        }
+
+        if (command === 'timeline') {
+          print('opening timeline...');
+          navigateTo(paths.timeline);
+          return;
+        }
+
+        if (command === 'blog' || command === 'blog latest') {
+          print('opening blog...');
+          navigateTo(paths.blog);
+          return;
+        }
+
+        if (command === 'status') {
+          print('current signal: <span class="cli-accent">online</span>. site stats live in the footer.');
+          return;
+        }
+
+        if (command === 'github') {
+          print('opening GitHub...');
+          window.open('https://github.com/huiishan99', '_blank', 'noopener');
+          return;
+        }
+
+        if (command === 'contact') {
+          print('opening LinkedIn...');
+          window.open('https://linkedin.com/in/laihuishan/', '_blank', 'noopener');
+          return;
+        }
+
+        if (command === 'music' || command === 'music toggle') {
+          const toggle = document.querySelector('[data-music-toggle]');
+          if (toggle instanceof HTMLButtonElement) {
+            toggle.click();
+            print('music toggled.');
+          } else {
+            print('music control unavailable.');
+          }
+          return;
+        }
+
+        if (command.startsWith('lang ')) {
+          const locale = command.split(/\s+/)[1];
+          if (!locales.includes(locale)) {
+            print('available languages: en, zh, ja');
+            return;
+          }
+          print(`switching language: <span class="cli-accent">${locale}</span>`);
+          navigateTo(localizeCurrentPath(locale));
+          return;
+        }
+
+        print(`unknown command: <span class="cli-accent">${escapeHtml(rawCommand.trim())}</span>. try help.`);
+      }
+
+      trigger.addEventListener('click', () => openCli());
+      close.addEventListener('click', closeCli);
+
+      overlay.addEventListener('click', (event) => {
+        if (event.target === overlay) closeCli();
+      });
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const command = input.value;
+        input.value = '';
+        runCommand(command);
+      });
+
+      hintButtons.forEach((button) => {
+        if (!(button instanceof HTMLButtonElement)) return;
+        button.addEventListener('click', () => {
+          input.value = button.dataset.cliCommand || '';
+          form.requestSubmit();
+        });
+      });
+    }
+
+    document.addEventListener('keydown', (event) => {
+      const root = getCli();
+      if (!root || isTypingTarget(event.target)) return;
+
+      const overlay = root.querySelector('[data-cli-overlay]');
+      if (!(overlay instanceof HTMLElement)) return;
+
+      const wantsOpen = (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k';
+      const wantsTilde = event.key === '`' || event.key === '~';
+
+      if (wantsOpen || wantsTilde) {
+        event.preventDefault();
+        const input = root.querySelector('[data-cli-input]');
+        overlay.classList.add('is-open');
+        overlay.setAttribute('aria-hidden', 'false');
+        window.setTimeout(() => {
+          if (input instanceof HTMLInputElement) input.focus();
+        }, 30);
+      }
+
+      if (event.key === 'Escape' && overlay.classList.contains('is-open')) {
+        overlay.classList.remove('is-open');
+        overlay.setAttribute('aria-hidden', 'true');
+      }
+    });
+
+    setupCli();
+    document.addEventListener('astro:page-load', setupCli);
+  })();
+</script>
+
+<style>
+  .shan-cli {
+    position: relative;
+    z-index: 180;
+  }
+
+  .cli-trigger {
+    position: fixed;
+    left: 1rem;
+    bottom: 1rem;
+    z-index: 181;
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.25rem;
+    padding: 0 0.78rem;
+    border: 1px solid rgba(201, 162, 39, 0.3);
+    border-radius: 999px;
+    background: rgba(10, 10, 15, 0.68);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.26);
+    color: var(--color-brass-light);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0;
+    cursor: pointer;
+    opacity: 0.72;
+    transition:
+      border-color 0.2s ease,
+      color 0.2s ease,
+      opacity 0.2s ease,
+      transform 0.2s ease;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .cli-trigger:hover,
+  .cli-trigger:focus-visible {
+    border-color: rgba(212, 168, 75, 0.7);
+    color: var(--color-brass);
+    opacity: 1;
+    transform: translateY(-1px);
+  }
+
+  .cli-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 180;
+    display: grid;
+    place-items: start center;
+    padding: 12vh var(--space-lg) var(--space-lg);
+    background: rgba(0, 0, 0, 0.18);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s ease;
+  }
+
+  .cli-overlay.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .cli-panel {
+    width: min(42rem, 100%);
+    border: 1px solid rgba(201, 162, 39, 0.28);
+    border-radius: 8px;
+    background:
+      linear-gradient(180deg, rgba(201, 162, 39, 0.1), rgba(201, 162, 39, 0.035)),
+      rgba(10, 10, 15, 0.88);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42), 0 0 30px rgba(201, 162, 39, 0.08);
+    color: var(--color-text-secondary);
+    overflow: hidden;
+    transform: translateY(-0.45rem) scale(0.98);
+    transition: transform 0.18s ease;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+
+  .cli-overlay.is-open .cli-panel {
+    transform: translateY(0) scale(1);
+  }
+
+  .cli-topline,
+  .cli-form,
+  .cli-hints {
+    display: flex;
+    align-items: center;
+  }
+
+  .cli-topline {
+    gap: 0.55rem;
+    padding: 0.75rem 0.9rem;
+    border-bottom: 1px solid rgba(201, 162, 39, 0.16);
+    font-family: var(--font-mono);
+  }
+
+  .cli-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--color-brass);
+    box-shadow: 0 0 14px rgba(201, 162, 39, 0.72);
+  }
+
+  .cli-title {
+    color: var(--color-text-primary);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+  }
+
+  .cli-close {
+    margin-left: auto;
+    width: 1.9rem;
+    height: 1.9rem;
+    border: 1px solid rgba(201, 162, 39, 0.22);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.035);
+    color: var(--color-text-muted);
+    cursor: pointer;
+  }
+
+  .cli-output {
+    min-height: 8.5rem;
+    max-height: 16rem;
+    overflow: auto;
+    padding: 0.9rem;
+    font-family: var(--font-mono);
+    font-size: 0.86rem;
+    line-height: 1.7;
+  }
+
+  .cli-output p,
+  .cli-output :global(p) {
+    margin: 0 0 0.35rem;
+  }
+
+  .cli-muted,
+  :global(.cli-muted) {
+    color: var(--color-text-muted);
+  }
+
+  .cli-accent,
+  .cli-prompt,
+  :global(.cli-accent) {
+    color: var(--color-brass-light);
+  }
+
+  .cli-form {
+    gap: 0.55rem;
+    padding: 0.75rem 0.9rem;
+    border-top: 1px solid rgba(201, 162, 39, 0.16);
+    background: rgba(255, 255, 255, 0.025);
+    font-family: var(--font-mono);
+  }
+
+  .cli-form input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--color-text-primary);
+    font: inherit;
+  }
+
+  .cli-form input::placeholder {
+    color: var(--color-text-muted);
+  }
+
+  .cli-hints {
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    padding: 0 0.9rem 0.9rem;
+  }
+
+  .cli-hints button {
+    min-height: 1.8rem;
+    padding: 0 0.65rem;
+    border: 1px solid rgba(201, 162, 39, 0.2);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.035);
+    color: var(--color-text-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    cursor: pointer;
+  }
+
+  .cli-hints button:hover,
+  .cli-hints button:focus-visible {
+    border-color: rgba(201, 162, 39, 0.55);
+    color: var(--color-brass-light);
+  }
+
+  @media (min-width: 641px) {
+    .cli-trigger {
+      opacity: 0;
+      transform: translateY(0.4rem);
+    }
+
+    .cli-trigger:focus-visible,
+    .cli-trigger:hover {
+      opacity: 1;
+      transform: translateY(-1px);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .cli-trigger {
+      left: 0.75rem;
+      bottom: calc(env(safe-area-inset-bottom) + 0.75rem);
+      min-height: 2.35rem;
+      padding: 0 0.72rem;
+      font-size: 0.74rem;
+    }
+
+    .cli-overlay {
+      align-items: end;
+      place-items: end center;
+      padding: var(--space-md);
+      background: rgba(0, 0, 0, 0.28);
+    }
+
+    .cli-panel {
+      border-radius: 8px;
+    }
+
+    .cli-output {
+      min-height: 7.5rem;
+      max-height: 14rem;
+      font-size: 0.8rem;
+    }
+  }
+</style>
