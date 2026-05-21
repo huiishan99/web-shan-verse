@@ -210,6 +210,7 @@ const milestoneSignalCount = visibleSignals.filter((signal) => signal.type === '
 const githubUsername = 'huiishan99';
 const githubProfileUrl = `https://github.com/${githubUsername}`;
 const githubContributionChartUrl = `https://ghchart.rshah.org/C9A227/${githubUsername}`;
+const sponsorContactUrl = 'https://linkedin.com/in/laihuishan/';
 
 // 提取文章第一段内容
 function getExcerpt(body: string, maxLength: number = 100): string {
@@ -490,6 +491,24 @@ function getExcerpt(body: string, maxLength: number = 100): string {
       <div class="posts-action">
         <a href={localizePath('/blog', lang)} class="btn">
           <span>→</span> {t.home.viewAllPosts}
+        </a>
+      </div>
+    </section>
+
+    <section class="support-note" aria-labelledby="support-note-title">
+      <div class="support-note-copy">
+        <p class="section-kicker">{t.home.supportKicker}</p>
+        <h2 id="support-note-title">{t.home.supportTitle}</h2>
+        <p>{t.home.supportBody}</p>
+        <span>{t.home.supportFinePrint}</span>
+      </div>
+
+      <div class="support-note-actions">
+        <a href={githubProfileUrl} class="support-note-link" target="_blank" rel="noopener noreferrer">
+          <Icon name="github" size={16} /> {t.home.supportGithub}
+        </a>
+        <a href={sponsorContactUrl} class="support-note-link support-note-link--primary" target="_blank" rel="noopener noreferrer">
+          <Icon name="heart" size={16} /> {t.home.supportContact}
         </a>
       </div>
     </section>
@@ -1754,6 +1773,127 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     text-align: center;
     padding-top: var(--space-md);
   }
+
+  .support-note {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-lg);
+    align-items: center;
+    margin: var(--space-lg) 0 0;
+    padding: var(--space-lg);
+    overflow: hidden;
+    background:
+      linear-gradient(135deg, rgba(106, 171, 255, 0.07), transparent 38%),
+      linear-gradient(180deg, rgba(201, 162, 39, 0.07), rgba(255, 255, 255, 0.025)),
+      rgba(13, 13, 18, 0.58);
+    border: 1px solid rgba(255, 255, 255, 0.085);
+    border-radius: var(--surface-radius);
+    box-shadow: var(--surface-shadow);
+    backdrop-filter: blur(var(--surface-blur));
+    -webkit-backdrop-filter: blur(var(--surface-blur));
+  }
+
+  .support-note::before,
+  .support-note::after {
+    content: '◈';
+    position: absolute;
+    color: var(--color-brass);
+    font-size: 0.7rem;
+    opacity: 0.48;
+  }
+
+  .support-note::before {
+    top: 0.7rem;
+    left: 0.8rem;
+  }
+
+  .support-note::after {
+    right: 0.8rem;
+    bottom: 0.7rem;
+  }
+
+  .support-note-copy {
+    min-width: 0;
+    padding-left: 0.15rem;
+  }
+
+  .support-note-copy h2 {
+    margin: 0 0 0.55rem;
+    padding: 0;
+    border: 0;
+    color: var(--color-text-primary);
+    font-size: clamp(1.2rem, 2.4vw, 1.55rem);
+    letter-spacing: 0.04em;
+  }
+
+  .support-note-copy p {
+    max-width: 42rem;
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: 0.96rem;
+    line-height: 1.65;
+  }
+
+  .support-note-copy span {
+    display: block;
+    margin-top: 0.55rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    line-height: 1.5;
+  }
+
+  .support-note-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--space-sm);
+  }
+
+  .support-note-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-height: 2.35rem;
+    padding: 0.48rem 0.8rem;
+    color: var(--color-text-secondary);
+    font-family: var(--font-body);
+    font-size: 0.94rem;
+    line-height: 1.1;
+    text-decoration: none;
+    white-space: nowrap;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.085);
+    border-radius: 4px;
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .support-note-link:hover,
+  .support-note-link:focus-visible {
+    color: var(--color-text-primary);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(201, 162, 39, 0.26);
+    transform: translateY(-1px);
+  }
+
+  .support-note-link--primary {
+    color: var(--color-brass-light);
+    background: rgba(201, 162, 39, 0.1);
+    border-color: rgba(201, 162, 39, 0.26);
+  }
+
+  .support-note-link--primary:hover,
+  .support-note-link--primary:focus-visible {
+    color: var(--color-bg-primary);
+    background: var(--color-brass);
+    border-color: var(--color-brass);
+  }
   
   .coming-soon {
     color: var(--color-text-muted);
@@ -1778,6 +1918,15 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     .featured-grid,
     .posts-grid {
       grid-template-columns: 1fr;
+    }
+
+    .support-note {
+      grid-template-columns: 1fr;
+      align-items: start;
+    }
+
+    .support-note-actions {
+      justify-content: flex-start;
     }
 
     .activity-header {
@@ -1859,6 +2008,26 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     .featured-card,
     .post-card {
       padding: var(--space-md);
+    }
+
+    .support-note {
+      gap: var(--space-md);
+      padding: var(--space-md);
+    }
+
+    .support-note-copy p {
+      font-size: 0.92rem;
+    }
+
+    .support-note-actions {
+      display: grid;
+      grid-template-columns: 1fr;
+      width: 100%;
+    }
+
+    .support-note-link {
+      width: 100%;
+      white-space: normal;
     }
 
     .activity {
