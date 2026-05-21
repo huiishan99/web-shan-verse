@@ -3,6 +3,7 @@ import { ClientRouter } from 'astro:transitions';
 import StarField from '../components/StarField.astro';
 import CustomCursor from '../components/CustomCursor.astro';
 import MusicPlayer from '../components/MusicPlayer.astro';
+import ShanCli from '../components/ShanCli.astro';
 import SiteStats from '../components/SiteStats.astro';
 import { defaultLocale, localeNames, localeShortNames, locales, localizePath, type Locale } from '../i18n/config';
 import { useTranslations } from '../i18n/ui';
@@ -62,6 +63,7 @@ const currentPath = Astro.url.pathname;
   <!-- 自定义鼠标 + 星星粒子 -->
   <CustomCursor />
   <MusicPlayer />
+  <ShanCli lang={lang} />
   
   <div class="page-wrapper">
     <slot name="header">
