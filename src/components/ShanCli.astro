@@ -40,7 +40,7 @@ const paths = {
       </div>
 
       <div class="cli-output" aria-live="polite" data-cli-output>
-        <p><span class="cli-muted">type</span> help <span class="cli-muted">or try</span> projects / blog / music</p>
+        <p><span class="cli-muted">type</span> help <span class="cli-muted">for commands</span></p>
       </div>
 
       <form class="cli-form" data-cli-form>
@@ -54,14 +54,6 @@ const paths = {
           data-cli-input
         />
       </form>
-
-      <div class="cli-hints" aria-label="Command suggestions">
-        <button type="button" data-cli-command="about">about</button>
-        <button type="button" data-cli-command="projects">projects</button>
-        <button type="button" data-cli-command="blog latest">blog latest</button>
-        <button type="button" data-cli-command="music">music</button>
-        <button type="button" data-cli-command="lang ja">lang ja</button>
-      </div>
     </section>
   </div>
 </div>
@@ -108,7 +100,6 @@ const paths = {
       const form = root.querySelector('[data-cli-form]');
       const input = root.querySelector('[data-cli-input]');
       const output = root.querySelector('[data-cli-output]');
-      const hintButtons = [...root.querySelectorAll('[data-cli-command]')];
 
       if (
         !(overlay instanceof HTMLElement) ||
@@ -155,6 +146,29 @@ const paths = {
         print(`<span class="cli-muted">shan&gt;</span> ${escapeHtml(command)}`);
       }
 
+      function printHelp() {
+        [
+          '<span class="cli-help-heading">navigation</span>',
+          '<span class="cli-command">home</span> - return to the landing page',
+          '<span class="cli-command">about</span> - open the about page',
+          '<span class="cli-command">projects</span> - browse project work',
+          '<span class="cli-command">timeline</span> - view the personal timeline',
+          '<span class="cli-command">blog</span> or <span class="cli-command">blog latest</span> - open blog posts',
+          '<span class="cli-help-heading">signals</span>',
+          '<span class="cli-command">status</span> - show the current site signal',
+          '<span class="cli-command">music</span> or <span class="cli-command">music toggle</span> - toggle the background music',
+          '<span class="cli-help-heading">outside links</span>',
+          '<span class="cli-command">github</span> - open GitHub',
+          '<span class="cli-command">contact</span> - open LinkedIn',
+          '<span class="cli-help-heading">language</span>',
+          '<span class="cli-command">lang en</span> / <span class="cli-command">lang zh</span> / <span class="cli-command">lang ja</span> - switch site language',
+          '<span class="cli-help-heading">utility</span>',
+          '<span class="cli-command">clear</span> - clear this terminal',
+          '<span class="cli-command">help</span> or <span class="cli-command">?</span> - show this command list',
+          '<span class="cli-muted">shortcuts: click shan&gt;, press Ctrl/Cmd + K, or press ` to open. Esc closes.</span>',
+        ].forEach(print);
+      }
+
       function escapeHtml(value) {
         return value.replace(/[&<>"']/g, (char) => ({
           '&': '&amp;',
@@ -176,7 +190,7 @@ const paths = {
         printCommand(rawCommand.trim());
 
         if (command === 'help' || command === '?') {
-          print('commands: <span class="cli-accent">about</span>, projects, timeline, blog, status, music, lang en/zh/ja, github, contact, clear');
+          printHelp();
           return;
         }
 
@@ -271,12 +285,13 @@ const paths = {
         runCommand(command);
       });
 
-      hintButtons.forEach((button) => {
-        if (!(button instanceof HTMLButtonElement)) return;
-        button.addEventListener('click', () => {
-          input.value = button.dataset.cliCommand || '';
-          form.requestSubmit();
-        });
+      input.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter') return;
+
+        event.preventDefault();
+        const command = input.value;
+        input.value = '';
+        runCommand(command);
       });
     }
 
@@ -394,8 +409,7 @@ const paths = {
   }
 
   .cli-topline,
-  .cli-form,
-  .cli-hints {
+  .cli-form {
     display: flex;
     align-items: center;
   }
@@ -458,6 +472,19 @@ const paths = {
     color: var(--color-brass-light);
   }
 
+  :global(.cli-help-heading) {
+    display: inline-block;
+    margin-top: 0.45rem;
+    color: var(--color-text-muted);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  :global(.cli-command) {
+    color: var(--color-brass-light);
+  }
+
   .cli-form {
     gap: 0.55rem;
     padding: 0.75rem 0.9rem;
@@ -478,30 +505,6 @@ const paths = {
 
   .cli-form input::placeholder {
     color: var(--color-text-muted);
-  }
-
-  .cli-hints {
-    flex-wrap: wrap;
-    gap: 0.45rem;
-    padding: 0 0.9rem 0.9rem;
-  }
-
-  .cli-hints button {
-    min-height: 1.8rem;
-    padding: 0 0.65rem;
-    border: 1px solid rgba(201, 162, 39, 0.2);
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.035);
-    color: var(--color-text-secondary);
-    font-family: var(--font-mono);
-    font-size: 0.76rem;
-    cursor: pointer;
-  }
-
-  .cli-hints button:hover,
-  .cli-hints button:focus-visible {
-    border-color: rgba(201, 162, 39, 0.55);
-    color: var(--color-brass-light);
   }
 
   @media (max-width: 640px) {
