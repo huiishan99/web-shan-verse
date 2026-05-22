@@ -355,12 +355,6 @@ const paths = {
     transform: translateY(-1px);
   }
 
-  .shan-cli.is-open .cli-trigger {
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(0.35rem);
-  }
-
   .cli-overlay {
     position: fixed;
     inset: 0;
@@ -510,19 +504,6 @@ const paths = {
     color: var(--color-brass-light);
   }
 
-  @media (min-width: 641px) {
-    .cli-trigger {
-      opacity: 0;
-      transform: translateY(0.4rem);
-    }
-
-    .cli-trigger:focus-visible,
-    .cli-trigger:hover {
-      opacity: 1;
-      transform: translateY(-1px);
-    }
-  }
-
   @media (max-width: 640px) {
     .cli-trigger {
       left: 0.75rem;
@@ -530,6 +511,12 @@ const paths = {
       min-height: 2.35rem;
       padding: 0 0.72rem;
       font-size: 0.74rem;
+    }
+
+    .shan-cli.is-open .cli-trigger {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(0.35rem);
     }
 
     .cli-overlay {
