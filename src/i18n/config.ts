@@ -51,8 +51,9 @@ export function normalizePath(pathname: string): string {
 
 export function localizePath(pathname: string, locale: Locale): string {
   const basePath = normalizePath(pathname);
+  const isBlogSubpath = basePath.startsWith('/blog/');
 
-  if (!localizedRoutes.has(basePath)) {
+  if (!localizedRoutes.has(basePath) && !isBlogSubpath) {
     return basePath;
   }
 

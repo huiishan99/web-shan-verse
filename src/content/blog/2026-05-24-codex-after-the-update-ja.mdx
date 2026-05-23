@@ -1,0 +1,222 @@
+---
+title: "Codex のアップデート後、AI コーディングエージェントの見方が変わった"
+date: 2026-05-24
+description: "2026 年 5 月前後の Codex アップデート、Pro の利用枠、そして古いプロジェクトを Codex でリファクタリングした体験をまとめた技術メモ。"
+categories:
+  - Technology
+tags:
+  - Codex
+  - OpenAI
+  - AI Coding
+  - Refactoring
+  - Developer Tools
+lang: ja
+postSlug: codex-after-the-update
+translationKey: codex-after-the-update
+draft: false
+---
+
+import Callout from '../../components/blog/Callout.astro';
+import LinkCard from '../../components/blog/LinkCard.astro';
+
+<Callout type="note" title="執筆時点">
+この記事は 2026-05-24（JST）に書いています。OpenAI の Codex、ChatGPT Pro の利用枠、期間限定キャンペーンは変わりやすいため、本文では具体的な日付と参考リンクを最後にまとめています。
+</Callout>
+
+ここ数日、かなり強い感覚がありました。Codex は「コードを書けるアシスタント」から、「人間が監督できるソフトウェアエンジニアリングの実行レイヤー」に近づいたのではないか、という感覚です。最初は転換点が 5 月 11 日ごろだったと思っていました。その日に `web-falling-sand` を単一の `sketch.js` からモジュール化されたプロジェクトへリファクタリングしたからです。しかし公式情報を確認すると、OpenAI が Codex のモバイル遠隔操作プレビューを発表したのは 2026-05-14 で、より大きなデスクトップ機能アップデートは 2026-04-16 に公開されていました。
+
+つまり、より正確にはこうです。私は 5 月 11 日前後から Codex の能力変化をはっきり感じ始め、5 月 14 日の公式アップデートによって、その感覚を説明しやすくなりました。
+
+この記事は「AI がプログラマーを置き換える」という大ざっぱな話ではありません。Codex で何が変わったのか、なぜ Pro にアップグレードしたのか、どの古いプロジェクトをリファクタリングしたのか、そして Codex をどう使うと開発フローに安全に組み込めるのかを、エンジニアリングの視点から整理します。
+
+## 何が変わったのか
+
+Codex を単なるコード補完として理解すると、その価値をかなり低く見積もってしまいます。OpenAI は Codex を、コードを書き、レビューし、出荷するための AI agent と説明しています。Codex web/cloud では、コードを読み、編集し、実行できます。また、専用環境の中でバックグラウンド実行や並列作業もできます。
+
+今回私が感じた変化は、主に次の四つです。
+
+| 観点 | 以前の体験 | 新しい体験 |
+| --- | --- | --- |
+| インターフェース | 主にターミナルや IDE 内のチャット | App、CLI、IDE、Web、モバイルが作業を引き継げる |
+| 実行方法 | 比較的短いタスクを一つずつ処理 | 複数の agent が複数スレッドを並行して進められる |
+| コンテキスト | ユーザーが何度も背景を説明する | リポジトリ、diff、テスト、ターミナル出力を読んで推論を継続できる |
+| 監督方法 | 人間がほぼ毎ステップを見る | 分岐、承認、最終 diff review に人間が介入する |
+
+OpenAI の 2026-04-16 の発表では、このアップデートをソフトウェア開発ライフサイクル全体への拡張として説明しています。Codex はローカルアプリを操作し、より多くのツールや app を使い、画像を生成し、好みを記憶し、過去の行動から学び、継続的・反復的な作業を担当できるようになりました。さらに 2026-05-14 には、Codex が ChatGPT モバイルアプリでプレビュー提供され、スマートフォンが遠隔操作パネルのようになりました。外出先から出力を確認し、コマンドを承認し、方向転換し、スレッドを移動できます。一方で、ファイル、認証情報、ローカル環境は信頼されたマシン上に残ります。
+
+これはエンジニアリング実務にとって大きな意味があります。以前の AI coding の問いは「このコードを書けるか」でした。今はむしろ、「境界のあるエンジニアリング目標を渡し、レビュー可能・巻き戻し可能・検証可能なループの中で進められるか」が重要になっています。
+
+<LinkCard
+  href="https://openai.com/index/codex-for-almost-everything/"
+  title="Codex for (almost) everything"
+  description="OpenAI による 2026-04-16 の Codex 大型アップデート発表。デスクトップアプリ、複数 agent、ツール利用、メモリ、ワークフロー拡張が中心。"
+  site="OpenAI"
+/>
+
+## なぜ Pro にアップグレードしたのか
+
+Pro が必須だとは思っていません。たまに小さな関数を修正してもらう程度なら、Plus や期間限定の Free/Go 体験で十分なこともあります。ただし使い方が次のようになると、利用枠はすぐに現実的な制約になります。
+
+- 複数の古いプロジェクトを同時に調査させる;
+- 構造を読ませてからリファクタリング案を出させる;
+- 複数ファイルを編集し、テストを実行し、UI を磨き、結果を見て再度調整する;
+- code review、ドキュメント、release checklist、移行ガイド作成に使う;
+- デスクトップアプリ、CLI、Web、モバイルを行き来する。
+
+OpenAI Help Center の現在の説明では、Codex は Plus、Pro、Business、Enterprise/Edu などのプランに含まれています。また期間限定で Free と Go でも利用でき、その他のプランでは 2x rate limits が提供されています。Pro tier ページでは、Pro $100 はキャンペーン期間中 2x Codex usage、つまり標準の 5x ではなく Plus 比 10x になると説明されています。Pro $200 は、より重く継続的な並列ワークフロー向けです。
+
+私が Pro に上げた理由はそこです。「AI にもっとコードを書かせたい」からではなく、Codex を継続的なエンジニアリング実行レイヤーとして使い始めたからです。価値は一回の回答ではありません。リポジトリを読み、変更し、検証し、diff を説明し、さらに続ける。そのループに価値があります。
+
+<Callout type="warning" title="期間限定枠について">
+キャンペーンは恒久的な権利ではありません。Pro $100、Pro $200、チームワークスペースの Codex credit などについては、必ず OpenAI の pricing / Help Center ページで最新の利用枠、終了日、地域対応を確認してください。
+</Callout>
+
+## リファクタリングした古いプロジェクト
+
+最近、Codex でいくつかの古いプロジェクトを見直しました。公開 GitHub の記録を見ると、単なる README 更新ではなく、構造、インタラクション、テストサンプル、ドキュメント、リリースフローまで触っていることが分かります。
+
+| プロジェクト | 言語 / スタック | 最新の公開 push | Codex で主に進めた変更 |
+| --- | --- | --- | --- |
+| [`web-blog`](https://github.com/huiishan99/web-blog) | Astro / MDX | 2026-05-23 | この個人サイトの mobile activity map、言語メニュー、hero タイトル、ページ余白を改善 |
+| [`web-falling-sand`](https://github.com/huiishan99/web-falling-sand) | JavaScript / p5-style | 2026-05-11 | 単一 `sketch.js` から modular `src/` へ変更し、Vite、ESLint、Prettier、GitHub Pages workflow、unit test、preview SVG を追加 |
+| [`cpp-tetris-game`](https://github.com/huiishan99/cpp-tetris-game) | C++ / raylib-cpp | 2026-05-23 | lock delay、DAS/ARR、SRS wall kicks、設定パネル、ローカルランキング、名前入力を追加 |
+| [`python-rockfall-game`](https://github.com/huiishan99/python-rockfall-game) | Python | 2026-05-23 | 岩石バリエーション、ヘルプ画面の凡例、GUI smoke-test サンプル、学習データ向け特徴量レポートを追加 |
+| [`csharp-snake-game`](https://github.com/huiishan99/csharp-snake-game) | C# | 2026-05-23 | 開始メニュー、テーマ付き controls、HUD、速度ショートカット、Windows テスト手順、release checklist を改善 |
+| [`web-genAI`](https://github.com/huiishan99/web-genAI) | Python | 2026-05-23 | image generation demo を修復し、image forge interface を再設計 |
+| [`web-notion-next`](https://github.com/huiishan99/web-notion-next) | Next.js / Notion | 2026-05-17 | 4.9.x user guide、テーマ文書、maintenance policy、reference manuals を整理 |
+
+特に印象が変わったのは `web-falling-sand` です。古いプロジェクトで難しいのは、機能を追加できないことではありません。たいていは、当時急いで作ったために構造が育っていないことです。単一ファイル、暗黙の状態、build script なし、lint なし、test なし、デプロイは記憶頼み。Codex はこのようなエンジニアリング負債にとても向いています。方向は分かっているけれど、手作業は面倒なタイプの仕事です。
+
+私が Codex に出した指示は「このプロジェクトを全部書き直して」ではありません。むしろ次のようなものでした。
+
+```text
+まずリポジトリを読んで、現在の構造を説明してください。
+目標: 単一ファイル demo を、玩法を維持したまま modular project にする。
+制約: 重い framework は入れない。GitHub Pages deployment は維持。最小限の test と README を追加。
+完了後: 変更点、リスク、検証方法を列挙。
+```
+
+Codex は自然に、material rules、grid、simulation engine、renderer、UI controls、build tooling、docs という review しやすい層に分けて進めました。私の仕事は、すべての行を書くことではなく、目標を狭め、diff を確認し、プロジェクトを実行し、判断が違うところを修正することになりました。
+
+ここが Codex の強さだと思います。未知のコードを読む、モジュール境界を見つける、tooling を追加する、test command を用意する、docs を直す。こうした senior engineer の日常的な忍耐を、対話的な実行ループに圧縮してくれます。
+
+## 今の Codex の使い方
+
+私は Codex の使い方を四つのモードに分けています。同じ prompt ですべてを処理しようとはしません。
+
+| モード | 向いている作業 | 指示の出し方 |
+| --- | --- | --- |
+| 偵察モード | 古いプロジェクトの読解、リスク発見、構造説明 | 「まだコードは変更しないで。module boundary と危険なファイルを整理して」 |
+| 手術モード | 小さな bug fix、UI 修正、test 追加 | 「このファイルだけ触って。この command を実行して。最後に diff を要約して」 |
+| リファクタリングモード | ファイル分割、構造変更、toolchain 追加 | 「段階的に進めて、各段階で動く状態を保って。編集前に plan を出して」 |
+| メンテナンスモード | README、release checklist、migration guide | 「ユーザーが再現できるように、開発、テスト、デプロイ手順を書いて」 |
+
+安定した流れは次のようになります。
+
+```text
+問題 / アイデア
+  -> Codex にリポジトリを読ませ、理解を復唱させる
+  -> 2-3 個の案とリスクを出させる
+  -> 最小の実行可能案を選ぶ
+  -> Codex がコードを編集し、test や browser check を実行
+  -> 私が diff を review し、なぜそう変更したか説明させる
+  -> merge、release、または次の round へ進む
+```
+
+特におすすめなのは、最初に「まだコードは変更しないで」と言うことです。多くの場合、時間を節約するのは即座のコード生成ではありません。Codex にプロジェクトのコンテキストを復元してもらうことです。古いプロジェクトで高いコストは、自分がなぜそのように書いたのかを思い出すことだからです。
+
+## なぜ Codex を使うのか
+
+私にとって Codex の価値は「コード生成」ではありません。もっと深いところに三つあります。
+
+第一に、古いプロジェクトを再起動する摩擦を下げます。古いプロジェクトに価値がないわけではありません。しかし再び開くには、entry point、依存関係、state flow、deployment を思い出す必要があります。Codex は最初の発掘作業を手伝ってくれます。
+
+第二に、エンジニアリング品質の作業を安くします。以前なら、練習プロジェクトで README、test、lint、release checklist、mobile polish を後回しにしていたかもしれません。今はそれらを同じ task loop に含められます。
+
+第三に、個人開発者の throughput を変えます。一人で複数プロジェクトを維持するとき、足りないのはアイデアではなく context switching の能力です。Codex の thread、background work、mobile approval によって、UI 修正、test、docs、release cleanup を別々の線として進められます。
+
+もちろん、Codex は自動運転ではありません。境界と review を必要とする、とても実行力のある junior-to-mid engineer に近いです。目標、制約、test command、停止条件を与える必要がありますし、diff は必ず自分で読む必要があります。
+
+## 安全境界
+
+Codex が強くなるほど、「無制限の shell 権限を持つ chat box」として扱うべきではありません。OpenAI の 2026-05-08 の安全記事では、いくつか重要な原則が強調されています。agent を明確な境界の中で動かすこと、低リスク作業は滑らかにすること、高リスク作業では承認を求めること、telemetry と audit trail を残すこと、sandbox、network policy、credential control を使うことです。
+
+私の最低限の運用は次の通りです。
+
+- task の前に `git status` を見て、どの変更が誰のものか把握する;
+- Codex は branch 上で作業させ、雑な実験と混ぜない;
+- 本物の secret、production token、private file を直接渡さない;
+- 高リスク action の前に、実行する command を説明させる;
+- 最後に「何を変えたか、どう検証したか、残るリスク」を説明させる;
+- UI task では screenshot や browser verification、logic/library task では test output を求める。
+
+つまり、Codex はエンジニアリング規律を置き換えるものではなく、増幅するものです。明確な境界を与えれば非常に効率的になります。曖昧な目標と無制限の権限を与えれば、混乱も効率よく拡大してしまいます。
+
+<LinkCard
+  href="https://openai.com/index/running-codex-safely/"
+  title="Running Codex safely at OpenAI"
+  description="Codex の sandbox、approval、network access、credential、audit log に関する OpenAI の安全運用記事。"
+  site="OpenAI"
+/>
+
+## 初めて使う人への短い導入ルート
+
+Codex をまだ本格的に使ったことがないなら、いきなり「新しい app を作る」から始めない方がよいと思います。おすすめは、よく知っているけれど少し古くなった小さなプロジェクトを選ぶことです。
+
+1. Codex に読むだけを頼む: 構造、実行方法、最も価値のある修正三つをまとめさせる。
+2. 低リスク task を選ぶ: README 整理、`npm scripts` 追加、mobile layout 修正など。
+3. 先に plan を出させる: 変更予定ファイルと検証方法。
+4. 実装を承認する: 編集、check、report を任せる。
+5. 自分で diff を review する: 違うと思ったら diff ベースで再調整させる。
+6. release note を書かせる: 変更記録を読める形にする。
+
+よく使う prompt は次のようなものです。
+
+```text
+まずこのリポジトリを読んでください。まだコードは変更しないでください。
+教えてほしいこと:
+1. entry point はどこか;
+2. state はどう流れているか;
+3. どこを module に分割するとよいか;
+4. 1 日だけ refactor するなら何を優先するか。
+```
+
+```text
+この feature を最小の検証可能な形で実装してください。
+制約:
+- 新しい framework は導入しない;
+- 既存の UI style を保つ;
+- 必要な file だけ変更する;
+- 完了後 npm run build を実行し、結果を説明する。
+```
+
+```text
+現在の diff を review してください。優先して見てほしいこと:
+- runtime bug;
+- mobile layout risk;
+- uncovered edge cases;
+- documentation と behavior の不一致。
+```
+
+こうした prompt は派手ではありませんが、よく効きます。Codex に必要なのは華やかな説明よりも、エンジニアリング上の境界です。
+
+## 結論
+
+今回の Codex アップデート後に私が最も感じたのは、「AI がコードを書く速度が上がった」ということではありません。「ソフトウェアエンジニアリングの作業台が広くなった」ということです。Codex は editor の中で質問を待つだけではなく、本機、cloud、browser、mobile の間を移動できます。snippet を生成するだけではなく、目標に沿って継続的に進め、repository を読み、file を編集し、command を実行し、diff を示し、人間の承認を待てます。
+
+古いプロジェクト、練習プロジェクト、個人サイト、研究 prototype を多く持っている私にとって、これは痛点にぴったり合いました。古いプロジェクトは再起動が難しく、個人サイトは継続的な polish が難しく、練習プロジェクトは engineering cleanup が後回しになりがちです。Codex は私の美意識や方向性を決めることはできませんが、先延ばしにしていた工程を目の前に持ってきてくれます。私は判断し、境界を決め、最後に検証すればよくなります。
+
+だから「なぜ Codex を使うのか」と聞かれたら、私の答えはこうです。一人でも小さなチームに近いリズムでプロジェクトを維持できるから。ただし、本物のエンジニアリングチームメイトのように扱う必要があります。context、boundary、test、review を与えることが前提です。
+
+## 参考文献
+
+- OpenAI. [Codex for (almost) everything](https://openai.com/index/codex-for-almost-everything/), 2026-04-16.
+- OpenAI. [Work with Codex from anywhere](https://openai.com/index/work-with-codex-from-anywhere/), 2026-05-14.
+- OpenAI. [Introducing the Codex app](https://openai.com/index/introducing-the-codex-app/), 2026-02-02; Windows update on 2026-03-04.
+- OpenAI Help Center. [Using Codex with your ChatGPT plan](https://help.openai.com/en/articles/11369540/), accessed 2026-05-24.
+- OpenAI Help Center. [About ChatGPT Pro tiers](https://help.openai.com/en/articles/9793128-ab-targets-pro-chatg), accessed 2026-05-24.
+- OpenAI Help Center. [Codex 费率表](https://help.openai.com/zh-hans-cn/articles/20001106-codex-rate-card), accessed 2026-05-24.
+- OpenAI Developers. [Codex web](https://developers.openai.com/codex/cloud), accessed 2026-05-24.
+- OpenAI Developers. [Code generation](https://developers.openai.com/api/docs/guides/code-generation), accessed 2026-05-24.
+- OpenAI. [Running Codex safely at OpenAI](https://openai.com/index/running-codex-safely/), 2026-05-08.
+- GitHub. Public repositories under [`huiishan99`](https://github.com/huiishan99), commit metadata accessed via GitHub REST API on 2026-05-24.

@@ -3,6 +3,13 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 import { defaultLocale, type Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
+import {
+  getBlogCategoryPath,
+  getBlogPostPath,
+  getBlogTagPath,
+  getPostLanguageLabel,
+  isPostVisibleInLocale,
+} from '../../utils/blog';
 
 interface Props {
   lang?: Locale;
@@ -21,15 +28,16 @@ const posts = await getCollection('blog', ({ data }) => {
   // 在生产环境中排除草稿
   return import.meta.env.PROD ? data.draft !== true : true;
 });
+const visiblePosts = posts.filter((post) => isPostVisibleInLocale(post, lang));
 
 // 按日期排序（最新在前）
-const sortedPosts = posts.sort((a, b) => 
+const sortedPosts = visiblePosts.sort((a, b) => 
   b.data.date.valueOf() - a.data.date.valueOf()
 );
 
 // 收集所有分类和标签
-const allCategories = [...new Set(posts.flatMap(post => post.data.categories || []))];
-const allTags = [...new Set(posts.flatMap(post => post.data.tags || []))];
+const allCategories = [...new Set(visiblePosts.flatMap(post => post.data.categories || []))];
+const allTags = [...new Set(visiblePosts.flatMap(post => post.data.tags || []))];
 
 // 格式化日期的辅助函数
 function formatDate(date: Date) {
@@ -51,13 +59,18 @@ function formatDate(date: Date) {
     <div class="blog-layout">
       <main class="posts-list">
         {sortedPosts.map((post) => (
-          <article class="post-card" data-href={`/blog/${post.id}`}>
+          <article class="post-card" data-href={getBlogPostPath(post, lang)}>
             <div class="post-meta">
               <time class="post-date" datetime={post.data.date.toISOString()}>
                 {formatDate(post.data.date)}
               </time>
+              {getPostLanguageLabel(post) && (
+                <span class="language-badge" title={t.blog.language}>
+                  {getPostLanguageLabel(post)}
+                </span>
+              )}
               {post.data.categories && post.data.categories[0] && (
-                <a href={`/blog/category/${post.data.categories[0].toLowerCase().replace(/\s+/g, '-')}`} 
+                <a href={getBlogCategoryPath(post.data.categories[0], lang)} 
                    class="post-category" 
                    onclick="event.stopPropagation()">
                   {post.data.categories[0]}
@@ -77,7 +90,7 @@ function formatDate(date: Date) {
             {post.data.tags && post.data.tags.length > 0 && (
               <div class="post-tags">
                 {post.data.tags.map((tag: string) => (
-                  <a href={`/blog/tag/${tag.toLowerCase().replace(/\s+/g, '-')}`} 
+                  <a href={getBlogTagPath(tag, lang)} 
                      class="tag-in-card"
                      onclick="event.stopPropagation()">
                     #{tag}
@@ -99,7 +112,7 @@ function formatDate(date: Date) {
           <ul class="category-list">
             {allCategories.map((category) => (
               <li>
-                <a href={`/blog/category/${category.toLowerCase().replace(/\s+/g, '-')}`} class="category-link">
+                <a href={getBlogCategoryPath(category, lang)} class="category-link">
                   {category}
                 </a>
               </li>
@@ -111,7 +124,7 @@ function formatDate(date: Date) {
           <h3>{t.blog.tags}</h3>
           <div class="tag-cloud">
             {allTags.map((tag) => (
-              <a href={`/blog/tag/${tag.toLowerCase().replace(/\s+/g, '-')}`} class="tag-link">
+              <a href={getBlogTagPath(tag, lang)} class="tag-link">
                 #{tag}
               </a>
             ))}
@@ -201,6 +214,16 @@ function formatDate(date: Date) {
     font-family: var(--font-mono);
     font-size: 0.9rem;
     color: var(--color-text-muted);
+  }
+
+  .language-badge {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    padding: 0.15rem 0.45rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.035);
   }
   
   .post-category {

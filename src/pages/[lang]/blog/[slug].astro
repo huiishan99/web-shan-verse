@@ -1,0 +1,30 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BlogPostPage from '../../../components/pages/BlogPostPage.astro';
+import { translatedLocales, type Locale } from '../../../i18n/config';
+import { getPostSlug, isPostVisibleInLocale } from '../../../utils/blog';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => {
+    return import.meta.env.PROD ? data.draft !== true : true;
+  });
+
+  return translatedLocales.flatMap((lang) =>
+    posts
+      .filter((post) => isPostVisibleInLocale(post, lang))
+      .map((post) => ({
+        params: { lang, slug: getPostSlug(post) },
+        props: { post, lang },
+      }))
+  );
+}
+
+type Props = {
+  post: CollectionEntry<'blog'>;
+  lang: Locale;
+};
+
+const { post, lang } = Astro.props;
+---
+
+<BlogPostPage post={post} lang={lang} />

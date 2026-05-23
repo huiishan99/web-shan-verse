@@ -1,0 +1,232 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { defaultLocale, localizePath, type Locale } from '../../i18n/config';
+import { useTranslations } from '../../i18n/ui';
+import { getBlogPostPath, getPostLanguageLabel } from '../../utils/blog';
+
+type Props = {
+  kind: 'category' | 'tag';
+  value: string;
+  posts: CollectionEntry<'blog'>[];
+  lang?: Locale;
+};
+
+const { kind, value, posts, lang = defaultLocale } = Astro.props;
+const t = useTranslations(lang);
+const titleLabel = kind === 'category' ? t.blog.categories : t.blog.tags;
+const titleValue = kind === 'tag' ? `#${value}` : value;
+const dateLocale: Record<Locale, string> = {
+  en: 'en-US',
+  zh: 'zh-CN',
+  ja: 'ja-JP',
+};
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString(dateLocale[lang], {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+}
+---
+
+<BaseLayout title={`${titleLabel}: ${titleValue}`} lang={lang}>
+  <div class="container">
+    <header class="page-header">
+      <a href={localizePath('/blog', lang)} class="back-link">← {t.blog.backToBlog}</a>
+      <h1>{titleLabel}: <span class="highlight">{titleValue}</span></h1>
+      <p class="subtitle">{posts.length} {t.home.posts}</p>
+    </header>
+
+    <div class="posts-list">
+      {posts.map((post) => (
+        <a href={getBlogPostPath(post, lang)} class="post-card-link">
+          <article class="post-card">
+            <div class="post-meta">
+              <time class="post-date" datetime={post.data.date.toISOString()}>
+                {formatDate(post.data.date)}
+              </time>
+              {getPostLanguageLabel(post) && (
+                <span class="language-badge" title={t.blog.language}>
+                  {getPostLanguageLabel(post)}
+                </span>
+              )}
+              {kind === 'tag' && post.data.categories && post.data.categories[0] && (
+                <span class="post-category">{post.data.categories[0]}</span>
+              )}
+              {post.data.draft && (
+                <span class="draft-badge">{t.blog.draft}</span>
+              )}
+            </div>
+            <h2 class="post-title">{post.data.title}</h2>
+            {post.data.description && (
+              <p class="post-excerpt">{post.data.description}</p>
+            )}
+            {post.data.tags && post.data.tags.length > 0 && (
+              <div class="post-tags">
+                {post.data.tags.map((tag: string) => (
+                  <span class:list={['tag', { current: kind === 'tag' && tag === value }]}>#{tag}</span>
+                ))}
+              </div>
+            )}
+          </article>
+        </a>
+      ))}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-header {
+    margin-bottom: var(--space-xl);
+  }
+
+  .back-link {
+    display: inline-block;
+    color: var(--color-accent-gold);
+    text-decoration: none;
+    font-family: var(--font-display);
+    margin-bottom: var(--space-md);
+    transition: color 0.2s ease;
+  }
+
+  .back-link:hover {
+    color: var(--color-accent-copper);
+  }
+
+  .page-header h1 {
+    margin-bottom: var(--space-sm);
+  }
+
+  .highlight {
+    color: var(--color-accent-gold);
+    font-family: var(--font-mono);
+  }
+
+  .subtitle {
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+
+  .posts-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    max-width: 800px;
+  }
+
+  .post-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .post-card {
+    background: var(--surface-glass);
+    border: 1px solid var(--surface-border);
+    border-radius: var(--surface-radius);
+    padding: var(--space-lg);
+    transition: all 0.3s ease;
+    box-shadow: var(--surface-shadow);
+    backdrop-filter: blur(var(--surface-blur));
+    -webkit-backdrop-filter: blur(var(--surface-blur));
+    cursor: pointer;
+  }
+
+  .post-card:hover {
+    background: var(--surface-glass-hover);
+    border-color: var(--surface-border-hover);
+    box-shadow: var(--surface-shadow-hover);
+    transform: translateY(-2px);
+  }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-sm);
+  }
+
+  .post-date {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+  }
+
+  .language-badge {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    padding: 0.15rem 0.45rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.035);
+  }
+
+  .post-category {
+    font-size: 0.85rem;
+    color: var(--color-brass);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .draft-badge {
+    background: rgba(255, 100, 100, 0.2);
+    color: #ff9999;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .post-title {
+    font-size: 1.35rem;
+    font-family: var(--font-body);
+    font-weight: 600;
+    margin-bottom: var(--space-sm);
+    color: var(--color-text-primary);
+    transition: color 0.2s ease;
+  }
+
+  .post-card:hover .post-title {
+    color: var(--color-accent-gold);
+  }
+
+  .post-excerpt {
+    color: var(--color-text-secondary);
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: var(--space-md);
+  }
+
+  .post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+
+  .post-tags .tag {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+  }
+
+  .post-tags .tag.current {
+    color: var(--color-accent-gold);
+    font-weight: 600;
+  }
+
+  @media (max-width: 600px) {
+    .post-card {
+      padding: var(--space-md);
+    }
+
+    .post-meta {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+  }
+</style>
