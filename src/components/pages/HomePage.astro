@@ -26,6 +26,7 @@ const dateLocale: Record<Locale, string> = {
   ja: 'ja-JP',
 };
 const activityLabelLocale = 'en-US';
+const activityTimeZone = 'Asia/Tokyo';
 const activityWeekdayLabels = ['', 'Mon', '', 'Wed', '', 'Fri', ''];
 
 // 获取最新3篇博客文章
@@ -154,7 +155,20 @@ function filterCrowdedMonthLabels(labels: string[], minGap: number = 3): string[
   return filteredLabels;
 }
 
-const today = startOfDay(new Date());
+function startOfTodayInTimeZone(timeZone: string): Date {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    day: '2-digit',
+    month: '2-digit',
+    timeZone,
+    year: 'numeric',
+  }).formatToParts(new Date());
+  const getPart = (type: Intl.DateTimeFormatPartTypes): number =>
+    Number(parts.find((part) => part.type === type)?.value);
+
+  return new Date(Date.UTC(getPart('year'), getPart('month') - 1, getPart('day')));
+}
+
+const today = startOfTodayInTimeZone(activityTimeZone);
 const fullWeekCount = 52;
 const compactWeekCount = 26;
 const gridEnd = addDays(today, 6 - today.getUTCDay());
