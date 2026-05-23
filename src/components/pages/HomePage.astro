@@ -538,6 +538,27 @@ function getExcerpt(body: string, maxLength: number = 100): string {
       year: 'numeric',
       timeZone: 'UTC',
     });
+    const mobileMapQuery = window.matchMedia('(max-width: 600px)');
+
+    function scrollFrameToLatest(frame, force = false) {
+      if (!mobileMapQuery.matches || !frame) return;
+
+      window.requestAnimationFrame(() => {
+        const maxScroll = frame.scrollWidth - frame.clientWidth;
+        if (maxScroll <= 0) return;
+        if (!force && frame.dataset.mobileAligned === 'true') return;
+        if (force || frame.scrollLeft < 4) {
+          frame.scrollLeft = maxScroll;
+          frame.dataset.mobileAligned = 'true';
+        }
+      });
+    }
+
+    function alignMobileActivityMaps(force = false) {
+      document
+        .querySelectorAll('.activity-map-frame, .github-activity-frame')
+        .forEach((frame) => scrollFrameToLatest(frame, force));
+    }
 
     function parseUTCDate(dateKey) {
       const [year, month, day] = dateKey.split('-').map(Number);
@@ -664,6 +685,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
       body.append(weekdays, grid);
 
       root.replaceChildren(years, months, body);
+      scrollFrameToLatest(root.closest('.github-activity-frame'), true);
     }
 
     async function setupGithubCalendar(root) {
@@ -701,7 +723,9 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     }
 
     setupGithubCalendars();
+    alignMobileActivityMaps();
     document.addEventListener('astro:page-load', setupGithubCalendars);
+    document.addEventListener('astro:page-load', () => alignMobileActivityMaps(true));
   })();
 </script>
 
@@ -2072,22 +2096,47 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     }
 
     .activity-chart {
-      --activity-cell: 8px;
-      --activity-gap: 3px;
+      --activity-cell: 5.4px;
+      --activity-gap: 1.7px;
+    }
+
+    .activity-map-frame,
+    .github-activity-frame {
+      width: calc(100% + 0.7rem);
+      margin-inline: -0.35rem;
+      padding-inline: 0.35rem;
+      scrollbar-width: none;
+    }
+
+    .activity-map-frame::-webkit-scrollbar,
+    .github-activity-frame::-webkit-scrollbar {
+      display: none;
     }
 
     .activity-years,
     .activity-months {
-      padding-left: 1.85rem;
+      padding-left: 1.35rem;
     }
 
     .activity-calendar {
-      grid-template-columns: 1.4rem max-content;
-      gap: 0.45rem;
+      grid-template-columns: 1rem max-content;
+      gap: 0.35rem;
+    }
+
+    .activity-years {
+      font-size: 0.58rem;
+    }
+
+    .activity-months {
+      font-size: 0.56rem;
     }
 
     .activity-weekdays {
-      font-size: 0.58rem;
+      font-size: 0.48rem;
+    }
+
+    .activity-dot {
+      border-radius: 2px;
     }
 
     .github-activity-header {
@@ -2096,33 +2145,46 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     }
 
     .github-activity-frame img {
-      min-width: 520px;
+      min-width: 430px;
     }
 
     .github-calendar {
-      --github-cell: 8px;
-      --github-gap: 3px;
-      min-width: 520px;
+      --github-cell: 5.4px;
+      --github-gap: 1.7px;
+      min-width: 0;
+      font-size: 0.5rem;
     }
 
     :global(.github-calendar-years),
     :global(.github-calendar-months) {
-      padding-left: 1.85rem;
+      padding-left: 1.35rem;
     }
 
     :global(.github-calendar-body) {
-      grid-template-columns: 1.4rem max-content;
-      gap: 0.45rem;
+      grid-template-columns: 1rem max-content;
+      gap: 0.35rem;
+    }
+
+    :global(.github-calendar-years) {
+      font-size: 0.58rem;
+    }
+
+    :global(.github-calendar-months) {
+      font-size: 0.56rem;
     }
 
     :global(.github-calendar-weekdays) {
-      font-size: 0.58rem;
+      font-size: 0.48rem;
+    }
+
+    :global(.github-calendar-day) {
+      border-radius: 2px;
     }
 
     .activity-panel {
       margin-left: calc(var(--space-md) * -1);
       margin-right: calc(var(--space-md) * -1);
-      padding: var(--space-md);
+      padding: 0.9rem 0.75rem;
       border-left: 0;
       border-right: 0;
     }
