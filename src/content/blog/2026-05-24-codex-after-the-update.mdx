@@ -1,0 +1,221 @@
+---
+title: "Codex 更新之后，我重新理解了 AI 编程代理"
+date: 2026-05-24
+description: "从 2026 年 5 月前后的 Codex 更新、Pro 额度变化和一批旧项目重构，记录我为什么开始把 Codex 当作可监督的软件工程执行层来使用。"
+categories:
+  - Technology
+tags:
+  - Codex
+  - OpenAI
+  - AI Coding
+  - Refactoring
+  - Developer Tools
+lang: zh
+postSlug: codex-after-the-update
+translationKey: codex-after-the-update
+draft: false
+---
+
+import Callout from '../../components/blog/Callout.astro';
+import LinkCard from '../../components/blog/LinkCard.astro';
+
+<Callout type="note" title="写作时点">
+本文写于 2026-05-24（JST）。OpenAI 的 Codex、ChatGPT Pro 额度和限时活动变化很快，所以本文把关键日期和参考链接都列在文末。
+</Callout>
+
+过去几天我一直有一种很强烈的感觉：Codex 好像突然从“会写代码的助手”变成了“可以被监督的软件工程执行层”。我一开始以为分水岭大概是 5 月 11 日，因为那天我把 `web-falling-sand` 从一个单文件 `sketch.js` 重构成了模块化项目；后来查资料才发现，OpenAI 在 2026-05-14 正式发布了 Codex 手机端远程协作预览，而更大的桌面端能力更新则是在 2026-04-16 发布的。
+
+所以更准确的说法应该是：我在 5 月 11 日前后开始明显感到 Codex 的能力跃迁，5 月 14 日的官方更新把这种体验坐实了。
+
+这篇文章不是“AI 会取代程序员”的泛泛而谈，而是一次偏工程视角的复盘：Codex 到底更新了什么、我为什么升级 Pro、我用它重构了哪些旧项目，以及如果你也想用 Codex，该如何把它放进一个相对可靠的开发流程里。
+
+## 这次变化到底是什么
+
+如果只把 Codex 理解成代码补全，那会低估它。OpenAI 官方文档对 Codex 的定义是一个能帮助你 write、review、ship code 的 AI agent；在 Codex web/cloud 里，它可以读取、编辑并运行代码，也可以在云端环境中后台并行工作。
+
+我这次感受到的变化，主要来自四个方向：
+
+| 维度 | 旧体验 | 新体验 |
+| --- | --- | --- |
+| 工作界面 | 主要在终端或 IDE 内对话 | App、CLI、IDE、Web、移动端可以互相接力 |
+| 执行方式 | 一次处理一个相对短的任务 | 可以让多个 agent 在线程中并行推进 |
+| 上下文 | 靠用户不断补充背景 | 能记住偏好、读取项目、看 diff、跑测试、拿终端输出继续推理 |
+| 监督方式 | 人盯着每一步 | 人在关键分叉、审批和最终 diff 上介入 |
+
+OpenAI 在 2026-04-16 的文章里把这次更新描述成覆盖更完整的软件开发生命周期：Codex 可以操作本机应用、使用更多工具和 app、生成图像、记住偏好、从过去动作中学习，并处理持续性、可重复的工作。到了 2026-05-14，Codex 进入 ChatGPT 移动端预览，手机变成了一个远程控制面板：你可以在外面查看输出、批准命令、改变方向、切换 thread，而真正的文件、凭据和本地环境仍留在可信机器上。
+
+这对工程实践的意义很大。以前 AI coding 的核心问题是“它能不能写出这段代码”。现在更关键的问题变成了：“我能不能把一个有边界的工程目标交给它，让它在可审计、可回滚、可验证的循环里推进？”
+
+<LinkCard
+  href="https://openai.com/index/codex-for-almost-everything/"
+  title="Codex for (almost) everything"
+  description="OpenAI 于 2026-04-16 发布的 Codex 大更新说明，重点是桌面端、多 agent、工具使用、记忆和工作流扩展。"
+  site="OpenAI"
+/>
+
+## 我为什么升级 Pro
+
+这里我不想把 Pro 写成“必须买”。如果你只是偶尔让 Codex 修一个小函数，Plus 或限时开放的 Free/Go 体验可能已经足够。但如果你的使用方式变成下面这种，额度会很快成为瓶颈：
+
+- 同时让 Codex 扫多个旧项目；
+- 要它先读项目结构，再提出重构计划；
+- 允许它编辑多文件、跑测试、修 UI、再根据结果继续迭代；
+- 反复让它做 code review、补文档、补 release checklist；
+- 在桌面端、CLI、网页端、移动端之间切换。
+
+OpenAI Help Center 当前写明：Codex 已包含在 Plus、Pro、Business、Enterprise/Edu 等计划中；限时期间 Free 和 Go 也可使用 Codex，其他计划享受 2x rate limits。Pro 分层页面还写到，Pro $100 在限时活动中获得 2x Codex usage，也就是相对 Plus 的 10x，而不是标准的 5x；Pro $200 则面向更重的并行工作流。
+
+这就是我升级 Pro 的原因：不是为了“让 AI 替我写更多代码”，而是为了把 Codex 当成一个持续工作的工程执行层来用。它的价值不在一次回答，而在多轮读仓库、改代码、跑验证、解释 diff、继续修的闭环。
+
+<Callout type="warning" title="关于限时优惠">
+限时活动不是永久权益。具体额度、到期时间和不同地区可用性应以 OpenAI 的 pricing / Help Center 页面为准，尤其是 Pro $100、Pro $200 和团队工作区的 Codex credit 规则。
+</Callout>
+
+## 我的旧项目重构清单
+
+我最近用 Codex 扫了一批旧项目。公开 GitHub 记录能看到一个很明显的现象：这些仓库不是简单地“更新 README”，而是在补工程化结构、交互细节、测试样例、文档和发布流程。
+
+| 项目 | 语言/框架 | 最近公开推送 | Codex 介入后的主要变化 |
+| --- | --- | --- | --- |
+| [`web-blog`](https://github.com/huiishan99/web-blog) | Astro / MDX | 2026-05-23 | 修移动端 activity map、语言菜单、hero 标题细节、页面间距，也就是这个个人网站的进一步打磨 |
+| [`web-falling-sand`](https://github.com/huiishan99/web-falling-sand) | JavaScript / p5-style | 2026-05-11 | 从单文件 `sketch.js` 拆到模块化 `src/`，加入 Vite、ESLint、Prettier、GitHub Pages workflow、单元测试和预览 SVG |
+| [`cpp-tetris-game`](https://github.com/huiishan99/cpp-tetris-game) | C++ / raylib-cpp | 2026-05-23 | 增加 lock delay、DAS/ARR、SRS wall kicks、设置面板、本地排行榜和姓名输入 |
+| [`python-rockfall-game`](https://github.com/huiishan99/python-rockfall-game) | Python | 2026-05-23 | 增加不同岩石类型、帮助界面图例、GUI smoke-test 样例和训练数据特征统计 |
+| [`csharp-snake-game`](https://github.com/huiishan99/csharp-snake-game) | C# | 2026-05-23 | 现代化开始菜单、主题化控件、HUD 样式、速度快捷项、Windows 测试与发布 checklist |
+| [`web-genAI`](https://github.com/huiishan99/web-genAI) | Python | 2026-05-23 | 修复 image generation demo，并重新设计 image forge 界面 |
+| [`web-notion-next`](https://github.com/huiishan99/web-notion-next) | Next.js / Notion | 2026-05-17 | 整理 4.9.x 用户指南、主题文档、维护流程和 reference manuals |
+
+这里最让我改变看法的是 `web-falling-sand`。这类旧项目通常最大的问题不是“功能不会写”，而是当初为了快，结构没有长出来：单文件、隐式状态、没有构建脚本、没有 lint、没有测试、部署靠手感。Codex 适合处理的恰恰是这种“你知道方向，但不想手动搬砖三小时”的工程债。
+
+我给 Codex 的任务不是“帮我重写这个项目”，而是更像：
+
+```text
+先阅读仓库，解释当前结构。
+目标：把单文件 demo 重构成模块化项目，但保持现有玩法。
+约束：不要引入重型框架；保留 GitHub Pages 部署；添加最小测试和 README。
+完成后：列出变更、风险、验证方式。
+```
+
+它会先把问题拆成几个可审的层：material rules、grid、simulation engine、renderer、UI controls、build tooling、docs。我的工作不再是逐行替它写，而是不断收窄目标、审 diff、跑项目、指出哪一部分的取舍不对。
+
+这就是我认为 Codex “强”的地方：它把很多本来属于高级工程师日常耐心的工作，例如读陌生代码、识别模块边界、补脚手架、补测试命令、写文档，压缩成了一个可交互的执行循环。
+
+## 我现在怎么用 Codex
+
+我会把 Codex 分成四种模式，而不是所有事情都用同一种 prompt：
+
+| 模式 | 适合任务 | 我会怎么下指令 |
+| --- | --- | --- |
+| 侦察模式 | 读旧项目、找风险、解释结构 | “先不要改代码，画出模块边界和最危险的文件” |
+| 手术模式 | 小范围修 bug、改 UI、补测试 | “只改这些文件；跑这个命令；最后给我 diff 摘要” |
+| 重构模式 | 拆文件、换结构、补工具链 | “分阶段做，每阶段保持可运行；先提交计划再动手” |
+| 维护模式 | README、release checklist、迁移指南 | “以用户能复现为标准，补齐开发、测试、部署步骤” |
+
+一个比较稳的工作流是这样的：
+
+```text
+问题/想法
+  -> 让 Codex 先读仓库并复述理解
+  -> 要它提出 2-3 个方案和风险
+  -> 选择一个最小可行方案
+  -> Codex 修改代码、运行测试或截图验证
+  -> 我 review diff，并要求它解释为什么这样改
+  -> 合并、发布或继续下一轮
+```
+
+我尤其建议把“先不要改代码”当作常用开场。很多时候，真正节省时间的不是马上生成代码，而是让 Codex 先帮你恢复项目上下文。旧项目最贵的成本往往是：你已经忘了自己当时为什么这么写。
+
+## 为什么要用 Codex
+
+我认为 Codex 的价值不在“代码生成”，而在三个更底层的能力。
+
+第一，它降低了重启旧项目的摩擦。旧项目往往不是没有价值，而是重新打开它时需要先找入口、装依赖、理解状态流、回忆部署方式。Codex 可以帮你做第一轮考古。
+
+第二，它把工程质量动作变便宜了。以前我可能会为了一个练习项目跳过 README、测试、lint、发布清单、移动端细节；现在这些事情可以被纳入同一个任务，让 Codex 顺手补上。
+
+第三，它改变了“个人开发者”的吞吐量。一个人维护多个项目，最稀缺的不是灵感，而是上下文切换能力。Codex 的多线程、后台任务、移动端远程审批，让我可以把项目拆成几条独立线索推进：一个修 UI，一个补测试，一个整理文档，一个做 release polish。
+
+当然，它不是自动驾驶。它更像一个执行力很强、但需要边界和审查的 junior-to-mid 工程队友。你必须给它目标、约束、测试命令和停止条件；你也必须看 diff。
+
+## 安全边界：强大之后更要克制
+
+Codex 越强，越不能把它当成“随便给 shell 权限的聊天框”。OpenAI 在 2026-05-08 的安全文章里强调了几个我很认同的原则：让 agent 工作在清晰边界内；低风险动作尽量顺滑；高风险动作必须停下来审批；保留 telemetry 和 audit trail；用 sandbox、网络策略和凭据管理来约束它。
+
+我个人的最低实践是：
+
+- 每个任务前先看 `git status`，确认工作区干净或至少知道哪些改动属于谁；
+- 让 Codex 在 branch 里工作，避免混进临时实验；
+- 不把真实密钥、生产 token、个人隐私文件直接喂给它；
+- 让它写明会运行哪些命令，再批准高风险动作；
+- 要求它最后说明“改了什么、怎么验证、剩余风险是什么”；
+- 对 UI 任务要求截图或浏览器验证，对库/逻辑任务要求测试输出。
+
+换句话说，Codex 不是替代工程纪律，而是放大工程纪律。你给它清晰边界，它会变得非常高效；你给它模糊目标和无限权限，它也可能非常高效地把混乱扩大。
+
+<LinkCard
+  href="https://openai.com/index/running-codex-safely/"
+  title="Running Codex safely at OpenAI"
+  description="OpenAI 对 Codex sandbox、审批、网络访问、凭据和审计日志的安全实践说明。"
+  site="OpenAI"
+/>
+
+## 给新用户的快速上手路线
+
+如果你还没有认真用过 Codex，我建议不要从“让它写一个新 app”开始。更好的练习路线是拿一个你熟悉但有点旧的小项目：
+
+1. 让 Codex 只读不改：总结项目结构、运行方式和最值得修的三件事。
+2. 选一个低风险任务：例如整理 README、补 `npm scripts`、修一个移动端样式问题。
+3. 要求它先给计划：列出会改哪些文件、如何验证。
+4. 批准它动手：让它改、跑检查、汇报结果。
+5. 自己 review diff：不满意就让它基于 diff 继续改。
+6. 最后让它写 release note：把本轮变化总结成可读记录。
+
+我会常用这些 prompt 模板：
+
+```text
+请先阅读这个仓库，不要改代码。告诉我：
+1. 入口文件在哪里；
+2. 状态是怎么流动的；
+3. 哪些地方最适合拆模块；
+4. 如果只做一天重构，优先顺序是什么。
+```
+
+```text
+请把这个功能做成最小可验证版本。
+约束：
+- 不引入新框架；
+- 保持现有 UI 风格；
+- 只改必要文件；
+- 完成后运行 npm run build，并说明验证结果。
+```
+
+```text
+请 review 当前 diff，优先找：
+- 运行时 bug；
+- 移动端布局风险；
+- 未覆盖的边界条件；
+- 文档和实际行为不一致的地方。
+```
+
+这些 prompt 看起来不酷，但很有效。因为 Codex 最需要的不是华丽描述，而是工程边界。
+
+## 结论：我愿意把 Codex 放进日常开发主循环
+
+这次 Codex 更新之后，我最大的感受不是“AI 写代码又快了”，而是“软件工程的工作台变宽了”。它不再只在代码编辑器里等你提问，而是能在本机、云端、浏览器、移动端之间移动；不再只是生成片段，而是能围绕一个目标持续推进；不再只是回答，而是能读仓库、改文件、跑命令、给 diff、等你审批。
+
+对我这种有很多旧项目、练习项目、个人网站和研究原型的人来说，这正好击中了痛点。旧项目最难的是重启，个人网站最难的是持续打磨，练习项目最容易缺工程化收尾。Codex 不能替我决定审美和方向，但它能把那些本来会被拖延的工程动作推到眼前，让我只需要做判断、约束和最终验收。
+
+所以，如果你问我为什么要用 Codex，我的答案是：因为它让一个人也能以更接近小团队的节奏维护项目。但前提是，你要像使用一个真正的工程队友那样使用它：给上下文，给边界，给测试，也给审查。
+
+## 参考文献
+
+- OpenAI. [Codex for (almost) everything](https://openai.com/index/codex-for-almost-everything/), 2026-04-16.
+- OpenAI. [Work with Codex from anywhere](https://openai.com/index/work-with-codex-from-anywhere/), 2026-05-14.
+- OpenAI. [Introducing the Codex app](https://openai.com/index/introducing-the-codex-app/), 2026-02-02; Windows update on 2026-03-04.
+- OpenAI Help Center. [Using Codex with your ChatGPT plan](https://help.openai.com/en/articles/11369540/), accessed 2026-05-24.
+- OpenAI Help Center. [About ChatGPT Pro tiers](https://help.openai.com/en/articles/9793128-ab-targets-pro-chatg), accessed 2026-05-24.
+- OpenAI Help Center. [Codex 费率表](https://help.openai.com/zh-hans-cn/articles/20001106-codex-rate-card), accessed 2026-05-24.
+- OpenAI Developers. [Codex web](https://developers.openai.com/codex/cloud), accessed 2026-05-24.
+- OpenAI Developers. [Code generation](https://developers.openai.com/api/docs/guides/code-generation), accessed 2026-05-24.
+- OpenAI. [Running Codex safely at OpenAI](https://openai.com/index/running-codex-safely/), 2026-05-08.
+- GitHub. Public repositories under [`huiishan99`](https://github.com/huiishan99), commit metadata accessed via GitHub REST API on 2026-05-24.

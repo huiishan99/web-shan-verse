@@ -78,6 +78,8 @@ export const ui = {
       tags: 'Tags',
       draft: 'Draft',
       deprecated: 'Deprecated',
+      language: 'Language',
+      backToBlog: 'Back to Blog',
       noPosts: 'No blog posts yet. Check back soon!',
     },
     projects: {
@@ -179,6 +181,8 @@ export const ui = {
       tags: '标签',
       draft: '草稿',
       deprecated: '已过时',
+      language: '语言',
+      backToBlog: '返回博客',
       noPosts: '还没有博客文章。请稍后再来看看！',
     },
     projects: {
@@ -280,6 +284,8 @@ export const ui = {
       tags: 'タグ',
       draft: '下書き',
       deprecated: '非推奨',
+      language: '言語',
+      backToBlog: 'ブログへ戻る',
       noPosts: 'まだブログ記事はありません。また後で見に来てください！',
     },
     projects: {

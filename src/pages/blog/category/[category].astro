@@ -1,207 +1,33 @@
 ---
-import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BlogTaxonomyPage from '../../../components/pages/BlogTaxonomyPage.astro';
+import { defaultLocale } from '../../../i18n/config';
+import { getTaxonomySlug, isPostVisibleInLocale } from '../../../utils/blog';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog', ({ data }) => {
+  const posts = (await getCollection('blog', ({ data }) => {
     return import.meta.env.PROD ? data.draft !== true : true;
-  });
-  
-  // 获取所有唯一的分类
-  const categories = [...new Set(posts.flatMap(post => post.data.categories || []))];
-  
+  })).filter((post) => isPostVisibleInLocale(post, defaultLocale));
+
+  const categories = [...new Set(posts.flatMap((post) => post.data.categories || []))];
+
   return categories.map((category) => ({
-    params: { category: category.toLowerCase().replace(/\s+/g, '-') },
-    props: { 
+    params: { category: getTaxonomySlug(category) },
+    props: {
       category,
-      posts: posts.filter(post => 
-        post.data.categories?.includes(category)
-      ).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+      posts: posts
+        .filter((post) => post.data.categories?.includes(category))
+        .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()),
     },
   }));
 }
 
 type Props = {
   category: string;
-  posts: any[];
+  posts: CollectionEntry<'blog'>[];
 };
 
 const { category, posts } = Astro.props;
-
-function formatDate(date: Date) {
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
-}
 ---
 
-<BaseLayout title={`Category: ${category}`}>
-  <div class="container">
-    <header class="page-header">
-      <a href="/blog" class="back-link">← Back to Blog</a>
-      <h1>Category: <span class="highlight">{category}</span></h1>
-      <p class="subtitle">{posts.length} post{posts.length !== 1 ? 's' : ''} in this category</p>
-    </header>
-    
-    <div class="posts-list">
-      {posts.map((post) => (
-        <a href={`/blog/${post.id}`} class="post-card-link">
-          <article class="post-card">
-            <div class="post-meta">
-              <time class="post-date" datetime={post.data.date.toISOString()}>
-                {formatDate(post.data.date)}
-              </time>
-              {post.data.draft && (
-                <span class="draft-badge">Draft</span>
-              )}
-            </div>
-            <h2 class="post-title">{post.data.title}</h2>
-            {post.data.description && (
-              <p class="post-excerpt">{post.data.description}</p>
-            )}
-            {post.data.tags && post.data.tags.length > 0 && (
-              <div class="post-tags">
-                {post.data.tags.map((tag: string) => (
-                  <span class="tag">#{tag}</span>
-                ))}
-              </div>
-            )}
-          </article>
-        </a>
-      ))}
-    </div>
-  </div>
-</BaseLayout>
-
-<style>
-  .page-header {
-    margin-bottom: var(--space-xl);
-  }
-  
-  .back-link {
-    display: inline-block;
-    color: var(--color-accent-gold);
-    text-decoration: none;
-    font-family: var(--font-display);
-    margin-bottom: var(--space-md);
-    transition: color 0.2s ease;
-  }
-  
-  .back-link:hover {
-    color: var(--color-accent-copper);
-  }
-  
-  .page-header h1 {
-    margin-bottom: var(--space-sm);
-  }
-  
-  .highlight {
-    color: var(--color-accent-gold);
-  }
-  
-  .subtitle {
-    color: var(--color-text-muted);
-    font-style: italic;
-  }
-  
-  .posts-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-lg);
-    max-width: 800px;
-  }
-  
-  .post-card-link {
-    text-decoration: none;
-    color: inherit;
-    display: block;
-  }
-  
-  .post-card {
-    background: var(--surface-glass);
-    border: 1px solid var(--surface-border);
-    border-radius: var(--surface-radius);
-    padding: var(--space-lg);
-    transition: all 0.3s ease;
-    box-shadow: var(--surface-shadow);
-    backdrop-filter: blur(var(--surface-blur));
-    -webkit-backdrop-filter: blur(var(--surface-blur));
-    cursor: pointer;
-  }
-  
-  .post-card:hover {
-    background: var(--surface-glass-hover);
-    border-color: var(--surface-border-hover);
-    box-shadow: var(--surface-shadow-hover);
-    transform: translateY(-2px);
-  }
-  
-  .post-meta {
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-    margin-bottom: var(--space-sm);
-  }
-  
-  .post-date {
-    font-family: var(--font-mono);
-    font-size: 0.9rem;
-    color: var(--color-text-muted);
-  }
-  
-  .draft-badge {
-    background: rgba(255, 100, 100, 0.2);
-    color: #ff9999;
-    padding: 0.15rem 0.5rem;
-    border-radius: 3px;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-  
-  .post-title {
-    font-size: 1.35rem;
-    font-family: var(--font-body);
-    font-weight: 600;
-    margin-bottom: var(--space-sm);
-    color: var(--color-text-primary);
-    transition: color 0.2s ease;
-  }
-  
-  .post-card:hover .post-title {
-    color: var(--color-accent-gold);
-  }
-  
-  .post-excerpt {
-    color: var(--color-text-secondary);
-    font-size: 1rem;
-    line-height: 1.7;
-    margin-bottom: var(--space-md);
-  }
-  
-  .post-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-xs);
-  }
-  
-  .post-tags .tag {
-    font-family: var(--font-mono);
-    font-size: 0.85rem;
-    color: var(--color-text-muted);
-  }
-
-  @media (max-width: 600px) {
-    .post-card {
-      padding: var(--space-md);
-    }
-
-    .post-meta {
-      align-items: flex-start;
-      flex-direction: column;
-      gap: 0.35rem;
-    }
-  }
-</style>
+<BlogTaxonomyPage kind="category" value={category} posts={posts} lang={defaultLocale} />
