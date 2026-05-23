@@ -153,9 +153,13 @@ function filterCrowdedMonthLabels(labels: string[], minGap: number = 3): string[
 }
 
 const today = startOfDay(new Date());
+const fullWeekCount = 52;
+const compactWeekCount = 26;
 const gridEnd = addDays(today, 6 - today.getUTCDay());
-const gridStart = addDays(gridEnd, -(52 * 7 - 1));
+const gridStart = addDays(gridEnd, -(fullWeekCount * 7 - 1));
+const compactGridStart = addDays(gridEnd, -(compactWeekCount * 7 - 1));
 const activityRangeLabel = `${formatActivityMonthYear(gridStart)} - ${formatActivityMonthYear(gridEnd)}`;
+const compactActivityRangeLabel = `${formatActivityMonthYear(compactGridStart)} - ${formatActivityMonthYear(gridEnd)}`;
 
 const signalsByDay = activitySignals.reduce<Record<string, ActivitySignal[]>>((acc, signal) => {
   const key = toDateKey(startOfDay(signal.date));
@@ -163,50 +167,81 @@ const signalsByDay = activitySignals.reduce<Record<string, ActivitySignal[]>>((a
   return acc;
 }, {});
 
-const activityWeeks = Array.from({ length: 52 }, (_, weekIndex) =>
-  Array.from({ length: 7 }, (_, dayIndex) => {
-    const date = addDays(gridStart, weekIndex * 7 + dayIndex);
-    const signals = signalsByDay[toDateKey(date)] || [];
-    const intensity = Math.min(signals.length, 4);
+function buildActivityWeeks(startDate: Date, weekCount: number) {
+  return Array.from({ length: weekCount }, (_, weekIndex) =>
+    Array.from({ length: 7 }, (_, dayIndex) => {
+      const date = addDays(startDate, weekIndex * 7 + dayIndex);
+      const signals = signalsByDay[toDateKey(date)] || [];
+      const intensity = Math.min(signals.length, 4);
 
-    return {
-      date,
-      key: toDateKey(date),
-      signals,
-      intensity,
-    };
-  })
-);
+      return {
+        date,
+        key: toDateKey(date),
+        signals,
+        intensity,
+      };
+    })
+  );
+}
 
-const activityMonthLabels = filterCrowdedMonthLabels(activityWeeks.map((week, weekIndex) => {
-  const firstOfMonth = week.find((day) => day.date.getUTCDate() === 1);
-  const labelDate = firstOfMonth?.date || (weekIndex === 0 ? week[0].date : null);
+function getActivityMonthLabels(
+  weeks: ReturnType<typeof buildActivityWeeks>
+): string[] {
+  return filterCrowdedMonthLabels(weeks.map((week, weekIndex) => {
+    const firstOfMonth = week.find((day) => day.date.getUTCDate() === 1);
+    const labelDate = firstOfMonth?.date || (weekIndex === 0 ? week[0].date : null);
 
-  return labelDate
-    ? labelDate.toLocaleDateString(activityLabelLocale, { month: 'short', timeZone: 'UTC' })
-    : '';
-}));
+    return labelDate
+      ? labelDate.toLocaleDateString(activityLabelLocale, { month: 'short', timeZone: 'UTC' })
+      : '';
+  }));
+}
 
-const activityYearLabels = activityWeeks.map((week, weekIndex) => {
-  const firstOfYear = week.find((day) => day.date.getUTCMonth() === 0 && day.date.getUTCDate() === 1);
-  const labelDate = firstOfYear?.date || (weekIndex === 0 ? week[0].date : null);
+function getActivityYearLabels(
+  weeks: ReturnType<typeof buildActivityWeeks>
+): string[] {
+  return weeks.map((week, weekIndex) => {
+    const firstOfYear = week.find((day) => day.date.getUTCMonth() === 0 && day.date.getUTCDate() === 1);
+    const labelDate = firstOfYear?.date || (weekIndex === 0 ? week[0].date : null);
 
-  return labelDate ? String(labelDate.getUTCFullYear()) : '';
-});
+    return labelDate ? String(labelDate.getUTCFullYear()) : '';
+  });
+}
 
-const visibleSignals = activitySignals
-  .filter((signal) => {
-    const signalDate = startOfDay(signal.date);
-    return signalDate >= gridStart && signalDate <= gridEnd;
-  })
-  .sort((a, b) => b.date.getTime() - a.date.getTime());
+function getVisibleSignals(startDate: Date): ActivitySignal[] {
+  return activitySignals
+    .filter((signal) => {
+      const signalDate = startOfDay(signal.date);
+      return signalDate >= startDate && signalDate <= gridEnd;
+    })
+    .sort((a, b) => b.date.getTime() - a.date.getTime());
+}
 
-const activeDays = new Set(visibleSignals.map((signal) => toDateKey(startOfDay(signal.date)))).size;
+function getActiveDayCount(signals: ActivitySignal[]): number {
+  return new Set(signals.map((signal) => toDateKey(startOfDay(signal.date)))).size;
+}
+
+const activityWeeks = buildActivityWeeks(gridStart, fullWeekCount);
+const compactActivityWeeks = buildActivityWeeks(compactGridStart, compactWeekCount);
+
+const activityMonthLabels = getActivityMonthLabels(activityWeeks);
+const compactActivityMonthLabels = getActivityMonthLabels(compactActivityWeeks);
+const activityYearLabels = getActivityYearLabels(activityWeeks);
+const compactActivityYearLabels = getActivityYearLabels(compactActivityWeeks);
+
+const visibleSignals = getVisibleSignals(gridStart);
+const compactVisibleSignals = getVisibleSignals(compactGridStart);
+const activeDays = getActiveDayCount(visibleSignals);
+const compactActiveDays = getActiveDayCount(compactVisibleSignals);
 const totalSignals = visibleSignals.length;
+const compactTotalSignals = compactVisibleSignals.length;
 const activityLabel = `${t.home.signalMap} ${activityRangeLabel}: ${totalSignals} ${t.home.totalSignals}, ${activeDays} ${t.home.activeDays}. ${t.home.activitySource}`;
+const compactActivityLabel = `${t.home.signalMap} ${compactActivityRangeLabel}: ${compactTotalSignals} ${t.home.totalSignals}, ${compactActiveDays} ${t.home.activeDays}. ${t.home.activitySource}`;
 const recentSignals = visibleSignals.slice(0, 6);
 const postSignalCount = visibleSignals.filter((signal) => signal.type === 'post').length;
 const milestoneSignalCount = visibleSignals.filter((signal) => signal.type === 'milestone').length;
+const compactPostSignalCount = compactVisibleSignals.filter((signal) => signal.type === 'post').length;
+const compactMilestoneSignalCount = compactVisibleSignals.filter((signal) => signal.type === 'milestone').length;
 const githubUsername = 'huiishan99';
 const githubProfileUrl = `https://github.com/${githubUsername}`;
 const githubContributionChartUrl = `https://ghchart.rshah.org/C9A227/${githubUsername}`;
@@ -315,18 +350,26 @@ function getExcerpt(body: string, maxLength: number = 100): string {
         <div>
           <p class="section-kicker">{t.home.activityKicker}</p>
           <h2>{t.home.signalMap}</h2>
-          <p class="activity-range">{activityRangeLabel}</p>
+          <p class="activity-range">
+            <span class="activity-range-full">{activityRangeLabel}</span>
+            <span class="activity-range-compact">{compactActivityRangeLabel}</span>
+          </p>
         </div>
-        <div class="activity-stats">
+        <div class="activity-stats activity-stats--full">
           <span>{postSignalCount} {t.home.posts}</span>
           <span>{milestoneSignalCount} {t.home.milestones}</span>
           <span>{activeDays} {t.home.activeDays}</span>
+        </div>
+        <div class="activity-stats activity-stats--compact">
+          <span>{compactPostSignalCount} {t.home.posts}</span>
+          <span>{compactMilestoneSignalCount} {t.home.milestones}</span>
+          <span>{compactActiveDays} {t.home.activeDays}</span>
         </div>
       </div>
 
       <div class="activity-panel">
         <div class="activity-chart">
-          <div class="activity-map-frame">
+          <div class="activity-map-frame activity-map-frame--full">
             <div class="activity-map">
               <div class="activity-years" aria-hidden="true">
                 {activityYearLabels.map((year) => (
@@ -381,6 +424,61 @@ function getExcerpt(body: string, maxLength: number = 100): string {
             </div>
           </div>
 
+          <div class="activity-map-frame activity-map-frame--compact">
+            <div class="activity-map activity-map--compact">
+              <div class="activity-years" aria-hidden="true">
+                {compactActivityYearLabels.map((year) => (
+                  <span>{year}</span>
+                ))}
+              </div>
+
+              <div class="activity-months" aria-hidden="true">
+                {compactActivityMonthLabels.map((month) => (
+                  <span>{month}</span>
+                ))}
+              </div>
+
+              <div class="activity-calendar">
+                <div class="activity-weekdays" aria-hidden="true">
+                  {activityWeekdayLabels.map((day) => (
+                    <span>{day}</span>
+                  ))}
+                </div>
+
+                <div class="activity-grid" role="img" aria-label={compactActivityLabel}>
+                  {compactActivityWeeks.map((week) => (
+                    <div class="activity-week">
+                      {week.map((day) => {
+                        const titles = day.signals
+                          .map((signal) => `${signal.displayDate} (${signal.dateSource}): ${signal.title}`)
+                          .join(' / ');
+                        const signalTypes = new Set(day.signals.map((signal) => signal.type));
+                        const typeClass = signalTypes.size > 1
+                          ? 'mixed'
+                          : signalTypes.has('post')
+                            ? 'post'
+                            : signalTypes.has('milestone')
+                              ? 'milestone'
+                              : 'quiet';
+                        const label = day.signals.length > 0
+                          ? titles
+                          : `${formatActivityDate(day.date)}: ${t.home.noSignal}`;
+
+                        return (
+                          <span
+                            class={`activity-dot activity-dot--${day.intensity} activity-dot--${typeClass}`}
+                            title={label}
+                            aria-label={label}
+                          />
+                        );
+                      })}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="activity-legend" aria-label={t.home.activityLegend}>
             <span><i class="activity-dot activity-dot--1 activity-dot--post"></i> {t.home.signalTypePost}</span>
             <span><i class="activity-dot activity-dot--1 activity-dot--milestone"></i> {t.home.signalTypeMilestone}</span>
@@ -400,10 +498,19 @@ function getExcerpt(body: string, maxLength: number = 100): string {
               rel="noopener noreferrer"
             >
               <div
-                class="github-calendar"
+                class="github-calendar github-calendar--full"
                 data-github-calendar
                 data-username={githubUsername}
                 data-start={toDateKey(gridStart)}
+                data-end={toDateKey(gridEnd)}
+                role="img"
+                aria-label={`${githubUsername} ${t.home.githubCalendarLabel}`}
+              ></div>
+              <div
+                class="github-calendar github-calendar--compact"
+                data-github-calendar
+                data-username={githubUsername}
+                data-start={toDateKey(compactGridStart)}
                 data-end={toDateKey(gridEnd)}
                 role="img"
                 aria-label={`${githubUsername} ${t.home.githubCalendarLabel}`}
@@ -531,6 +638,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
 
     const API_ROOT = 'https://github-contributions-api.jogruber.de/v4/';
     const WEEKDAYS = ['', 'Mon', '', 'Wed', '', 'Fri', ''];
+    const contributionRequests = new Map();
     const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', timeZone: 'UTC' });
     const dateFormatter = new Intl.DateTimeFormat('en-US', {
       month: 'short',
@@ -538,27 +646,6 @@ function getExcerpt(body: string, maxLength: number = 100): string {
       year: 'numeric',
       timeZone: 'UTC',
     });
-    const mobileMapQuery = window.matchMedia('(max-width: 600px)');
-
-    function scrollFrameToLatest(frame, force = false) {
-      if (!mobileMapQuery.matches || !frame) return;
-
-      window.requestAnimationFrame(() => {
-        const maxScroll = frame.scrollWidth - frame.clientWidth;
-        if (maxScroll <= 0) return;
-        if (!force && frame.dataset.mobileAligned === 'true') return;
-        if (force || frame.scrollLeft < 4) {
-          frame.scrollLeft = maxScroll;
-          frame.dataset.mobileAligned = 'true';
-        }
-      });
-    }
-
-    function alignMobileActivityMaps(force = false) {
-      document
-        .querySelectorAll('.activity-map-frame, .github-activity-frame')
-        .forEach((frame) => scrollFrameToLatest(frame, force));
-    }
 
     function parseUTCDate(dateKey) {
       const [year, month, day] = dateKey.split('-').map(Number);
@@ -685,7 +772,22 @@ function getExcerpt(body: string, maxLength: number = 100): string {
       body.append(weekdays, grid);
 
       root.replaceChildren(years, months, body);
-      scrollFrameToLatest(root.closest('.github-activity-frame'), true);
+    }
+
+    function loadContributionData(username) {
+      if (!contributionRequests.has(username)) {
+        contributionRequests.set(
+          username,
+          fetch(`${API_ROOT}${encodeURIComponent(username)}?y=last`).then(async (response) => {
+            if (!response.ok) throw new Error(`GitHub contribution API returned ${response.status}`);
+            const data = await response.json();
+            if (!Array.isArray(data.contributions)) throw new Error('Invalid contribution payload');
+            return data.contributions;
+          })
+        );
+      }
+
+      return contributionRequests.get(username);
     }
 
     async function setupGithubCalendar(root) {
@@ -699,12 +801,8 @@ function getExcerpt(body: string, maxLength: number = 100): string {
       if (!username || !start || !end || !activity) return;
 
       try {
-        const response = await fetch(`${API_ROOT}${encodeURIComponent(username)}?y=last`);
-        if (!response.ok) throw new Error(`GitHub contribution API returned ${response.status}`);
-        const data = await response.json();
-        if (!Array.isArray(data.contributions)) throw new Error('Invalid contribution payload');
-
-        const weeks = buildWeeks(start, end, data.contributions);
+        const contributions = await loadContributionData(username);
+        const weeks = buildWeeks(start, end, contributions);
         renderCalendar(root, weeks);
         activity.classList.add('is-enhanced');
         activity.classList.remove('is-fallback');
@@ -723,9 +821,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     }
 
     setupGithubCalendars();
-    alignMobileActivityMaps();
     document.addEventListener('astro:page-load', setupGithubCalendars);
-    document.addEventListener('astro:page-load', () => alignMobileActivityMaps(true));
   })();
 </script>
 
@@ -1301,6 +1397,12 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     white-space: nowrap;
   }
 
+  .activity-range-compact,
+  .activity-stats--compact,
+  .activity-map-frame--compact {
+    display: none;
+  }
+
   .activity-panel {
     display: grid;
     grid-template-columns: minmax(0, 1.45fr) minmax(240px, 300px);
@@ -1407,6 +1509,12 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     gap: var(--activity-gap);
     width: max-content;
     padding: 0 0 var(--space-xs);
+  }
+
+  .activity-map--compact .activity-years,
+  .activity-map--compact .activity-months,
+  .activity-map--compact .activity-grid {
+    grid-template-columns: repeat(26, var(--activity-cell));
   }
 
   .activity-week {
@@ -1538,7 +1646,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     font-size: 0.62rem;
   }
 
-  .github-activity.is-enhanced .github-calendar {
+  .github-activity.is-enhanced .github-calendar--full {
     display: block;
   }
 
@@ -1595,6 +1703,12 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     gap: var(--github-gap);
     width: max-content;
     padding-bottom: var(--space-xs);
+  }
+
+  .github-calendar--compact :global(.github-calendar-years),
+  .github-calendar--compact :global(.github-calendar-months),
+  .github-calendar--compact :global(.github-calendar-grid) {
+    grid-template-columns: repeat(26, var(--github-cell));
   }
 
   :global(.github-calendar-week) {
@@ -2095,9 +2209,27 @@ function getExcerpt(body: string, maxLength: number = 100): string {
       font-size: 0.72rem;
     }
 
+    .activity-range-full,
+    .activity-stats--full,
+    .activity-map-frame--full {
+      display: none;
+    }
+
+    .activity-range-compact {
+      display: inline;
+    }
+
+    .activity-stats--compact {
+      display: flex;
+    }
+
+    .activity-map-frame--compact {
+      display: block;
+    }
+
     .activity-chart {
-      --activity-cell: 5.4px;
-      --activity-gap: 1.7px;
+      --activity-cell: 8px;
+      --activity-gap: 3px;
     }
 
     .activity-map-frame,
@@ -2145,14 +2277,22 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     }
 
     .github-activity-frame img {
-      min-width: 430px;
+      min-width: 0;
     }
 
     .github-calendar {
-      --github-cell: 5.4px;
-      --github-gap: 1.7px;
+      --github-cell: 8px;
+      --github-gap: 3px;
       min-width: 0;
       font-size: 0.5rem;
+    }
+
+    .github-activity.is-enhanced .github-calendar--full {
+      display: none;
+    }
+
+    .github-activity.is-enhanced .github-calendar--compact {
+      display: block;
     }
 
     :global(.github-calendar-years),
