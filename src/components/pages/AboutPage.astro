@@ -282,7 +282,7 @@ function getWikipediaUrl(page: string) {
         }
 
         const data = await summaryCache.get(page);
-        const thumbnail = data?.thumbnail?.source || data?.originalimage?.source;
+        const thumbnail = data?.originalimage?.source || data?.thumbnail?.source;
         const description = data?.description || data?.extract || 'Open Wikipedia for more details.';
 
         if (data?.title) setTitle(link, data.title);
@@ -582,14 +582,16 @@ function getWikipediaUrl(page: string) {
     aspect-ratio: 2 / 3;
     overflow: hidden;
     border-radius: 4px;
-    background: rgba(255, 255, 255, 0.04);
+    background:
+      radial-gradient(circle at 50% 42%, rgba(201, 162, 39, 0.08), transparent 62%),
+      rgba(255, 255, 255, 0.035);
     border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .interest-preview-media img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
   }
 
   .interest-preview-placeholder {
