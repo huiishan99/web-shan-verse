@@ -459,8 +459,8 @@ const currentPath = Astro.url.pathname;
       min-height: 1.75rem;
       padding: 0.15rem 0.02rem 0.22rem;
       color: rgba(232, 229, 220, 0.76);
-      font-size: 0.84rem;
-      letter-spacing: 0.015em;
+      font-size: 0.94rem;
+      letter-spacing: 0.035em;
       line-height: 1;
       white-space: nowrap;
     }
@@ -486,8 +486,13 @@ const currentPath = Astro.url.pathname;
       gap: 0.72rem;
     }
 
-    :global(html[lang='ja']) .nav-links a,
     :global(html[lang='zh']) .nav-links a {
+      font-family: var(--font-cjk);
+      font-size: 0.92rem;
+      letter-spacing: 0;
+    }
+
+    :global(html[lang='ja']) .nav-links a {
       font-family: var(--font-cjk);
       font-size: 0.8rem;
       letter-spacing: 0;
