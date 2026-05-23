@@ -81,19 +81,31 @@ const currentPath = Astro.url.pathname;
               <li><a href={localizePath('/timeline', lang)}>{t.nav.timeline}</a></li>
               <li><a href={localizePath('/blog', lang)}>{t.nav.blog}</a></li>
             </ul>
-            <div class="language-switcher" aria-label={t.nav.languageSwitcher}>
-              {locales.map((locale) => (
-                <a
-                  href={localizePath(currentPath, locale)}
-                  class:list={['language-link', { 'is-active': locale === lang }]}
-                  aria-label={localeNames[locale]}
-                  aria-current={locale === lang ? 'page' : undefined}
-                  lang={locale}
-                  title={localeNames[locale]}
-                >
-                  {localeShortNames[locale]}
-                </a>
-              ))}
+            <div class="language-switcher" aria-label={t.nav.languageSwitcher} data-language-switcher>
+              <button
+                type="button"
+                class="language-toggle"
+                aria-label={t.nav.languageSwitcher}
+                aria-expanded="false"
+                lang={lang}
+                data-language-toggle
+              >
+                {localeShortNames[lang]}
+              </button>
+              <div class="language-menu" data-language-menu>
+                {locales.map((locale) => (
+                  <a
+                    href={localizePath(currentPath, locale)}
+                    class:list={['language-link', { 'is-active': locale === lang }]}
+                    aria-label={localeNames[locale]}
+                    aria-current={locale === lang ? 'page' : undefined}
+                    lang={locale}
+                    title={localeNames[locale]}
+                  >
+                    {localeShortNames[locale]}
+                  </a>
+                ))}
+              </div>
             </div>
           </nav>
         </div>
@@ -155,6 +167,48 @@ const currentPath = Astro.url.pathname;
 
       event.preventDefault();
       navigate(href);
+    });
+  }
+
+  const languageWindow = window as typeof window & { __shanLanguageSwitcherReady?: boolean };
+
+  if (!languageWindow.__shanLanguageSwitcherReady) {
+    languageWindow.__shanLanguageSwitcherReady = true;
+
+    function closeLanguageSwitchers(except?: Element) {
+      document.querySelectorAll('[data-language-switcher]').forEach((switcher) => {
+        if (except && switcher === except) return;
+
+        switcher.classList.remove('is-open');
+        const toggle = switcher.querySelector('[data-language-toggle]');
+        if (toggle instanceof HTMLButtonElement) {
+          toggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
+    document.addEventListener('click', (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+
+      const toggle = target.closest('[data-language-toggle]');
+      if (toggle instanceof HTMLButtonElement) {
+        const switcher = toggle.closest('[data-language-switcher]');
+        if (!switcher) return;
+
+        const isOpen = switcher.classList.toggle('is-open');
+        toggle.setAttribute('aria-expanded', String(isOpen));
+        closeLanguageSwitchers(switcher);
+        return;
+      }
+
+      if (!target.closest('[data-language-switcher]')) {
+        closeLanguageSwitchers();
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closeLanguageSwitchers();
     });
   }
 </script>
@@ -248,9 +302,9 @@ const currentPath = Astro.url.pathname;
   }
 
   .language-switcher {
+    position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 0.08rem;
     padding: 0.1rem;
     border: 1px solid rgba(201, 162, 39, 0.12);
     border-radius: 999px;
@@ -260,6 +314,24 @@ const currentPath = Astro.url.pathname;
       opacity 0.2s ease,
       border-color 0.2s ease,
       background 0.2s ease;
+  }
+
+  .language-menu {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.08rem;
+  }
+
+  .language-toggle {
+    display: none;
+    border: 0;
+    background: transparent;
+    color: rgba(244, 238, 222, 0.92);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
   }
 
   .language-switcher:hover,
@@ -361,6 +433,7 @@ const currentPath = Astro.url.pathname;
   /* 移动端 */
   @media (max-width: 768px) {
     .nav {
+      position: relative;
       flex-direction: column;
       gap: var(--space-md);
     }
@@ -373,8 +446,93 @@ const currentPath = Astro.url.pathname;
     }
 
     .language-switcher {
-      align-self: center;
-      margin-top: -0.15rem;
+      position: absolute;
+      top: 0;
+      right: 0;
+      z-index: 3;
+      padding: 0;
+      border-color: rgba(201, 162, 39, 0.18);
+      background: rgba(10, 10, 15, 0.54);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+      opacity: 0.82;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .language-toggle {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      min-width: 2.15rem;
+      min-height: 1.85rem;
+      padding: 0 0.55rem;
+    }
+
+    .language-toggle::after {
+      content: '';
+      width: 0.28rem;
+      height: 0.28rem;
+      margin-left: 0.35rem;
+      border-right: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+      opacity: 0.7;
+      transform: translateY(-0.08rem) rotate(45deg);
+      transition: transform 0.18s ease;
+    }
+
+    .language-switcher.is-open .language-toggle::after {
+      transform: translateY(0.08rem) rotate(225deg);
+    }
+
+    .language-menu {
+      position: absolute;
+      top: calc(100% + 0.45rem);
+      right: 0;
+      display: flex;
+      gap: 0.22rem;
+      padding: 0.28rem;
+      border: 1px solid rgba(201, 162, 39, 0.18);
+      border-radius: 999px;
+      background:
+        linear-gradient(180deg, rgba(201, 162, 39, 0.08), rgba(255, 255, 255, 0.025)),
+        rgba(10, 10, 15, 0.9);
+      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.32);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-0.22rem) scale(0.96);
+      transform-origin: 100% 0;
+      transition:
+        opacity 0.18s ease,
+        transform 0.18s ease;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .language-switcher.is-open .language-menu,
+    .language-switcher:focus-within .language-menu {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    .language-menu .language-link.is-active {
+      display: none;
+    }
+
+    .language-link {
+      min-width: 1.8rem;
+      min-height: 1.7rem;
+      padding: 0 0.45rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+    }
+
+    .language-link[lang='zh'],
+    .language-link[lang='ja'],
+    .language-toggle[lang='zh'],
+    .language-toggle[lang='ja'] {
+      font-family: var(--font-cjk);
+      font-size: 0.72rem;
     }
   }
 </style>
