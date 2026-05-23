@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../Icon.astro';
-import { pageHeader, intro, profile, education, experience, awards, skills, languages, interests } from '../../data/about';
+import { pageHeader, intro, profile, education, experience, awards, skills, languages, interests, type InterestItem } from '../../data/about';
 import { defaultLocale, localizeString, type Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
 
@@ -11,6 +11,18 @@ interface Props {
 
 const { lang = defaultLocale } = Astro.props;
 const t = useTranslations(lang);
+
+function isWikiInterestItem(item: InterestItem): item is Extract<InterestItem, { wikiPage: string }> {
+  return typeof item === 'object' && item !== null && 'wikiPage' in item;
+}
+
+function getInterestTitle(item: InterestItem) {
+  return isWikiInterestItem(item) ? localizeString(item.title, lang) : localizeString(item, lang);
+}
+
+function getWikipediaUrl(page: string) {
+  return `https://en.wikipedia.org/wiki/${encodeURIComponent(page).replace(/%20/g, '_')}`;
+}
 ---
 
 <BaseLayout title={t.about.title} lang={lang}>
@@ -155,9 +167,35 @@ const t = useTranslations(lang);
                   {localizeString(category.name, lang)}
                 </h3>
                 <div class="interest-items">
-                  {category.items.map((item) => (
-                    <span class="interest-tag">{localizeString(item, lang)}</span>
-                  ))}
+                  {category.items.map((item) => {
+                    const title = getInterestTitle(item);
+
+                    return isWikiInterestItem(item) ? (
+                      <a
+                        class="interest-tag interest-tag--work"
+                        href={getWikipediaUrl(item.wikiPage)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        data-wiki-preview
+                        data-wiki-page={item.wikiPage}
+                        aria-label={`${title} on Wikipedia`}
+                      >
+                        <span>{title}</span>
+                        <span class="interest-preview" aria-hidden="true">
+                          <span class="interest-preview-media" data-wiki-media>
+                            <span class="interest-preview-placeholder">W</span>
+                          </span>
+                          <span class="interest-preview-body">
+                            <span class="interest-preview-kicker">Wikipedia</span>
+                            <strong data-wiki-title>{title}</strong>
+                            <span data-wiki-extract>Hover to load a cover preview.</span>
+                          </span>
+                        </span>
+                      </a>
+                    ) : (
+                      <span class="interest-tag">{title}</span>
+                    );
+                  })}
                 </div>
               </div>
             ))}
@@ -191,6 +229,82 @@ const t = useTranslations(lang);
     </div>
   </div>
 </BaseLayout>
+
+<script is:inline>
+  (() => {
+    if (window.__shanInterestPreviewReady) return;
+    window.__shanInterestPreviewReady = true;
+
+    const summaryCache = new Map();
+    const API_ROOT = 'https://en.wikipedia.org/api/rest_v1/page/summary/';
+
+    function findPreviewLink(target) {
+      return target instanceof Element ? target.closest('[data-wiki-preview]') : null;
+    }
+
+    function setExtract(link, text) {
+      const extract = link.querySelector('[data-wiki-extract]');
+      if (extract) extract.textContent = text;
+    }
+
+    function setTitle(link, text) {
+      const title = link.querySelector('[data-wiki-title]');
+      if (title) title.textContent = text;
+    }
+
+    function setImage(link, source) {
+      const media = link.querySelector('[data-wiki-media]');
+      if (!media || !source || media.dataset.ready === 'true') return;
+
+      const image = document.createElement('img');
+      image.src = source;
+      image.alt = '';
+      image.loading = 'lazy';
+      image.decoding = 'async';
+      media.replaceChildren(image);
+      media.dataset.ready = 'true';
+    }
+
+    async function loadPreview(link) {
+      if (!(link instanceof HTMLElement)) return;
+
+      const page = link.dataset.wikiPage;
+      if (!page || link.dataset.previewLoaded === 'true') return;
+
+      link.dataset.previewLoaded = 'true';
+      setExtract(link, 'Loading Wikipedia preview...');
+
+      try {
+        if (!summaryCache.has(page)) {
+          const response = await fetch(`${API_ROOT}${encodeURIComponent(page)}`);
+          if (!response.ok) throw new Error(`Wikipedia returned ${response.status}`);
+          summaryCache.set(page, response.json());
+        }
+
+        const data = await summaryCache.get(page);
+        const thumbnail = data?.thumbnail?.source || data?.originalimage?.source;
+        const description = data?.description || data?.extract || 'Open Wikipedia for more details.';
+
+        if (data?.title) setTitle(link, data.title);
+        setExtract(link, description);
+        setImage(link, thumbnail);
+      } catch (error) {
+        link.dataset.previewLoaded = 'false';
+        setExtract(link, 'Preview unavailable. Open Wikipedia for details.');
+      }
+    }
+
+    document.addEventListener('pointerover', (event) => {
+      const link = findPreviewLink(event.target);
+      if (link) loadPreview(link);
+    });
+
+    document.addEventListener('focusin', (event) => {
+      const link = findPreviewLink(event.target);
+      if (link) loadPreview(link);
+    });
+  })();
+</script>
 
 <style>
   .page-header {
@@ -386,6 +500,9 @@ const t = useTranslations(lang);
   }
   
   .interest-tag {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
     padding: 4px 10px;
     background: rgba(255, 255, 255, 0.035);
     border: 1px solid rgba(255, 255, 255, 0.075);
@@ -394,10 +511,118 @@ const t = useTranslations(lang);
     color: var(--color-text-secondary);
     transition: all 0.2s ease;
   }
+
+  a.interest-tag {
+    text-decoration: none;
+  }
   
-  .interest-tag:hover {
+  .interest-tag:hover,
+  .interest-tag:focus-visible {
     border-color: var(--color-brass);
     color: var(--color-brass-light);
+  }
+
+  .interest-tag--work {
+    cursor: pointer;
+  }
+
+  .interest-preview {
+    position: absolute;
+    left: 0;
+    bottom: calc(100% + 0.65rem);
+    z-index: 40;
+    display: grid;
+    grid-template-columns: 4.2rem minmax(0, 1fr);
+    gap: 0.65rem;
+    width: min(16rem, calc(100vw - 2rem));
+    min-height: 5.65rem;
+    padding: 0.6rem;
+    border: 1px solid rgba(201, 162, 39, 0.26);
+    border-radius: 6px;
+    background:
+      linear-gradient(180deg, rgba(201, 162, 39, 0.09), rgba(255, 255, 255, 0.025)),
+      rgba(10, 10, 15, 0.94);
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.38), 0 0 18px rgba(201, 162, 39, 0.08);
+    color: var(--color-text-secondary);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(0.35rem) scale(0.98);
+    transform-origin: 1.25rem 100%;
+    transition:
+      opacity 0.16s ease,
+      transform 0.16s ease;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .interest-preview::after {
+    content: '';
+    position: absolute;
+    left: 1.1rem;
+    bottom: -0.38rem;
+    width: 0.7rem;
+    height: 0.7rem;
+    border-right: 1px solid rgba(201, 162, 39, 0.22);
+    border-bottom: 1px solid rgba(201, 162, 39, 0.22);
+    background: rgba(10, 10, 15, 0.94);
+    transform: rotate(45deg);
+  }
+
+  .interest-tag--work:hover .interest-preview,
+  .interest-tag--work:focus-visible .interest-preview,
+  .interest-tag--work:focus-within .interest-preview {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .interest-preview-media {
+    display: grid;
+    place-items: center;
+    width: 4.2rem;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .interest-preview-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .interest-preview-placeholder {
+    color: rgba(201, 162, 39, 0.62);
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+  }
+
+  .interest-preview-body {
+    display: grid;
+    align-content: center;
+    gap: 0.22rem;
+    min-width: 0;
+  }
+
+  .interest-preview-kicker {
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .interest-preview-body strong {
+    color: var(--color-text-primary);
+    font-size: 0.88rem;
+    line-height: 1.25;
+  }
+
+  .interest-preview-body span:last-child {
+    color: var(--color-text-muted);
+    font-size: 0.72rem;
+    line-height: 1.35;
   }
   
   /* Sidebar */
@@ -498,6 +723,12 @@ const t = useTranslations(lang);
     
     .interests-grid {
       grid-template-columns: 1fr;
+    }
+  }
+
+  @media (hover: none) {
+    .interest-preview {
+      display: none;
     }
   }
 </style>

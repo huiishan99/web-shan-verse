@@ -314,34 +314,75 @@ export const languages: LanguageItem[] = [
 export interface InterestCategory {
   name: LocalizedString;             // 分类名称
   icon: string;             // 图标名称 (参考 Icon.astro)
-  items: LocalizedString[];          // 具体内容
+  items: InterestItem[];          // 具体内容
+}
+
+export type InterestItem = LocalizedString | {
+  title: LocalizedString;
+  wikiPage: string;
 }
 
 export const interests: InterestCategory[] = [
   {
     name: { en: "Games", zh: "游戏", ja: "ゲーム" },
     icon: "gamepad",
-    items: ["The Legend of Zelda: Breath of the Wild", "Baldur's Gate 3", "Stardew Valley","Persona 5","Crusader Kings III","Cyberpunk 2077","Disco Elysium: The Final Cut","Uncharted Waters: New Horizons","Resident Evil 4","The Legend of Sword and Fairy 4"]
+    items: [
+      { title: "The Legend of Zelda: Breath of the Wild", wikiPage: "The Legend of Zelda: Breath of the Wild" },
+      { title: "Baldur's Gate 3", wikiPage: "Baldur's Gate 3" },
+      { title: "Stardew Valley", wikiPage: "Stardew Valley" },
+      { title: "Persona 5", wikiPage: "Persona 5" },
+      { title: "Crusader Kings III", wikiPage: "Crusader Kings III" },
+      { title: "Cyberpunk 2077", wikiPage: "Cyberpunk 2077" },
+      { title: "Disco Elysium: The Final Cut", wikiPage: "Disco Elysium" },
+      { title: "Uncharted Waters: New Horizons", wikiPage: "Uncharted Waters: New Horizons" },
+      { title: "Resident Evil 4", wikiPage: "Resident Evil 4" },
+      { title: "The Legend of Sword and Fairy 4", wikiPage: "The Legend of Sword and Fairy 4" }
+    ]
   },
   {
     name: { en: "Movies", zh: "电影", ja: "映画" },
     icon: "film",
-    items: ["Coco", "Flipped","Howl's Moving Castle","The Truman Show","Interstellar","The Lord of the Rings","The Reluctant Fundamentalist","Maharaja"]
+    items: [
+      { title: "Coco", wikiPage: "Coco (2017 film)" },
+      { title: "Flipped", wikiPage: "Flipped (2010 film)" },
+      { title: "Howl's Moving Castle", wikiPage: "Howl's Moving Castle (film)" },
+      { title: "The Truman Show", wikiPage: "The Truman Show" },
+      { title: "Interstellar", wikiPage: "Interstellar (film)" },
+      { title: "The Lord of the Rings", wikiPage: "The Lord of the Rings (film series)" },
+      { title: "The Reluctant Fundamentalist", wikiPage: "The Reluctant Fundamentalist (film)" },
+      { title: "Maharaja", wikiPage: "Maharaja (2024 film)" }
+    ]
   },
   {
     name: { en: "Drama & Anime", zh: "剧集与动画", ja: "ドラマ・アニメ" },
     icon: "layers",
-    items: ["Love, Death & Robots","Cyberpunk: Edgerunners","The Queen's Gambit", "Gin Tama", "Doraemon"]
+    items: [
+      { title: "Love, Death & Robots", wikiPage: "Love, Death & Robots" },
+      { title: "Cyberpunk: Edgerunners", wikiPage: "Cyberpunk: Edgerunners" },
+      { title: "The Queen's Gambit", wikiPage: "The Queen's Gambit (miniseries)" },
+      { title: "Gin Tama", wikiPage: "Gin Tama" },
+      { title: "Doraemon", wikiPage: "Doraemon" }
+    ]
   },
   {
     name: { en: "Books", zh: "书", ja: "本" },
     icon: "book",
-    items: ["Les Misérables","A Thousand Splendid Suns","To Live","Tristan and Iseult","Kinder- und Hausmärchen"]
+    items: [
+      { title: "Les Misérables", wikiPage: "Les Misérables" },
+      { title: "A Thousand Splendid Suns", wikiPage: "A Thousand Splendid Suns" },
+      { title: "To Live", wikiPage: "To Live (novel)" },
+      { title: "Tristan and Iseult", wikiPage: "Tristan and Iseult" },
+      { title: "Kinder- und Hausmärchen", wikiPage: "Grimms' Fairy Tales" }
+    ]
   },
   {
     name: { en: "Music", zh: "音乐", ja: "音楽" },
     icon: "music",
-    items: ["Bohemian Rhapsody","We Are the Champions", "Lemon"]
+    items: [
+      { title: "Bohemian Rhapsody", wikiPage: "Bohemian Rhapsody" },
+      { title: "We Are the Champions", wikiPage: "We Are the Champions" },
+      { title: "Lemon", wikiPage: "Lemon (Kenshi Yonezu song)" }
+    ]
   },
   {
     name: { en: "Foods", zh: "食物", ja: "食べ物" },
