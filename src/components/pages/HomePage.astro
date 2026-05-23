@@ -238,7 +238,12 @@ function getExcerpt(body: string, maxLength: number = 100): string {
           <span class="title-line">SHAN</span>
           <span class="title-decoration" aria-hidden="true">
             <span class="title-rule"></span>
-            <span class="title-star"></span>
+            <svg class="title-star" viewBox="0 0 64 64" focusable="false">
+              <path
+                class="title-star-core"
+                d="M32 2C35.2 19.6 44.4 28.8 62 32C44.4 35.2 35.2 44.4 32 62C28.8 44.4 19.6 35.2 2 32C19.6 28.8 28.8 19.6 32 2Z"
+              />
+            </svg>
             <span class="title-rule"></span>
           </span>
           <span class="title-line">VERSE</span>
@@ -875,11 +880,15 @@ function getExcerpt(body: string, maxLength: number = 100): string {
   }
 
   .title-star {
-    width: 1.12rem;
-    aspect-ratio: 1;
-    background: currentColor;
-    clip-path: polygon(50% 0, 64% 35%, 100% 50%, 64% 65%, 50% 100%, 36% 65%, 0 50%, 36% 35%);
+    display: block;
+    width: 1.18rem;
+    height: 1.18rem;
+    overflow: visible;
     filter: drop-shadow(0 0 6px rgba(201, 162, 39, 0.32));
+  }
+
+  .title-star-core {
+    fill: currentColor;
   }
   
   .hero-tagline {
