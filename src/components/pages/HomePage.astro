@@ -1454,6 +1454,10 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     scrollbar-width: thin;
   }
 
+  .activity-map-frame.activity-map-frame--compact {
+    display: none;
+  }
+
   .activity-map-frame::-webkit-scrollbar,
   .github-activity-frame::-webkit-scrollbar {
     height: 8px;
@@ -2239,7 +2243,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
       display: flex;
     }
 
-    .activity-map-frame--compact {
+    .activity-map-frame.activity-map-frame--compact {
       display: block;
     }
 
