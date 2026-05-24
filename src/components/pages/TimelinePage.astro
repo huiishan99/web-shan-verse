@@ -154,6 +154,7 @@ function formatEventDate(event: TimelineEvent): string | undefined {
 
               return (
                 <article class={`month-cluster month-cluster--${dominantWeight}`}>
+                  <span class="month-marker" aria-hidden="true"></span>
                   <div class="month-shell">
                     <header class="month-header">
                       <div>
@@ -316,11 +317,13 @@ function formatEventDate(event: TimelineEvent): string | undefined {
   }
 
   .year-months {
+    --month-offset: 2.5rem;
+    --spine-left: 1.12rem;
     display: grid;
     gap: var(--space-md);
     min-width: 0;
     position: relative;
-    padding-left: 2.5rem;
+    padding-left: var(--month-offset);
   }
 
   .year-months::before {
@@ -328,7 +331,7 @@ function formatEventDate(event: TimelineEvent): string | undefined {
     position: absolute;
     top: 0.2rem;
     bottom: -1.4rem;
-    left: 1.12rem;
+    left: var(--spine-left);
     width: 1px;
     background: linear-gradient(
       180deg,
@@ -348,6 +351,23 @@ function formatEventDate(event: TimelineEvent): string | undefined {
     --month-accent: var(--color-brass);
   }
 
+  .month-marker {
+    position: absolute;
+    display: block;
+    top: 1.18rem;
+    left: calc(var(--spine-left) - var(--month-offset) - 4.5px);
+    z-index: 1;
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: var(--color-brass);
+    box-shadow: 0 0 12px rgba(201, 162, 39, 0.24);
+    transition:
+      transform 0.3s ease,
+      background 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+
   .month-shell {
     min-width: 0;
     padding: var(--space-md) var(--space-lg);
@@ -359,6 +379,24 @@ function formatEventDate(event: TimelineEvent): string | undefined {
     box-shadow: 0 16px 36px rgba(0, 0, 0, 0.18);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+    transition:
+      transform 0.3s ease,
+      background 0.3s ease,
+      border-color 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+
+  .month-cluster:hover .month-shell {
+    background: var(--surface-glass-hover);
+    border-color: var(--surface-border-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--surface-shadow-hover);
+  }
+
+  .month-cluster:hover .month-marker {
+    background: var(--color-accent-gold);
+    transform: translateY(-2px) scale(1.12);
+    box-shadow: 0 0 16px rgba(201, 162, 39, 0.4);
   }
 
   .month-cluster--note .month-shell {
@@ -552,11 +590,8 @@ function formatEventDate(event: TimelineEvent): string | undefined {
     }
 
     .year-months {
-      padding-left: 1.35rem;
-    }
-
-    .year-months::before {
-      left: 0.45rem;
+      --month-offset: 1.35rem;
+      --spine-left: 0.45rem;
     }
 
     .month-shell {
