@@ -162,16 +162,12 @@ function formatEventDate(event: TimelineEvent): string | undefined {
 
                         return (
                           <section class={`timeline-event timeline-event--${weight} timeline-event--${category}`}>
-                            <div class="event-orbit" aria-hidden="true">
-                              <span class="event-dot"></span>
-                            </div>
                             <div class="event-body">
                               <div class="event-meta">
                                 {eventDate && (
                                   <time class="event-date" datetime={event.date}>{eventDate}</time>
                                 )}
                                 <span class="event-category">{localizeString(categoryLabels[category], lang)}</span>
-                                <span class="event-weight">{localizeString(weightLabels[weight], lang)}</span>
                               </div>
                               <h3 class="event-title">{localizeString(event.title, lang)}</h3>
                               <p class="event-desc">{localizeString(event.description, lang)}</p>
@@ -356,9 +352,7 @@ function formatEventDate(event: TimelineEvent): string | undefined {
 
   .timeline-event {
     --event-accent: var(--color-brass);
-    display: grid;
-    grid-template-columns: 1.2rem minmax(0, 1fr);
-    gap: var(--space-sm);
+    display: block;
     padding: var(--space-md) 0;
     border-top: 1px solid rgba(255, 255, 255, 0.055);
   }
@@ -394,34 +388,6 @@ function formatEventDate(event: TimelineEvent): string | undefined {
     font-size: 0.9rem;
   }
 
-  .event-orbit {
-    display: flex;
-    justify-content: center;
-    padding-top: 0.36rem;
-  }
-
-  .event-dot {
-    width: 0.54rem;
-    height: 0.54rem;
-    border: 1px solid var(--event-accent);
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--event-accent) 28%, transparent);
-    box-shadow: 0 0 12px color-mix(in srgb, var(--event-accent) 35%, transparent);
-  }
-
-  .timeline-event--major .event-dot {
-    width: 0.72rem;
-    height: 0.72rem;
-    background: color-mix(in srgb, var(--event-accent) 44%, transparent);
-    box-shadow: 0 0 18px color-mix(in srgb, var(--event-accent) 54%, transparent);
-  }
-
-  .timeline-event--note .event-dot {
-    width: 0.42rem;
-    height: 0.42rem;
-    opacity: 0.7;
-  }
-
   .event-body {
     min-width: 0;
   }
@@ -435,7 +401,6 @@ function formatEventDate(event: TimelineEvent): string | undefined {
   }
 
   .event-category,
-  .event-weight,
   .event-date {
     color: var(--color-text-muted);
     font-family: var(--font-mono);
@@ -446,6 +411,8 @@ function formatEventDate(event: TimelineEvent): string | undefined {
 
   .event-category {
     color: var(--color-brass);
+    padding-bottom: 0.08rem;
+    border-bottom: 1px solid rgba(201, 162, 39, 0.22);
   }
 
   .timeline-event--major .event-category {
@@ -455,10 +422,6 @@ function formatEventDate(event: TimelineEvent): string | undefined {
   .timeline-event--note .event-category {
     color: var(--color-brass);
     opacity: 0.72;
-  }
-
-  .event-weight {
-    opacity: 0.74;
   }
 
   .event-date {
@@ -549,11 +512,6 @@ function formatEventDate(event: TimelineEvent): string | undefined {
 
     .month-label {
       font-size: 1.08rem;
-    }
-
-    .timeline-event {
-      grid-template-columns: 0.9rem minmax(0, 1fr);
-      gap: var(--space-xs);
     }
 
     .event-desc {
