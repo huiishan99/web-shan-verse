@@ -3,7 +3,7 @@ import type { CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { defaultLocale, localizePath, type Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
-import { getBlogPostPath, getPostLanguageLabel } from '../../utils/blog';
+import { getBlogPostPath } from '../../utils/blog';
 
 type Props = {
   kind: 'category' | 'tag';
@@ -47,11 +47,6 @@ function formatDate(date: Date) {
               <time class="post-date" datetime={post.data.date.toISOString()}>
                 {formatDate(post.data.date)}
               </time>
-              {getPostLanguageLabel(post) && (
-                <span class="language-badge" title={t.blog.language}>
-                  {getPostLanguageLabel(post)}
-                </span>
-              )}
               {kind === 'tag' && post.data.categories && post.data.categories[0] && (
                 <span class="post-category">{post.data.categories[0]}</span>
               )}
@@ -152,16 +147,6 @@ function formatDate(date: Date) {
     font-family: var(--font-mono);
     font-size: 0.9rem;
     color: var(--color-text-muted);
-  }
-
-  .language-badge {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    color: var(--color-text-secondary);
-    padding: 0.15rem 0.45rem;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 4px;
-    background: rgba(255, 255, 255, 0.035);
   }
 
   .post-category {
