@@ -249,7 +249,7 @@ function formatEventDate(event: TimelineEvent): string | undefined {
   }
 
   .legend-item--standard {
-    --legend-color: #8db7ff;
+    --legend-color: var(--color-brass);
   }
 
   .legend-item--note {
@@ -306,7 +306,7 @@ function formatEventDate(event: TimelineEvent): string | undefined {
   }
 
   .month-cluster {
-    --month-accent: rgba(141, 183, 255, 0.74);
+    --month-accent: var(--color-brass);
     display: grid;
     grid-template-columns: 2.5rem minmax(0, 1fr);
     position: relative;
@@ -317,7 +317,7 @@ function formatEventDate(event: TimelineEvent): string | undefined {
   }
 
   .month-cluster--note {
-    --month-accent: rgba(255, 255, 255, 0.5);
+    --month-accent: rgba(255, 255, 255, 0.38);
   }
 
   .month-rail {
@@ -350,14 +350,25 @@ function formatEventDate(event: TimelineEvent): string | undefined {
   .month-shell {
     min-width: 0;
     padding: var(--space-md) var(--space-lg);
-    border: 1px solid color-mix(in srgb, var(--month-accent) 22%, var(--color-border));
+    border: 1px solid rgba(201, 162, 39, 0.24);
     border-radius: 8px;
     background:
-      linear-gradient(135deg, color-mix(in srgb, var(--month-accent) 10%, transparent), transparent 44%),
+      linear-gradient(135deg, rgba(201, 162, 39, 0.055), transparent 42%),
       rgba(13, 13, 18, 0.66);
     box-shadow: 0 16px 36px rgba(0, 0, 0, 0.18);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+  }
+
+  .month-cluster--major .month-shell {
+    border-color: rgba(201, 162, 39, 0.36);
+  }
+
+  .month-cluster--note .month-shell {
+    border-color: rgba(255, 255, 255, 0.11);
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.035), transparent 42%),
+      rgba(13, 13, 18, 0.6);
   }
 
   .month-header {
@@ -392,7 +403,7 @@ function formatEventDate(event: TimelineEvent): string | undefined {
   }
 
   .timeline-event {
-    --event-accent: rgba(255, 255, 255, 0.42);
+    --event-accent: var(--color-brass);
     display: grid;
     grid-template-columns: 1.2rem minmax(0, 1fr);
     gap: var(--space-sm);
@@ -405,6 +416,7 @@ function formatEventDate(event: TimelineEvent): string | undefined {
   }
 
   .timeline-event--major {
+    --event-accent: var(--color-accent-gold);
     padding: var(--space-md) 0 var(--space-lg);
   }
 
@@ -419,6 +431,7 @@ function formatEventDate(event: TimelineEvent): string | undefined {
   }
 
   .timeline-event--note {
+    --event-accent: rgba(255, 255, 255, 0.42);
     padding-block: var(--space-sm);
   }
 
@@ -428,34 +441,6 @@ function formatEventDate(event: TimelineEvent): string | undefined {
 
   .timeline-event--note .event-desc {
     font-size: 0.9rem;
-  }
-
-  .timeline-event--research {
-    --event-accent: #8db7ff;
-  }
-
-  .timeline-event--career {
-    --event-accent: var(--color-accent-gold);
-  }
-
-  .timeline-event--education {
-    --event-accent: #a7d78a;
-  }
-
-  .timeline-event--life {
-    --event-accent: #d6b5ff;
-  }
-
-  .timeline-event--travel {
-    --event-accent: #7dd7cf;
-  }
-
-  .timeline-event--project {
-    --event-accent: #ffb782;
-  }
-
-  .timeline-event--award {
-    --event-accent: #f3d46b;
   }
 
   .event-orbit {
@@ -509,7 +494,15 @@ function formatEventDate(event: TimelineEvent): string | undefined {
   }
 
   .event-category {
-    color: var(--event-accent);
+    color: var(--color-brass);
+  }
+
+  .timeline-event--major .event-category {
+    color: var(--color-accent-gold);
+  }
+
+  .timeline-event--note .event-category {
+    color: var(--color-text-muted);
   }
 
   .event-weight {
