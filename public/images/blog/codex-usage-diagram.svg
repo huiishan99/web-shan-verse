@@ -1,0 +1,111 @@
+<svg width="1440" height="900" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Codex usage scenario illustration</title>
+  <desc id="desc">A laptop-style diagram showing a repository, a Codex task panel, terminal checks, a devlog, and a git commit checkpoint.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1440" y2="900" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0e1017"/>
+      <stop offset="0.52" stop-color="#171722"/>
+      <stop offset="1" stop-color="#11131a"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="126" y1="146" x2="1314" y2="754" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#222331"/>
+      <stop offset="1" stop-color="#171923"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#f2d171"/>
+      <stop offset="1" stop-color="#a97828"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="24" stdDeviation="28" flood-color="#000000" flood-opacity="0.38"/>
+    </filter>
+  </defs>
+
+  <rect width="1440" height="900" rx="36" fill="url(#bg)"/>
+  <circle cx="1226" cy="154" r="160" fill="#c9a227" opacity="0.08"/>
+  <circle cx="226" cy="746" r="190" fill="#7bc7a0" opacity="0.06"/>
+
+  <text x="94" y="94" fill="#f7ecd1" font-family="Inter, system-ui, sans-serif" font-size="42" font-weight="740">Using Codex as an engineering co-pilot</text>
+  <text x="96" y="132" fill="#c9c2ad" font-family="Inter, system-ui, sans-serif" font-size="19">The interesting part is not one prompt. It is the loop between repo context, agent work, verification, notes, and version control.</text>
+
+  <g filter="url(#softShadow)">
+    <rect x="96" y="170" width="1248" height="600" rx="28" fill="url(#panel)" stroke="#3d3726" stroke-width="2"/>
+    <rect x="96" y="170" width="1248" height="54" rx="28" fill="#242635"/>
+    <circle cx="132" cy="197" r="7" fill="#ff6868"/>
+    <circle cx="158" cy="197" r="7" fill="#ffc857"/>
+    <circle cx="184" cy="197" r="7" fill="#6ed38f"/>
+    <text x="218" y="204" fill="#bdb59f" font-family="JetBrains Mono, monospace" font-size="15">shan-verse / codex session</text>
+  </g>
+
+  <g>
+    <rect x="126" y="254" width="260" height="420" rx="18" fill="#181a24" stroke="#333747"/>
+    <text x="154" y="294" fill="#f6e8bd" font-family="Inter, system-ui, sans-serif" font-size="22" font-weight="720">Repository</text>
+    <text x="154" y="324" fill="#9fa6b2" font-family="JetBrains Mono, monospace" font-size="14">src/content/blog</text>
+    <rect x="154" y="350" width="204" height="34" rx="8" fill="#232633"/>
+    <text x="174" y="372" fill="#d8d0bc" font-family="JetBrains Mono, monospace" font-size="13">codex-post.zh.mdx</text>
+    <rect x="154" y="394" width="204" height="34" rx="8" fill="#232633"/>
+    <text x="174" y="416" fill="#d8d0bc" font-family="JetBrains Mono, monospace" font-size="13">codex-post.en.mdx</text>
+    <rect x="154" y="438" width="204" height="34" rx="8" fill="#232633"/>
+    <text x="174" y="460" fill="#d8d0bc" font-family="JetBrains Mono, monospace" font-size="13">codex-post.ja.mdx</text>
+    <rect x="154" y="506" width="204" height="112" rx="12" fill="#11131b" stroke="#343847"/>
+    <text x="176" y="538" fill="#7bdc9d" font-family="JetBrains Mono, monospace" font-size="14">+ lang: zh</text>
+    <text x="176" y="566" fill="#7bdc9d" font-family="JetBrains Mono, monospace" font-size="14">+ postSlug</text>
+    <text x="176" y="594" fill="#7bdc9d" font-family="JetBrains Mono, monospace" font-size="14">+ references</text>
+  </g>
+
+  <g>
+    <rect x="430" y="254" width="354" height="420" rx="18" fill="#1c1e29" stroke="#4f4528"/>
+    <text x="462" y="294" fill="#f6e8bd" font-family="Inter, system-ui, sans-serif" font-size="22" font-weight="720">Codex task</text>
+    <rect x="462" y="326" width="290" height="74" rx="16" fill="#292b38"/>
+    <text x="486" y="354" fill="#f4ecd9" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="680">User request</text>
+    <text x="486" y="382" fill="#c8c0aa" font-family="Inter, system-ui, sans-serif" font-size="14">Translate, update facts, add a useful image.</text>
+    <rect x="462" y="422" width="290" height="128" rx="16" fill="#161821" stroke="#3b3e4f"/>
+    <text x="486" y="454" fill="#f2d171" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="680">Agent plan</text>
+    <text x="486" y="484" fill="#c8c0aa" font-family="JetBrains Mono, monospace" font-size="13">1. read repo</text>
+    <text x="486" y="510" fill="#c8c0aa" font-family="JetBrains Mono, monospace" font-size="13">2. patch all languages</text>
+    <text x="486" y="536" fill="#c8c0aa" font-family="JetBrains Mono, monospace" font-size="13">3. build + commit</text>
+    <rect x="462" y="582" width="290" height="48" rx="12" fill="url(#gold)" opacity="0.92"/>
+    <text x="520" y="612" fill="#17140a" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="760">Human approves scope</text>
+  </g>
+
+  <g>
+    <rect x="828" y="254" width="216" height="196" rx="18" fill="#11131b" stroke="#333747"/>
+    <text x="856" y="294" fill="#f6e8bd" font-family="Inter, system-ui, sans-serif" font-size="22" font-weight="720">Terminal</text>
+    <text x="856" y="336" fill="#7bdc9d" font-family="JetBrains Mono, monospace" font-size="14">$ npm run build</text>
+    <text x="856" y="366" fill="#c8c0aa" font-family="JetBrains Mono, monospace" font-size="13">57 pages built</text>
+    <text x="856" y="396" fill="#7bdc9d" font-family="JetBrains Mono, monospace" font-size="14">$ rg stale text</text>
+    <text x="856" y="424" fill="#c8c0aa" font-family="JetBrains Mono, monospace" font-size="13">no matches</text>
+  </g>
+
+  <g>
+    <rect x="828" y="478" width="216" height="196" rx="18" fill="#11131b" stroke="#333747"/>
+    <text x="856" y="518" fill="#f6e8bd" font-family="Inter, system-ui, sans-serif" font-size="22" font-weight="720">Diff</text>
+    <text x="856" y="560" fill="#7bdc9d" font-family="JetBrains Mono, monospace" font-size="14">+ useful diagram</text>
+    <text x="856" y="590" fill="#7bdc9d" font-family="JetBrains Mono, monospace" font-size="14">+ devlog prompt</text>
+    <text x="856" y="620" fill="#ff8c8c" font-family="JetBrains Mono, monospace" font-size="14">- forked repo row</text>
+  </g>
+
+  <g>
+    <rect x="1080" y="254" width="230" height="420" rx="18" fill="#181a24" stroke="#333747"/>
+    <text x="1110" y="294" fill="#f6e8bd" font-family="Inter, system-ui, sans-serif" font-size="22" font-weight="720">Traceable finish</text>
+    <rect x="1110" y="326" width="170" height="82" rx="14" fill="#232633"/>
+    <text x="1130" y="358" fill="#d8d0bc" font-family="JetBrains Mono, monospace" font-size="13">docs/devlog.md</text>
+    <text x="1130" y="386" fill="#9fa6b2" font-family="JetBrains Mono, monospace" font-size="12">why + result</text>
+    <rect x="1110" y="438" width="170" height="82" rx="14" fill="#232633"/>
+    <text x="1130" y="470" fill="#d8d0bc" font-family="JetBrains Mono, monospace" font-size="13">git commit</text>
+    <text x="1130" y="498" fill="#9fa6b2" font-family="JetBrains Mono, monospace" font-size="12">rollback point</text>
+    <rect x="1110" y="550" width="170" height="82" rx="14" fill="#232633"/>
+    <text x="1130" y="582" fill="#d8d0bc" font-family="JetBrains Mono, monospace" font-size="13">blog publish</text>
+    <text x="1130" y="610" fill="#9fa6b2" font-family="JetBrains Mono, monospace" font-size="12">reader-friendly</text>
+  </g>
+
+  <path d="M392 464 C410 464 412 464 424 464" stroke="#c9a227" stroke-width="4"/>
+  <path d="M790 464 C808 464 810 464 822 464" stroke="#c9a227" stroke-width="4"/>
+  <path d="M1048 464 C1066 464 1068 464 1078 464" stroke="#c9a227" stroke-width="4"/>
+  <path d="M398 464 L382 454 L382 474 Z" fill="#c9a227" opacity="0"/>
+  <path d="M424 464 L410 454 L410 474 Z" fill="#c9a227"/>
+  <path d="M822 464 L808 454 L808 474 Z" fill="#c9a227"/>
+  <path d="M1078 464 L1064 454 L1064 474 Z" fill="#c9a227"/>
+
+  <rect x="222" y="716" width="996" height="42" rx="21" fill="#0f1118" stroke="#333747"/>
+  <text x="254" y="743" fill="#c8c0aa" font-family="Inter, system-ui, sans-serif" font-size="16">A good Codex workflow leaves artifacts ordinary humans can inspect: commands, screenshots, devlogs, diffs, and commits.</text>
+</svg>
