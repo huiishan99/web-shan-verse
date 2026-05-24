@@ -221,21 +221,51 @@ function formatEventDate(event: TimelineEvent): string | undefined {
     position: sticky;
     top: 6rem;
     align-self: start;
-    display: grid;
-    justify-items: end;
-    gap: var(--space-xs);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.55rem;
     padding-top: 0.15rem;
   }
 
   .year-signal {
-    width: 1.4rem;
-    height: 1.4rem;
-    border: 2px solid var(--color-brass);
+    position: relative;
+    flex: 0 0 auto;
+    width: 1.46rem;
+    height: 1.46rem;
+    border: 1px solid rgba(201, 162, 39, 0.86);
     border-radius: 999px;
     background:
-      radial-gradient(circle, var(--color-accent-gold) 0 18%, transparent 19%),
-      rgba(13, 13, 18, 0.86);
-    box-shadow: 0 0 18px rgba(201, 162, 39, 0.32);
+      radial-gradient(circle at 38% 38%, rgba(255, 231, 158, 0.96) 0 0.13rem, transparent 0.14rem),
+      radial-gradient(circle at 62% 64%, rgba(201, 162, 39, 0.28), transparent 46%),
+      linear-gradient(135deg, rgba(24, 31, 48, 0.92), rgba(6, 7, 12, 0.96));
+    box-shadow:
+      inset -0.18rem -0.16rem 0.34rem rgba(0, 0, 0, 0.78),
+      inset 0.12rem 0.12rem 0.28rem rgba(255, 237, 176, 0.16),
+      0 0 18px rgba(201, 162, 39, 0.26);
+  }
+
+  .year-signal::before {
+    content: '';
+    position: absolute;
+    inset: -0.34rem;
+    border: 1px solid rgba(201, 162, 39, 0.32);
+    border-left-color: transparent;
+    border-bottom-color: rgba(142, 171, 226, 0.26);
+    border-radius: 999px;
+    transform: rotate(-18deg) scaleX(1.2);
+  }
+
+  .year-signal::after {
+    content: '';
+    position: absolute;
+    right: -0.14rem;
+    bottom: 0.12rem;
+    width: 0.28rem;
+    height: 0.28rem;
+    border-radius: 999px;
+    background: rgba(201, 162, 39, 0.88);
+    box-shadow: 0 0 12px rgba(201, 162, 39, 0.52);
   }
 
   .year-label {
