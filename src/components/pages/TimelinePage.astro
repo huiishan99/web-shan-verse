@@ -269,7 +269,7 @@ function formatEventDate(event: TimelineEvent): string | undefined {
   }
 
   .month-cluster--note {
-    --month-accent: rgba(255, 255, 255, 0.38);
+    --month-accent: var(--color-brass);
   }
 
   .month-rail {
@@ -317,9 +317,9 @@ function formatEventDate(event: TimelineEvent): string | undefined {
   }
 
   .month-cluster--note .month-shell {
-    border-color: rgba(255, 255, 255, 0.11);
+    border-color: rgba(201, 162, 39, 0.16);
     background:
-      linear-gradient(135deg, rgba(255, 255, 255, 0.035), transparent 42%),
+      linear-gradient(135deg, rgba(201, 162, 39, 0.035), transparent 42%),
       rgba(13, 13, 18, 0.6);
   }
 
@@ -382,7 +382,7 @@ function formatEventDate(event: TimelineEvent): string | undefined {
   }
 
   .timeline-event--note {
-    --event-accent: rgba(255, 255, 255, 0.42);
+    --event-accent: var(--color-brass);
     padding-block: var(--space-sm);
   }
 
@@ -419,7 +419,7 @@ function formatEventDate(event: TimelineEvent): string | undefined {
   .timeline-event--note .event-dot {
     width: 0.42rem;
     height: 0.42rem;
-    opacity: 0.72;
+    opacity: 0.7;
   }
 
   .event-body {
@@ -453,7 +453,8 @@ function formatEventDate(event: TimelineEvent): string | undefined {
   }
 
   .timeline-event--note .event-category {
-    color: var(--color-text-muted);
+    color: var(--color-brass);
+    opacity: 0.72;
   }
 
   .event-weight {
