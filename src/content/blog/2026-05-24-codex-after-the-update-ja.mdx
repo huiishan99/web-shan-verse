@@ -23,7 +23,7 @@ import LinkCard from '../../components/blog/LinkCard.astro';
 この記事は 2026-05-24（JST）に書いています。OpenAI の Codex、ChatGPT Pro の利用枠、期間限定キャンペーンは変わりやすいため、本文では具体的な日付と参考リンクを最後にまとめています。
 </Callout>
 
-ここ数日、かなり強い感覚がありました。Codex は「コードを書けるアシスタント」から、「人間が監督できるソフトウェアエンジニアリングの実行レイヤー」に近づいたのではないか、という感覚です。最初は転換点が 5 月 11 日ごろだったと思っていました。その日に `web-falling-sand` を単一の `sketch.js` からモジュール化されたプロジェクトへリファクタリングしたからです。しかし公式情報を確認すると、OpenAI が Codex のモバイル遠隔操作プレビューを発表したのは 2026-05-14 で、より大きなデスクトップ機能アップデートは 2026-04-16 に公開されていました。
+ここ数日、かなり強い感覚がありました。Codex は「コードを書けるアシスタント」から、「人間が監督できるソフトウェアエンジニアリングの実行レイヤー」に近づいたのではないか、という感覚です。最初は転換点が 5 月 11 日ごろだったと思っていました。その日に自分の玩具プロジェクトの一つを、単一ファイルの demo からモジュール化されたプロジェクトへリファクタリングしたからです。しかし公式情報を確認すると、OpenAI が Codex のモバイル遠隔操作プレビューを発表したのは 2026-05-14 で、より大きなデスクトップ機能アップデートは 2026-04-16 に公開されていました。
 
 つまり、より正確にはこうです。私は 5 月 11 日前後から Codex の能力変化をはっきり感じ始め、5 月 14 日の公式アップデートによって、その感覚を説明しやすくなりました。
 
@@ -77,15 +77,18 @@ OpenAI Help Center の現在の説明では、Codex は Plus、Pro、Business、
 
 | プロジェクト | 言語 / スタック | 最新の公開 push | Codex で主に進めた変更 |
 | --- | --- | --- | --- |
-| [`web-blog`](https://github.com/huiishan99/web-blog) | Astro / MDX | 2026-05-23 | この個人サイトの mobile activity map、言語メニュー、hero タイトル、ページ余白を改善 |
+| [`web-blog`](https://github.com/huiishan99/web-blog) | Astro / MDX | 2026-05-24 | この個人サイトの mobile activity map、言語メニュー、hero タイトル、timezone 処理、多言語 blog route、この記事の三言語版を改善 |
 | [`web-falling-sand`](https://github.com/huiishan99/web-falling-sand) | JavaScript / p5-style | 2026-05-11 | 単一 `sketch.js` から modular `src/` へ変更し、Vite、ESLint、Prettier、GitHub Pages workflow、unit test、preview SVG を追加 |
-| [`cpp-tetris-game`](https://github.com/huiishan99/cpp-tetris-game) | C++ / raylib-cpp | 2026-05-23 | lock delay、DAS/ARR、SRS wall kicks、設定パネル、ローカルランキング、名前入力を追加 |
-| [`python-rockfall-game`](https://github.com/huiishan99/python-rockfall-game) | Python | 2026-05-23 | 岩石バリエーション、ヘルプ画面の凡例、GUI smoke-test サンプル、学習データ向け特徴量レポートを追加 |
-| [`csharp-snake-game`](https://github.com/huiishan99/csharp-snake-game) | C# | 2026-05-23 | 開始メニュー、テーマ付き controls、HUD、速度ショートカット、Windows テスト手順、release checklist を改善 |
-| [`web-genAI`](https://github.com/huiishan99/web-genAI) | Python | 2026-05-23 | image generation demo を修復し、image forge interface を再設計 |
-| [`web-notion-next`](https://github.com/huiishan99/web-notion-next) | Next.js / Notion | 2026-05-17 | 4.9.x user guide、テーマ文書、maintenance policy、reference manuals を整理 |
+| [`cpp-tetris-game`](https://github.com/huiishan99/cpp-tetris-game) | C++ / raylib-cpp | 2026-05-23 | lock delay、DAS/ARR、SRS wall kicks、一時停止/再開 control、設定保存、ローカルランキング、名前入力を追加 |
+| [`python-rockfall-game`](https://github.com/huiishan99/python-rockfall-game) | Python | 2026-05-24 | 岩石バリエーション、ヘルプ画面の凡例、GUI smoke-test、model debug overlay、baseline policy 比較、学習データ向け特徴量レポートを追加 |
+| [`csharp-snake-game`](https://github.com/huiishan99/csharp-snake-game) | C# | 2026-05-23 | 開始メニュー、arcade start screen、テーマ付き controls、HUD、速度ショートカット、obstacle mode、Windows テスト手順、release checklist を改善 |
+| [`web-genAI`](https://github.com/huiishan99/web-genAI) | Python | 2026-05-23 | image generation demo を修復し、image forge interface を再設計し、responsive layout と prompt starter contrast を改善 |
+| [`csharp-exercises`](https://github.com/huiishan99/csharp-exercises) | C# | 2026-05-22 | `DemoSourceButton` class をリファクタリングし、UI 要素と README を整理して、練習リポジトリを振り返りやすくした |
+| [`web-math-note`](https://github.com/huiishan99/web-math-note) | TypeScript / FastAPI | 2026-04-13 | Vite と Axios 周辺の frontend dependency maintenance を行い、後で再開しやすい状態を維持 |
 
 特に印象が変わったのは `web-falling-sand` です。古いプロジェクトで難しいのは、機能を追加できないことではありません。たいていは、当時急いで作ったために構造が育っていないことです。単一ファイル、暗黙の状態、build script なし、lint なし、test なし、デプロイは記憶頼み。Codex はこのようなエンジニアリング負債にとても向いています。方向は分かっているけれど、手作業は面倒なタイプの仕事です。
+
+この表から分かるのは、Codex は「大きなリファクタリング」だけの道具ではないということです。README、release checklist、debug overlay、smoke test、dependency hygiene、mobile edge case、visual polish のように、保守性を静かに左右する周辺作業にも向いています。人間が後回しにしやすい作業を、agent は checklist として着実に進められます。
 
 私が Codex に出した指示は「このプロジェクトを全部書き直して」ではありません。むしろ次のようなものでした。
 
@@ -119,9 +122,13 @@ Codex は自然に、material rules、grid、simulation engine、renderer、UI c
   -> 2-3 個の案とリスクを出させる
   -> 最小の実行可能案を選ぶ
   -> Codex がコードを編集し、test や browser check を実行
+  -> 重要な仮説、変更、検証結果を devlog に書く
   -> 私が diff を review し、なぜそう変更したか説明させる
+  -> rollback しやすい checkpoint として git commit する
   -> merge、release、または次の round へ進む
 ```
+
+![Codex supervised engineering loop](/images/blog/codex-workflow.svg "wide: 今いちばんよく使う Codex の閉ループ：計画、実装、検証、記録、コミット。")
 
 特におすすめなのは、最初に「まだコードは変更しないで」と言うことです。多くの場合、時間を節約するのは即座のコード生成ではありません。Codex にプロジェクトのコンテキストを復元してもらうことです。古いプロジェクトで高いコストは、自分がなぜそのように書いたのかを思い出すことだからです。
 
@@ -198,6 +205,15 @@ Codex をまだ本格的に使ったことがないなら、いきなり「新�
 - documentation と behavior の不一致。
 ```
 
+```text
+debug first の方針でこの問題を進めてください:
+1. 修正案を推測する前に、まず bug を再現または局所化する;
+2. 変更ごとに docs/devlog.md へ、時刻、仮説、変更内容、検証 command、結果を書く;
+3. 検証に失敗した場合も、失敗理由と考えられる原因を devlog に残す;
+4. 検証が通ったら git diff を確認し、重要な差分を説明する;
+5. 最後に小さく明確な git commit を作成し、後から rollback や bisect がしやすい状態にする。
+```
+
 こうした prompt は派手ではありませんが、よく効きます。Codex に必要なのは華やかな説明よりも、エンジニアリング上の境界です。
 
 ## 結論
@@ -219,4 +235,15 @@ Codex をまだ本格的に使ったことがないなら、いきなり「新�
 - OpenAI Developers. [Codex web](https://developers.openai.com/codex/cloud), accessed 2026-05-24.
 - OpenAI Developers. [Code generation](https://developers.openai.com/api/docs/guides/code-generation), accessed 2026-05-24.
 - OpenAI. [Running Codex safely at OpenAI](https://openai.com/index/running-codex-safely/), 2026-05-08.
+- OpenAI Help Center. [OpenAI Codex CLI - Getting Started](https://help.openai.com/en/articles/11096431-openai-codex-cli-getting-tarted), accessed 2026-05-24.
+- OpenAI Developers. [Custom instructions with AGENTS.md](https://developers.openai.com/codex/guides/agents-md), accessed 2026-05-24.
+- GitHub. [openai/codex](https://github.com/openai/codex), accessed 2026-05-24.
+- Simon Willison. [Agentic Engineering Patterns](https://simonwillison.net/guides/), accessed 2026-05-24.
+- Stephen Cox. [AI coding best practices](https://stephencox.net/writing/ai-coding-best-practices/), 2026-01-04.
+- Hacker News. [OpenAI Codex CLI: Lightweight coding agent that runs in your terminal](https://news.ycombinator.com/item?id=43708025), accessed 2026-05-24.
+- Y Combinator on X. [Discussion of Andrej Karpathy's “vibe coding” framing](https://x.com/ycombinator/status/1897301568736911530), 2025-03-05.
+- OpenAI Developers on X. [Codex workflows discussion announcement](https://x.com/openaidevs/status/2041247305286996373), 2026-04-06.
+- Ramya Chinnadurai on X. [Discussion of Karpathy's point about CLIs and agents](https://x.com/code_rams/status/2026428310402572726), 2026-02-24.
+- Shuster et al. [SWE-chat: Coding Agent Interactions From Real Users in the Wild](https://arxiv.org/abs/2604.20779), arXiv, 2026.
+- Niu et al. [AIDev: Studying AI Coding Agents on GitHub](https://arxiv.org/abs/2602.09185), arXiv, 2026.
 - GitHub. Public repositories under [`huiishan99`](https://github.com/huiishan99), commit metadata accessed via GitHub REST API on 2026-05-24.
