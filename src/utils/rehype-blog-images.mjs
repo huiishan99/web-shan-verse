@@ -61,12 +61,31 @@ function toFigure(node) {
   return figure;
 }
 
+function isTable(node) {
+  return node?.type === 'element' && node.tagName === 'table';
+}
+
+function toTableScroll(node) {
+  return {
+    type: 'element',
+    tagName: 'div',
+    properties: {
+      className: ['blog-table-scroll'],
+    },
+    children: [node],
+  };
+}
+
 function transform(node) {
   if (!node || !Array.isArray(node.children)) return;
 
   node.children = node.children.map((child) => {
     if (isSingleImageParagraph(child)) {
       return toFigure(child);
+    }
+
+    if (isTable(child)) {
+      return toTableScroll(child);
     }
 
     transform(child);

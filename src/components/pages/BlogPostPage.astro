@@ -6,7 +6,6 @@ import { useTranslations } from '../../i18n/ui';
 import {
   getBlogCategoryPath,
   getBlogTagPath,
-  getPostLanguageLabel,
 } from '../../utils/blog';
 
 type Props = {
@@ -17,7 +16,6 @@ type Props = {
 const { post, lang = defaultLocale } = Astro.props;
 const { Content } = await render(post);
 const t = useTranslations(lang);
-const languageLabel = getPostLanguageLabel(post);
 const dateLocale: Record<Locale, string> = {
   en: 'en-US',
   zh: 'zh-CN',
@@ -37,11 +35,6 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
       <h1>{post.data.title}</h1>
       <div class="post-meta">
         <time datetime={post.data.date.toISOString()}>{formattedDate}</time>
-        {languageLabel && (
-          <span class="language-badge" title={t.blog.language}>
-            {languageLabel}
-          </span>
-        )}
         {post.data.categories && post.data.categories.length > 0 && (
           <span class="categories">
             {post.data.categories.map((cat: string) => (
@@ -160,16 +153,6 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
 
   .post-meta time {
     color: var(--color-accent-gold);
-  }
-
-  .language-badge {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    color: var(--color-text-secondary);
-    padding: 0.16rem 0.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 4px;
-    background: rgba(255, 255, 255, 0.035);
   }
 
   .categories {
@@ -336,6 +319,93 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
     padding: 0;
   }
 
+  .post-content :global(.blog-table-scroll) {
+    width: 100%;
+    margin: 1.75rem 0 2rem;
+    overflow-x: auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background:
+      linear-gradient(180deg, rgba(106, 171, 255, 0.045), rgba(201, 162, 39, 0.025)),
+      rgba(12, 12, 18, 0.74);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.2);
+  }
+
+  .post-content :global(.blog-table-scroll::-webkit-scrollbar) {
+    height: 0.65rem;
+  }
+
+  .post-content :global(.blog-table-scroll::-webkit-scrollbar-track) {
+    background: rgba(255, 255, 255, 0.035);
+  }
+
+  .post-content :global(.blog-table-scroll::-webkit-scrollbar-thumb) {
+    background: rgba(201, 162, 39, 0.42);
+    border-radius: 999px;
+  }
+
+  .post-content :global(table) {
+    width: 100%;
+    min-width: 720px;
+    border-collapse: collapse;
+    font-size: 0.94rem;
+    line-height: 1.55;
+  }
+
+  .post-content :global(th),
+  .post-content :global(td) {
+    min-width: 9rem;
+    padding: 0.8rem 0.95rem;
+    vertical-align: top;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .post-content :global(th:last-child),
+  .post-content :global(td:last-child) {
+    border-right: 0;
+  }
+
+  .post-content :global(thead th) {
+    color: var(--color-text-primary);
+    background:
+      linear-gradient(180deg, rgba(201, 162, 39, 0.16), rgba(106, 171, 255, 0.08)),
+      rgba(22, 22, 30, 0.96);
+    font-family: var(--font-display);
+    font-size: 0.88rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .post-content :global(tbody tr:nth-child(even)) {
+    background: rgba(255, 255, 255, 0.025);
+  }
+
+  .post-content :global(tbody tr:hover) {
+    background: rgba(106, 171, 255, 0.055);
+  }
+
+  .post-content :global(tbody tr:last-child td) {
+    border-bottom: 0;
+  }
+
+  .post-content :global(th:first-child),
+  .post-content :global(td:first-child) {
+    min-width: 8.5rem;
+  }
+
+  .post-content :global(th:last-child),
+  .post-content :global(td:last-child) {
+    min-width: 15rem;
+  }
+
+  .post-content :global(td:first-child) {
+    color: var(--color-accent-gold);
+    font-weight: 600;
+  }
+
   .post-content :global(ul),
   .post-content :global(ol) {
     margin: 1rem 0;
@@ -400,6 +470,23 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
       margin-left: -0.5rem;
       margin-right: -0.5rem;
       border-radius: 0;
+    }
+
+    .post-content :global(.blog-table-scroll) {
+      width: calc(100% + 1rem);
+      max-width: calc(100% + 1rem);
+      margin: 1.5rem -0.5rem;
+      border-radius: 0;
+    }
+
+    .post-content :global(table) {
+      min-width: 720px;
+      font-size: 0.86rem;
+    }
+
+    .post-content :global(th),
+    .post-content :global(td) {
+      padding: 0.68rem 0.75rem;
     }
 
     .post-content :global(img) {
