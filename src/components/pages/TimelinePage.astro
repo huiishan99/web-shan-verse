@@ -134,11 +134,15 @@ function formatEventDate(event: TimelineEvent): string | undefined {
           <div class="year-marker">
             <span class="year-signal" aria-hidden="true">
               <svg viewBox="0 0 24 24" focusable="false">
-                <path d="M7.027 11.477a5 5 0 1 0 5.496 -4.45a4.951 4.951 0 0 0 -3.088 .681"></path>
-                <path d="M5.636 5.636a9 9 0 1 0 3.555 -2.188"></path>
-                <path d="M17 5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
-                <path d="M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
-                <path d="M8 16a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                <g class="year-signal-orbit">
+                  <path d="M5.636 5.636a9 9 0 1 0 3.555 -2.188"></path>
+                  <path d="M17 5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                </g>
+                <g class="year-signal-core">
+                  <path d="M7.027 11.477a5 5 0 1 0 5.496 -4.45a4.951 4.951 0 0 0 -3.088 .681"></path>
+                  <path d="M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                  <path d="M8 16a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                </g>
               </svg>
             </span>
             <h2 id={`year-${yearData.year}`} class="year-label">{yearData.year}</h2>
@@ -253,8 +257,11 @@ function formatEventDate(event: TimelineEvent): string | undefined {
     position: absolute;
     inset: 0.1rem;
     border: 1px solid rgba(201, 162, 39, 0.18);
+    border-left-color: rgba(142, 171, 226, 0.26);
+    border-bottom-color: rgba(201, 162, 39, 0.04);
     border-radius: 999px;
     background: radial-gradient(circle, rgba(201, 162, 39, 0.08), transparent 62%);
+    animation: year-signal-spin-left 22s linear infinite;
   }
 
   .year-signal svg {
@@ -267,6 +274,40 @@ function formatEventDate(event: TimelineEvent): string | undefined {
     stroke-width: 1.7;
     stroke-linecap: round;
     stroke-linejoin: round;
+  }
+
+  .year-signal-orbit,
+  .year-signal-core {
+    transform-box: view-box;
+    transform-origin: center;
+  }
+
+  .year-signal-orbit {
+    animation: year-signal-spin-left 16s linear infinite;
+  }
+
+  .year-signal-core {
+    animation: year-signal-spin-right 12s linear infinite;
+  }
+
+  @keyframes year-signal-spin-left {
+    to {
+      transform: rotate(-360deg);
+    }
+  }
+
+  @keyframes year-signal-spin-right {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .year-signal::before,
+    .year-signal-orbit,
+    .year-signal-core {
+      animation: none;
+    }
   }
 
   .year-label {
