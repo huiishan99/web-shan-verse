@@ -126,11 +126,6 @@ function formatEventDate(event: TimelineEvent): string | undefined {
     <header class="page-header">
       <h1>{t.timeline.title}</h1>
       <p class="subtitle">{t.timeline.subtitle}</p>
-      <div class="timeline-legend" aria-label="Timeline event levels">
-        <span class="legend-item legend-item--major">{localizeString(weightLabels.major, lang)}</span>
-        <span class="legend-item legend-item--standard">{localizeString(weightLabels.standard, lang)}</span>
-        <span class="legend-item legend-item--note">{localizeString(weightLabels.note, lang)}</span>
-      </div>
     </header>
 
     <div class="timeline">
@@ -211,49 +206,6 @@ function formatEventDate(event: TimelineEvent): string | undefined {
     color: var(--color-text-secondary);
     font-style: italic;
     margin-top: var(--space-sm);
-  }
-
-  .timeline-legend {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: var(--space-sm);
-    margin-top: var(--space-md);
-  }
-
-  .legend-item {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    color: var(--color-text-muted);
-    font-family: var(--font-mono);
-    font-size: 0.76rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
-  .legend-item::before {
-    content: '';
-    display: block;
-    width: 0.55rem;
-    height: 0.55rem;
-    border: 1px solid var(--legend-color);
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--legend-color) 28%, transparent);
-    box-shadow: 0 0 12px color-mix(in srgb, var(--legend-color) 35%, transparent);
-  }
-
-  .legend-item--major {
-    --legend-color: var(--color-accent-gold);
-  }
-
-  .legend-item--standard {
-    --legend-color: var(--color-brass);
-  }
-
-  .legend-item--note {
-    --legend-color: rgba(255, 255, 255, 0.46);
   }
 
   .timeline {
