@@ -132,7 +132,15 @@ function formatEventDate(event: TimelineEvent): string | undefined {
       {timelineData.map((yearData) => (
         <section class="timeline-year" aria-labelledby={`year-${yearData.year}`}>
           <div class="year-marker">
-            <span class="year-signal" aria-hidden="true"></span>
+            <span class="year-signal" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path d="M7.027 11.477a5 5 0 1 0 5.496 -4.45a4.951 4.951 0 0 0 -3.088 .681"></path>
+                <path d="M5.636 5.636a9 9 0 1 0 3.555 -2.188"></path>
+                <path d="M17 5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                <path d="M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                <path d="M8 16a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+              </svg>
+            </span>
             <h2 id={`year-${yearData.year}`} class="year-label">{yearData.year}</h2>
           </div>
 
@@ -231,41 +239,33 @@ function formatEventDate(event: TimelineEvent): string | undefined {
   .year-signal {
     position: relative;
     flex: 0 0 auto;
-    width: 1.46rem;
-    height: 1.46rem;
-    border: 1px solid rgba(201, 162, 39, 0.86);
-    border-radius: 999px;
-    background:
-      radial-gradient(circle at 38% 38%, rgba(255, 231, 158, 0.96) 0 0.13rem, transparent 0.14rem),
-      radial-gradient(circle at 62% 64%, rgba(201, 162, 39, 0.28), transparent 46%),
-      linear-gradient(135deg, rgba(24, 31, 48, 0.92), rgba(6, 7, 12, 0.96));
-    box-shadow:
-      inset -0.18rem -0.16rem 0.34rem rgba(0, 0, 0, 0.78),
-      inset 0.12rem 0.12rem 0.28rem rgba(255, 237, 176, 0.16),
-      0 0 18px rgba(201, 162, 39, 0.26);
+    display: grid;
+    place-items: center;
+    width: 1.7rem;
+    height: 1.7rem;
+    color: var(--color-brass);
+    filter: drop-shadow(0 0 8px rgba(201, 162, 39, 0.34));
   }
 
   .year-signal::before {
     content: '';
     position: absolute;
-    inset: -0.34rem;
-    border: 1px solid rgba(201, 162, 39, 0.32);
-    border-left-color: transparent;
-    border-bottom-color: rgba(142, 171, 226, 0.26);
+    inset: 0.1rem;
+    border: 1px solid rgba(201, 162, 39, 0.18);
     border-radius: 999px;
-    transform: rotate(-18deg) scaleX(1.2);
+    background: radial-gradient(circle, rgba(201, 162, 39, 0.08), transparent 62%);
   }
 
-  .year-signal::after {
-    content: '';
-    position: absolute;
-    right: -0.14rem;
-    bottom: 0.12rem;
-    width: 0.28rem;
-    height: 0.28rem;
-    border-radius: 999px;
-    background: rgba(201, 162, 39, 0.88);
-    box-shadow: 0 0 12px rgba(201, 162, 39, 0.52);
+  .year-signal svg {
+    position: relative;
+    z-index: 1;
+    width: 1.42rem;
+    height: 1.42rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 
   .year-label {
