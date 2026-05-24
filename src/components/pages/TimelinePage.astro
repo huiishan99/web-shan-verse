@@ -154,10 +154,6 @@ function formatEventDate(event: TimelineEvent): string | undefined {
 
               return (
                 <article class={`month-cluster month-cluster--${dominantWeight}`}>
-                  <div class="month-rail" aria-hidden="true">
-                    <span class="month-pin"></span>
-                  </div>
-
                   <div class="month-shell">
                     <header class="month-header">
                       <div>
@@ -323,48 +319,33 @@ function formatEventDate(event: TimelineEvent): string | undefined {
     display: grid;
     gap: var(--space-md);
     min-width: 0;
+    position: relative;
+    padding-left: 2.5rem;
+  }
+
+  .year-months::before {
+    content: '';
+    position: absolute;
+    top: 0.2rem;
+    bottom: -1.4rem;
+    left: 1.12rem;
+    width: 1px;
+    background: linear-gradient(
+      180deg,
+      rgba(201, 162, 39, 0.3),
+      rgba(142, 171, 226, 0.12) 46%,
+      rgba(255, 255, 255, 0.04)
+    );
   }
 
   .month-cluster {
     --month-accent: var(--color-brass);
-    display: grid;
-    grid-template-columns: 2.5rem minmax(0, 1fr);
+    display: block;
     position: relative;
-  }
-
-  .month-cluster--major {
-    --month-accent: var(--color-accent-gold);
   }
 
   .month-cluster--note {
     --month-accent: var(--color-brass);
-  }
-
-  .month-rail {
-    position: relative;
-    display: flex;
-    justify-content: center;
-  }
-
-  .month-rail::before {
-    content: '';
-    position: absolute;
-    top: 1.1rem;
-    bottom: -1.2rem;
-    width: 1px;
-    background: linear-gradient(180deg, var(--month-accent), rgba(255, 255, 255, 0.05));
-  }
-
-  .month-pin {
-    position: relative;
-    z-index: 1;
-    width: 0.72rem;
-    height: 0.72rem;
-    margin-top: 0.82rem;
-    border: 1px solid var(--month-accent);
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--month-accent) 30%, var(--color-bg-primary));
-    box-shadow: 0 0 14px color-mix(in srgb, var(--month-accent) 34%, transparent);
   }
 
   .month-shell {
@@ -378,10 +359,6 @@ function formatEventDate(event: TimelineEvent): string | undefined {
     box-shadow: 0 16px 36px rgba(0, 0, 0, 0.18);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-  }
-
-  .month-cluster--major .month-shell {
-    border-color: rgba(201, 162, 39, 0.36);
   }
 
   .month-cluster--note .month-shell {
@@ -574,8 +551,12 @@ function formatEventDate(event: TimelineEvent): string | undefined {
       font-size: 1.7rem;
     }
 
-    .month-cluster {
-      grid-template-columns: 1.6rem minmax(0, 1fr);
+    .year-months {
+      padding-left: 1.35rem;
+    }
+
+    .year-months::before {
+      left: 0.45rem;
     }
 
     .month-shell {
