@@ -426,8 +426,7 @@ function formatEventDate(event: TimelineEvent): string | undefined {
   }
 
   .timeline-event--major .event-body {
-    border-left: 2px solid color-mix(in srgb, var(--event-accent) 80%, var(--color-accent-gold));
-    padding-left: var(--space-md);
+    padding-left: 0;
   }
 
   .timeline-event--note {
@@ -602,10 +601,6 @@ function formatEventDate(event: TimelineEvent): string | undefined {
     .timeline-event {
       grid-template-columns: 0.9rem minmax(0, 1fr);
       gap: var(--space-xs);
-    }
-
-    .timeline-event--major .event-body {
-      padding-left: var(--space-sm);
     }
 
     .event-desc {
