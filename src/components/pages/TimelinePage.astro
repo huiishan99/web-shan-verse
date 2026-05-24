@@ -238,6 +238,7 @@ function formatEventDate(event: TimelineEvent): string | undefined {
   }
 
   .year-signal {
+    --year-signal-shift-x: 0rem;
     position: relative;
     flex: 0 0 auto;
     display: grid;
@@ -246,7 +247,7 @@ function formatEventDate(event: TimelineEvent): string | undefined {
     height: 1.7rem;
     color: var(--color-brass);
     filter: drop-shadow(0 0 8px rgba(201, 162, 39, 0.34));
-    transform: translateY(-0.36rem);
+    transform: translate(var(--year-signal-shift-x), -0.36rem);
   }
 
   .year-signal::before {
@@ -587,6 +588,10 @@ function formatEventDate(event: TimelineEvent): string | undefined {
 
     .year-label {
       font-size: 1.7rem;
+    }
+
+    .year-signal {
+      --year-signal-shift-x: -0.4rem;
     }
 
     .year-months {
