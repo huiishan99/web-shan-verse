@@ -23,7 +23,7 @@ import LinkCard from '../../components/blog/LinkCard.astro';
 This post was written on 2026-05-24 JST. Codex, ChatGPT Pro usage limits, and promotional offers change quickly, so I list concrete dates and references at the end.
 </Callout>
 
-Over the past few days, I have had a very strong feeling: Codex has shifted from “a coding assistant that can write code” to “a supervised execution layer for software engineering.” At first I thought the turning point was around May 11, because that was when I refactored `web-falling-sand` from a single `sketch.js` file into a modular project. After checking the official timeline, the picture became clearer: OpenAI announced the Codex mobile remote-work preview on 2026-05-14, and the broader desktop capability update had already shipped on 2026-04-16.
+Over the past few days, I have had a very strong feeling: Codex has shifted from “a coding assistant that can write code” to “a supervised execution layer for software engineering.” At first I thought the turning point was around May 11, because that was when I refactored one of my toy projects from a single-file demo into a modular project. After checking the official timeline, the picture became clearer: OpenAI announced the Codex mobile remote-work preview on 2026-05-14, and the broader desktop capability update had already shipped on 2026-04-16.
 
 So the more accurate version is this: I started to feel the capability jump around May 11, and the May 14 official update made that feeling much easier to explain.
 
@@ -77,15 +77,18 @@ I recently used Codex to revisit a batch of old projects. Public GitHub activity
 
 | Project | Language / stack | Latest public push | Main Codex-assisted changes |
 | --- | --- | --- | --- |
-| [`web-blog`](https://github.com/huiishan99/web-blog) | Astro / MDX | 2026-05-23 | Fixed mobile activity map layout, language menu behavior, hero title details, and page spacing on this personal site |
+| [`web-blog`](https://github.com/huiishan99/web-blog) | Astro / MDX | 2026-05-24 | Fixed mobile activity maps, language menu behavior, hero title details, timezone handling, multilingual blog routes, and the three-language version of this post |
 | [`web-falling-sand`](https://github.com/huiishan99/web-falling-sand) | JavaScript / p5-style | 2026-05-11 | Reworked a single `sketch.js` into modular `src/`, added Vite, ESLint, Prettier, GitHub Pages workflow, a unit test, and preview SVG |
-| [`cpp-tetris-game`](https://github.com/huiishan99/cpp-tetris-game) | C++ / raylib-cpp | 2026-05-23 | Added lock delay, DAS/ARR movement, SRS wall kicks, gameplay settings, local leaderboard, and name entry |
-| [`python-rockfall-game`](https://github.com/huiishan99/python-rockfall-game) | Python | 2026-05-23 | Added rock variants, help-screen legend, GUI smoke-test samples, and feature reporting for training data |
-| [`csharp-snake-game`](https://github.com/huiishan99/csharp-snake-game) | C# | 2026-05-23 | Modernized the start menu, themed controls, HUD styling, speed shortcuts, Windows testing notes, and release checklist |
-| [`web-genAI`](https://github.com/huiishan99/web-genAI) | Python | 2026-05-23 | Rescued the image generation demo and restyled the image forge interface |
-| [`web-notion-next`](https://github.com/huiishan99/web-notion-next) | Next.js / Notion | 2026-05-17 | Consolidated 4.9.x user guides, theme documentation, maintenance policy, and reference manuals |
+| [`cpp-tetris-game`](https://github.com/huiishan99/cpp-tetris-game) | C++ / raylib-cpp | 2026-05-23 | Added lock delay, DAS/ARR movement, SRS wall kicks, pause/restart controls, persisted settings, local leaderboard, and name entry |
+| [`python-rockfall-game`](https://github.com/huiishan99/python-rockfall-game) | Python | 2026-05-24 | Added rock variants, help-screen legend, GUI smoke-test samples, model debug overlay, baseline policy comparison, and training-data feature reporting |
+| [`csharp-snake-game`](https://github.com/huiishan99/csharp-snake-game) | C# | 2026-05-23 | Modernized the start menu, arcade start screen, themed controls, HUD styling, speed shortcuts, obstacle mode, Windows testing notes, and release checklist |
+| [`web-genAI`](https://github.com/huiishan99/web-genAI) | Python | 2026-05-23 | Rescued the image generation demo, restyled the image forge interface, and fixed responsive layout and prompt starter contrast |
+| [`csharp-exercises`](https://github.com/huiishan99/csharp-exercises) | C# | 2026-05-22 | Refactored the `DemoSourceButton` class, updated UI elements, and refreshed README notes so the exercise repo is easier to revisit |
+| [`web-math-note`](https://github.com/huiishan99/web-math-note) | TypeScript / FastAPI | 2026-04-13 | Handled frontend dependency maintenance around Vite and Axios, keeping the project easier to resume later |
 
 The project that changed my view the most was `web-falling-sand`. The hard part with old projects is usually not that I do not know how to add a feature. It is that the structure never had time to grow: one file, implicit state, no build scripts, no linting, no tests, deployment by memory. Codex is especially useful for this kind of engineering debt: the direction is obvious, but the manual work is tedious.
+
+The table also reminded me of something important: Codex is not only for “large refactors.” It is also good at the edge work that quietly determines maintainability: README updates, release checklists, debug overlays, smoke tests, dependency hygiene, mobile edge cases, and visual polish. These are exactly the tasks a human developer easily postpones but an agent can push through as a checklist.
 
 I did not ask Codex to “rewrite this project.” The prompt was closer to:
 
@@ -119,9 +122,13 @@ Problem / idea
   -> Ask for 2-3 approaches and risks
   -> Choose the smallest viable approach
   -> Codex edits code and runs tests or browser checks
+  -> Write key assumptions, changes, and verification results into a devlog
   -> I review the diff and ask it to explain the changes
+  -> git commit a rollback-friendly checkpoint
   -> Merge, release, or continue the next round
 ```
+
+![Codex supervised engineering loop](/images/blog/codex-workflow.svg "wide: The Codex loop I use most often now: plan, build, verify, log, commit.")
 
 I especially recommend starting with “do not change code yet.” Often the biggest time saver is not immediate code generation; it is letting Codex rebuild the project context for you. With old projects, the expensive part is remembering why you wrote things the way you did.
 
@@ -198,6 +205,15 @@ Please review the current diff, focusing on:
 - places where documentation and behavior disagree.
 ```
 
+```text
+Please work in a debugging-first way:
+1. reproduce or localize the bug before guessing at a fix;
+2. after each change, write to docs/devlog.md with time, hypothesis, change, verification command, and result;
+3. if verification fails, record the failure and likely cause in the devlog too;
+4. after verification passes, inspect git diff and explain the important changes;
+5. finally create a small, clear git commit so the change is easy to roll back or bisect later.
+```
+
 These prompts do not look fancy, but they work. Codex does not need ornate instructions as much as it needs engineering boundaries.
 
 ## Conclusion
@@ -219,4 +235,15 @@ So if you ask me why use Codex, my answer is: because it lets one person maintai
 - OpenAI Developers. [Codex web](https://developers.openai.com/codex/cloud), accessed 2026-05-24.
 - OpenAI Developers. [Code generation](https://developers.openai.com/api/docs/guides/code-generation), accessed 2026-05-24.
 - OpenAI. [Running Codex safely at OpenAI](https://openai.com/index/running-codex-safely/), 2026-05-08.
+- OpenAI Help Center. [OpenAI Codex CLI - Getting Started](https://help.openai.com/en/articles/11096431-openai-codex-cli-getting-tarted), accessed 2026-05-24.
+- OpenAI Developers. [Custom instructions with AGENTS.md](https://developers.openai.com/codex/guides/agents-md), accessed 2026-05-24.
+- GitHub. [openai/codex](https://github.com/openai/codex), accessed 2026-05-24.
+- Simon Willison. [Agentic Engineering Patterns](https://simonwillison.net/guides/), accessed 2026-05-24.
+- Stephen Cox. [AI coding best practices](https://stephencox.net/writing/ai-coding-best-practices/), 2026-01-04.
+- Hacker News. [OpenAI Codex CLI: Lightweight coding agent that runs in your terminal](https://news.ycombinator.com/item?id=43708025), accessed 2026-05-24.
+- Y Combinator on X. [Discussion of Andrej Karpathy's “vibe coding” framing](https://x.com/ycombinator/status/1897301568736911530), 2025-03-05.
+- OpenAI Developers on X. [Codex workflows discussion announcement](https://x.com/openaidevs/status/2041247305286996373), 2026-04-06.
+- Ramya Chinnadurai on X. [Discussion of Karpathy's point about CLIs and agents](https://x.com/code_rams/status/2026428310402572726), 2026-02-24.
+- Shuster et al. [SWE-chat: Coding Agent Interactions From Real Users in the Wild](https://arxiv.org/abs/2604.20779), arXiv, 2026.
+- Niu et al. [AIDev: Studying AI Coding Agents on GitHub](https://arxiv.org/abs/2602.09185), arXiv, 2026.
 - GitHub. Public repositories under [`huiishan99`](https://github.com/huiishan99), commit metadata accessed via GitHub REST API on 2026-05-24.

@@ -23,7 +23,7 @@ import LinkCard from '../../components/blog/LinkCard.astro';
 本文写于 2026-05-24（JST）。OpenAI 的 Codex、ChatGPT Pro 额度和限时活动变化很快，所以本文把关键日期和参考链接都列在文末。
 </Callout>
 
-过去几天我一直有一种很强烈的感觉：Codex 好像突然从“会写代码的助手”变成了“可以被监督的软件工程执行层”。我一开始以为分水岭大概是 5 月 11 日，因为那天我把 `web-falling-sand` 从一个单文件 `sketch.js` 重构成了模块化项目；后来查资料才发现，OpenAI 在 2026-05-14 正式发布了 Codex 手机端远程协作预览，而更大的桌面端能力更新则是在 2026-04-16 发布的。
+过去几天我一直有一种很强烈的感觉：Codex 好像突然从“会写代码的助手”变成了“可以被监督的软件工程执行层”。我一开始以为分水岭大概是 5 月 11 日，因为那一天我把自己的一个玩具项目从单文件 demo 重构成了模块化项目；后来查资料才发现，OpenAI 在 2026-05-14 正式发布了 Codex 手机端远程协作预览，而更大的桌面端能力更新则是在 2026-04-16 发布的。
 
 所以更准确的说法应该是：我在 5 月 11 日前后开始明显感到 Codex 的能力跃迁，5 月 14 日的官方更新把这种体验坐实了。
 
@@ -77,15 +77,18 @@ OpenAI Help Center 当前写明：Codex 已包含在 Plus、Pro、Business、Ent
 
 | 项目 | 语言/框架 | 最近公开推送 | Codex 介入后的主要变化 |
 | --- | --- | --- | --- |
-| [`web-blog`](https://github.com/huiishan99/web-blog) | Astro / MDX | 2026-05-23 | 修移动端 activity map、语言菜单、hero 标题细节、页面间距，也就是这个个人网站的进一步打磨 |
+| [`web-blog`](https://github.com/huiishan99/web-blog) | Astro / MDX | 2026-05-24 | 修移动端 activity map、语言菜单、hero 标题细节、时区计算、多语言博客路由和这篇文章的三语版本 |
 | [`web-falling-sand`](https://github.com/huiishan99/web-falling-sand) | JavaScript / p5-style | 2026-05-11 | 从单文件 `sketch.js` 拆到模块化 `src/`，加入 Vite、ESLint、Prettier、GitHub Pages workflow、单元测试和预览 SVG |
-| [`cpp-tetris-game`](https://github.com/huiishan99/cpp-tetris-game) | C++ / raylib-cpp | 2026-05-23 | 增加 lock delay、DAS/ARR、SRS wall kicks、设置面板、本地排行榜和姓名输入 |
-| [`python-rockfall-game`](https://github.com/huiishan99/python-rockfall-game) | Python | 2026-05-23 | 增加不同岩石类型、帮助界面图例、GUI smoke-test 样例和训练数据特征统计 |
-| [`csharp-snake-game`](https://github.com/huiishan99/csharp-snake-game) | C# | 2026-05-23 | 现代化开始菜单、主题化控件、HUD 样式、速度快捷项、Windows 测试与发布 checklist |
-| [`web-genAI`](https://github.com/huiishan99/web-genAI) | Python | 2026-05-23 | 修复 image generation demo，并重新设计 image forge 界面 |
-| [`web-notion-next`](https://github.com/huiishan99/web-notion-next) | Next.js / Notion | 2026-05-17 | 整理 4.9.x 用户指南、主题文档、维护流程和 reference manuals |
+| [`cpp-tetris-game`](https://github.com/huiishan99/cpp-tetris-game) | C++ / raylib-cpp | 2026-05-23 | 增加 lock delay、DAS/ARR、SRS wall kicks、暂停/重开控制、设置持久化、本地排行榜和姓名输入 |
+| [`python-rockfall-game`](https://github.com/huiishan99/python-rockfall-game) | Python | 2026-05-24 | 增加不同岩石类型、帮助界面图例、GUI smoke-test 样例、模型调试 overlay、baseline policy 对比和训练数据特征统计 |
+| [`csharp-snake-game`](https://github.com/huiishan99/csharp-snake-game) | C# | 2026-05-23 | 现代化开始菜单、arcade start screen、主题化控件、HUD 样式、速度快捷项、obstacle mode、Windows 测试与发布 checklist |
+| [`web-genAI`](https://github.com/huiishan99/web-genAI) | Python | 2026-05-23 | 修复 image generation demo，重新设计 image forge 界面，补响应式布局和 prompt starter 对比度 |
+| [`csharp-exercises`](https://github.com/huiishan99/csharp-exercises) | C# | 2026-05-22 | 重构 `DemoSourceButton` 类，整理 UI 元素，并补 README 让练习仓库更容易回看 |
+| [`web-math-note`](https://github.com/huiishan99/web-math-note) | TypeScript / FastAPI | 2026-04-13 | 处理前端依赖升级，保持 Vite、Axios 等基础依赖可维护，为之后继续开发降低阻力 |
 
 这里最让我改变看法的是 `web-falling-sand`。这类旧项目通常最大的问题不是“功能不会写”，而是当初为了快，结构没有长出来：单文件、隐式状态、没有构建脚本、没有 lint、没有测试、部署靠手感。Codex 适合处理的恰恰是这种“你知道方向，但不想手动搬砖三小时”的工程债。
+
+这张表也提醒我一件事：Codex 不只适合“大重构”。它同样适合做那些散落在项目边缘、但长期影响可维护性的工作：README、发布清单、调试 overlay、smoke test、依赖升级、移动端边界、视觉 polish。这些都是人类开发者很容易拖延，但 agent 很适合按清单推进的任务。
 
 我给 Codex 的任务不是“帮我重写这个项目”，而是更像：
 
@@ -119,9 +122,13 @@ OpenAI Help Center 当前写明：Codex 已包含在 Plus、Pro、Business、Ent
   -> 要它提出 2-3 个方案和风险
   -> 选择一个最小可行方案
   -> Codex 修改代码、运行测试或截图验证
+  -> 把关键假设、改动和验证结果写入 devlog
   -> 我 review diff，并要求它解释为什么这样改
+  -> git commit 成一个可回滚的检查点
   -> 合并、发布或继续下一轮
 ```
+
+![Codex supervised engineering loop](/images/blog/codex-workflow.svg "wide: 我现在最常用的 Codex 工作闭环：计划、实现、验证、记录、提交。")
 
 我尤其建议把“先不要改代码”当作常用开场。很多时候，真正节省时间的不是马上生成代码，而是让 Codex 先帮你恢复项目上下文。旧项目最贵的成本往往是：你已经忘了自己当时为什么这么写。
 
@@ -197,6 +204,15 @@ Codex 越强，越不能把它当成“随便给 shell 权限的聊天框”。O
 - 文档和实际行为不一致的地方。
 ```
 
+```text
+请用调试优先的方式推进这个问题：
+1. 先复现或定位 bug，不要直接猜修法；
+2. 每次改动都写入 docs/devlog.md，记录时间、假设、改动、验证命令和结果；
+3. 如果验证失败，把失败原因也写进 devlog；
+4. 验证通过后查看 git diff，说明关键 diff；
+5. 最后创建一个小而清晰的 git commit，方便之后回滚或定位问题。
+```
+
 这些 prompt 看起来不酷，但很有效。因为 Codex 最需要的不是华丽描述，而是工程边界。
 
 ## 结论：我愿意把 Codex 放进日常开发主循环
@@ -218,4 +234,15 @@ Codex 越强，越不能把它当成“随便给 shell 权限的聊天框”。O
 - OpenAI Developers. [Codex web](https://developers.openai.com/codex/cloud), accessed 2026-05-24.
 - OpenAI Developers. [Code generation](https://developers.openai.com/api/docs/guides/code-generation), accessed 2026-05-24.
 - OpenAI. [Running Codex safely at OpenAI](https://openai.com/index/running-codex-safely/), 2026-05-08.
+- OpenAI Help Center. [OpenAI Codex CLI - Getting Started](https://help.openai.com/en/articles/11096431-openai-codex-cli-getting-tarted), accessed 2026-05-24.
+- OpenAI Developers. [Custom instructions with AGENTS.md](https://developers.openai.com/codex/guides/agents-md), accessed 2026-05-24.
+- GitHub. [openai/codex](https://github.com/openai/codex), accessed 2026-05-24.
+- Simon Willison. [Agentic Engineering Patterns](https://simonwillison.net/guides/), accessed 2026-05-24.
+- Stephen Cox. [AI coding best practices](https://stephencox.net/writing/ai-coding-best-practices/), 2026-01-04.
+- Hacker News. [OpenAI Codex CLI: Lightweight coding agent that runs in your terminal](https://news.ycombinator.com/item?id=43708025), accessed 2026-05-24.
+- Y Combinator on X. [Discussion of Andrej Karpathy's “vibe coding” framing](https://x.com/ycombinator/status/1897301568736911530), 2025-03-05.
+- OpenAI Developers on X. [Codex workflows discussion announcement](https://x.com/openaidevs/status/2041247305286996373), 2026-04-06.
+- Ramya Chinnadurai on X. [Discussion of Karpathy's point about CLIs and agents](https://x.com/code_rams/status/2026428310402572726), 2026-02-24.
+- Shuster et al. [SWE-chat: Coding Agent Interactions From Real Users in the Wild](https://arxiv.org/abs/2604.20779), arXiv, 2026.
+- Niu et al. [AIDev: Studying AI Coding Agents on GitHub](https://arxiv.org/abs/2602.09185), arXiv, 2026.
 - GitHub. Public repositories under [`huiishan99`](https://github.com/huiishan99), commit metadata accessed via GitHub REST API on 2026-05-24.
