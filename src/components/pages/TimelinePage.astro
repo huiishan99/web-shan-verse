@@ -250,18 +250,6 @@ function formatEventDate(event: TimelineEvent): string | undefined {
     transform: translate(var(--year-signal-shift-x), -0.36rem);
   }
 
-  .year-signal::before {
-    content: '';
-    position: absolute;
-    inset: 0.1rem;
-    border: 1px solid rgba(201, 162, 39, 0.18);
-    border-left-color: rgba(142, 171, 226, 0.26);
-    border-bottom-color: rgba(201, 162, 39, 0.04);
-    border-radius: 999px;
-    background: radial-gradient(circle, rgba(201, 162, 39, 0.08), transparent 62%);
-    animation: year-signal-spin-left 22s linear infinite;
-  }
-
   .year-signal svg {
     position: relative;
     z-index: 1;
@@ -301,7 +289,6 @@ function formatEventDate(event: TimelineEvent): string | undefined {
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .year-signal::before,
     .year-signal-orbit,
     .year-signal-core {
       animation: none;
