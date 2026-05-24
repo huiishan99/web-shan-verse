@@ -70,7 +70,7 @@ type ActivitySignal = {
   date: Date;
   datetime: string;
   displayDate: string;
-  dateSource: 'blog date' | 'timeline month';
+  dateSource: 'blog date' | 'timeline date' | 'timeline month';
   href: string;
   title: string;
   type: 'post' | 'milestone';
@@ -91,13 +91,19 @@ const timelineSignals: ActivitySignal[] = timelineData.flatMap((yearData) =>
     const englishMonth = localizeString(event.month, 'en');
     const eventMonthIndex = monthIndex[englishMonth] ?? 0;
     const eventMonth = localizeMonth(event.month, lang);
+    const preciseEventDate = event.date && event.datePrecision !== 'month'
+      ? new Date(`${event.date}T00:00:00Z`)
+      : undefined;
+    const eventDate = preciseEventDate ?? new Date(Date.UTC(yearData.year, eventMonthIndex, 15));
 
     return {
-      // Timeline entries are month-level, so place them at mid-month for the grid.
-      date: new Date(Date.UTC(yearData.year, eventMonthIndex, 15)),
-      datetime: `${yearData.year}-${String(eventMonthIndex + 1).padStart(2, '0')}`,
+      // Month-level entries are placed at mid-month; exact dates can opt in with `event.date`.
+      date: eventDate,
+      datetime: preciseEventDate
+        ? toDateKey(preciseEventDate)
+        : `${yearData.year}-${String(eventMonthIndex + 1).padStart(2, '0')}`,
       displayDate: `${eventMonth} ${yearData.year}`,
-      dateSource: 'timeline month' as const,
+      dateSource: preciseEventDate ? 'timeline date' as const : 'timeline month' as const,
       href: localizePath('/timeline', lang),
       title: localizeString(event.title, lang),
       type: 'milestone' as const,

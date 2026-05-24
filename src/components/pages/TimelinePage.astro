@@ -1,6 +1,11 @@
-﻿---
+---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { timelineData } from '../../data/timeline';
+import {
+  timelineData,
+  type TimelineEvent,
+  type TimelineEventCategory,
+  type TimelineEventWeight,
+} from '../../data/timeline';
 import { defaultLocale, localizeMonth, localizeString, type Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
 
@@ -10,6 +15,110 @@ interface Props {
 
 const { lang = defaultLocale } = Astro.props;
 const t = useTranslations(lang);
+const dateLocale: Record<Locale, string> = {
+  en: 'en-US',
+  zh: 'zh-CN',
+  ja: 'ja-JP',
+};
+
+const weightLabels: Record<TimelineEventWeight, { en: string; zh: string; ja: string }> = {
+  major: { en: 'Major', zh: '重要', ja: '重要' },
+  standard: { en: 'Signal', zh: '记录', ja: '記録' },
+  note: { en: 'Note', zh: '日常', ja: 'メモ' },
+};
+
+const categoryLabels: Record<TimelineEventCategory, { en: string; zh: string; ja: string }> = {
+  research: { en: 'Research', zh: '研究', ja: '研究' },
+  career: { en: 'Career', zh: '职业', ja: 'キャリア' },
+  education: { en: 'Education', zh: '教育', ja: '教育' },
+  life: { en: 'Life', zh: '生活', ja: '生活' },
+  travel: { en: 'Travel', zh: '旅行', ja: '旅' },
+  project: { en: 'Project', zh: '项目', ja: 'プロジェクト' },
+  award: { en: 'Award', zh: '奖项', ja: '受賞' },
+};
+
+const weightRank: Record<TimelineEventWeight, number> = {
+  major: 0,
+  standard: 1,
+  note: 2,
+};
+
+type TimelineMonthGroup = {
+  key: string;
+  label: string;
+  events: TimelineEvent[];
+};
+
+function getEventWeight(event: TimelineEvent): TimelineEventWeight {
+  return event.weight ?? 'standard';
+}
+
+function getEventCategory(event: TimelineEvent): TimelineEventCategory {
+  return event.category ?? 'life';
+}
+
+function getMonthGroups(events: TimelineEvent[]): TimelineMonthGroup[] {
+  return events.reduce<TimelineMonthGroup[]>((groups, event) => {
+    const key = localizeString(event.month, 'en');
+    const previousGroup = groups[groups.length - 1];
+
+    if (previousGroup?.key === key) {
+      previousGroup.events.push(event);
+      return groups;
+    }
+
+    groups.push({
+      key,
+      label: localizeMonth(event.month, lang),
+      events: [event],
+    });
+
+    return groups;
+  }, []);
+}
+
+function getDominantWeight(events: TimelineEvent[]): TimelineEventWeight {
+  if (events.some((event) => getEventWeight(event) === 'major')) return 'major';
+  if (events.some((event) => getEventWeight(event) === 'standard')) return 'standard';
+  return 'note';
+}
+
+function getMonthSummary(events: TimelineEvent[]): string {
+  const summaryParts = (['major', 'standard', 'note'] as TimelineEventWeight[])
+    .map((weight) => {
+      const count = events.filter((event) => getEventWeight(event) === weight).length;
+      return count > 0 ? `${count} ${localizeString(weightLabels[weight], lang)}` : '';
+    })
+    .filter(Boolean);
+
+  return summaryParts.join(' / ');
+}
+
+function getSortedEvents(events: TimelineEvent[]): TimelineEvent[] {
+  return [...events].sort((firstEvent, secondEvent) => {
+    const rankDifference = weightRank[getEventWeight(firstEvent)] - weightRank[getEventWeight(secondEvent)];
+    if (rankDifference !== 0) return rankDifference;
+
+    if (firstEvent.date && secondEvent.date) {
+      return secondEvent.date.localeCompare(firstEvent.date);
+    }
+
+    if (firstEvent.date) return -1;
+    if (secondEvent.date) return 1;
+
+    return 0;
+  });
+}
+
+function formatEventDate(event: TimelineEvent): string | undefined {
+  if (!event.date || event.datePrecision === 'month') return undefined;
+
+  return new Date(`${event.date}T00:00:00Z`).toLocaleDateString(dateLocale[lang], {
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'UTC',
+  });
+}
 ---
 
 <BaseLayout title={t.timeline.title} lang={lang}>
@@ -17,30 +126,74 @@ const t = useTranslations(lang);
     <header class="page-header">
       <h1>{t.timeline.title}</h1>
       <p class="subtitle">{t.timeline.subtitle}</p>
+      <div class="timeline-legend" aria-label="Timeline event levels">
+        <span class="legend-item legend-item--major">{localizeString(weightLabels.major, lang)}</span>
+        <span class="legend-item legend-item--standard">{localizeString(weightLabels.standard, lang)}</span>
+        <span class="legend-item legend-item--note">{localizeString(weightLabels.note, lang)}</span>
+      </div>
     </header>
-    
+
     <div class="timeline">
       {timelineData.map((yearData) => (
-        <div class="timeline-year">
+        <section class="timeline-year" aria-labelledby={`year-${yearData.year}`}>
           <div class="year-marker">
-            <span class="year-label">{yearData.year}</span>
+            <span class="year-signal" aria-hidden="true"></span>
+            <h2 id={`year-${yearData.year}`} class="year-label">{yearData.year}</h2>
           </div>
-          <div class="year-events">
-            {yearData.events.map((event) => (
-              <div class="timeline-event">
-                <div class="event-dot"></div>
-                <div class="event-content card">
-                  <span class="event-month">{localizeMonth(event.month, lang)}</span>
-                  <h3 class="event-title">{localizeString(event.title, lang)}</h3>
-                  <p class="event-desc">{localizeString(event.description, lang)}</p>
-                </div>
-              </div>
-            ))}
+
+          <div class="year-months">
+            {getMonthGroups(yearData.events).map((monthGroup) => {
+              const dominantWeight = getDominantWeight(monthGroup.events);
+
+              return (
+                <article class={`month-cluster month-cluster--${dominantWeight}`}>
+                  <div class="month-rail" aria-hidden="true">
+                    <span class="month-pin"></span>
+                  </div>
+
+                  <div class="month-shell">
+                    <header class="month-header">
+                      <div>
+                        <span class="month-label">{monthGroup.label}</span>
+                        <span class="month-summary">{getMonthSummary(monthGroup.events)}</span>
+                      </div>
+                    </header>
+
+                    <div class="month-events">
+                      {getSortedEvents(monthGroup.events).map((event) => {
+                        const weight = getEventWeight(event);
+                        const category = getEventCategory(event);
+                        const eventDate = formatEventDate(event);
+
+                        return (
+                          <section class={`timeline-event timeline-event--${weight} timeline-event--${category}`}>
+                            <div class="event-orbit" aria-hidden="true">
+                              <span class="event-dot"></span>
+                            </div>
+                            <div class="event-body">
+                              <div class="event-meta">
+                                {eventDate && (
+                                  <time class="event-date" datetime={event.date}>{eventDate}</time>
+                                )}
+                                <span class="event-category">{localizeString(categoryLabels[category], lang)}</span>
+                                <span class="event-weight">{localizeString(weightLabels[weight], lang)}</span>
+                              </div>
+                              <h3 class="event-title">{localizeString(event.title, lang)}</h3>
+                              <p class="event-desc">{localizeString(event.description, lang)}</p>
+                            </div>
+                          </section>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
           </div>
-        </div>
+        </section>
       ))}
     </div>
-    
+
     <div class="timeline-end">
       <div class="end-dot"></div>
       <span>{t.timeline.end}</span>
@@ -53,145 +206,339 @@ const t = useTranslations(lang);
     text-align: center;
     margin-bottom: var(--space-xl);
   }
-  
+
   .subtitle {
     color: var(--color-text-secondary);
     font-style: italic;
     margin-top: var(--space-sm);
   }
-  
-  .timeline {
-    max-width: 800px;
-    margin: 0 auto;
-    position: relative;
-  }
-  
-  .timeline-year {
-    margin-bottom: var(--space-xl);
-    position: relative;
-    padding-left: 20px;
-  }
-  
-  /* 竖线 - 只在年份内部的事件区域，上粗下细 */
-  .year-events::before {
-    content: '';
-    position: absolute;
-    left: 8px;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: linear-gradient(
-      180deg,
-      var(--color-brass) 0%,
-      var(--color-brass-dark) 100%
-    );
-    clip-path: polygon(0 0, 100% 0, 75% 100%, 25% 100%);
-  }
-  
-  .year-marker {
+
+  .timeline-legend {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
+  }
+
+  .legend-item {
+    position: relative;
+    display: inline-flex;
     align-items: center;
-    gap: var(--space-md);
-    margin-bottom: var(--space-lg);
-    position: relative;
-  }
-  
-  /* 年份大圆点 */
-  .year-marker::before {
-    content: '';
-    width: 20px;
-    height: 20px;
-    background: var(--color-bg-primary);
-    border: 3px solid var(--color-brass);
-    border-radius: 50%;
-    box-shadow: 0 0 12px var(--color-brass-dark);
-    flex-shrink: 0;
-    z-index: 2;
-  }
-  
-  .year-label {
-    font-family: var(--font-display);
-    font-size: 2rem;
-    color: var(--color-brass);
-    letter-spacing: 0.1em;
-  }
-  
-  .year-marker::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, var(--color-brass-dark), transparent);
-  }
-  
-  .year-events {
-    padding-left: 40px;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
-    position: relative;
-    margin-left: 9px;
-  }
-  
-  .timeline-event {
-    position: relative;
-    display: flex;
-    align-items: flex-start;
-    gap: var(--space-md);
-  }
-  
-  /* 月份横杠 - 穿过竖线，左粗右细 */
-  .event-dot {
-    position: absolute;
-    left: -32px;
-    top: 1rem;
-    width: 18px;
-    height: 2px;
-    background: linear-gradient(
-      90deg,
-      var(--color-brass) 0%,
-      var(--color-brass-dark) 100%
-    );
-    clip-path: polygon(0 0, 100% 30%, 100% 70%, 0 100%);
-    z-index: 1;
-    transition: all 0.3s ease;
-  }
-  
-  .timeline-event:hover .event-dot {
-    background: linear-gradient(
-      90deg,
-      var(--color-brass-light) 0%,
-      var(--color-brass) 100%
-    );
-    box-shadow: 0 0 8px var(--color-brass);
-  }
-  
-  .event-content {
-    padding: var(--space-md) var(--space-lg);
-    flex: 1;
-  }
-  
-  .event-month {
-    font-family: var(--font-mono);
-    font-size: 0.85rem;
+    gap: 0.45rem;
     color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
   }
-  
-  .event-title {
-    font-size: 1.2rem;
-    font-family: var(--font-body);
-    font-weight: 600;
-    margin: var(--space-xs) 0 var(--space-sm);
+
+  .legend-item::before {
+    content: '';
+    display: block;
+    width: 0.55rem;
+    height: 0.55rem;
+    border: 1px solid var(--legend-color);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--legend-color) 28%, transparent);
+    box-shadow: 0 0 12px color-mix(in srgb, var(--legend-color) 35%, transparent);
+  }
+
+  .legend-item--major {
+    --legend-color: var(--color-accent-gold);
+  }
+
+  .legend-item--standard {
+    --legend-color: #8db7ff;
+  }
+
+  .legend-item--note {
+    --legend-color: rgba(255, 255, 255, 0.46);
+  }
+
+  .timeline {
+    max-width: 980px;
+    margin: 0 auto;
+  }
+
+  .timeline-year {
+    display: grid;
+    grid-template-columns: 8rem minmax(0, 1fr);
+    gap: var(--space-lg);
+    position: relative;
+    margin-bottom: var(--space-xl);
+  }
+
+  .year-marker {
+    position: sticky;
+    top: 6rem;
+    align-self: start;
+    display: grid;
+    justify-items: end;
+    gap: var(--space-xs);
+    padding-top: 0.15rem;
+  }
+
+  .year-signal {
+    width: 1.4rem;
+    height: 1.4rem;
+    border: 2px solid var(--color-brass);
+    border-radius: 999px;
+    background:
+      radial-gradient(circle, var(--color-accent-gold) 0 18%, transparent 19%),
+      rgba(13, 13, 18, 0.86);
+    box-shadow: 0 0 18px rgba(201, 162, 39, 0.32);
+  }
+
+  .year-label {
+    margin: 0;
+    color: var(--color-brass);
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 3vw, 2.45rem);
+    letter-spacing: 0.12em;
+    line-height: 1;
+  }
+
+  .year-months {
+    display: grid;
+    gap: var(--space-md);
+    min-width: 0;
+  }
+
+  .month-cluster {
+    --month-accent: rgba(141, 183, 255, 0.74);
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+    position: relative;
+  }
+
+  .month-cluster--major {
+    --month-accent: var(--color-accent-gold);
+  }
+
+  .month-cluster--note {
+    --month-accent: rgba(255, 255, 255, 0.5);
+  }
+
+  .month-rail {
+    position: relative;
+    display: flex;
+    justify-content: center;
+  }
+
+  .month-rail::before {
+    content: '';
+    position: absolute;
+    top: 1.1rem;
+    bottom: -1.2rem;
+    width: 1px;
+    background: linear-gradient(180deg, var(--month-accent), rgba(255, 255, 255, 0.05));
+  }
+
+  .month-pin {
+    position: relative;
+    z-index: 1;
+    width: 0.72rem;
+    height: 0.72rem;
+    margin-top: 0.82rem;
+    border: 1px solid var(--month-accent);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--month-accent) 30%, var(--color-bg-primary));
+    box-shadow: 0 0 14px color-mix(in srgb, var(--month-accent) 34%, transparent);
+  }
+
+  .month-shell {
+    min-width: 0;
+    padding: var(--space-md) var(--space-lg);
+    border: 1px solid color-mix(in srgb, var(--month-accent) 22%, var(--color-border));
+    border-radius: 8px;
+    background:
+      linear-gradient(135deg, color-mix(in srgb, var(--month-accent) 10%, transparent), transparent 44%),
+      rgba(13, 13, 18, 0.66);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.18);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .month-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-md);
+    padding-bottom: var(--space-sm);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .month-label {
+    display: block;
+    color: var(--month-accent);
+    font-family: var(--font-display);
+    font-size: 1.28rem;
+    letter-spacing: 0.06em;
+  }
+
+  .month-summary {
+    display: block;
+    margin-top: 0.18rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+  }
+
+  .month-events {
+    display: grid;
+    gap: 0;
+  }
+
+  .timeline-event {
+    --event-accent: rgba(255, 255, 255, 0.42);
+    display: grid;
+    grid-template-columns: 1.2rem minmax(0, 1fr);
+    gap: var(--space-sm);
+    padding: var(--space-md) 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.055);
+  }
+
+  .timeline-event:first-child {
+    border-top: 0;
+  }
+
+  .timeline-event--major {
+    padding: var(--space-md) 0 var(--space-lg);
+  }
+
+  .timeline-event--major .event-title {
     color: var(--color-text-primary);
+    font-size: clamp(1.2rem, 2vw, 1.42rem);
   }
-  
-  .event-desc {
-    color: var(--color-text-secondary);
+
+  .timeline-event--major .event-body {
+    border-left: 2px solid color-mix(in srgb, var(--event-accent) 80%, var(--color-accent-gold));
+    padding-left: var(--space-md);
+  }
+
+  .timeline-event--note {
+    padding-block: var(--space-sm);
+  }
+
+  .timeline-event--note .event-title {
     font-size: 1rem;
-    line-height: 1.7;
   }
-  
+
+  .timeline-event--note .event-desc {
+    font-size: 0.9rem;
+  }
+
+  .timeline-event--research {
+    --event-accent: #8db7ff;
+  }
+
+  .timeline-event--career {
+    --event-accent: var(--color-accent-gold);
+  }
+
+  .timeline-event--education {
+    --event-accent: #a7d78a;
+  }
+
+  .timeline-event--life {
+    --event-accent: #d6b5ff;
+  }
+
+  .timeline-event--travel {
+    --event-accent: #7dd7cf;
+  }
+
+  .timeline-event--project {
+    --event-accent: #ffb782;
+  }
+
+  .timeline-event--award {
+    --event-accent: #f3d46b;
+  }
+
+  .event-orbit {
+    display: flex;
+    justify-content: center;
+    padding-top: 0.36rem;
+  }
+
+  .event-dot {
+    width: 0.54rem;
+    height: 0.54rem;
+    border: 1px solid var(--event-accent);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--event-accent) 28%, transparent);
+    box-shadow: 0 0 12px color-mix(in srgb, var(--event-accent) 35%, transparent);
+  }
+
+  .timeline-event--major .event-dot {
+    width: 0.72rem;
+    height: 0.72rem;
+    background: color-mix(in srgb, var(--event-accent) 44%, transparent);
+    box-shadow: 0 0 18px color-mix(in srgb, var(--event-accent) 54%, transparent);
+  }
+
+  .timeline-event--note .event-dot {
+    width: 0.42rem;
+    height: 0.42rem;
+    opacity: 0.72;
+  }
+
+  .event-body {
+    min-width: 0;
+  }
+
+  .event-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+    margin-bottom: 0.36rem;
+  }
+
+  .event-category,
+  .event-weight,
+  .event-date {
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .event-category {
+    color: var(--event-accent);
+  }
+
+  .event-weight {
+    opacity: 0.74;
+  }
+
+  .event-date {
+    padding: 0.1rem 0.38rem;
+    border: 1px solid color-mix(in srgb, var(--event-accent) 38%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--event-accent) 10%, transparent);
+  }
+
+  .event-title {
+    margin: 0 0 0.42rem;
+    color: var(--color-text-primary);
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    font-weight: 650;
+    line-height: 1.35;
+  }
+
+  .event-desc {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: 0.96rem;
+    line-height: 1.65;
+  }
+
   .timeline-end {
     text-align: center;
     padding: var(--space-xl) 0;
@@ -199,7 +546,7 @@ const t = useTranslations(lang);
     font-style: italic;
     position: relative;
   }
-  
+
   .end-dot {
     width: 12px;
     height: 12px;
@@ -209,7 +556,7 @@ const t = useTranslations(lang);
     margin: 0 auto var(--space-md);
     animation: pulse 2s ease-in-out infinite;
   }
-  
+
   @keyframes pulse {
     0%, 100% {
       box-shadow: 0 0 5px var(--color-brass-dark);
@@ -218,40 +565,59 @@ const t = useTranslations(lang);
       box-shadow: 0 0 15px var(--color-brass);
     }
   }
-  
+
   @media (max-width: 768px) {
+    .page-header {
+      margin-bottom: var(--space-lg);
+    }
+
+    .timeline {
+      max-width: none;
+    }
+
     .timeline-year {
-      padding-left: 15px;
+      grid-template-columns: 1fr;
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
     }
-    
-    .year-events::before {
-      left: 6px;
-      width: 2px;
+
+    .year-marker {
+      position: relative;
+      top: auto;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: var(--space-sm);
     }
-    
-    .year-marker::before {
-      width: 16px;
-      height: 16px;
-      border-width: 2px;
-    }
-    
-    .year-events {
-      padding-left: 30px;
-      margin-left: 7px;
-    }
-    
-    .event-dot {
-      left: -24px;
-      width: 12px;
-      height: 2px;
-    }
-    
+
     .year-label {
-      font-size: 1.5rem;
+      font-size: 1.7rem;
     }
-    
-    .event-content {
+
+    .month-cluster {
+      grid-template-columns: 1.6rem minmax(0, 1fr);
+    }
+
+    .month-shell {
       padding: var(--space-md);
+    }
+
+    .month-label {
+      font-size: 1.08rem;
+    }
+
+    .timeline-event {
+      grid-template-columns: 0.9rem minmax(0, 1fr);
+      gap: var(--space-xs);
+    }
+
+    .timeline-event--major .event-body {
+      padding-left: var(--space-sm);
+    }
+
+    .event-desc {
+      font-size: 0.92rem;
+      line-height: 1.6;
     }
   }
 </style>
