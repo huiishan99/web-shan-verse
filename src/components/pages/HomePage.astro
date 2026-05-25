@@ -73,7 +73,7 @@ type ActivitySignal = {
   dateSource: 'blog date' | 'timeline date' | 'timeline month';
   href: string;
   title: string;
-  type: 'post' | 'milestone';
+  type: 'activity' | 'milestone';
 };
 
 const postSignals: ActivitySignal[] = allPosts.map((post) => ({
@@ -83,7 +83,7 @@ const postSignals: ActivitySignal[] = allPosts.map((post) => ({
   dateSource: 'blog date',
   href: getBlogPostPath(post, lang),
   title: post.data.title,
-  type: 'post',
+  type: 'activity',
 }));
 
 const timelineSignals: ActivitySignal[] = timelineData.flatMap((yearData) =>
@@ -106,7 +106,7 @@ const timelineSignals: ActivitySignal[] = timelineData.flatMap((yearData) =>
       dateSource: preciseEventDate ? 'timeline date' as const : 'timeline month' as const,
       href: localizePath('/timeline', lang),
       title: localizeString(event.title, lang),
-      type: 'milestone' as const,
+      type: event.weight === 'major' ? 'milestone' as const : 'activity' as const,
     };
   })
 );
@@ -260,9 +260,9 @@ const compactTotalSignals = compactVisibleSignals.length;
 const activityLabel = `${t.home.signalMap} ${activityRangeLabel}: ${totalSignals} ${t.home.totalSignals}, ${activeDays} ${t.home.activeDays}. ${t.home.activitySource}`;
 const compactActivityLabel = `${t.home.signalMap} ${compactActivityRangeLabel}: ${compactTotalSignals} ${t.home.totalSignals}, ${compactActiveDays} ${t.home.activeDays}. ${t.home.activitySource}`;
 const recentSignals = visibleSignals.slice(0, 6);
-const postSignalCount = visibleSignals.filter((signal) => signal.type === 'post').length;
+const activitySignalCount = visibleSignals.filter((signal) => signal.type === 'activity').length;
 const milestoneSignalCount = visibleSignals.filter((signal) => signal.type === 'milestone').length;
-const compactPostSignalCount = compactVisibleSignals.filter((signal) => signal.type === 'post').length;
+const compactActivitySignalCount = compactVisibleSignals.filter((signal) => signal.type === 'activity').length;
 const compactMilestoneSignalCount = compactVisibleSignals.filter((signal) => signal.type === 'milestone').length;
 const githubUsername = 'huiishan99';
 const githubProfileUrl = `https://github.com/${githubUsername}`;
@@ -378,12 +378,12 @@ function getExcerpt(body: string, maxLength: number = 100): string {
           </p>
         </div>
         <div class="activity-stats activity-stats--full">
-          <span>{postSignalCount} {t.home.posts}</span>
+          <span>{activitySignalCount} {t.home.activities}</span>
           <span>{milestoneSignalCount} {t.home.milestones}</span>
           <span>{activeDays} {t.home.activeDays}</span>
         </div>
         <div class="activity-stats activity-stats--compact">
-          <span>{compactPostSignalCount} {t.home.posts}</span>
+          <span>{compactActivitySignalCount} {t.home.activities}</span>
           <span>{compactMilestoneSignalCount} {t.home.milestones}</span>
           <span>{compactActiveDays} {t.home.activeDays}</span>
         </div>
@@ -422,8 +422,8 @@ function getExcerpt(body: string, maxLength: number = 100): string {
                         const signalTypes = new Set(day.signals.map((signal) => signal.type));
                         const typeClass = signalTypes.size > 1
                           ? 'mixed'
-                          : signalTypes.has('post')
-                            ? 'post'
+                          : signalTypes.has('activity')
+                            ? 'activity'
                             : signalTypes.has('milestone')
                               ? 'milestone'
                               : 'quiet';
@@ -477,8 +477,8 @@ function getExcerpt(body: string, maxLength: number = 100): string {
                         const signalTypes = new Set(day.signals.map((signal) => signal.type));
                         const typeClass = signalTypes.size > 1
                           ? 'mixed'
-                          : signalTypes.has('post')
-                            ? 'post'
+                          : signalTypes.has('activity')
+                            ? 'activity'
                             : signalTypes.has('milestone')
                               ? 'milestone'
                               : 'quiet';
@@ -502,7 +502,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
           </div>
 
           <div class="activity-legend" aria-label={t.home.activityLegend}>
-            <span><i class="activity-dot activity-dot--1 activity-dot--post"></i> {t.home.signalTypePost}</span>
+            <span><i class="activity-dot activity-dot--1 activity-dot--activity"></i> {t.home.signalTypeActivity}</span>
             <span><i class="activity-dot activity-dot--1 activity-dot--milestone"></i> {t.home.signalTypeMilestone}</span>
             <span><i class="activity-dot activity-dot--2 activity-dot--mixed"></i> {t.home.signalTypeMixed}</span>
           </div>
@@ -559,7 +559,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
               <li>
                 <a href={signal.href}>
                   <span class={`activity-type activity-type--${signal.type}`}>
-                    {signal.type === 'post' ? t.home.signalTypePost : t.home.signalTypeMilestone}
+                    {signal.type === 'milestone' ? t.home.signalTypeMilestone : t.home.signalTypeActivity}
                   </span>
                   <span class="activity-log-main">
                     <time datetime={signal.datetime}>{signal.displayDate}</time>
@@ -1564,7 +1564,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
       transform 0.2s ease;
   }
 
-  .activity-dot--post {
+  .activity-dot--activity {
     background: rgba(106, 171, 255, 0.72);
     border-color: rgba(160, 200, 255, 0.34);
     box-shadow: 0 0 8px rgba(106, 171, 255, 0.2);
@@ -1833,7 +1833,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     text-transform: uppercase;
   }
 
-  .activity-type--post {
+  .activity-type--activity {
     color: var(--color-link-hover);
   }
 
