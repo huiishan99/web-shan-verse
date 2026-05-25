@@ -257,8 +257,8 @@ const activeDays = getActiveDayCount(visibleSignals);
 const compactActiveDays = getActiveDayCount(compactVisibleSignals);
 const totalSignals = visibleSignals.length;
 const compactTotalSignals = compactVisibleSignals.length;
-const activityLabel = `${t.home.signalMap} ${activityRangeLabel}: ${totalSignals} ${t.home.totalSignals}, ${activeDays} ${t.home.activeDays}. ${t.home.activitySource}`;
-const compactActivityLabel = `${t.home.signalMap} ${compactActivityRangeLabel}: ${compactTotalSignals} ${t.home.totalSignals}, ${compactActiveDays} ${t.home.activeDays}. ${t.home.activitySource}`;
+const activityLabel = `${t.home.signalMap} ${activityRangeLabel}: ${totalSignals} ${t.home.totalSignals}, ${activeDays} ${t.home.activeDays}.`;
+const compactActivityLabel = `${t.home.signalMap} ${compactActivityRangeLabel}: ${compactTotalSignals} ${t.home.totalSignals}, ${compactActiveDays} ${t.home.activeDays}.`;
 const recentSignals = visibleSignals.slice(0, 6);
 const blogSignalCount = visibleSignals.filter((signal) => signal.type === 'blog').length;
 const activitySignalCount = visibleSignals.filter((signal) => signal.type === 'activity').length;
@@ -515,7 +515,6 @@ function getExcerpt(body: string, maxLength: number = 100): string {
             <span><i class="activity-dot activity-dot--1 activity-dot--milestone"></i> {t.home.signalTypeMilestone}</span>
             <span><i class="activity-dot activity-dot--2 activity-dot--mixed"></i> {t.home.signalTypeMixed}</span>
           </div>
-          <p class="activity-source">{t.home.activitySource}</p>
 
           <div class="github-activity" aria-label={t.home.githubContributions} data-github-activity>
             <div class="github-activity-header">
@@ -557,7 +556,6 @@ function getExcerpt(body: string, maxLength: number = 100): string {
                 referrerpolicy="no-referrer"
               />
             </a>
-            <p class="github-activity-note">{t.home.githubNote}</p>
           </div>
         </div>
 
@@ -1629,13 +1627,6 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     gap: 6px;
   }
 
-  .activity-source {
-    margin: 0.55rem 0 0;
-    color: var(--color-text-muted);
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-  }
-
   .github-activity {
     margin-top: var(--space-md);
     padding-top: var(--space-md);
@@ -1801,13 +1792,6 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     opacity: 0.9;
     border-radius: 4px;
     filter: sepia(0.48) saturate(0.9) brightness(0.58) contrast(1.25);
-  }
-
-  .github-activity-note {
-    margin: 0.35rem 0 0;
-    color: var(--color-text-muted);
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
   }
 
   .activity-log {
