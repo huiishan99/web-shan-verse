@@ -12,18 +12,22 @@ interface Props {
 const { lang = defaultLocale } = Astro.props;
 const t = useTranslations(lang);
 
-function isWikiInterestItem(item: InterestItem): item is Extract<InterestItem, { wikiPage: string }> {
-  return typeof item === 'object' && item !== null && 'wikiPage' in item;
+type InterestObject = Exclude<InterestItem, string>;
+
+function isObjectInterestItem(item: InterestItem): item is InterestObject {
+  return typeof item === 'object' && item !== null;
 }
 
-function isAudioInterestItem(item: InterestItem): item is Extract<InterestItem, { audioSrc: string }> {
-  return typeof item === 'object' && item !== null && 'audioSrc' in item;
+function isWikiInterestItem(item: InterestItem): item is InterestObject & { wikiPage: string } {
+  return typeof item === 'object' && item !== null && typeof item.wikiPage === 'string';
+}
+
+function isAudioInterestItem(item: InterestItem): item is InterestObject & { audioSrc: string } {
+  return typeof item === 'object' && item !== null && typeof item.audioSrc === 'string';
 }
 
 function getInterestTitle(item: InterestItem) {
-  return isWikiInterestItem(item) || isAudioInterestItem(item)
-    ? localizeString(item.title, lang)
-    : localizeString(item, lang);
+  return isObjectInterestItem(item) ? localizeString(item.title, lang) : localizeString(item, lang);
 }
 
 function getWikipediaUrl(page: string) {
@@ -179,15 +183,28 @@ function getWikipediaUrl(page: string) {
                     return isAudioInterestItem(item) ? (
                       <button
                         type="button"
-                        class="interest-tag interest-tag--audio"
+                        class="interest-tag interest-tag--work interest-tag--audio"
                         data-interest-audio
                         data-audio-src={item.audioSrc}
                         data-audio-title={title}
+                        data-wiki-preview={isWikiInterestItem(item) ? true : undefined}
+                        data-wiki-page={isWikiInterestItem(item) ? item.wikiPage : undefined}
                         aria-label={`Play ${title}`}
                         aria-pressed="false"
                       >
                         <span>{title}</span>
-                        <Icon name="music" size={13} />
+                        {isWikiInterestItem(item) && (
+                          <span class="interest-preview" aria-hidden="true">
+                            <span class="interest-preview-media" data-wiki-media>
+                              <span class="interest-preview-placeholder">♪</span>
+                            </span>
+                            <span class="interest-preview-body">
+                              <span class="interest-preview-kicker">Album</span>
+                              <strong data-wiki-title>{title}</strong>
+                              <span data-wiki-extract>Hover to load a cover preview.</span>
+                            </span>
+                          </span>
+                        )}
                       </button>
                     ) : isWikiInterestItem(item) ? (
                       <a
@@ -643,7 +660,11 @@ function getWikipediaUrl(page: string) {
   }
 
   button.interest-tag {
-    font: inherit;
+    appearance: none;
+    -webkit-appearance: none;
+    font-family: inherit;
+    font-size: 0.9rem;
+    line-height: inherit;
     cursor: pointer;
   }
   
@@ -657,22 +678,10 @@ function getWikipediaUrl(page: string) {
     cursor: pointer;
   }
 
-  .interest-tag--audio {
-    gap: 0.36rem;
-  }
-
-  .interest-tag--audio :global(.icon) {
-    width: 0.82rem;
-    height: 0.82rem;
-    color: currentColor;
-    opacity: 0.72;
-  }
-
   .interest-tag--audio.is-playing {
-    color: var(--color-bg-primary);
     border-color: var(--color-brass);
-    background: var(--color-brass);
-    box-shadow: 0 0 16px rgba(201, 162, 39, 0.18);
+    color: var(--color-brass-light);
+    background: rgba(201, 162, 39, 0.08);
   }
 
   .interest-tag--audio.is-loading {
