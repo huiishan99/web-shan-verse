@@ -14,8 +14,8 @@ const t = useTranslations(lang);
 
 type InterestObject = Exclude<InterestItem, string>;
 
-function isObjectInterestItem(item: InterestItem): item is InterestObject {
-  return typeof item === 'object' && item !== null;
+function hasInterestTitle(item: InterestItem): item is InterestObject & { title: NonNullable<InterestObject['title']> } {
+  return typeof item === 'object' && item !== null && 'title' in item;
 }
 
 function isWikiInterestItem(item: InterestItem): item is InterestObject & { wikiPage: string } {
@@ -27,7 +27,7 @@ function isAudioInterestItem(item: InterestItem): item is InterestObject & { aud
 }
 
 function getInterestTitle(item: InterestItem) {
-  return isObjectInterestItem(item) ? localizeString(item.title, lang) : localizeString(item, lang);
+  return hasInterestTitle(item) ? localizeString(item.title, lang) : localizeString(item, lang);
 }
 
 function getWikipediaUrl(page: string) {
