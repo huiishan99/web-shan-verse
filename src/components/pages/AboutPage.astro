@@ -16,8 +16,14 @@ function isWikiInterestItem(item: InterestItem): item is Extract<InterestItem, {
   return typeof item === 'object' && item !== null && 'wikiPage' in item;
 }
 
+function isAudioInterestItem(item: InterestItem): item is Extract<InterestItem, { audioSrc: string }> {
+  return typeof item === 'object' && item !== null && 'audioSrc' in item;
+}
+
 function getInterestTitle(item: InterestItem) {
-  return isWikiInterestItem(item) ? localizeString(item.title, lang) : localizeString(item, lang);
+  return isWikiInterestItem(item) || isAudioInterestItem(item)
+    ? localizeString(item.title, lang)
+    : localizeString(item, lang);
 }
 
 function getWikipediaUrl(page: string) {
@@ -170,7 +176,20 @@ function getWikipediaUrl(page: string) {
                   {category.items.map((item) => {
                     const title = getInterestTitle(item);
 
-                    return isWikiInterestItem(item) ? (
+                    return isAudioInterestItem(item) ? (
+                      <button
+                        type="button"
+                        class="interest-tag interest-tag--audio"
+                        data-interest-audio
+                        data-audio-src={item.audioSrc}
+                        data-audio-title={title}
+                        aria-label={`Play ${title}`}
+                        aria-pressed="false"
+                      >
+                        <span>{title}</span>
+                        <Icon name="music" size={13} />
+                      </button>
+                    ) : isWikiInterestItem(item) ? (
                       <a
                         class="interest-tag interest-tag--work"
                         href={getWikipediaUrl(item.wikiPage)}
@@ -200,6 +219,7 @@ function getWikipediaUrl(page: string) {
               </div>
             ))}
           </div>
+          <audio class="interest-audio-player" preload="metadata" data-interest-audio-player></audio>
         </div>
       </section>
       
@@ -303,6 +323,112 @@ function getWikipediaUrl(page: string) {
       const link = findPreviewLink(event.target);
       if (link) loadPreview(link);
     });
+  })();
+</script>
+
+<script is:inline>
+  (() => {
+    if (window.__shanInterestAudioReady) return;
+    window.__shanInterestAudioReady = true;
+
+    let activeButton = null;
+
+    function getAudioPlayer() {
+      const audio = document.querySelector('[data-interest-audio-player]');
+      return audio instanceof HTMLAudioElement ? audio : null;
+    }
+
+    function setButtonState(button, state) {
+      if (!(button instanceof HTMLButtonElement)) return;
+
+      const title = button.dataset.audioTitle || button.textContent?.trim() || 'music';
+      const isPlaying = state === 'playing';
+      const isLoading = state === 'loading';
+      const isFailed = state === 'failed';
+
+      button.classList.toggle('is-playing', isPlaying);
+      button.classList.toggle('is-loading', isLoading);
+      button.classList.toggle('has-error', isFailed);
+      button.setAttribute('aria-pressed', String(isPlaying));
+      button.setAttribute('aria-label', isPlaying ? `Pause ${title}` : `Play ${title}`);
+    }
+
+    function resetActiveButton() {
+      if (activeButton instanceof HTMLButtonElement) {
+        setButtonState(activeButton, 'idle');
+      }
+      activeButton = null;
+    }
+
+    function pauseSiteMusic() {
+      const siteMusic = document.querySelector('[data-music-audio]');
+      if (siteMusic instanceof HTMLAudioElement && !siteMusic.paused) {
+        siteMusic.pause();
+      }
+    }
+
+    function bindAudioPlayer(audio) {
+      if (!audio || audio.dataset.interestAudioReady === 'true') return;
+      audio.dataset.interestAudioReady = 'true';
+      audio.addEventListener('ended', resetActiveButton);
+      audio.addEventListener('pause', resetActiveButton);
+    }
+
+    document.addEventListener('click', async (event) => {
+      const button = event.target instanceof Element
+        ? event.target.closest('[data-interest-audio]')
+        : null;
+      if (!(button instanceof HTMLButtonElement)) return;
+
+      const audio = getAudioPlayer();
+      const src = button.dataset.audioSrc;
+      if (!audio || !src) return;
+
+      bindAudioPlayer(audio);
+
+      if (activeButton === button && !audio.paused) {
+        audio.pause();
+        return;
+      }
+
+      audio.pause();
+      resetActiveButton();
+      pauseSiteMusic();
+
+      const nextSrc = new URL(src, window.location.href).href;
+      if (audio.currentSrc !== nextSrc) {
+        audio.src = src;
+      } else {
+        audio.currentTime = 0;
+      }
+
+      activeButton = button;
+      setButtonState(button, 'loading');
+
+      try {
+        await audio.play();
+        setButtonState(button, 'playing');
+      } catch {
+        setButtonState(button, 'failed');
+        window.setTimeout(() => {
+          setButtonState(button, 'idle');
+          if (activeButton === button) activeButton = null;
+        }, 900);
+      }
+    });
+
+    document.addEventListener('play', (event) => {
+      if (!(event.target instanceof HTMLAudioElement)) return;
+      if (!event.target.matches('[data-music-audio]')) return;
+
+      const audio = getAudioPlayer();
+      if (audio && !audio.paused) {
+        audio.pause();
+      }
+    }, true);
+
+    bindAudioPlayer(getAudioPlayer());
+    document.addEventListener('astro:page-load', () => bindAudioPlayer(getAudioPlayer()));
   })();
 </script>
 
@@ -515,6 +641,11 @@ function getWikipediaUrl(page: string) {
   a.interest-tag {
     text-decoration: none;
   }
+
+  button.interest-tag {
+    font: inherit;
+    cursor: pointer;
+  }
   
   .interest-tag:hover,
   .interest-tag:focus-visible {
@@ -524,6 +655,38 @@ function getWikipediaUrl(page: string) {
 
   .interest-tag--work {
     cursor: pointer;
+  }
+
+  .interest-tag--audio {
+    gap: 0.36rem;
+  }
+
+  .interest-tag--audio :global(.icon) {
+    width: 0.82rem;
+    height: 0.82rem;
+    color: currentColor;
+    opacity: 0.72;
+  }
+
+  .interest-tag--audio.is-playing {
+    color: var(--color-bg-primary);
+    border-color: var(--color-brass);
+    background: var(--color-brass);
+    box-shadow: 0 0 16px rgba(201, 162, 39, 0.18);
+  }
+
+  .interest-tag--audio.is-loading {
+    border-color: rgba(201, 162, 39, 0.45);
+    color: var(--color-brass-light);
+  }
+
+  .interest-tag--audio.has-error {
+    border-color: rgba(208, 139, 115, 0.58);
+    color: #d08b73;
+  }
+
+  .interest-audio-player {
+    display: none;
   }
 
   .interest-preview {
