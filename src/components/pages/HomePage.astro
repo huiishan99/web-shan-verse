@@ -73,7 +73,7 @@ type ActivitySignal = {
   dateSource: 'blog date' | 'timeline date' | 'timeline month';
   href: string;
   title: string;
-  type: 'activity' | 'milestone';
+  type: 'blog' | 'activity' | 'milestone';
 };
 
 const postSignals: ActivitySignal[] = allPosts.map((post) => ({
@@ -83,7 +83,7 @@ const postSignals: ActivitySignal[] = allPosts.map((post) => ({
   dateSource: 'blog date',
   href: getBlogPostPath(post, lang),
   title: post.data.title,
-  type: 'activity',
+  type: 'blog',
 }));
 
 const timelineSignals: ActivitySignal[] = timelineData.flatMap((yearData) =>
@@ -260,8 +260,10 @@ const compactTotalSignals = compactVisibleSignals.length;
 const activityLabel = `${t.home.signalMap} ${activityRangeLabel}: ${totalSignals} ${t.home.totalSignals}, ${activeDays} ${t.home.activeDays}. ${t.home.activitySource}`;
 const compactActivityLabel = `${t.home.signalMap} ${compactActivityRangeLabel}: ${compactTotalSignals} ${t.home.totalSignals}, ${compactActiveDays} ${t.home.activeDays}. ${t.home.activitySource}`;
 const recentSignals = visibleSignals.slice(0, 6);
+const blogSignalCount = visibleSignals.filter((signal) => signal.type === 'blog').length;
 const activitySignalCount = visibleSignals.filter((signal) => signal.type === 'activity').length;
 const milestoneSignalCount = visibleSignals.filter((signal) => signal.type === 'milestone').length;
+const compactBlogSignalCount = compactVisibleSignals.filter((signal) => signal.type === 'blog').length;
 const compactActivitySignalCount = compactVisibleSignals.filter((signal) => signal.type === 'activity').length;
 const compactMilestoneSignalCount = compactVisibleSignals.filter((signal) => signal.type === 'milestone').length;
 const githubUsername = 'huiishan99';
@@ -378,11 +380,13 @@ function getExcerpt(body: string, maxLength: number = 100): string {
           </p>
         </div>
         <div class="activity-stats activity-stats--full">
+          <span>{blogSignalCount} {t.home.blogUpdates}</span>
           <span>{activitySignalCount} {t.home.activities}</span>
           <span>{milestoneSignalCount} {t.home.milestones}</span>
           <span>{activeDays} {t.home.activeDays}</span>
         </div>
         <div class="activity-stats activity-stats--compact">
+          <span>{compactBlogSignalCount} {t.home.blogUpdates}</span>
           <span>{compactActivitySignalCount} {t.home.activities}</span>
           <span>{compactMilestoneSignalCount} {t.home.milestones}</span>
           <span>{compactActiveDays} {t.home.activeDays}</span>
@@ -422,7 +426,9 @@ function getExcerpt(body: string, maxLength: number = 100): string {
                         const signalTypes = new Set(day.signals.map((signal) => signal.type));
                         const typeClass = signalTypes.size > 1
                           ? 'mixed'
-                          : signalTypes.has('activity')
+                          : signalTypes.has('blog')
+                            ? 'blog'
+                            : signalTypes.has('activity')
                             ? 'activity'
                             : signalTypes.has('milestone')
                               ? 'milestone'
@@ -477,7 +483,9 @@ function getExcerpt(body: string, maxLength: number = 100): string {
                         const signalTypes = new Set(day.signals.map((signal) => signal.type));
                         const typeClass = signalTypes.size > 1
                           ? 'mixed'
-                          : signalTypes.has('activity')
+                          : signalTypes.has('blog')
+                            ? 'blog'
+                            : signalTypes.has('activity')
                             ? 'activity'
                             : signalTypes.has('milestone')
                               ? 'milestone'
@@ -502,6 +510,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
           </div>
 
           <div class="activity-legend" aria-label={t.home.activityLegend}>
+            <span><i class="activity-dot activity-dot--1 activity-dot--blog"></i> {t.home.signalTypeBlog}</span>
             <span><i class="activity-dot activity-dot--1 activity-dot--activity"></i> {t.home.signalTypeActivity}</span>
             <span><i class="activity-dot activity-dot--1 activity-dot--milestone"></i> {t.home.signalTypeMilestone}</span>
             <span><i class="activity-dot activity-dot--2 activity-dot--mixed"></i> {t.home.signalTypeMixed}</span>
@@ -559,7 +568,11 @@ function getExcerpt(body: string, maxLength: number = 100): string {
               <li>
                 <a href={signal.href}>
                   <span class={`activity-type activity-type--${signal.type}`}>
-                    {signal.type === 'milestone' ? t.home.signalTypeMilestone : t.home.signalTypeActivity}
+                    {signal.type === 'milestone'
+                      ? t.home.signalTypeMilestone
+                      : signal.type === 'activity'
+                        ? t.home.signalTypeActivity
+                        : t.home.signalTypeBlog}
                   </span>
                   <span class="activity-log-main">
                     <time datetime={signal.datetime}>{signal.displayDate}</time>
@@ -1564,10 +1577,16 @@ function getExcerpt(body: string, maxLength: number = 100): string {
       transform 0.2s ease;
   }
 
-  .activity-dot--activity {
+  .activity-dot--blog {
     background: rgba(106, 171, 255, 0.72);
     border-color: rgba(160, 200, 255, 0.34);
     box-shadow: 0 0 8px rgba(106, 171, 255, 0.2);
+  }
+
+  .activity-dot--activity {
+    background: rgba(148, 196, 179, 0.68);
+    border-color: rgba(176, 220, 205, 0.3);
+    box-shadow: 0 0 8px rgba(148, 196, 179, 0.18);
   }
 
   .activity-dot--milestone {
@@ -1577,7 +1596,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
   }
 
   .activity-dot--mixed {
-    background: conic-gradient(from 90deg, rgba(106, 171, 255, 0.85), rgba(241, 213, 122, 0.95), rgba(106, 171, 255, 0.85));
+    background: conic-gradient(from 90deg, rgba(106, 171, 255, 0.85), rgba(148, 196, 179, 0.82), rgba(241, 213, 122, 0.95), rgba(106, 171, 255, 0.85));
     border-color: rgba(245, 245, 245, 0.22);
     box-shadow: 0 0 10px rgba(212, 168, 75, 0.4);
   }
@@ -1833,8 +1852,12 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     text-transform: uppercase;
   }
 
-  .activity-type--activity {
+  .activity-type--blog {
     color: var(--color-link-hover);
+  }
+
+  .activity-type--activity {
+    color: rgb(148, 196, 179);
   }
 
   .activity-type--milestone {
