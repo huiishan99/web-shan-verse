@@ -22,8 +22,12 @@ function isWikiInterestItem(item: InterestItem): item is InterestObject & { wiki
   return typeof item === 'object' && item !== null && typeof item.wikiPage === 'string';
 }
 
-function isAudioInterestItem(item: InterestItem): item is InterestObject & { audioSrc: string } {
-  return typeof item === 'object' && item !== null && typeof item.audioSrc === 'string';
+function isAudioInterestItem(item: InterestItem): item is InterestObject & ({ audioSrc: string } | { previewProvider: 'itunes' }) {
+  return (
+    typeof item === 'object' &&
+    item !== null &&
+    (typeof item.audioSrc === 'string' || item.previewProvider === 'itunes')
+  );
 }
 
 function getInterestTitle(item: InterestItem) {
@@ -32,6 +36,18 @@ function getInterestTitle(item: InterestItem) {
 
 function getWikipediaUrl(page: string) {
   return `https://en.wikipedia.org/wiki/${encodeURIComponent(page).replace(/%20/g, '_')}`;
+}
+
+function getItunesSearchUrl(term: string, country = 'JP') {
+  const params = new URLSearchParams({
+    term,
+    country,
+    media: 'music',
+    entity: 'song',
+    limit: '1',
+  });
+
+  return `https://itunes.apple.com/search?${params.toString()}`;
 }
 ---
 
@@ -179,33 +195,46 @@ function getWikipediaUrl(page: string) {
                 <div class="interest-items">
                   {category.items.map((item) => {
                     const title = getInterestTitle(item);
+                    const artist = hasInterestTitle(item) && item.artist ? localizeString(item.artist, lang) : '';
+                    const itunesTerm = hasInterestTitle(item) && item.itunesTerm
+                      ? localizeString(item.itunesTerm, lang)
+                      : [title, artist].filter(Boolean).join(' ');
+                    const itunesCountry = hasInterestTitle(item) ? item.itunesCountry ?? 'JP' : 'JP';
 
                     return isAudioInterestItem(item) ? (
-                      <button
-                        type="button"
+                      <a
+                        href={getItunesSearchUrl(itunesTerm, itunesCountry)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        role="button"
                         class="interest-tag interest-tag--work interest-tag--audio"
                         data-interest-audio
                         data-audio-src={item.audioSrc}
                         data-audio-title={title}
-                        data-wiki-preview={isWikiInterestItem(item) ? true : undefined}
+                        data-audio-artist={artist}
+                        data-itunes-preview={item.previewProvider === 'itunes' ? true : undefined}
+                        data-itunes-term={itunesTerm}
+                        data-itunes-country={itunesCountry}
                         data-wiki-page={isWikiInterestItem(item) ? item.wikiPage : undefined}
                         aria-label={`Play ${title}`}
                         aria-pressed="false"
                       >
                         <span>{title}</span>
-                        {isWikiInterestItem(item) && (
-                          <span class="interest-preview" aria-hidden="true">
-                            <span class="interest-preview-media" data-wiki-media>
+                        <span class="interest-preview interest-preview--album" aria-hidden="true">
+                          <span class="interest-preview-media interest-preview-media--album" data-wiki-media>
+                            {item.previewProvider === 'itunes' ? (
                               <span class="interest-preview-placeholder">♪</span>
-                            </span>
-                            <span class="interest-preview-body">
-                              <span class="interest-preview-kicker">Album</span>
-                              <strong data-wiki-title>{title}</strong>
-                              <span data-wiki-extract>Hover to load a cover preview.</span>
-                            </span>
+                            ) : (
+                              <span class="interest-preview-placeholder">A</span>
+                            )}
                           </span>
-                        )}
-                      </button>
+                          <span class="interest-preview-body">
+                            <span class="interest-preview-kicker" data-preview-kicker>{item.previewProvider === 'itunes' ? 'iTunes Preview' : 'Album'}</span>
+                            <strong data-wiki-title>{artist ? `${title} — ${artist}` : title}</strong>
+                            <span data-wiki-extract>Hover to load an album preview.</span>
+                          </span>
+                        </span>
+                      </a>
                     ) : isWikiInterestItem(item) ? (
                       <a
                         class="interest-tag interest-tag--work"
@@ -273,10 +302,12 @@ function getWikipediaUrl(page: string) {
     window.__shanInterestPreviewReady = true;
 
     const summaryCache = new Map();
+    const itunesCache = new Map();
     const API_ROOT = 'https://en.wikipedia.org/api/rest_v1/page/summary/';
+    const ITUNES_API_ROOT = 'https://itunes.apple.com/search';
 
     function findPreviewLink(target) {
-      return target instanceof Element ? target.closest('[data-wiki-preview]') : null;
+      return target instanceof Element ? target.closest('[data-wiki-preview], [data-itunes-preview]') : null;
     }
 
     function setExtract(link, text) {
@@ -287,6 +318,11 @@ function getWikipediaUrl(page: string) {
     function setTitle(link, text) {
       const title = link.querySelector('[data-wiki-title]');
       if (title) title.textContent = text;
+    }
+
+    function setKicker(link, text) {
+      const kicker = link.querySelector('[data-preview-kicker]');
+      if (kicker) kicker.textContent = text;
     }
 
     function setImage(link, source) {
@@ -302,8 +338,79 @@ function getWikipediaUrl(page: string) {
       media.dataset.ready = 'true';
     }
 
+    function getItunesSearchUrl(term, country) {
+      const params = new URLSearchParams({
+        term,
+        country,
+        media: 'music',
+        entity: 'song',
+        limit: '1',
+      });
+
+      return `${ITUNES_API_ROOT}?${params.toString()}`;
+    }
+
+    async function getItunesTrack(link) {
+      const term = link.dataset.itunesTerm || link.dataset.audioTitle || '';
+      const country = link.dataset.itunesCountry || 'JP';
+      if (!term) return null;
+
+      const cacheKey = `${country}:${term}`;
+      if (!itunesCache.has(cacheKey)) {
+        const response = await fetch(getItunesSearchUrl(term, country));
+        if (!response.ok) throw new Error(`iTunes returned ${response.status}`);
+
+        itunesCache.set(cacheKey, response.json().then((data) => {
+          const results = Array.isArray(data?.results) ? data.results : [];
+          return results.find((track) => track?.previewUrl) || results[0] || null;
+        }));
+      }
+
+      return itunesCache.get(cacheKey);
+    }
+
+    async function loadItunesPreview(link) {
+      if (!(link instanceof HTMLElement)) return null;
+      if (link.dataset.previewLoaded === 'true') return link.dataset.audioSrc || null;
+
+      link.dataset.previewLoaded = 'true';
+      setKicker(link, 'iTunes Preview');
+      setExtract(link, 'Loading iTunes preview...');
+
+      try {
+        const data = await getItunesTrack(link);
+        if (!data) throw new Error('No iTunes result');
+
+        const title = [
+          link.dataset.audioTitle || data.trackName,
+          link.dataset.audioArtist || data.artistName,
+        ].filter(Boolean).join(' — ');
+        const description = [
+          data.collectionName,
+          data.previewUrl ? 'Preview courtesy of iTunes.' : 'Preview unavailable.',
+        ].filter(Boolean).join(' · ');
+
+        if (title) setTitle(link, title);
+        setExtract(link, description || 'Preview courtesy of iTunes.');
+        setImage(link, data.artworkUrl100);
+
+        if (data.previewUrl) link.dataset.audioSrc = data.previewUrl;
+        if (data.trackViewUrl) link.href = data.trackViewUrl;
+
+        return data.previewUrl || null;
+      } catch {
+        link.dataset.previewLoaded = 'false';
+        setExtract(link, 'iTunes preview unavailable.');
+        return null;
+      }
+    }
+
     async function loadPreview(link) {
       if (!(link instanceof HTMLElement)) return;
+      if (link.hasAttribute('data-itunes-preview')) {
+        await loadItunesPreview(link);
+        return;
+      }
 
       const page = link.dataset.wikiPage;
       if (!page || link.dataset.previewLoaded === 'true') return;
@@ -340,6 +447,8 @@ function getWikipediaUrl(page: string) {
       const link = findPreviewLink(event.target);
       if (link) loadPreview(link);
     });
+
+    window.__shanLoadItunesPreview = loadItunesPreview;
   })();
 </script>
 
@@ -356,7 +465,7 @@ function getWikipediaUrl(page: string) {
     }
 
     function setButtonState(button, state) {
-      if (!(button instanceof HTMLButtonElement)) return;
+      if (!(button instanceof HTMLElement)) return;
 
       const title = button.dataset.audioTitle || button.textContent?.trim() || 'music';
       const isPlaying = state === 'playing';
@@ -371,7 +480,7 @@ function getWikipediaUrl(page: string) {
     }
 
     function resetActiveButton() {
-      if (activeButton instanceof HTMLButtonElement) {
+      if (activeButton instanceof HTMLElement) {
         setButtonState(activeButton, 'idle');
       }
       activeButton = null;
@@ -382,6 +491,20 @@ function getWikipediaUrl(page: string) {
       if (siteMusic instanceof HTMLAudioElement && !siteMusic.paused) {
         siteMusic.pause();
       }
+    }
+
+    async function resolveAudioSource(button) {
+      if (!(button instanceof HTMLElement)) return '';
+      if (button.dataset.audioSrc) return button.dataset.audioSrc;
+
+      if (
+        button.hasAttribute('data-itunes-preview') &&
+        typeof window.__shanLoadItunesPreview === 'function'
+      ) {
+        return await window.__shanLoadItunesPreview(button);
+      }
+
+      return '';
     }
 
     function bindAudioPlayer(audio) {
@@ -395,11 +518,12 @@ function getWikipediaUrl(page: string) {
       const button = event.target instanceof Element
         ? event.target.closest('[data-interest-audio]')
         : null;
-      if (!(button instanceof HTMLButtonElement)) return;
+      if (!(button instanceof HTMLElement)) return;
+
+      event.preventDefault();
 
       const audio = getAudioPlayer();
-      const src = button.dataset.audioSrc;
-      if (!audio || !src) return;
+      if (!audio) return;
 
       bindAudioPlayer(audio);
 
@@ -412,15 +536,25 @@ function getWikipediaUrl(page: string) {
       resetActiveButton();
       pauseSiteMusic();
 
+      activeButton = button;
+      setButtonState(button, 'loading');
+
+      const src = await resolveAudioSource(button);
+      if (!src) {
+        setButtonState(button, 'failed');
+        window.setTimeout(() => {
+          setButtonState(button, 'idle');
+          if (activeButton === button) activeButton = null;
+        }, 900);
+        return;
+      }
+
       const nextSrc = new URL(src, window.location.href).href;
       if (audio.currentSrc !== nextSrc) {
         audio.src = src;
       } else {
         audio.currentTime = 0;
       }
-
-      activeButton = button;
-      setButtonState(button, 'loading');
 
       try {
         await audio.play();
@@ -758,6 +892,10 @@ function getWikipediaUrl(page: string) {
       radial-gradient(circle at 50% 42%, rgba(201, 162, 39, 0.08), transparent 62%),
       rgba(255, 255, 255, 0.035);
     border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .interest-preview-media--album {
+    aspect-ratio: 1;
   }
 
   :global(.interest-preview-media img) {

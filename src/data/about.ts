@@ -319,8 +319,12 @@ export interface InterestCategory {
 
 export type InterestItem = LocalizedString | {
   title: LocalizedString;
+  artist?: LocalizedString;
   wikiPage?: string;
   audioSrc?: string;
+  previewProvider?: "itunes";
+  itunesCountry?: string;
+  itunesTerm?: LocalizedString;
 }
 
 export const interests: InterestCategory[] = [
@@ -380,10 +384,9 @@ export const interests: InterestCategory[] = [
     name: { en: "Music", zh: "音乐", ja: "音楽" },
     icon: "music",
     items: [
-      // Replace these paths with per-track files in public/audio when you add the real clips.
-      { title: "Bohemian Rhapsody", wikiPage: "Bohemian Rhapsody", audioSrc: "/audio/bgm.mp3" },
-      { title: "We Are the Champions", wikiPage: "We Are the Champions", audioSrc: "/audio/bgm.mp3" },
-      { title: "Lemon", wikiPage: "Lemon (Kenshi Yonezu song)", audioSrc: "/audio/bgm.mp3" }
+      { title: "Bohemian Rhapsody", artist: "Queen", wikiPage: "Bohemian Rhapsody", previewProvider: "itunes", itunesCountry: "JP" },
+      { title: "We Are the Champions", artist: "Queen", wikiPage: "We Are the Champions", previewProvider: "itunes", itunesCountry: "JP" },
+      { title: "Lemon", artist: "Kenshi Yonezu", wikiPage: "Lemon (Kenshi Yonezu song)", previewProvider: "itunes", itunesCountry: "JP" }
     ]
   },
   {
