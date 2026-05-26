@@ -65,8 +65,22 @@ const audioSrc = '/audio/bgm.mp3';
     window.__shanMusicPlayerReady = true;
 
     const STORAGE_KEY = 'shan-verse:bgm';
+    const AUDIO_STATE_EVENT = 'shan-verse:audio-state';
     const MOBILE_QUERY = '(max-width: 640px)';
     const LONG_PRESS_DELAY = 320;
+
+    function clampVolume(value) {
+      return Math.min(1, Math.max(0, Number.isFinite(value) ? value : 0.35));
+    }
+
+    function publishAudioState(audio) {
+      const detail = {
+        volume: audio.volume,
+        muted: audio.muted,
+      };
+      window.__shanAudioState = detail;
+      window.dispatchEvent(new CustomEvent(AUDIO_STATE_EVENT, { detail }));
+    }
 
     function readState() {
       try {
@@ -116,8 +130,9 @@ const audioSrc = '/audio/bgm.mp3';
 
       const saved = readState();
       const savedVolume = typeof saved.volume === 'number' ? saved.volume : 0.35;
-      audio.volume = Math.min(1, Math.max(0, savedVolume));
+      audio.volume = clampVolume(savedVolume);
       audio.muted = saved.muted === true;
+      publishAudioState(audio);
       let longPressTimer = 0;
       let longPressActive = false;
       let suppressNextClick = false;
@@ -154,10 +169,6 @@ const audioSrc = '/audio/bgm.mp3';
       function showMobilePanel() {
         if (!isMobilePlayer()) return;
         setPanelOpen(true);
-      }
-
-      function clampVolume(value) {
-        return Math.min(1, Math.max(0, value));
       }
 
       function setSelectedAction(action) {
@@ -209,6 +220,7 @@ const audioSrc = '/audio/bgm.mp3';
         syncVolumeInputs();
         syncMuteButton();
         writeState(audio);
+        publishAudioState(audio);
       }
 
       function performPanelAction(action) {
@@ -220,6 +232,7 @@ const audioSrc = '/audio/bgm.mp3';
           audio.muted = !audio.muted;
           syncMuteButton();
           writeState(audio);
+          publishAudioState(audio);
         } else if (action === 'restart') {
           void restartMusic();
         }
@@ -345,6 +358,7 @@ const audioSrc = '/audio/bgm.mp3';
           syncVolumeInputs();
           syncMuteButton();
           writeState(audio);
+          publishAudioState(audio);
         });
       });
 
