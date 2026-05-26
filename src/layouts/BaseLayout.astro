@@ -327,9 +327,10 @@ const currentPath = Astro.url.pathname;
     border: 0;
     background: transparent;
     color: rgba(244, 238, 222, 0.92);
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
+    font-family: var(--font-body);
+    font-size: 0.74rem;
     font-weight: 600;
+    letter-spacing: 0.025em;
     line-height: 1;
     cursor: pointer;
   }
@@ -599,6 +600,7 @@ const currentPath = Astro.url.pathname;
     .language-toggle[lang='ja'] {
       font-family: var(--font-cjk);
       font-size: 0.72rem;
+      letter-spacing: 0;
     }
   }
 </style>

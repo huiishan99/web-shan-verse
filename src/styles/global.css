@@ -79,6 +79,22 @@ body {
   letter-spacing: 0.01em;
 }
 
+@media (max-width: 768px) {
+  .language-toggle[lang='en'] {
+    font-family: var(--font-body) !important;
+    font-size: 0.74rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.025em !important;
+  }
+
+  .language-toggle[lang='zh'],
+  .language-toggle[lang='ja'] {
+    font-family: var(--font-cjk) !important;
+    font-size: 0.72rem !important;
+    letter-spacing: 0 !important;
+  }
+}
+
 /* --- 星空背景 --- */
 .starfield {
   position: fixed;
