@@ -635,6 +635,13 @@ function getItunesSearchUrl(term: string, country = 'JP') {
     gap: var(--space-xl);
     align-items: start;
   }
+
+  .about-sidebar {
+    position: sticky;
+    top: 100px;
+    align-self: start;
+    height: fit-content;
+  }
   
   .intro-section {
     margin-bottom: var(--space-xl);
@@ -978,8 +985,6 @@ function getItunesSearchUrl(term: string, country = 'JP') {
   .profile-card {
     padding: var(--space-lg);
     text-align: center;
-    position: sticky;
-    top: 100px;
   }
   
   .profile-avatar {
@@ -1060,10 +1065,8 @@ function getItunesSearchUrl(term: string, country = 'JP') {
     
     .about-sidebar {
       order: -1;
-    }
-    
-    .profile-card {
       position: static;
+      height: auto;
     }
     
     .languages-list {
