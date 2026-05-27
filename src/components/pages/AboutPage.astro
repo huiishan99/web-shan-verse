@@ -1086,6 +1086,61 @@ function getItunesSearchUrl(term: string, country = 'JP') {
       margin-bottom: 1.35rem;
     }
 
+    .profile-card {
+      max-width: 21rem;
+      margin: 0 auto;
+      padding: 1.05rem 0.95rem;
+    }
+
+    .profile-avatar {
+      margin-bottom: 0.7rem;
+    }
+
+    .avatar-placeholder,
+    .avatar-image {
+      width: 64px;
+      height: 64px;
+    }
+
+    .avatar-placeholder {
+      font-size: 1.2rem;
+    }
+
+    .profile-name {
+      font-size: 1.05rem;
+      margin-bottom: 0.15rem;
+    }
+
+    .profile-title {
+      font-size: 0.84rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .profile-links {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.42rem;
+    }
+
+    .profile-link {
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.2rem;
+      min-height: 2.65rem;
+      padding: 0.38rem 0.25rem;
+      font-size: 0.74rem;
+      line-height: 1.1 !important;
+    }
+
+    .profile-link svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .profile-link span {
+      line-height: 1.1;
+    }
+
     .intro-section {
       margin-bottom: var(--space-lg);
       padding: 0.88rem 0.95rem;
