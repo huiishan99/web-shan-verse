@@ -30,6 +30,118 @@ export const timelineData: TimelineYear[] = [
     year: 2026,
     events: [
       {
+        month: { en: "May", zh: "五月", ja: "5月" },
+        title: {
+          en: "ICICS 2026 Short Paper Acceptance",
+          zh: "ICICS 2026 短论文接收",
+          ja: "ICICS 2026 ショートペーパー採択"
+        },
+        weight: "major",
+        category: "research",
+        date: "2026-05-01",
+        description: {
+          en: "Received the acceptance notification for a short paper at ICICS 2026.",
+          zh: "收到 ICICS 2026 短论文被接收的通知。",
+          ja: "ICICS 2026 のショートペーパー採択通知を受け取りました。"
+        }
+      },
+      {
+        month: { en: "May", zh: "五月", ja: "5月" },
+        title: {
+          en: "First Personal Car",
+          zh: "人生第一辆自己的车",
+          ja: "人生初の自分の車"
+        },
+        weight: "major",
+        category: "life",
+        date: "2026-05-23",
+        description: {
+          en: "Got my first personal car, a used Honda Freed series vehicle.",
+          zh: "拿到人生第一辆自己的车，是一辆二手的本田 Freed 系列车型。",
+          ja: "人生で初めて自分の車を手に入れました。中古の Honda Freed シリーズの車です。"
+        }
+      },
+      {
+        month: { en: "May", zh: "五月", ja: "5月" },
+        title: {
+          en: "Department Welcome Party",
+          zh: "部门欢迎会",
+          ja: "部署の歓迎会"
+        },
+        weight: "standard",
+        category: "career",
+        date: "2026-05-22",
+        description: {
+          en: "The department held a welcome party for me after I joined the assigned team.",
+          zh: "配属后，部门为我举办了欢迎会。",
+          ja: "配属後、部署で歓迎会を開いていただきました。"
+        }
+      },
+      {
+        month: { en: "April", zh: "四月", ja: "4月" },
+        title: {
+          en: "First Day at Iwaki Development Center",
+          zh: "磐城开发中心配属初日",
+          ja: "いわき開発センター配属初日"
+        },
+        weight: "major",
+        category: "career",
+        date: "2026-04-27",
+        description: {
+          en: "Completed the Tokyo Head Office training on April 23, returned to Iwaki on April 24, and started the first day at the assigned workplace, Iwaki Development Center, as a new employee.",
+          zh: "4 月 23 日结束东京本社研修，4 月 24 日回到配属地磐城，并于 4 月 27 日作为新人在磐城开发中心开始配属后的第一天工作。",
+          ja: "4月23日に東京本社での研修を終え、4月24日に配属地のいわきへ戻り、4月27日に新人としていわき開発センターで配属初日を迎えました。"
+        }
+      },
+      {
+        month: { en: "April", zh: "四月", ja: "4月" },
+        title: {
+          en: "Alps Alpine Tokyo Head Office Training",
+          zh: "Alps Alpine 东京本社研修",
+          ja: "Alps Alpine 東京本社研修"
+        },
+        weight: "standard",
+        category: "career",
+        date: "2026-04-01",
+        description: {
+          en: "Started new-employee training at the Alps Alpine Tokyo Head Office.",
+          zh: "开始在 Alps Alpine 东京本社参加新人研修。",
+          ja: "Alps Alpine 東京本社で新人研修を開始しました。"
+        }
+      },
+      {
+        month: { en: "March", zh: "三月", ja: "3月" },
+        title: {
+          en: "Tokyo Trip Before Training",
+          zh: "研修前前往东京",
+          ja: "研修前に東京へ移動"
+        },
+        weight: "standard",
+        category: "travel",
+        date: "2026-03-31",
+        description: {
+          en: "Traveled to Tokyo ahead of the new-employee training at Alps Alpine.",
+          zh: "在 Alps Alpine 新人研修开始前前往东京。",
+          ja: "Alps Alpine の新人研修に向けて東京へ移動しました。"
+        }
+      },
+      {
+        month: { en: "March", zh: "三月", ja: "3月" },
+        title: {
+          en: "Japanese AT Driver's License",
+          zh: "取得日本 AT 驾照",
+          ja: "日本のAT限定運転免許取得"
+        },
+        weight: "major",
+        category: "life",
+        date: "2026-03-30",
+        description: {
+          en: "Officially obtained a Japanese automatic-transmission driver's license.",
+          zh: "正式取得日本自动挡（AT）驾驶执照。",
+          ja: "日本のAT限定運転免許を正式に取得しました。"
+        }
+      },
+      {
         month: { en: "January", zh: "一月", ja: "1月" },
         title: {
           en: "Driving School Intensive Camp Completion",
