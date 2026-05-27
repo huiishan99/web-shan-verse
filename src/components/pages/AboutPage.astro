@@ -628,6 +628,10 @@ function getItunesSearchUrl(term: string, country = 'JP') {
     font-style: italic;
     margin-top: var(--space-sm);
   }
+
+  :global(.main-content:has(.about-layout)) {
+    padding-bottom: 0;
+  }
   
   .about-layout {
     display: grid;
@@ -672,6 +676,10 @@ function getItunesSearchUrl(term: string, country = 'JP') {
   
   .section {
     margin-bottom: var(--space-xl);
+  }
+
+  .about-main > .section:last-child {
+    margin-bottom: 0;
   }
   
   .section h2 {
