@@ -17,7 +17,7 @@ export const localeShortNames: Record<Locale, string> = {
   ja: '日',
 };
 
-const localizedRoutes = new Set(['/', '/about', '/projects', '/timeline', '/blog']);
+const localizedRoutes = new Set(['/', '/about', '/projects', '/timeline', '/blog', '/journey']);
 const monthNames: Record<string, Record<Locale, string>> = {
   January: { en: 'January', zh: '一月', ja: '1月' },
   February: { en: 'February', zh: '二月', ja: '2月' },
