@@ -103,10 +103,10 @@ const scenePoints = travelPoints.map((point) => ({
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
 
-      const ambient = new THREE.AmbientLight(0x9fb7d8, 0.62);
-      const keyLight = new THREE.DirectionalLight(0xffe4a8, 2.35);
+      const ambient = new THREE.AmbientLight(0xb6c7e8, 0.82);
+      const keyLight = new THREE.DirectionalLight(0xffdf9b, 1.75);
       keyLight.position.set(-3.2, 4.1, 5.2);
-      const rimLight = new THREE.DirectionalLight(0x7ba7ff, 1.4);
+      const rimLight = new THREE.DirectionalLight(0x9bbcff, 1.75);
       rimLight.position.set(4.2, -1.4, 3.2);
       scene.add(ambient, keyLight, rimLight);
 
@@ -146,16 +146,17 @@ const scenePoints = travelPoints.map((point) => ({
 
       const earthGeometry = new THREE.SphereGeometry(2, 96, 96);
       const textureLoader = new THREE.TextureLoader();
-      const earthTexture = textureLoader.load('/images/earth-blue-marble.jpg');
+      const earthTexture = textureLoader.load('/images/earth-black-marble-2016.jpg');
       earthTexture.colorSpace = THREE.SRGBColorSpace;
       earthTexture.anisotropy = 8;
       const earthMaterial = new THREE.MeshStandardMaterial({
         color: 0xffffff,
         map: earthTexture,
-        metalness: 0.02,
-        roughness: 0.82,
-        emissive: 0x02060a,
-        emissiveIntensity: 0.08,
+        emissiveMap: earthTexture,
+        emissive: 0xd39b52,
+        emissiveIntensity: 0.36,
+        metalness: 0.1,
+        roughness: 0.58,
       });
       const earth = new THREE.Mesh(earthGeometry, earthMaterial);
       globe.add(earth);
@@ -178,7 +179,7 @@ const scenePoints = travelPoints.map((point) => ({
           map: cloudTexture || undefined,
           color: 0xffffff,
           transparent: true,
-          opacity: 0.48,
+          opacity: 0.18,
           blending: THREE.AdditiveBlending,
           depthWrite: false,
         })
@@ -200,6 +201,38 @@ const scenePoints = travelPoints.map((point) => ({
 
       const routeGeometries = [];
       const routeMaterials = [];
+      const lightMaterials = [];
+
+      function addCityLightCluster(lat, lon, count, radius, color = 0xf0c66a) {
+        const positions = new Float32Array(count * 3);
+        for (let index = 0; index < count; index += 1) {
+          const angle = seededNoise(lat + index, lon) * Math.PI * 2;
+          const distance = Math.abs(seededNoise(lon, lat + index)) * radius;
+          const pointLat = lat + Math.sin(angle) * distance;
+          const pointLon = lon + Math.cos(angle) * distance * 1.25;
+          const position = latLonToVector3(pointLat, pointLon, 2.095);
+          positions[index * 3] = position.x;
+          positions[index * 3 + 1] = position.y;
+          positions[index * 3 + 2] = position.z;
+        }
+
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const material = new THREE.PointsMaterial({
+          color,
+          size: 0.012,
+          transparent: true,
+          opacity: 0.48,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        });
+        const lights = new THREE.Points(geometry, material);
+        lights.userData.phase = seededNoise(lat, lon) * Math.PI * 2;
+        globe.add(lights);
+        routeGeometries.push(geometry);
+        routeMaterials.push(material);
+        lightMaterials.push(material);
+      }
 
       function addOrbitRing(radius, y, color, opacity) {
         const curve = new THREE.EllipseCurve(0, 0, radius, radius, 0, Math.PI * 2);
@@ -274,11 +307,11 @@ const scenePoints = travelPoints.map((point) => ({
       }
 
       function addBrassRoute(curve) {
-        const shadowGeometry = new THREE.TubeGeometry(curve, 96, 0.012, 8, false);
+        const shadowGeometry = new THREE.TubeGeometry(curve, 96, 0.009, 8, false);
         const shadowMaterial = new THREE.MeshBasicMaterial({
           color: 0x3d2a07,
           transparent: true,
-          opacity: 0.26,
+          opacity: 0.24,
           depthWrite: false,
         });
         const shadow = new THREE.Mesh(shadowGeometry, shadowMaterial);
@@ -286,12 +319,15 @@ const scenePoints = travelPoints.map((point) => ({
         routeGeometries.push(shadowGeometry);
         routeMaterials.push(shadowMaterial);
 
-        const coreGeometry = new THREE.TubeGeometry(curve, 96, 0.0028, 8, false);
-        const coreMaterial = new THREE.MeshBasicMaterial({
-          color: 0xc9a227,
+        const coreGeometry = new THREE.TubeGeometry(curve, 96, 0.0042, 12, false);
+        const coreMaterial = new THREE.MeshStandardMaterial({
+          color: 0xb8902d,
+          metalness: 0.78,
+          roughness: 0.26,
+          emissive: 0x3a2505,
+          emissiveIntensity: 0.18,
           transparent: true,
-          opacity: 0.42,
-          blending: THREE.AdditiveBlending,
+          opacity: 0.74,
           depthWrite: false,
         });
         const core = new THREE.Mesh(coreGeometry, coreMaterial);
@@ -301,12 +337,11 @@ const scenePoints = travelPoints.map((point) => ({
 
         const highlightGeometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(96));
         const highlightMaterial = new THREE.LineDashedMaterial({
-          color: 0xf0cf72,
-          dashSize: 0.055,
-          gapSize: 0.028,
+          color: 0xffdf91,
+          dashSize: 0.035,
+          gapSize: 0.038,
           transparent: true,
-          opacity: 0.78,
-          blending: THREE.AdditiveBlending,
+          opacity: 0.52,
           depthWrite: false,
         });
         const highlight = new THREE.Line(highlightGeometry, highlightMaterial);
@@ -316,22 +351,55 @@ const scenePoints = travelPoints.map((point) => ({
         routeMaterials.push(highlightMaterial);
       }
 
-      const markerGeometry = new THREE.SphereGeometry(0.026, 20, 20);
-      const haloGeometry = new THREE.SphereGeometry(0.047, 20, 20);
-      const markerMaterial = new THREE.MeshBasicMaterial({ color: 0xf3d57a });
+      [
+        [39.9, 116.4, 46, 0.9],
+        [39.3, 117.4, 28, 0.6],
+        [31.2, 121.5, 54, 0.8],
+        [23.1, 113.3, 46, 0.75],
+        [22.5, 114.1, 42, 0.55],
+        [35.7, 139.7, 52, 0.65],
+        [34.7, 135.5, 42, 0.55],
+        [37.5, 127.0, 38, 0.55],
+        [25.0, 121.5, 32, 0.45],
+        [13.8, 100.5, 26, 0.45],
+      ].forEach(([lat, lon, count, radius]) => addCityLightCluster(lat, lon, count, radius));
+
+      const markerGeometry = new THREE.SphereGeometry(0.024, 24, 24);
+      const markerRingGeometry = new THREE.TorusGeometry(0.042, 0.003, 8, 32);
+      const haloGeometry = new THREE.SphereGeometry(0.043, 20, 20);
+      const markerMaterial = new THREE.MeshStandardMaterial({
+        color: 0xd4af37,
+        metalness: 0.82,
+        roughness: 0.2,
+        emissive: 0x5b3807,
+        emissiveIntensity: 0.25,
+      });
+      const markerRingMaterial = new THREE.MeshStandardMaterial({
+        color: 0xe7c76c,
+        metalness: 0.86,
+        roughness: 0.18,
+        emissive: 0x3c2606,
+        emissiveIntensity: 0.2,
+      });
       const markerHaloMaterial = new THREE.MeshBasicMaterial({
         color: 0xc9a227,
         transparent: true,
-        opacity: 0.11,
+        opacity: 0.1,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
       });
 
       points.forEach((point) => {
         const position = latLonToVector3(point.lat, point.lon);
+        const normal = position.clone().normalize();
         const marker = new THREE.Mesh(markerGeometry, markerMaterial);
         marker.position.copy(position);
         globe.add(marker);
+
+        const ring = new THREE.Mesh(markerRingGeometry, markerRingMaterial);
+        ring.position.copy(normal.clone().multiplyScalar(2.092));
+        ring.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), normal);
+        globe.add(ring);
 
         const halo = new THREE.Mesh(haloGeometry, markerHaloMaterial);
         halo.position.copy(position);
@@ -386,12 +454,12 @@ const scenePoints = travelPoints.map((point) => ({
 
         renderer.setSize(width, height, false);
         camera.aspect = width / height;
-        camera.position.set(isMobile ? 0 : 0.5, isMobile ? 0.55 : 0.3, isMobile ? 7 : 5.8);
-        camera.lookAt(isMobile ? 0 : 0.34, -0.06, 0);
+        camera.position.set(isMobile ? 0 : 0.18, isMobile ? 0.5 : 0.2, isMobile ? 5.65 : 5.15);
+        camera.lookAt(isMobile ? 0 : 0.08, isMobile ? -0.08 : -0.16, 0);
         camera.updateProjectionMatrix();
 
-        globe.position.set(isMobile ? 0 : 0.72, isMobile ? -0.58 : -0.08, 0);
-        const scale = isMobile ? 0.72 : 0.94;
+        globe.position.set(isMobile ? 0.08 : 0.24, isMobile ? -0.34 : -0.34, 0);
+        const scale = isMobile ? 0.98 : 1.08;
         globe.scale.setScalar(scale);
       }
 
@@ -463,6 +531,9 @@ const scenePoints = travelPoints.map((point) => ({
         globe.rotation.x += (targetRotationX - globe.rotation.x) * 0.07;
         globe.rotation.y += (targetRotationY - globe.rotation.y) * 0.07;
         stars.rotation.y += 0.00008;
+        lightMaterials.forEach((material, index) => {
+          material.opacity = 0.34 + Math.sin(time * 0.0017 + index * 1.73) * 0.12;
+        });
 
         renderer.render(scene, camera);
         if (time - lastCanvasSample > 1200) {
@@ -486,8 +557,10 @@ const scenePoints = travelPoints.map((point) => ({
         earthTexture.dispose();
         cloudTexture?.dispose();
         markerGeometry.dispose();
+        markerRingGeometry.dispose();
         haloGeometry.dispose();
         markerMaterial.dispose();
+        markerRingMaterial.dispose();
         markerHaloMaterial.dispose();
         routeGeometries.forEach((geometry) => geometry.dispose());
         routeMaterials.forEach((material) => material.dispose());
@@ -517,9 +590,9 @@ const scenePoints = travelPoints.map((point) => ({
     overflow: hidden;
     isolation: isolate;
     background:
-      radial-gradient(circle at 70% 42%, rgba(106, 171, 255, 0.16), transparent 30rem),
-      radial-gradient(circle at 40% 84%, rgba(201, 162, 39, 0.11), transparent 18rem),
-      rgba(5, 6, 11, 0.28);
+      radial-gradient(circle at 63% 42%, rgba(106, 171, 255, 0.22), transparent 34rem),
+      radial-gradient(circle at 42% 70%, rgba(201, 162, 39, 0.17), transparent 22rem),
+      rgba(8, 10, 18, 0.2);
   }
 
   .earth-canvas {
@@ -543,8 +616,8 @@ const scenePoints = travelPoints.map((point) => ({
     pointer-events: none;
     z-index: 1;
     background:
-      linear-gradient(90deg, rgba(5, 6, 11, 0.74), rgba(5, 6, 11, 0.1) 47%, rgba(5, 6, 11, 0.6)),
-      linear-gradient(180deg, rgba(5, 6, 11, 0.68), transparent 24%, rgba(5, 6, 11, 0.82));
+      linear-gradient(90deg, rgba(5, 6, 11, 0.55), rgba(5, 6, 11, 0.04) 46%, rgba(5, 6, 11, 0.38)),
+      linear-gradient(180deg, rgba(5, 6, 11, 0.46), transparent 28%, rgba(5, 6, 11, 0.58));
   }
 
   .journey-copy {
@@ -658,15 +731,15 @@ const scenePoints = travelPoints.map((point) => ({
       min-height: calc(100vh - 3.4rem);
       margin: -1rem 0 calc(-1 * var(--space-lg));
       background:
-        radial-gradient(circle at 50% 48%, rgba(106, 171, 255, 0.15), transparent 18rem),
-        radial-gradient(circle at 48% 82%, rgba(201, 162, 39, 0.12), transparent 14rem),
-        rgba(5, 6, 11, 0.24);
+        radial-gradient(circle at 52% 48%, rgba(106, 171, 255, 0.2), transparent 18rem),
+        radial-gradient(circle at 48% 78%, rgba(201, 162, 39, 0.15), transparent 14rem),
+        rgba(8, 10, 18, 0.18);
     }
 
     .journey-vignette {
       background:
-        linear-gradient(180deg, rgba(5, 6, 11, 0.72), rgba(5, 6, 11, 0.18) 36%, rgba(5, 6, 11, 0.88)),
-        linear-gradient(90deg, rgba(5, 6, 11, 0.56), transparent 50%, rgba(5, 6, 11, 0.42));
+        linear-gradient(180deg, rgba(5, 6, 11, 0.56), rgba(5, 6, 11, 0.08) 36%, rgba(5, 6, 11, 0.62)),
+        linear-gradient(90deg, rgba(5, 6, 11, 0.42), transparent 50%, rgba(5, 6, 11, 0.28));
     }
 
     .journey-copy {
