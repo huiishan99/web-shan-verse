@@ -127,6 +127,49 @@ const scenePoints = travelPoints.map((point) => ({
         return texture;
       }
 
+      function createFlareTexture() {
+        const size = 256;
+        const flareCanvas = document.createElement('canvas');
+        flareCanvas.width = size;
+        flareCanvas.height = size;
+        const context = flareCanvas.getContext('2d');
+        if (!context) return null;
+
+        const center = size / 2;
+        const glow = context.createRadialGradient(center, center, 0, center, center, center);
+        glow.addColorStop(0, 'rgba(255, 235, 172, 1)');
+        glow.addColorStop(0.22, 'rgba(255, 210, 92, 0.82)');
+        glow.addColorStop(0.48, 'rgba(153, 113, 37, 0.26)');
+        glow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+        context.fillStyle = glow;
+        context.fillRect(0, 0, size, size);
+        context.strokeStyle = 'rgba(255, 226, 139, 0.72)';
+        context.lineWidth = 2;
+        context.beginPath();
+        context.moveTo(center, 22);
+        context.lineTo(center, size - 22);
+        context.moveTo(22, center);
+        context.lineTo(size - 22, center);
+        context.stroke();
+
+        const texture = new THREE.CanvasTexture(flareCanvas);
+        texture.colorSpace = THREE.SRGBColorSpace;
+        return texture;
+      }
+
+      const flareTexture = createFlareTexture();
+      const arrivalFlareMaterial = new THREE.SpriteMaterial({
+        map: flareTexture || undefined,
+        color: 0xffd66c,
+        transparent: true,
+        opacity: 0.95,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      });
+      const arrivalFlare = new THREE.Sprite(arrivalFlareMaterial);
+      scene.add(arrivalFlare);
+
       const earthGeometry = new THREE.SphereGeometry(2, 96, 96);
       const textureLoader = new THREE.TextureLoader();
       const earthTexture = textureLoader.load('/images/earth-black-marble-2016.jpg');
@@ -425,15 +468,44 @@ const scenePoints = travelPoints.map((point) => ({
       let isDragging = false;
       let lastX = 0;
       let lastY = 0;
+      let finalGlobeScale = 1;
+      let isMobileLayout = false;
+      let sceneStartTime = 0;
+      let entranceReady = false;
+      let entranceTimer = 0;
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const introDelay = reducedMotion ? 0 : 520;
+      const introDuration = reducedMotion ? 1 : 2600;
+      const finalGlobePosition = new THREE.Vector3();
+      const introStartPosition = new THREE.Vector3();
+      const currentGlobePosition = new THREE.Vector3();
 
       globe.rotation.x = targetRotationX;
       globe.rotation.y = targetRotationY;
       globe.rotation.z = 0.04;
 
+      function easeOutCubic(progress) {
+        return 1 - Math.pow(1 - progress, 3);
+      }
+
+      function startEntranceAfterPaint() {
+        window.clearTimeout(entranceTimer);
+        entranceTimer = window.setTimeout(() => {
+          entranceReady = true;
+        }, reducedMotion ? 0 : 180);
+      }
+
+      if (document.readyState === 'complete') {
+        startEntranceAfterPaint();
+      } else {
+        window.addEventListener('load', startEntranceAfterPaint, { once: true });
+      }
+
       function resize() {
         const width = Math.max(1, root.clientWidth);
         const height = Math.max(1, root.clientHeight);
         const isMobile = width < 720;
+        isMobileLayout = isMobile;
 
         renderer.setSize(width, height, false);
         camera.aspect = width / height;
@@ -441,9 +513,14 @@ const scenePoints = travelPoints.map((point) => ({
         camera.lookAt(isMobile ? 0.02 : 0.02, isMobile ? -0.12 : -0.14, 0);
         camera.updateProjectionMatrix();
 
-        globe.position.set(isMobile ? 0.02 : 0.04, isMobile ? -0.33 : -0.62, 0);
-        const scale = isMobile ? 0.98 : 1.1;
-        globe.scale.setScalar(scale);
+        finalGlobePosition.set(isMobile ? 0.02 : 0.04, isMobile ? -0.33 : -0.62, 0);
+        finalGlobeScale = isMobile ? 0.98 : 1.1;
+
+        if (reducedMotion) {
+          globe.position.copy(finalGlobePosition);
+          globe.scale.setScalar(finalGlobeScale);
+          arrivalFlare.visible = false;
+        }
       }
 
       function onPointerDown(event) {
@@ -511,9 +588,43 @@ const scenePoints = travelPoints.map((point) => ({
       }
 
       function animate(time = 0) {
-        globe.rotation.x += (targetRotationX - globe.rotation.x) * 0.07;
-        globe.rotation.y += (targetRotationY - globe.rotation.y) * 0.07;
+        if (entranceReady && sceneStartTime === 0) sceneStartTime = time + introDelay;
+
+        const introProgress = entranceReady
+          ? THREE.MathUtils.clamp((time - sceneStartTime) / introDuration, 0, 1)
+          : 0;
+        const easedIntro = reducedMotion ? 1 : easeOutCubic(introProgress);
+        const startScale = isMobileLayout ? 0.036 : 0.042;
+        const flarePulse = Math.sin(Math.min(1, introProgress) * Math.PI);
+        introStartPosition.set(
+          finalGlobePosition.x + (isMobileLayout ? 0.02 : 0.05),
+          finalGlobePosition.y + (isMobileLayout ? 0.12 : 0.18),
+          -3.6
+        );
+        currentGlobePosition.lerpVectors(introStartPosition, finalGlobePosition, easedIntro);
+
+        const settledMotion = reducedMotion ? 0 : Math.min(1, Math.max(0, introProgress - 0.72) / 0.28);
+        currentGlobePosition.y += Math.sin(time * 0.00042) * 0.018 * settledMotion;
+        currentGlobePosition.z += Math.sin(time * 0.00028) * 0.018 * settledMotion;
+        globe.position.copy(currentGlobePosition);
+        globe.scale.setScalar(
+          THREE.MathUtils.lerp(startScale, finalGlobeScale, easedIntro) * (1 + flarePulse * 0.035)
+        );
+
+        arrivalFlare.position.copy(currentGlobePosition);
+        arrivalFlare.position.z += 0.08;
+        arrivalFlare.scale.setScalar(THREE.MathUtils.lerp(0.22, isMobileLayout ? 0.82 : 1.08, flarePulse));
+        arrivalFlareMaterial.opacity = reducedMotion ? 0 : Math.max(0, 1 - introProgress) * 0.88;
+        arrivalFlare.visible = arrivalFlareMaterial.opacity > 0.02;
+
+        const idleMotion = isDragging || reducedMotion ? 0 : settledMotion;
+        const idleRotationX = Math.sin(time * 0.00019) * 0.012 * idleMotion;
+        const idleRotationY = Math.sin(time * 0.00016) * 0.032 * idleMotion;
+        globe.rotation.x += (targetRotationX + idleRotationX - globe.rotation.x) * 0.055;
+        globe.rotation.y += (targetRotationY + idleRotationY - globe.rotation.y) * 0.055;
+        clouds.rotation.y += 0.000035 * settledMotion;
         stars.rotation.y += 0.00008;
+        root.dataset.introProgress = introProgress.toFixed(3);
         lightMaterials.forEach((material, index) => {
           material.opacity = 0.34 + Math.sin(time * 0.0017 + index * 1.73) * 0.12;
         });
@@ -529,6 +640,8 @@ const scenePoints = travelPoints.map((point) => ({
 
       function cleanup() {
         cancelAnimationFrame(animationFrame);
+        window.clearTimeout(entranceTimer);
+        window.removeEventListener('load', startEntranceAfterPaint);
         window.removeEventListener('resize', resize);
         canvas.removeEventListener('pointerdown', onPointerDown);
         canvas.removeEventListener('pointermove', onPointerMove);
@@ -538,6 +651,8 @@ const scenePoints = travelPoints.map((point) => ({
         renderer.dispose();
         earthGeometry.dispose();
         earthTexture.dispose();
+        flareTexture?.dispose();
+        arrivalFlareMaterial.dispose();
         cloudTexture?.dispose();
         markerGeometry.dispose();
         markerRingGeometry.dispose();
