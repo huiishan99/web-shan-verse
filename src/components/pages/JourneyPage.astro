@@ -11,43 +11,23 @@ const { lang = defaultLocale } = Astro.props;
 
 const journeyCopy: Record<Locale, {
   title: string;
-  kicker: string;
-  heading: string;
-  intro: string;
   back: string;
   route: string;
-  places: string;
-  years: string;
 }> = {
   en: {
     title: 'Travel Atlas',
-    kicker: 'Hidden Entrance',
-    heading: 'Earth of Footprints',
-    intro: 'A quiet orbit of the places that shaped my route, from study years to trips, conferences, and work.',
     back: 'Back Home',
     route: 'Route Log',
-    places: 'places traced',
-    years: 'years',
   },
   zh: {
     title: '旅行星图',
-    kicker: '神奇入口',
-    heading: '足迹地球',
-    intro: '一条安静的轨道，把学习、旅行、会议和工作留下的地点串在一起。',
     back: '返回首页',
     route: '轨迹记录',
-    places: '个地点',
-    years: '年',
   },
   ja: {
     title: '旅の星図',
-    kicker: '隠し入口',
-    heading: '足跡の地球',
-    intro: '学び、旅、カンファレンス、仕事で残した場所を静かな軌道としてつないだ地球。',
     back: 'ホームへ',
     route: 'ルートログ',
-    places: '地点',
-    years: '年',
   },
 };
 
@@ -61,8 +41,6 @@ const scenePoints = travelPoints.map((point) => ({
   year: point.year,
   kind: point.kind,
 }));
-const firstYear = Math.min(...travelPoints.map((point) => point.year));
-const lastYear = Math.max(...travelPoints.map((point) => point.year));
 ---
 
 <BaseLayout title={copy.title} lang={lang}>
@@ -70,9 +48,9 @@ const lastYear = Math.max(...travelPoints.map((point) => point.year));
     class="journey-shell"
     data-earth-scene
     data-points={JSON.stringify(scenePoints)}
-    aria-labelledby="journey-title"
+    aria-label={copy.title}
   >
-    <canvas class="earth-canvas" data-earth-canvas aria-label={copy.heading}></canvas>
+    <canvas class="earth-canvas" data-earth-canvas aria-label={copy.title}></canvas>
     <div class="journey-vignette" aria-hidden="true"></div>
 
     <div class="journey-copy">
@@ -80,13 +58,6 @@ const lastYear = Math.max(...travelPoints.map((point) => point.year));
         <span aria-hidden="true">←</span>
         {copy.back}
       </a>
-      <p class="section-kicker">{copy.kicker}</p>
-      <h1 id="journey-title">{copy.heading}</h1>
-      <p>{copy.intro}</p>
-      <div class="journey-meta" aria-label={`${scenePoints.length} ${copy.places}, ${firstYear}-${lastYear}`}>
-        <span>{scenePoints.length} {copy.places}</span>
-        <span>{firstYear}-{lastYear} {copy.years}</span>
-      </div>
     </div>
 
     <aside class="journey-route" aria-label={copy.route}>
@@ -119,7 +90,6 @@ const lastYear = Math.max(...travelPoints.map((point) => point.year));
 
       root.dataset.earthReady = 'true';
       const points = JSON.parse(root.dataset.points || '[]');
-      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       const renderer = new THREE.WebGLRenderer({
         canvas,
@@ -143,13 +113,49 @@ const lastYear = Math.max(...travelPoints.map((point) => point.year));
       const globe = new THREE.Group();
       scene.add(globe);
 
+      function seededNoise(x, y) {
+        return Math.sin(x * 12.9898 + y * 78.233) * 43758.5453 % 1;
+      }
+
+      function createCloudTexture() {
+        const width = 1024;
+        const height = 512;
+        const cloudCanvas = document.createElement('canvas');
+        cloudCanvas.width = width;
+        cloudCanvas.height = height;
+        const context = cloudCanvas.getContext('2d');
+        if (!context) return null;
+        context.clearRect(0, 0, width, height);
+
+        for (let i = 0; i < 160; i += 1) {
+          const x = Math.abs(seededNoise(i, 9)) * width;
+          const y = Math.abs(seededNoise(17, i)) * height;
+          const w = 18 + Math.abs(seededNoise(x, i)) * 76;
+          const h = 4 + Math.abs(seededNoise(i, y)) * 18;
+          const opacity = 0.035 + Math.abs(seededNoise(x, y)) * 0.07;
+          context.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+          context.beginPath();
+          context.ellipse(x, y, w, h, seededNoise(y, x) * Math.PI, 0, Math.PI * 2);
+          context.fill();
+        }
+
+        const texture = new THREE.CanvasTexture(cloudCanvas);
+        texture.colorSpace = THREE.SRGBColorSpace;
+        return texture;
+      }
+
       const earthGeometry = new THREE.SphereGeometry(2, 96, 96);
+      const textureLoader = new THREE.TextureLoader();
+      const earthTexture = textureLoader.load('/images/earth-blue-marble.jpg');
+      earthTexture.colorSpace = THREE.SRGBColorSpace;
+      earthTexture.anisotropy = 8;
       const earthMaterial = new THREE.MeshStandardMaterial({
-        color: 0x102a44,
-        metalness: 0.08,
-        roughness: 0.86,
-        emissive: 0x08131f,
-        emissiveIntensity: 0.48,
+        color: 0xffffff,
+        map: earthTexture,
+        metalness: 0.02,
+        roughness: 0.82,
+        emissive: 0x02060a,
+        emissiveIntensity: 0.08,
       });
       const earth = new THREE.Mesh(earthGeometry, earthMaterial);
       globe.add(earth);
@@ -159,11 +165,25 @@ const lastYear = Math.max(...travelPoints.map((point) => point.year));
         new THREE.MeshBasicMaterial({
           color: 0x8fb6dd,
           transparent: true,
-          opacity: 0.12,
+          opacity: 0.035,
           wireframe: true,
         })
       );
       globe.add(wire);
+
+      const cloudTexture = createCloudTexture();
+      const clouds = new THREE.Mesh(
+        new THREE.SphereGeometry(2.032, 96, 96),
+        new THREE.MeshBasicMaterial({
+          map: cloudTexture || undefined,
+          color: 0xffffff,
+          transparent: true,
+          opacity: 0.48,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        })
+      );
+      globe.add(clouds);
 
       const atmosphere = new THREE.Mesh(
         new THREE.SphereGeometry(2.16, 96, 96),
@@ -201,7 +221,7 @@ const lastYear = Math.max(...travelPoints.map((point) => point.year));
       }
 
       [-1.35, -0.68, 0, 0.68, 1.35].forEach((y, index) => {
-        addOrbitRing(Math.sqrt(Math.max(0.01, 4 - y * y)), y, index === 2 ? 0xc9a227 : 0x88a7c4, index === 2 ? 0.2 : 0.11);
+        addOrbitRing(Math.sqrt(Math.max(0.01, 4 - y * y)), y, index === 2 ? 0xc9a227 : 0x88a7c4, index === 2 ? 0.1 : 0.04);
       });
 
       function addMeridian(rotationZ) {
@@ -411,13 +431,8 @@ const lastYear = Math.max(...travelPoints.map((point) => point.year));
       }
 
       function animate(time = 0) {
-        if (!prefersReducedMotion && !isDragging) {
-          targetRotationY += 0.00055;
-        }
-
         globe.rotation.x += (targetRotationX - globe.rotation.x) * 0.07;
         globe.rotation.y += (targetRotationY - globe.rotation.y) * 0.07;
-        atmosphere.rotation.y -= 0.0008;
         stars.rotation.y += 0.00008;
 
         markers.forEach((marker) => {
@@ -450,6 +465,8 @@ const lastYear = Math.max(...travelPoints.map((point) => point.year));
         root.dataset.earthReady = 'false';
         renderer.dispose();
         earthGeometry.dispose();
+        earthTexture.dispose();
+        cloudTexture?.dispose();
         markerGeometry.dispose();
         haloGeometry.dispose();
         starGeometry.dispose();
@@ -511,8 +528,8 @@ const lastYear = Math.max(...travelPoints.map((point) => point.year));
   .journey-copy {
     position: relative;
     z-index: 2;
-    width: min(32rem, calc(100vw - 4rem));
-    padding: clamp(2rem, 5vw, 4.5rem) 0 0 clamp(2rem, 7vw, 7rem);
+    width: max-content;
+    padding: clamp(1.6rem, 4vw, 3.4rem) 0 0 clamp(2rem, 7vw, 7rem);
     text-shadow: 0 2px 18px rgba(0, 0, 0, 0.65);
   }
 
@@ -520,7 +537,6 @@ const lastYear = Math.max(...travelPoints.map((point) => point.year));
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    margin-bottom: clamp(1rem, 2vw, 1.5rem);
     color: rgba(232, 229, 220, 0.76);
     font-family: var(--font-mono);
     font-size: 0.82rem;
@@ -531,53 +547,6 @@ const lastYear = Math.max(...travelPoints.map((point) => point.year));
   .journey-back:hover,
   .journey-back:focus-visible {
     color: var(--color-brass-light);
-  }
-
-  .section-kicker {
-    margin-bottom: 0.55rem;
-    color: var(--color-brass);
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.26em;
-    text-transform: uppercase;
-  }
-
-  .journey-copy h1 {
-    max-width: 10ch;
-    margin-bottom: 1rem;
-    font-size: clamp(3rem, 8vw, 6.4rem);
-    line-height: 0.94;
-    letter-spacing: 0.08em;
-  }
-
-  .journey-copy p:not(.section-kicker) {
-    max-width: 28rem;
-    color: var(--color-text-secondary);
-    font-size: clamp(1.05rem, 1.55vw, 1.25rem);
-    line-height: 1.75;
-  }
-
-  .journey-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    margin-top: 1.5rem;
-  }
-
-  .journey-meta span {
-    display: inline-flex;
-    align-items: center;
-    min-height: 2.2rem;
-    padding: 0.2rem 0.75rem;
-    border: 1px solid rgba(201, 162, 39, 0.24);
-    border-radius: 999px;
-    background: rgba(10, 10, 15, 0.28);
-    color: rgba(244, 238, 222, 0.86);
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
   }
 
   .journey-route {
@@ -679,42 +648,12 @@ const lastYear = Math.max(...travelPoints.map((point) => point.year));
     }
 
     .journey-copy {
-      width: 100%;
-      padding: 1.15rem 1.35rem 0;
+      width: max-content;
+      padding: 1.15rem 1rem 0;
     }
 
     .journey-back {
-      margin-bottom: 0.75rem;
       font-size: 0.74rem;
-    }
-
-    .section-kicker {
-      font-size: 0.68rem;
-      letter-spacing: 0.2em;
-    }
-
-    .journey-copy h1 {
-      max-width: 9ch;
-      margin-bottom: 0.7rem;
-      font-size: clamp(2.45rem, 14vw, 3.75rem);
-      letter-spacing: 0.06em;
-    }
-
-    .journey-copy p:not(.section-kicker) {
-      max-width: 24rem;
-      font-size: 1rem;
-      line-height: 1.55;
-    }
-
-    .journey-meta {
-      gap: 0.5rem;
-      margin-top: 1rem;
-    }
-
-    .journey-meta span {
-      min-height: 1.9rem;
-      padding: 0.16rem 0.58rem;
-      font-size: 0.68rem;
     }
 
     .journey-route {
@@ -757,10 +696,6 @@ const lastYear = Math.max(...travelPoints.map((point) => point.year));
   @media (max-width: 420px) {
     .journey-copy {
       padding-inline: 1rem;
-    }
-
-    .journey-copy p:not(.section-kicker) {
-      font-size: 0.94rem;
     }
 
     .journey-route {
