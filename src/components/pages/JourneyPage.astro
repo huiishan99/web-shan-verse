@@ -198,14 +198,8 @@ const scenePoints = travelPoints.map((point) => ({
       );
       globe.add(atmosphere);
 
-      const brass = new THREE.Color(0xc9a227);
-      const blue = new THREE.Color(0x6aabff);
-      const routeColors = {
-        study: 0xc9a227,
-        travel: 0x77a7d9,
-        work: 0xd4a84b,
-        event: 0x9fb7ff,
-      };
+      const routeGeometries = [];
+      const routeMaterials = [];
 
       function addOrbitRing(radius, y, color, opacity) {
         const curve = new THREE.EllipseCurve(0, 0, radius, radius, 0, Math.PI * 2);
@@ -252,33 +246,94 @@ const scenePoints = travelPoints.map((point) => ({
         );
       }
 
-      const markerGeometry = new THREE.SphereGeometry(0.044, 20, 20);
-      const haloGeometry = new THREE.SphereGeometry(0.082, 20, 20);
-      const markers = [];
-      const runners = [];
+      function createSurfaceRouteCurve(start, end) {
+        const startNormal = start.clone().normalize();
+        const endNormal = end.clone().normalize();
+        const dot = THREE.MathUtils.clamp(startNormal.dot(endNormal), -1, 1);
+        const theta = Math.acos(dot);
+        const sinTheta = Math.sin(theta);
+        const routePoints = [];
 
-      points.forEach((point, index) => {
+        for (let step = 0; step <= 72; step += 1) {
+          const t = step / 72;
+          let point;
+
+          if (sinTheta < 0.001) {
+            point = startNormal.clone().lerp(endNormal, t);
+          } else {
+            point = startNormal.clone()
+              .multiplyScalar(Math.sin((1 - t) * theta) / sinTheta)
+              .add(endNormal.clone().multiplyScalar(Math.sin(t * theta) / sinTheta));
+          }
+
+          const lift = 0.026 + Math.sin(t * Math.PI) * (0.028 + theta * 0.014);
+          routePoints.push(point.normalize().multiplyScalar(2.065 + lift));
+        }
+
+        return new THREE.CatmullRomCurve3(routePoints);
+      }
+
+      function addBrassRoute(curve) {
+        const shadowGeometry = new THREE.TubeGeometry(curve, 96, 0.012, 8, false);
+        const shadowMaterial = new THREE.MeshBasicMaterial({
+          color: 0x3d2a07,
+          transparent: true,
+          opacity: 0.26,
+          depthWrite: false,
+        });
+        const shadow = new THREE.Mesh(shadowGeometry, shadowMaterial);
+        globe.add(shadow);
+        routeGeometries.push(shadowGeometry);
+        routeMaterials.push(shadowMaterial);
+
+        const coreGeometry = new THREE.TubeGeometry(curve, 96, 0.0028, 8, false);
+        const coreMaterial = new THREE.MeshBasicMaterial({
+          color: 0xc9a227,
+          transparent: true,
+          opacity: 0.42,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        });
+        const core = new THREE.Mesh(coreGeometry, coreMaterial);
+        globe.add(core);
+        routeGeometries.push(coreGeometry);
+        routeMaterials.push(coreMaterial);
+
+        const highlightGeometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(96));
+        const highlightMaterial = new THREE.LineDashedMaterial({
+          color: 0xf0cf72,
+          dashSize: 0.055,
+          gapSize: 0.028,
+          transparent: true,
+          opacity: 0.78,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        });
+        const highlight = new THREE.Line(highlightGeometry, highlightMaterial);
+        highlight.computeLineDistances();
+        globe.add(highlight);
+        routeGeometries.push(highlightGeometry);
+        routeMaterials.push(highlightMaterial);
+      }
+
+      const markerGeometry = new THREE.SphereGeometry(0.026, 20, 20);
+      const haloGeometry = new THREE.SphereGeometry(0.047, 20, 20);
+      const markerMaterial = new THREE.MeshBasicMaterial({ color: 0xf3d57a });
+      const markerHaloMaterial = new THREE.MeshBasicMaterial({
+        color: 0xc9a227,
+        transparent: true,
+        opacity: 0.11,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      });
+
+      points.forEach((point) => {
         const position = latLonToVector3(point.lat, point.lon);
-        const color = routeColors[point.kind] || routeColors.travel;
-        const marker = new THREE.Mesh(
-          markerGeometry,
-          new THREE.MeshBasicMaterial({ color })
-        );
+        const marker = new THREE.Mesh(markerGeometry, markerMaterial);
         marker.position.copy(position);
-        marker.userData.seed = index * 0.41;
         globe.add(marker);
-        markers.push(marker);
 
-        const halo = new THREE.Mesh(
-          haloGeometry,
-          new THREE.MeshBasicMaterial({
-            color,
-            transparent: true,
-            opacity: 0.18,
-            blending: THREE.AdditiveBlending,
-            depthWrite: false,
-          })
-        );
+        const halo = new THREE.Mesh(haloGeometry, markerHaloMaterial);
         halo.position.copy(position);
         globe.add(halo);
       });
@@ -286,35 +341,9 @@ const scenePoints = travelPoints.map((point) => ({
       for (let index = 1; index < points.length; index += 1) {
         const previous = points[index - 1];
         const current = points[index];
-        const start = latLonToVector3(previous.lat, previous.lon, 2.06);
-        const end = latLonToVector3(current.lat, current.lon, 2.06);
-        const distance = start.distanceTo(end);
-        const mid = start.clone().add(end).multiplyScalar(0.5).normalize().multiplyScalar(2.22 + distance * 0.14);
-        const curve = new THREE.QuadraticBezierCurve3(start, mid, end);
-        const color = routeColors[current.kind] || routeColors.travel;
-        const arc = new THREE.Mesh(
-          new THREE.TubeGeometry(curve, 56, 0.008, 8, false),
-          new THREE.MeshBasicMaterial({
-            color,
-            transparent: true,
-            opacity: 0.52,
-            blending: THREE.AdditiveBlending,
-          })
-        );
-        globe.add(arc);
-
-        const runner = new THREE.Mesh(
-          new THREE.SphereGeometry(0.032, 16, 16),
-          new THREE.MeshBasicMaterial({
-            color: index % 3 === 0 ? blue : brass,
-            transparent: true,
-            opacity: 0.95,
-          })
-        );
-        runner.userData.curve = curve;
-        runner.userData.offset = index * 0.071;
-        globe.add(runner);
-        runners.push(runner);
+        const start = latLonToVector3(previous.lat, previous.lon, 2.065);
+        const end = latLonToVector3(current.lat, current.lon, 2.065);
+        addBrassRoute(createSurfaceRouteCurve(start, end));
       }
 
       const starGeometry = new THREE.BufferGeometry();
@@ -435,17 +464,6 @@ const scenePoints = travelPoints.map((point) => ({
         globe.rotation.y += (targetRotationY - globe.rotation.y) * 0.07;
         stars.rotation.y += 0.00008;
 
-        markers.forEach((marker) => {
-          const pulse = 1 + Math.sin(time * 0.003 + marker.userData.seed) * 0.22;
-          marker.scale.setScalar(pulse);
-        });
-
-        runners.forEach((runner) => {
-          const curve = runner.userData.curve;
-          const progress = (time * 0.00008 + runner.userData.offset) % 1;
-          runner.position.copy(curve.getPoint(progress));
-        });
-
         renderer.render(scene, camera);
         if (time - lastCanvasSample > 1200) {
           lastCanvasSample = time;
@@ -469,6 +487,10 @@ const scenePoints = travelPoints.map((point) => ({
         cloudTexture?.dispose();
         markerGeometry.dispose();
         haloGeometry.dispose();
+        markerMaterial.dispose();
+        markerHaloMaterial.dispose();
+        routeGeometries.forEach((geometry) => geometry.dispose());
+        routeMaterials.forEach((material) => material.dispose());
         starGeometry.dispose();
       }
 
