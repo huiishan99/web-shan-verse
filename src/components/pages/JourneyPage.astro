@@ -12,22 +12,18 @@ const { lang = defaultLocale } = Astro.props;
 const journeyCopy: Record<Locale, {
   title: string;
   back: string;
-  route: string;
 }> = {
   en: {
     title: 'Travel Atlas',
     back: 'Back Home',
-    route: 'Route Log',
   },
   zh: {
     title: '旅行星图',
     back: '返回首页',
-    route: '轨迹记录',
   },
   ja: {
     title: '旅の星図',
     back: 'ホームへ',
-    route: 'ルートログ',
   },
 };
 
@@ -59,19 +55,6 @@ const scenePoints = travelPoints.map((point) => ({
         {copy.back}
       </a>
     </div>
-
-    <aside class="journey-route" aria-label={copy.route}>
-      <p>{copy.route}</p>
-      <ol>
-        {scenePoints.map((point) => (
-          <li data-kind={point.kind}>
-            <span>{point.year}</span>
-            <strong>{point.name}</strong>
-            <em>{point.note}</em>
-          </li>
-        ))}
-      </ol>
-    </aside>
   </section>
 </BaseLayout>
 
@@ -454,12 +437,12 @@ const scenePoints = travelPoints.map((point) => ({
 
         renderer.setSize(width, height, false);
         camera.aspect = width / height;
-        camera.position.set(isMobile ? 0 : 0.18, isMobile ? 0.5 : 0.2, isMobile ? 5.65 : 5.15);
-        camera.lookAt(isMobile ? 0 : 0.08, isMobile ? -0.08 : -0.16, 0);
+        camera.position.set(isMobile ? 0.02 : 0.06, isMobile ? 0.46 : 0.16, isMobile ? 5.65 : 5.08);
+        camera.lookAt(isMobile ? 0.02 : 0.02, isMobile ? -0.12 : -0.14, 0);
         camera.updateProjectionMatrix();
 
-        globe.position.set(isMobile ? 0.08 : 0.24, isMobile ? -0.34 : -0.34, 0);
-        const scale = isMobile ? 0.98 : 1.08;
+        globe.position.set(isMobile ? 0.02 : 0.04, isMobile ? -0.33 : -0.62, 0);
+        const scale = isMobile ? 0.98 : 1.1;
         globe.scale.setScalar(scale);
       }
 
@@ -644,88 +627,6 @@ const scenePoints = travelPoints.map((point) => ({
     color: var(--color-brass-light);
   }
 
-  .journey-route {
-    position: absolute;
-    right: clamp(1.25rem, 5vw, 5rem);
-    bottom: clamp(1.25rem, 4vw, 3.2rem);
-    z-index: 2;
-    width: min(27rem, 36vw);
-    color: var(--color-text-secondary);
-  }
-
-  .journey-route p {
-    margin-bottom: 0.8rem;
-    color: var(--color-brass-light);
-    font-family: var(--font-display);
-    font-size: 1.05rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-  }
-
-  .journey-route ol {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.5rem 0.7rem;
-    max-height: min(34vh, 22rem);
-    overflow: auto;
-    padding: 0.15rem 0.25rem 0.15rem 0;
-    list-style: none;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(201, 162, 39, 0.32) transparent;
-  }
-
-  .journey-route li {
-    position: relative;
-    min-width: 0;
-    padding: 0.5rem 0.55rem 0.45rem 0.72rem;
-    border-left: 1px solid rgba(201, 162, 39, 0.34);
-    background: linear-gradient(90deg, rgba(201, 162, 39, 0.07), transparent);
-  }
-
-  .journey-route li[data-kind='travel'] {
-    border-left-color: rgba(106, 171, 255, 0.52);
-    background: linear-gradient(90deg, rgba(106, 171, 255, 0.07), transparent);
-  }
-
-  .journey-route li[data-kind='work'] {
-    border-left-color: rgba(212, 168, 75, 0.62);
-  }
-
-  .journey-route li[data-kind='event'] {
-    border-left-color: rgba(159, 183, 255, 0.68);
-  }
-
-  .journey-route span,
-  .journey-route em {
-    display: block;
-    color: var(--color-text-muted);
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    font-style: normal;
-    line-height: 1.35;
-  }
-
-  .journey-route strong {
-    display: block;
-    overflow: hidden;
-    margin: 0.1rem 0;
-    color: var(--color-text-primary);
-    font-size: 0.94rem;
-    line-height: 1.2;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  @media (max-width: 900px) {
-    .journey-route {
-      width: min(24rem, 42vw);
-    }
-
-    .journey-route ol {
-      grid-template-columns: 1fr;
-    }
-  }
-
   @media (max-width: 720px) {
     .journey-shell {
       min-height: calc(100vh - 3.4rem);
@@ -750,52 +651,11 @@ const scenePoints = travelPoints.map((point) => ({
     .journey-back {
       font-size: 0.74rem;
     }
-
-    .journey-route {
-      left: 1rem;
-      right: 1rem;
-      bottom: 6.6rem;
-      width: auto;
-    }
-
-    .journey-route p {
-      margin-bottom: 0.55rem;
-      font-size: 0.8rem;
-      letter-spacing: 0.12em;
-    }
-
-    .journey-route ol {
-      display: flex;
-      gap: 0.55rem;
-      max-height: none;
-      overflow-x: auto;
-      overflow-y: hidden;
-      padding: 0 0 0.35rem;
-      scroll-snap-type: x proximity;
-    }
-
-    .journey-route li {
-      flex: 0 0 9.5rem;
-      scroll-snap-align: start;
-      padding: 0.45rem 0.5rem 0.42rem 0.6rem;
-      background: rgba(10, 10, 15, 0.32);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-    }
-
-    .journey-route strong {
-      font-size: 0.86rem;
-    }
   }
 
   @media (max-width: 420px) {
     .journey-copy {
       padding-inline: 1rem;
-    }
-
-    .journey-route {
-      left: 0.8rem;
-      right: 0.8rem;
     }
   }
 </style>
