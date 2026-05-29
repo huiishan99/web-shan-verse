@@ -249,8 +249,8 @@ const scenePoints = travelPoints.map((point) => ({
 
       const earthGeometry = new THREE.SphereGeometry(2, 96, 96);
       const textureLoader = new THREE.TextureLoader();
-      // Derived from NASA Earth Observatory Blue Marble topography data.
-      const earthTexture = textureLoader.load('/images/earth-topography-dark.jpg');
+      // Derived from NASA Blue Marble imagery, color graded for the atlas scene.
+      const earthTexture = textureLoader.load('/images/earth-natural-dark.jpg');
       earthTexture.colorSpace = THREE.SRGBColorSpace;
       earthTexture.anisotropy = Math.min(16, renderer.capabilities.getMaxAnisotropy());
       const earthMaterial = new THREE.MeshBasicMaterial({
@@ -285,7 +285,7 @@ const scenePoints = travelPoints.map((point) => ({
           void main() {
             float rim = pow(1.0 - max(dot(normalize(vNormal), normalize(vViewPosition)), 0.0), 2.35);
             vec3 color = mix(rimColor, brassColor, 0.22);
-            gl_FragColor = vec4(color, rim * 0.42);
+            gl_FragColor = vec4(color, rim * 0.26);
           }
         `,
         transparent: true,
