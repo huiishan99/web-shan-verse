@@ -249,13 +249,42 @@ const scenePoints = travelPoints.map((point) => ({
 
       const earthGeometry = new THREE.SphereGeometry(2, 96, 96);
       const textureLoader = new THREE.TextureLoader();
-      // Derived from NASA Blue Marble imagery, muted for the atlas scene.
-      const earthTexturePath = renderer.capabilities.maxTextureSize >= 8192
-        ? '/images/earth-natural-muted-8192.jpg'
-        : '/images/earth-natural-muted-4096.jpg';
-      const earthTexture = textureLoader.load(earthTexturePath);
-      earthTexture.colorSpace = THREE.SRGBColorSpace;
-      earthTexture.anisotropy = Math.min(16, renderer.capabilities.getMaxAnisotropy());
+      const maxAnisotropy = Math.min(16, renderer.capabilities.getMaxAnisotropy());
+      function configureEarthTexture(texture) {
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.anisotropy = maxAnisotropy;
+      }
+
+      // Start with a lighter texture so the entrance animation can begin quickly,
+      // then upgrade to the full atlas once the intro has settled.
+      const earthTexture = textureLoader.load('/images/earth-natural-muted-4096.jpg');
+      configureEarthTexture(earthTexture);
+      let highResEarthTexture = null;
+      let highResEarthReady = false;
+      let highResEarthSwapped = false;
+      let sceneDisposed = false;
+      root.dataset.earthTexture = '4096';
+
+      if (renderer.capabilities.maxTextureSize >= 8192) {
+        highResEarthTexture = textureLoader.load(
+          '/images/earth-natural-muted-8192.jpg',
+          (loadedTexture) => {
+            if (sceneDisposed) {
+              loadedTexture.dispose();
+              return;
+            }
+            configureEarthTexture(loadedTexture);
+            highResEarthReady = true;
+            root.dataset.earthTexture = '8192-ready';
+          },
+          undefined,
+          () => {
+            highResEarthTexture?.dispose();
+            highResEarthTexture = null;
+          }
+        );
+        configureEarthTexture(highResEarthTexture);
+      }
       const earthMaterial = new THREE.MeshBasicMaterial({
         color: 0xffffff,
         map: earthTexture,
@@ -653,6 +682,15 @@ const scenePoints = travelPoints.map((point) => ({
           ? THREE.MathUtils.clamp((time - sceneStartTime) / introDuration, 0, 1)
           : 0;
         const easedIntro = reducedMotion ? 1 : easeOutCubic(introProgress);
+        if (highResEarthReady && highResEarthTexture && !highResEarthSwapped && introProgress >= 1 && !isDragging) {
+          highResEarthSwapped = true;
+          const previousTexture = earthMaterial.map;
+          renderer.initTexture(highResEarthTexture);
+          earthMaterial.map = highResEarthTexture;
+          earthMaterial.needsUpdate = true;
+          previousTexture?.dispose();
+          root.dataset.earthTexture = '8192';
+        }
         const startScale = isMobileLayout ? 0.13 : 0.16;
         const flarePulse = Math.sin(Math.min(1, introProgress) * Math.PI);
         introStartPosition.set(
@@ -715,6 +753,7 @@ const scenePoints = travelPoints.map((point) => ({
       }
 
       function cleanup() {
+        sceneDisposed = true;
         cancelAnimationFrame(animationFrame);
         window.clearTimeout(entranceTimer);
         window.removeEventListener('load', startEntranceAfterPaint);
@@ -731,7 +770,10 @@ const scenePoints = travelPoints.map((point) => ({
         root.dataset.earthReady = 'false';
         renderer.dispose();
         earthGeometry.dispose();
-        earthTexture.dispose();
+        earthMaterial.map?.dispose();
+        if (highResEarthTexture && highResEarthTexture !== earthMaterial.map) {
+          highResEarthTexture.dispose();
+        }
         earthRim.geometry.dispose();
         earthRimMaterial.dispose();
         flareTexture?.dispose();

@@ -317,7 +317,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
           <a href={aboutPath} class="btn">
             <Icon name="gear" size={16} /> {t.home.aboutButton}
           </a>
-          <a href={localizePath('/journey', lang)} class="btn">
+          <a href={localizePath('/journey', lang)} class="btn" data-journey-preload data-astro-prefetch="hover">
             <Icon name="globe" size={16} /> {t.home.projectsButton}
           </a>
         </div>
@@ -855,6 +855,69 @@ function getExcerpt(body: string, maxLength: number = 100): string {
 
     setupGithubCalendars();
     document.addEventListener('astro:page-load', setupGithubCalendars);
+  })();
+
+  (() => {
+    if (window.__shanJourneyTextureWarmupReady) return;
+    window.__shanJourneyTextureWarmupReady = true;
+
+    const warmup = window.__shanJourneyTextureWarmup || {
+      urls: new Set(),
+      images: [],
+    };
+    window.__shanJourneyTextureWarmup = warmup;
+
+    function canUseHighResTexture() {
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+      return !!gl && gl.getParameter(gl.MAX_TEXTURE_SIZE) >= 8192;
+    }
+
+    const textureUrls = [
+      '/images/earth-natural-muted-4096.jpg',
+      ...(canUseHighResTexture() ? ['/images/earth-natural-muted-8192.jpg'] : []),
+    ];
+
+    function warmImage(url) {
+      if (warmup.urls.has(url)) return;
+      warmup.urls.add(url);
+
+      const link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.as = 'image';
+      link.href = url;
+      link.fetchPriority = 'low';
+      document.head.append(link);
+
+      const image = new Image();
+      image.decoding = 'async';
+      image.src = url;
+      warmup.images.push(image);
+      if (typeof image.decode === 'function') {
+        image.decode().catch(() => {});
+      }
+    }
+
+    function warmJourneyTextures() {
+      textureUrls.forEach(warmImage);
+    }
+
+    function maybeWarmFromEvent(event) {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (target.closest('[data-journey-preload]')) warmJourneyTextures();
+    }
+
+    document.addEventListener('pointerover', maybeWarmFromEvent, { passive: true });
+    document.addEventListener('touchstart', maybeWarmFromEvent, { passive: true });
+    document.addEventListener('focusin', maybeWarmFromEvent);
+
+    const scheduleWarmup = () => warmJourneyTextures();
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(scheduleWarmup, { timeout: 3200 });
+    } else {
+      window.setTimeout(scheduleWarmup, 1800);
+    }
   })();
 </script>
 
