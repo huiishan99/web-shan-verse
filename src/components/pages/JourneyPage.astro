@@ -138,33 +138,6 @@ const scenePoints = travelPoints.map((point) => ({
         return Math.sin(x * 12.9898 + y * 78.233) * 43758.5453 % 1;
       }
 
-      function createCloudTexture() {
-        const width = 1024;
-        const height = 512;
-        const cloudCanvas = document.createElement('canvas');
-        cloudCanvas.width = width;
-        cloudCanvas.height = height;
-        const context = cloudCanvas.getContext('2d');
-        if (!context) return null;
-        context.clearRect(0, 0, width, height);
-
-        for (let i = 0; i < 160; i += 1) {
-          const x = Math.abs(seededNoise(i, 9)) * width;
-          const y = Math.abs(seededNoise(17, i)) * height;
-          const w = 18 + Math.abs(seededNoise(x, i)) * 76;
-          const h = 4 + Math.abs(seededNoise(i, y)) * 18;
-          const opacity = 0.035 + Math.abs(seededNoise(x, y)) * 0.07;
-          context.fillStyle = `rgba(255, 255, 255, ${opacity})`;
-          context.beginPath();
-          context.ellipse(x, y, w, h, seededNoise(y, x) * Math.PI, 0, Math.PI * 2);
-          context.fill();
-        }
-
-        const texture = new THREE.CanvasTexture(cloudCanvas);
-        texture.colorSpace = THREE.SRGBColorSpace;
-        return texture;
-      }
-
       function createFlareTexture() {
         const size = 256;
         const flareCanvas = document.createElement('canvas');
@@ -278,59 +251,16 @@ const scenePoints = travelPoints.map((point) => ({
       const textureLoader = new THREE.TextureLoader();
       const earthTexture = textureLoader.load('/images/earth-black-marble-2016.jpg');
       earthTexture.colorSpace = THREE.SRGBColorSpace;
-      earthTexture.anisotropy = 8;
-      const earthMaterial = new THREE.MeshStandardMaterial({
-        color: 0xffffff,
+      earthTexture.anisotropy = Math.min(16, renderer.capabilities.getMaxAnisotropy());
+      const earthMaterial = new THREE.MeshBasicMaterial({
+        color: 0xf0e6cf,
         map: earthTexture,
-        emissiveMap: earthTexture,
-        emissive: 0xd39b52,
-        emissiveIntensity: 0.36,
-        metalness: 0.1,
-        roughness: 0.58,
       });
       const earth = new THREE.Mesh(earthGeometry, earthMaterial);
       globe.add(earth);
 
-      const wire = new THREE.Mesh(
-        new THREE.SphereGeometry(2.006, 36, 24),
-        new THREE.MeshBasicMaterial({
-          color: 0x8fb6dd,
-          transparent: true,
-          opacity: 0.035,
-          wireframe: true,
-        })
-      );
-      globe.add(wire);
-
-      const cloudTexture = createCloudTexture();
-      const clouds = new THREE.Mesh(
-        new THREE.SphereGeometry(2.032, 96, 96),
-        new THREE.MeshBasicMaterial({
-          map: cloudTexture || undefined,
-          color: 0xffffff,
-          transparent: true,
-          opacity: 0.18,
-          blending: THREE.AdditiveBlending,
-          depthWrite: false,
-        })
-      );
-      globe.add(clouds);
-
-      const atmosphere = new THREE.Mesh(
-        new THREE.SphereGeometry(2.16, 96, 96),
-        new THREE.MeshBasicMaterial({
-          color: 0x6aabff,
-          transparent: true,
-          opacity: 0.12,
-          side: THREE.BackSide,
-          blending: THREE.AdditiveBlending,
-          depthWrite: false,
-        })
-      );
-      globe.add(atmosphere);
-
-      const routeGeometries = [];
-      const routeMaterials = [];
+      const disposableGeometries = [];
+      const disposableMaterials = [];
       const lightMaterials = [];
       const markerHitTargets = [];
       const markerSprites = [];
@@ -348,7 +278,7 @@ const scenePoints = travelPoints.map((point) => ({
           const distance = Math.abs(seededNoise(lon, lat + index)) * radius;
           const pointLat = lat + Math.sin(angle) * distance;
           const pointLon = lon + Math.cos(angle) * distance * 1.25;
-          const position = latLonToVector3(pointLat, pointLon, 2.044);
+          const position = latLonToVector3(pointLat, pointLon, 2.01);
           positions[index * 3] = position.x;
           positions[index * 3 + 1] = position.y;
           positions[index * 3 + 2] = position.z;
@@ -367,44 +297,10 @@ const scenePoints = travelPoints.map((point) => ({
         const lights = new THREE.Points(geometry, material);
         lights.userData.phase = seededNoise(lat, lon) * Math.PI * 2;
         globe.add(lights);
-        routeGeometries.push(geometry);
-        routeMaterials.push(material);
+        disposableGeometries.push(geometry);
+        disposableMaterials.push(material);
         lightMaterials.push(material);
       }
-
-      function addOrbitRing(radius, y, color, opacity) {
-        const curve = new THREE.EllipseCurve(0, 0, radius, radius, 0, Math.PI * 2);
-        const positions = curve.getPoints(128).map((point) => new THREE.Vector3(point.x, y, point.y));
-        const geometry = new THREE.BufferGeometry().setFromPoints(positions);
-        const material = new THREE.LineBasicMaterial({
-          color,
-          transparent: true,
-          opacity,
-        });
-        const ring = new THREE.LineLoop(geometry, material);
-        globe.add(ring);
-      }
-
-      [-1.35, -0.68, 0, 0.68, 1.35].forEach((y, index) => {
-        addOrbitRing(Math.sqrt(Math.max(0.01, 4 - y * y)), y, index === 2 ? 0xc9a227 : 0x88a7c4, index === 2 ? 0.1 : 0.04);
-      });
-
-      function addMeridian(rotationZ) {
-        const curve = new THREE.EllipseCurve(0, 0, 2.012, 2.012, 0, Math.PI * 2);
-        const positions = curve.getPoints(128).map((point) => new THREE.Vector3(point.x, point.y, 0));
-        const geometry = new THREE.BufferGeometry().setFromPoints(positions);
-        const material = new THREE.LineBasicMaterial({
-          color: 0x88a7c4,
-          transparent: true,
-          opacity: 0.09,
-        });
-        const meridian = new THREE.LineLoop(geometry, material);
-        meridian.rotation.y = Math.PI / 2;
-        meridian.rotation.z = rotationZ;
-        globe.add(meridian);
-      }
-
-      Array.from({ length: 6 }, (_, index) => addMeridian((Math.PI / 6) * index));
 
       function latLonToVector3(lat, lon, radius = 2.028) {
         const phi = THREE.MathUtils.degToRad(90 - lat);
@@ -415,78 +311,6 @@ const scenePoints = travelPoints.map((point) => ({
           radius * Math.cos(phi),
           radius * Math.sin(phi) * Math.sin(theta)
         );
-      }
-
-      function createSurfaceRouteCurve(start, end) {
-        const startNormal = start.clone().normalize();
-        const endNormal = end.clone().normalize();
-        const dot = THREE.MathUtils.clamp(startNormal.dot(endNormal), -1, 1);
-        const theta = Math.acos(dot);
-        const sinTheta = Math.sin(theta);
-        const routePoints = [];
-
-        for (let step = 0; step <= 72; step += 1) {
-          const t = step / 72;
-          let point;
-
-          if (sinTheta < 0.001) {
-            point = startNormal.clone().lerp(endNormal, t);
-          } else {
-            point = startNormal.clone()
-              .multiplyScalar(Math.sin((1 - t) * theta) / sinTheta)
-              .add(endNormal.clone().multiplyScalar(Math.sin(t * theta) / sinTheta));
-          }
-
-          const lift = 0.006 + Math.sin(t * Math.PI) * (0.01 + theta * 0.004);
-          routePoints.push(point.normalize().multiplyScalar(2.026 + lift));
-        }
-
-        return new THREE.CatmullRomCurve3(routePoints);
-      }
-
-      function addBrassRoute(curve) {
-        const shadowGeometry = new THREE.TubeGeometry(curve, 96, 0.009, 8, false);
-        const shadowMaterial = new THREE.MeshBasicMaterial({
-          color: 0x3d2a07,
-          transparent: true,
-          opacity: 0.24,
-          depthWrite: false,
-        });
-        const shadow = new THREE.Mesh(shadowGeometry, shadowMaterial);
-        globe.add(shadow);
-        routeGeometries.push(shadowGeometry);
-        routeMaterials.push(shadowMaterial);
-
-        const coreGeometry = new THREE.TubeGeometry(curve, 96, 0.0042, 12, false);
-        const coreMaterial = new THREE.MeshStandardMaterial({
-          color: 0xb8902d,
-          metalness: 0.78,
-          roughness: 0.26,
-          emissive: 0x3a2505,
-          emissiveIntensity: 0.18,
-          transparent: true,
-          opacity: 0.74,
-          depthWrite: false,
-        });
-        const core = new THREE.Mesh(coreGeometry, coreMaterial);
-        globe.add(core);
-        routeGeometries.push(coreGeometry);
-        routeMaterials.push(coreMaterial);
-
-        const highlightGeometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(96));
-        const highlightMaterial = new THREE.LineDashedMaterial({
-          color: 0xffdf91,
-          dashSize: 0.035,
-          gapSize: 0.038,
-          transparent: true,
-          opacity: 0.52,
-          depthWrite: false,
-        });
-        const highlight = new THREE.Line(highlightGeometry, highlightMaterial);
-        highlight.computeLineDistances();
-        globe.add(highlight);
-        routeGeometries.push(highlightGeometry);
-        routeMaterials.push(highlightMaterial);
       }
 
       [
@@ -523,29 +347,21 @@ const scenePoints = travelPoints.map((point) => ({
         const position = latLonToVector3(point.lat, point.lon);
         const normal = position.clone().normalize();
         const marker = new THREE.Sprite(markerMaterial.clone());
-        marker.position.copy(normal.clone().multiplyScalar(2.034));
-        marker.scale.setScalar(0.11);
+        marker.position.copy(normal.clone().multiplyScalar(2.012));
+        marker.scale.setScalar(0.092);
         marker.userData.point = point;
-        marker.userData.baseScale = 0.11;
+        marker.userData.baseScale = 0.092;
         marker.userData.phase = seededNoise(point.lat, point.lon) * Math.PI * 2;
         globe.add(marker);
         markerSprites.push(marker);
 
         const hitTarget = new THREE.Mesh(markerHitGeometry, markerHitMaterial);
-        hitTarget.position.copy(normal.clone().multiplyScalar(2.04));
+        hitTarget.position.copy(normal.clone().multiplyScalar(2.018));
         hitTarget.userData.point = point;
         hitTarget.userData.marker = marker;
         globe.add(hitTarget);
         markerHitTargets.push(hitTarget);
       });
-
-      for (let index = 1; index < points.length; index += 1) {
-        const previous = points[index - 1];
-        const current = points[index];
-        const start = latLonToVector3(previous.lat, previous.lon, 2.028);
-        const end = latLonToVector3(current.lat, current.lon, 2.028);
-        addBrassRoute(createSurfaceRouteCurve(start, end));
-      }
 
       const starGeometry = new THREE.BufferGeometry();
       const starPositions = new Float32Array(260 * 3);
@@ -872,7 +688,6 @@ const scenePoints = travelPoints.map((point) => ({
         const idleRotationY = Math.sin(time * 0.00016) * 0.032 * idleMotion;
         globe.rotation.x += (targetRotationX + idleRotationX - globe.rotation.x) * 0.055;
         globe.rotation.y += (targetRotationY + idleRotationY - globe.rotation.y) * 0.055;
-        clouds.rotation.y += 0.000035 * settledMotion;
         stars.rotation.y += 0.00008;
         root.dataset.introProgress = introProgress.toFixed(3);
         lightMaterials.forEach((material, index) => {
@@ -919,14 +734,13 @@ const scenePoints = travelPoints.map((point) => ({
         earthTexture.dispose();
         flareTexture?.dispose();
         arrivalFlareMaterial.dispose();
-        cloudTexture?.dispose();
         markerTexture?.dispose();
         markerHitGeometry.dispose();
         markerMaterial.dispose();
         markerHitMaterial.dispose();
         markerSprites.forEach((marker) => marker.material.dispose());
-        routeGeometries.forEach((geometry) => geometry.dispose());
-        routeMaterials.forEach((material) => material.dispose());
+        disposableGeometries.forEach((geometry) => geometry.dispose());
+        disposableMaterials.forEach((material) => material.dispose());
         starGeometry.dispose();
       }
 
