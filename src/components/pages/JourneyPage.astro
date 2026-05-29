@@ -180,10 +180,10 @@ const scenePoints = travelPoints.map((point) => ({
         const center = size / 2;
         context.clearRect(0, 0, size, size);
 
-        const glow = context.createRadialGradient(center, center, 0, center, center, center * 0.86);
-        glow.addColorStop(0, 'rgba(255, 242, 188, 0.96)');
-        glow.addColorStop(0.18, 'rgba(240, 197, 86, 0.36)');
-        glow.addColorStop(0.54, 'rgba(156, 108, 28, 0.12)');
+        const glow = context.createRadialGradient(center, center, 0, center, center, 78);
+        glow.addColorStop(0, 'rgba(255, 246, 205, 0.92)');
+        glow.addColorStop(0.26, 'rgba(246, 202, 88, 0.24)');
+        glow.addColorStop(0.72, 'rgba(156, 108, 28, 0.06)');
         glow.addColorStop(1, 'rgba(0, 0, 0, 0)');
         context.fillStyle = glow;
         context.fillRect(0, 0, size, size);
@@ -192,41 +192,41 @@ const scenePoints = travelPoints.map((point) => ({
         context.translate(center, center);
         context.globalCompositeOperation = 'screen';
 
-        for (const ray of [
-          { rotation: 0, width: 138, height: 19, alpha: 0.18 },
-          { rotation: Math.PI / 2, width: 116, height: 17, alpha: 0.14 },
-          { rotation: Math.PI / 4, width: 72, height: 12, alpha: 0.1 },
-          { rotation: -Math.PI / 4, width: 72, height: 12, alpha: 0.1 },
-        ]) {
-          context.save();
-          context.rotate(ray.rotation);
-          const rayGlow = context.createRadialGradient(0, 0, 0, 0, 0, ray.width / 2);
-          rayGlow.addColorStop(0, `rgba(255, 238, 177, ${ray.alpha})`);
-          rayGlow.addColorStop(0.56, `rgba(245, 200, 88, ${ray.alpha * 0.3})`);
-          rayGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
-          context.fillStyle = rayGlow;
-          context.beginPath();
-          context.ellipse(0, 0, ray.width / 2, ray.height / 2, 0, 0, Math.PI * 2);
-          context.fill();
-          context.restore();
-        }
+        context.strokeStyle = 'rgba(255, 238, 176, 0.58)';
+        context.lineWidth = 1.7;
+        context.lineCap = 'round';
+        context.beginPath();
+        context.moveTo(-44, 0);
+        context.lineTo(44, 0);
+        context.moveTo(0, -38);
+        context.lineTo(0, 38);
+        context.stroke();
 
-        const halo = context.createRadialGradient(0, 0, 0, 0, 0, 52);
-        halo.addColorStop(0, 'rgba(255, 248, 213, 0.88)');
-        halo.addColorStop(0.42, 'rgba(255, 213, 100, 0.38)');
+        context.strokeStyle = 'rgba(255, 214, 106, 0.28)';
+        context.lineWidth = 1.1;
+        context.beginPath();
+        context.moveTo(-24, -24);
+        context.lineTo(24, 24);
+        context.moveTo(24, -24);
+        context.lineTo(-24, 24);
+        context.stroke();
+
+        const halo = context.createRadialGradient(0, 0, 0, 0, 0, 34);
+        halo.addColorStop(0, 'rgba(255, 248, 213, 0.92)');
+        halo.addColorStop(0.44, 'rgba(255, 213, 100, 0.42)');
         halo.addColorStop(1, 'rgba(201, 162, 39, 0)');
         context.fillStyle = halo;
         context.beginPath();
-        context.arc(0, 0, 52, 0, Math.PI * 2);
+        context.arc(0, 0, 34, 0, Math.PI * 2);
         context.fill();
 
-        const core = context.createRadialGradient(0, 0, 0, 0, 0, 28);
+        const core = context.createRadialGradient(0, 0, 0, 0, 0, 13);
         core.addColorStop(0, 'rgba(255, 255, 238, 1)');
-        core.addColorStop(0.4, 'rgba(255, 228, 130, 0.88)');
+        core.addColorStop(0.5, 'rgba(255, 230, 136, 0.96)');
         core.addColorStop(1, 'rgba(201, 162, 39, 0)');
         context.fillStyle = core;
         context.beginPath();
-        context.arc(0, 0, 28, 0, Math.PI * 2);
+        context.arc(0, 0, 14, 0, Math.PI * 2);
         context.fill();
         context.restore();
 
@@ -404,10 +404,11 @@ const scenePoints = travelPoints.map((point) => ({
       const minZoom = 0.72;
       const maxZoom = 1.75;
       const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const introDelay = reducedMotion ? 0 : 520;
-      const introDuration = reducedMotion ? 1 : 2600;
+      const introDelay = 0;
+      const introDuration = reducedMotion ? 1 : 2200;
       const finalGlobePosition = new THREE.Vector3();
       const introStartPosition = new THREE.Vector3();
+      const introControlPosition = new THREE.Vector3();
       const currentGlobePosition = new THREE.Vector3();
 
       globe.rotation.x = targetRotationX;
@@ -422,7 +423,7 @@ const scenePoints = travelPoints.map((point) => ({
         window.clearTimeout(entranceTimer);
         entranceTimer = window.setTimeout(() => {
           entranceReady = true;
-        }, reducedMotion ? 0 : 180);
+        }, reducedMotion ? 0 : 40);
       }
 
       if (document.readyState === 'complete') {
@@ -554,7 +555,7 @@ const scenePoints = travelPoints.map((point) => ({
           Math.hypot(event.clientX - pointerStartX, event.clientY - pointerStartY)
         );
         targetRotationY += deltaX * 0.004;
-        targetRotationX = THREE.MathUtils.clamp(targetRotationX + deltaY * 0.002, -0.72, 0.34);
+        targetRotationX = THREE.MathUtils.clamp(targetRotationX + deltaY * 0.0022, -1.08, 0.88);
         lastX = event.clientX;
         lastY = event.clientY;
       }
@@ -660,14 +661,24 @@ const scenePoints = travelPoints.map((point) => ({
           ? THREE.MathUtils.clamp((time - sceneStartTime) / introDuration, 0, 1)
           : 0;
         const easedIntro = reducedMotion ? 1 : easeOutCubic(introProgress);
-        const startScale = isMobileLayout ? 0.036 : 0.042;
+        const startScale = isMobileLayout ? 0.13 : 0.16;
         const flarePulse = Math.sin(Math.min(1, introProgress) * Math.PI);
         introStartPosition.set(
-          finalGlobePosition.x + (isMobileLayout ? 0.02 : 0.05),
-          finalGlobePosition.y + (isMobileLayout ? 0.12 : 0.18),
-          -3.6
+          finalGlobePosition.x + (isMobileLayout ? 1.28 : 1.86),
+          finalGlobePosition.y + (isMobileLayout ? 1.72 : 1.94),
+          -4.15
         );
-        currentGlobePosition.lerpVectors(introStartPosition, finalGlobePosition, easedIntro);
+        introControlPosition.set(
+          finalGlobePosition.x + (isMobileLayout ? 0.72 : 1.1),
+          finalGlobePosition.y + (isMobileLayout ? 0.58 : 0.82),
+          -1.35
+        );
+        const inverseIntro = 1 - easedIntro;
+        currentGlobePosition
+          .copy(introStartPosition)
+          .multiplyScalar(inverseIntro * inverseIntro)
+          .addScaledVector(introControlPosition, 2 * inverseIntro * easedIntro)
+          .addScaledVector(finalGlobePosition, easedIntro * easedIntro);
 
         const settledMotion = reducedMotion ? 0 : Math.min(1, Math.max(0, introProgress - 0.72) / 0.28);
         currentGlobePosition.y += Math.sin(time * 0.00042) * 0.018 * settledMotion;
