@@ -81,7 +81,7 @@ const scenePoints = travelPoints.map((point) => ({
 
     <div class="journey-place-card" data-place-card hidden>
       <span class="journey-place-media" aria-hidden="true">
-        <span class="journey-place-orbit"></span>
+        <span class="journey-place-initial" data-place-initial></span>
       </span>
       <span class="journey-place-kicker" data-place-kicker></span>
       <strong data-place-name></strong>
@@ -103,6 +103,7 @@ const scenePoints = travelPoints.map((point) => ({
       const canvas = root.querySelector('[data-earth-canvas]');
       if (!(canvas instanceof HTMLCanvasElement)) return;
       const placeCard = root.querySelector('[data-place-card]');
+      const placeInitial = root.querySelector('[data-place-initial]');
       const placeKicker = root.querySelector('[data-place-kicker]');
       const placeName = root.querySelector('[data-place-name]');
       const placeNote = root.querySelector('[data-place-note]');
@@ -510,7 +511,7 @@ const scenePoints = travelPoints.map((point) => ({
         const anchorX = (markerScreenPosition.x * 0.5 + 0.5) * root.clientWidth;
         const anchorY = (-markerScreenPosition.y * 0.5 + 0.5) * root.clientHeight;
         const cardWidth = placeCard.offsetWidth || 196;
-        const cardHeight = placeCard.offsetHeight || 252;
+        const cardHeight = placeCard.offsetHeight || 190;
         const inset = isMobileLayout ? 12 : 18;
         const left = clamp(anchorX - cardWidth / 2, inset, root.clientWidth - cardWidth - inset);
         const top = clamp(anchorY - cardHeight - 16, inset, root.clientHeight - cardHeight - inset);
@@ -530,6 +531,8 @@ const scenePoints = travelPoints.map((point) => ({
         selectedMarker = target.userData.marker || target;
         const pointDateLabel = point.period || point.year || '';
         const pointKindLabel = point.kindLabel || point.kind;
+        const pointInitial = Array.from(String(point.name || '?').trim())[0] || '?';
+        setCardText(placeInitial, pointInitial.toUpperCase());
         setCardText(placeKicker, pointDateLabel ? `${pointDateLabel} / ${pointKindLabel}` : pointKindLabel);
         setCardText(placeName, point.name);
         setCardText(placeNote, point.note);
@@ -898,10 +901,9 @@ const scenePoints = travelPoints.map((point) => ({
     position: absolute;
     z-index: 3;
     display: grid;
-    grid-template-rows: auto auto auto 1fr;
+    grid-template-rows: auto auto auto auto;
     gap: 0.42rem;
     width: min(12.25rem, calc(100vw - 1.5rem));
-    min-height: 15.4rem;
     padding: 0.6rem 0.62rem 0.72rem;
     border: 1px solid rgba(201, 162, 39, 0.26);
     border-radius: 6px;
@@ -951,7 +953,7 @@ const scenePoints = travelPoints.map((point) => ({
     display: grid;
     place-items: center;
     width: 100%;
-    aspect-ratio: 2 / 3;
+    aspect-ratio: 1;
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 4px;
@@ -962,40 +964,25 @@ const scenePoints = travelPoints.map((point) => ({
       rgba(255, 255, 255, 0.035);
   }
 
-  .journey-place-media::before,
-  .journey-place-media::after {
+  .journey-place-media::before {
     content: '';
     position: absolute;
-    border-radius: 999px;
+    inset: 13%;
+    border: 1px solid rgba(201, 162, 39, 0.2);
+    border-radius: 4px;
     pointer-events: none;
+    transform: rotate(45deg);
   }
 
-  .journey-place-media::before {
-    inset: 18% 14%;
-    border: 1px solid rgba(201, 162, 39, 0.28);
-    box-shadow: inset 0 0 18px rgba(201, 162, 39, 0.08);
-    transform: rotate(-18deg);
-  }
-
-  .journey-place-media::after {
-    width: 0.38rem;
-    height: 0.38rem;
-    background: rgba(245, 225, 162, 0.86);
-    box-shadow:
-      0 0 8px rgba(245, 225, 162, 0.52),
-      1.55rem -1.15rem 0 -0.12rem rgba(123, 167, 217, 0.68),
-      -1.3rem 1.35rem 0 -0.1rem rgba(201, 162, 39, 0.55);
-  }
-
-  .journey-place-orbit {
-    width: 64%;
-    aspect-ratio: 1;
-    border: 1px solid rgba(201, 162, 39, 0.3);
-    border-radius: 999px;
-    box-shadow:
-      0 0 16px rgba(201, 162, 39, 0.08),
-      inset 0 0 20px rgba(123, 167, 217, 0.08);
-    transform: rotate(24deg) scaleY(0.72);
+  .journey-place-initial {
+    position: relative;
+    z-index: 1;
+    color: rgba(245, 225, 162, 0.78);
+    font-family: var(--font-display);
+    font-size: clamp(2.35rem, 8vw, 3.3rem);
+    line-height: 1;
+    text-transform: uppercase;
+    text-shadow: 0 0 18px rgba(201, 162, 39, 0.22);
   }
 
   .journey-place-kicker {
@@ -1048,7 +1035,6 @@ const scenePoints = travelPoints.map((point) => ({
 
     .journey-place-card {
       width: min(11.5rem, calc(100vw - 1.5rem));
-      min-height: 14.35rem;
       padding: 0.56rem 0.58rem 0.68rem;
     }
   }
