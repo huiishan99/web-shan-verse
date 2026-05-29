@@ -205,36 +205,55 @@ const scenePoints = travelPoints.map((point) => ({
         if (!context) return null;
 
         const center = size / 2;
+        context.clearRect(0, 0, size, size);
+
         const glow = context.createRadialGradient(center, center, 0, center, center, center * 0.86);
         glow.addColorStop(0, 'rgba(255, 242, 188, 0.96)');
-        glow.addColorStop(0.24, 'rgba(240, 197, 86, 0.42)');
-        glow.addColorStop(0.68, 'rgba(156, 108, 28, 0.12)');
+        glow.addColorStop(0.18, 'rgba(240, 197, 86, 0.36)');
+        glow.addColorStop(0.54, 'rgba(156, 108, 28, 0.12)');
         glow.addColorStop(1, 'rgba(0, 0, 0, 0)');
         context.fillStyle = glow;
         context.fillRect(0, 0, size, size);
 
         context.save();
         context.translate(center, center);
-        context.fillStyle = 'rgba(255, 229, 134, 0.94)';
-        context.beginPath();
-        for (let index = 0; index < 16; index += 1) {
-          const angle = -Math.PI / 2 + (Math.PI * 2 * index) / 16;
-          const radius = index % 2 === 0 ? 92 : 18;
-          const x = Math.cos(angle) * radius;
-          const y = Math.sin(angle) * radius;
-          if (index === 0) context.moveTo(x, y);
-          else context.lineTo(x, y);
+        context.globalCompositeOperation = 'screen';
+
+        for (const ray of [
+          { rotation: 0, width: 138, height: 19, alpha: 0.18 },
+          { rotation: Math.PI / 2, width: 116, height: 17, alpha: 0.14 },
+          { rotation: Math.PI / 4, width: 72, height: 12, alpha: 0.1 },
+          { rotation: -Math.PI / 4, width: 72, height: 12, alpha: 0.1 },
+        ]) {
+          context.save();
+          context.rotate(ray.rotation);
+          const rayGlow = context.createRadialGradient(0, 0, 0, 0, 0, ray.width / 2);
+          rayGlow.addColorStop(0, `rgba(255, 238, 177, ${ray.alpha})`);
+          rayGlow.addColorStop(0.56, `rgba(245, 200, 88, ${ray.alpha * 0.3})`);
+          rayGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+          context.fillStyle = rayGlow;
+          context.beginPath();
+          context.ellipse(0, 0, ray.width / 2, ray.height / 2, 0, 0, Math.PI * 2);
+          context.fill();
+          context.restore();
         }
-        context.closePath();
+
+        const halo = context.createRadialGradient(0, 0, 0, 0, 0, 52);
+        halo.addColorStop(0, 'rgba(255, 248, 213, 0.88)');
+        halo.addColorStop(0.42, 'rgba(255, 213, 100, 0.38)');
+        halo.addColorStop(1, 'rgba(201, 162, 39, 0)');
+        context.fillStyle = halo;
+        context.beginPath();
+        context.arc(0, 0, 52, 0, Math.PI * 2);
         context.fill();
 
-        const core = context.createRadialGradient(0, 0, 0, 0, 0, 34);
+        const core = context.createRadialGradient(0, 0, 0, 0, 0, 28);
         core.addColorStop(0, 'rgba(255, 255, 238, 1)');
-        core.addColorStop(0.48, 'rgba(255, 218, 112, 0.9)');
+        core.addColorStop(0.4, 'rgba(255, 228, 130, 0.88)');
         core.addColorStop(1, 'rgba(201, 162, 39, 0)');
         context.fillStyle = core;
         context.beginPath();
-        context.arc(0, 0, 34, 0, Math.PI * 2);
+        context.arc(0, 0, 28, 0, Math.PI * 2);
         context.fill();
         context.restore();
 
@@ -560,10 +579,14 @@ const scenePoints = travelPoints.map((point) => ({
       let pointerStartY = 0;
       let dragDistance = 0;
       let finalGlobeScale = 1;
+      let userZoom = 1;
+      let gestureStartZoom = 1;
       let isMobileLayout = false;
       let sceneStartTime = 0;
       let entranceReady = false;
       let entranceTimer = 0;
+      const minZoom = 0.72;
+      const maxZoom = 1.75;
       const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const introDelay = reducedMotion ? 0 : 520;
       const introDuration = reducedMotion ? 1 : 2600;
@@ -609,7 +632,7 @@ const scenePoints = travelPoints.map((point) => ({
 
         if (reducedMotion) {
           globe.position.copy(finalGlobePosition);
-          globe.scale.setScalar(finalGlobeScale);
+          globe.scale.setScalar(getTargetGlobeScale());
           arrivalFlare.visible = false;
         }
 
@@ -618,6 +641,10 @@ const scenePoints = travelPoints.map((point) => ({
 
       function clamp(value, min, max) {
         return Math.min(Math.max(value, min), max);
+      }
+
+      function getTargetGlobeScale() {
+        return finalGlobeScale * userZoom;
       }
 
       function setCardText(element, value) {
@@ -744,11 +771,35 @@ const scenePoints = travelPoints.map((point) => ({
         }
       }
 
+      function onWheelZoom(event) {
+        event.preventDefault();
+        const zoomIntensity = event.ctrlKey ? 0.006 : 0.0014;
+        userZoom = clamp(userZoom * Math.exp(-event.deltaY * zoomIntensity), minZoom, maxZoom);
+        root.dataset.zoom = userZoom.toFixed(3);
+        updatePlaceCardPosition();
+      }
+
+      function onGestureStart(event) {
+        event.preventDefault();
+        gestureStartZoom = userZoom;
+      }
+
+      function onGestureChange(event) {
+        event.preventDefault();
+        const gestureScale = Number(event.scale) || 1;
+        userZoom = clamp(gestureStartZoom * gestureScale, minZoom, maxZoom);
+        root.dataset.zoom = userZoom.toFixed(3);
+        updatePlaceCardPosition();
+      }
+
       canvas.addEventListener('pointerdown', onPointerDown);
       canvas.addEventListener('pointermove', onPointerMove);
       canvas.addEventListener('pointerup', onPointerUp);
       canvas.addEventListener('pointercancel', onPointerUp);
       canvas.addEventListener('pointerleave', onPointerLeave);
+      canvas.addEventListener('wheel', onWheelZoom, { passive: false });
+      canvas.addEventListener('gesturestart', onGestureStart, { passive: false });
+      canvas.addEventListener('gesturechange', onGestureChange, { passive: false });
       placeClose?.addEventListener('click', hidePlaceCard);
       window.addEventListener('resize', resize);
 
@@ -807,7 +858,7 @@ const scenePoints = travelPoints.map((point) => ({
         currentGlobePosition.z += Math.sin(time * 0.00028) * 0.018 * settledMotion;
         globe.position.copy(currentGlobePosition);
         globe.scale.setScalar(
-          THREE.MathUtils.lerp(startScale, finalGlobeScale, easedIntro) * (1 + flarePulse * 0.035)
+          THREE.MathUtils.lerp(startScale, getTargetGlobeScale(), easedIntro) * (1 + flarePulse * 0.035)
         );
 
         arrivalFlare.position.copy(currentGlobePosition);
@@ -858,6 +909,9 @@ const scenePoints = travelPoints.map((point) => ({
         canvas.removeEventListener('pointerup', onPointerUp);
         canvas.removeEventListener('pointercancel', onPointerUp);
         canvas.removeEventListener('pointerleave', onPointerLeave);
+        canvas.removeEventListener('wheel', onWheelZoom);
+        canvas.removeEventListener('gesturestart', onGestureStart);
+        canvas.removeEventListener('gesturechange', onGestureChange);
         placeClose?.removeEventListener('click', hidePlaceCard);
         root.dataset.earthReady = 'false';
         renderer.dispose();
