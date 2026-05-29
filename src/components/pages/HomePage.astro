@@ -888,8 +888,12 @@ function getExcerpt(body: string, maxLength: number = 100): string {
       return !!gl && gl.getParameter(gl.MAX_TEXTURE_SIZE) >= 8192;
     }
 
+    const usesMobileTexture = window.matchMedia('(max-width: 719px)').matches
+      || ('deviceMemory' in navigator && Number(navigator.deviceMemory) <= 4);
     const textureUrls = [
-      '/images/earth-natural-muted-4096.jpg',
+      usesMobileTexture
+        ? '/images/earth-natural-muted-2048.jpg'
+        : '/images/earth-natural-muted-4096.jpg',
       ...(canUseHighResTexture() ? ['/images/earth-natural-muted-8192.jpg'] : []),
     ];
 
