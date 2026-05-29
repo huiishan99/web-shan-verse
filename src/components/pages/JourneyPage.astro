@@ -514,7 +514,7 @@ const scenePoints = travelPoints.map((point) => ({
         const cardHeight = placeCard.offsetHeight || 190;
         const inset = isMobileLayout ? 12 : 18;
         const left = clamp(anchorX - cardWidth / 2, inset, root.clientWidth - cardWidth - inset);
-        const top = clamp(anchorY - cardHeight - 16, inset, root.clientHeight - cardHeight - inset);
+        const top = anchorY - cardHeight - 16;
         const pinX = clamp(anchorX - left, 18, cardWidth - 18);
 
         placeCard.style.left = `${left}px`;
@@ -817,7 +817,7 @@ const scenePoints = travelPoints.map((point) => ({
     height: 100%;
     min-height: 0;
     margin: 0;
-    overflow: hidden;
+    overflow: visible;
     isolation: isolate;
     background:
       radial-gradient(circle at 63% 42%, rgba(106, 171, 255, 0.22), transparent 34rem),
@@ -841,7 +841,7 @@ const scenePoints = travelPoints.map((point) => ({
     flex: 1 1 auto;
     min-height: 0;
     padding: 0;
-    overflow: hidden;
+    overflow: visible;
   }
 
   :global(body:has(.journey-shell) .site-footer) {
