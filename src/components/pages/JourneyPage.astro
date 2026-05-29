@@ -254,11 +254,46 @@ const scenePoints = travelPoints.map((point) => ({
       earthTexture.colorSpace = THREE.SRGBColorSpace;
       earthTexture.anisotropy = Math.min(16, renderer.capabilities.getMaxAnisotropy());
       const earthMaterial = new THREE.MeshBasicMaterial({
-        color: 0xf0e6cf,
+        color: 0xffffff,
         map: earthTexture,
       });
       const earth = new THREE.Mesh(earthGeometry, earthMaterial);
       globe.add(earth);
+
+      const earthRimMaterial = new THREE.ShaderMaterial({
+        uniforms: {
+          rimColor: { value: new THREE.Color(0x8fb6dd) },
+          brassColor: { value: new THREE.Color(0xc9a227) },
+        },
+        vertexShader: `
+          varying vec3 vNormal;
+          varying vec3 vViewPosition;
+
+          void main() {
+            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+            vNormal = normalize(normalMatrix * normal);
+            vViewPosition = normalize(-mvPosition.xyz);
+            gl_Position = projectionMatrix * mvPosition;
+          }
+        `,
+        fragmentShader: `
+          uniform vec3 rimColor;
+          uniform vec3 brassColor;
+          varying vec3 vNormal;
+          varying vec3 vViewPosition;
+
+          void main() {
+            float rim = pow(1.0 - max(dot(normalize(vNormal), normalize(vViewPosition)), 0.0), 2.35);
+            vec3 color = mix(rimColor, brassColor, 0.22);
+            gl_FragColor = vec4(color, rim * 0.42);
+          }
+        `,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      });
+      const earthRim = new THREE.Mesh(new THREE.SphereGeometry(2.026, 96, 96), earthRimMaterial);
+      globe.add(earthRim);
 
       const markerHitTargets = [];
       const markerSprites = [];
@@ -694,6 +729,8 @@ const scenePoints = travelPoints.map((point) => ({
         renderer.dispose();
         earthGeometry.dispose();
         earthTexture.dispose();
+        earthRim.geometry.dispose();
+        earthRimMaterial.dispose();
         flareTexture?.dispose();
         arrivalFlareMaterial.dispose();
         markerTexture?.dispose();
