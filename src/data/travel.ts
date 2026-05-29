@@ -8,11 +8,105 @@ export interface TravelPoint {
   note: LocalizedString;
   lat: number;
   lon: number;
-  year: number;
+  year?: number;
+  period?: LocalizedString;
   kind: TravelPointKind;
 }
 
+const malaysiaYears: LocalizedString = {
+  en: 'Malaysia years',
+  zh: '马来西亚时期',
+  ja: 'マレーシア時代',
+};
+
+const japanYears: LocalizedString = {
+  en: 'Japan years',
+  zh: '日本时期',
+  ja: '日本での日々',
+};
+
+const sabahFootprints: LocalizedString = {
+  en: 'Sabah footprints',
+  zh: '沙巴足迹',
+  ja: 'サバの足跡',
+};
+
+const malaysiaFootprints: LocalizedString = {
+  en: 'Malaysia footprints',
+  zh: '马来西亚足迹',
+  ja: 'マレーシアの足跡',
+};
+
+const japanFootprints: LocalizedString = {
+  en: 'Japan footprints',
+  zh: '日本足迹',
+  ja: '日本の足跡',
+};
+
 export const travelPoints: TravelPoint[] = [
+  {
+    id: 'sandakan-sabah',
+    name: { en: 'Sandakan', zh: '山打根', ja: 'サンダカン' },
+    note: sabahFootprints,
+    lat: 5.8465,
+    lon: 118.0738,
+    period: malaysiaYears,
+    kind: 'travel',
+  },
+  {
+    id: 'beaufort-sabah',
+    name: { en: 'Beaufort', zh: '保佛', ja: 'ビューフォート' },
+    note: sabahFootprints,
+    lat: 5.3473,
+    lon: 115.7455,
+    period: malaysiaYears,
+    kind: 'travel',
+  },
+  {
+    id: 'kota-kinabalu-sabah',
+    name: { en: 'Kota Kinabalu', zh: '亚庇', ja: 'コタキナバル' },
+    note: sabahFootprints,
+    lat: 5.9804,
+    lon: 116.0735,
+    period: malaysiaYears,
+    kind: 'travel',
+  },
+  {
+    id: 'lahad-datu-sabah',
+    name: { en: 'Lahad Datu', zh: '拿笃', ja: 'ラハダトゥ' },
+    note: sabahFootprints,
+    lat: 5.0268,
+    lon: 118.3270,
+    period: malaysiaYears,
+    kind: 'travel',
+  },
+  {
+    id: 'kuala-lumpur-malaysia',
+    name: { en: 'Kuala Lumpur', zh: '吉隆坡', ja: 'クアラルンプール' },
+    note: malaysiaFootprints,
+    lat: 3.1390,
+    lon: 101.6869,
+    period: malaysiaYears,
+    kind: 'travel',
+  },
+  {
+    id: 'penang-malaysia',
+    name: { en: 'Penang', zh: '槟城', ja: 'ペナン' },
+    note: malaysiaFootprints,
+    lat: 5.4141,
+    lon: 100.3288,
+    period: malaysiaYears,
+    kind: 'travel',
+  },
+  {
+    id: 'singapore-travel',
+    name: { en: 'Singapore', zh: '新加坡', ja: 'シンガポール' },
+    note: { en: 'Southeast Asia footprints', zh: '东南亚足迹', ja: '東南アジアの足跡' },
+    lat: 1.3521,
+    lon: 103.8198,
+    period: malaysiaYears,
+    kind: 'travel',
+  },
   {
     id: 'xian-ifp',
     name: { en: "Xi'an", zh: '西安', ja: '西安' },
@@ -173,6 +267,42 @@ export const travelPoints: TravelPoint[] = [
     lat: 34.6937,
     lon: 135.5023,
     year: 2025,
+    kind: 'travel',
+  },
+  {
+    id: 'chichibu-saitama',
+    name: { en: 'Chichibu', zh: '秩父', ja: '秩父' },
+    note: japanFootprints,
+    lat: 35.9903,
+    lon: 139.0764,
+    period: japanYears,
+    kind: 'travel',
+  },
+  {
+    id: 'niigata-travel',
+    name: { en: 'Niigata', zh: '新潟', ja: '新潟' },
+    note: japanFootprints,
+    lat: 37.9161,
+    lon: 139.0364,
+    period: japanYears,
+    kind: 'travel',
+  },
+  {
+    id: 'nagaoka-travel',
+    name: { en: 'Nagaoka', zh: '长冈', ja: '長岡' },
+    note: japanFootprints,
+    lat: 37.4463,
+    lon: 138.8512,
+    period: japanYears,
+    kind: 'travel',
+  },
+  {
+    id: 'chiba-travel',
+    name: { en: 'Chiba', zh: '千叶', ja: '千葉' },
+    note: japanFootprints,
+    lat: 35.6074,
+    lon: 140.1065,
+    period: japanYears,
     kind: 'travel',
   },
   {
