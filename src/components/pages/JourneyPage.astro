@@ -249,8 +249,11 @@ const scenePoints = travelPoints.map((point) => ({
 
       const earthGeometry = new THREE.SphereGeometry(2, 96, 96);
       const textureLoader = new THREE.TextureLoader();
-      // Derived from NASA Blue Marble imagery, color graded for the atlas scene.
-      const earthTexture = textureLoader.load('/images/earth-natural-dark.jpg');
+      // Derived from NASA Blue Marble imagery, muted for the atlas scene.
+      const earthTexturePath = renderer.capabilities.maxTextureSize >= 8192
+        ? '/images/earth-natural-muted-8192.jpg'
+        : '/images/earth-natural-muted-4096.jpg';
+      const earthTexture = textureLoader.load(earthTexturePath);
       earthTexture.colorSpace = THREE.SRGBColorSpace;
       earthTexture.anisotropy = Math.min(16, renderer.capabilities.getMaxAnisotropy());
       const earthMaterial = new THREE.MeshBasicMaterial({
