@@ -516,7 +516,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
             <span><i class="activity-dot activity-dot--2 activity-dot--mixed"></i> {t.home.signalTypeMixed}</span>
           </div>
 
-          <div class="github-activity" aria-label={t.home.githubContributions} data-github-activity>
+          <div class="github-activity is-fallback" aria-label={t.home.githubContributions} data-github-activity>
             <div class="github-activity-header">
               <span><Icon name="github" size={14} /> {t.home.githubContributions}</span>
               <a href={githubProfileUrl} target="_blank" rel="noopener noreferrer">@{githubUsername}</a>
@@ -666,12 +666,13 @@ function getExcerpt(body: string, maxLength: number = 100): string {
 
 <script is:inline>
   (() => {
-    if (window.__shanGithubCalendarReady) return;
-    window.__shanGithubCalendarReady = true;
-
     const API_ROOT = 'https://github-contributions-api.jogruber.de/v4/';
     const WEEKDAYS = ['', 'Mon', '', 'Wed', '', 'Fri', ''];
-    const contributionRequests = new Map();
+    const githubCalendarState = window.__shanGithubCalendarState || {
+      contributionRequests: new Map(),
+      isListening: false,
+    };
+    window.__shanGithubCalendarState = githubCalendarState;
     const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', timeZone: 'UTC' });
     const dateFormatter = new Intl.DateTimeFormat('en-US', {
       month: 'short',
@@ -808,6 +809,8 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     }
 
     function loadContributionData(username) {
+      const { contributionRequests } = githubCalendarState;
+
       if (!contributionRequests.has(username)) {
         contributionRequests.set(
           username,
@@ -853,8 +856,15 @@ function getExcerpt(body: string, maxLength: number = 100): string {
         .forEach((root) => setupGithubCalendar(root));
     }
 
+    window.__shanSetupGithubCalendars = setupGithubCalendars;
     setupGithubCalendars();
-    document.addEventListener('astro:page-load', setupGithubCalendars);
+
+    if (!githubCalendarState.isListening) {
+      document.addEventListener('astro:page-load', () => {
+        window.__shanSetupGithubCalendars?.();
+      });
+      githubCalendarState.isListening = true;
+    }
   })();
 
   (() => {
@@ -869,8 +879,8 @@ function getExcerpt(body: string, maxLength: number = 100): string {
 
     function canUseHighResTexture() {
       const isMobileLayout = window.matchMedia('(max-width: 719px)').matches;
-      const lowMemoryDevice = 'deviceMemory' in navigator
-        && Number((navigator as Navigator & { deviceMemory?: number }).deviceMemory) <= 4;
+      const deviceMemory = 'deviceMemory' in navigator ? Number(navigator.deviceMemory) : Infinity;
+      const lowMemoryDevice = Number.isFinite(deviceMemory) && deviceMemory <= 4;
       if (isMobileLayout || lowMemoryDevice) return false;
 
       const canvas = document.createElement('canvas');
