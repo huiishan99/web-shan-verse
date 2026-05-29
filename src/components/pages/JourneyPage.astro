@@ -12,18 +12,43 @@ const { lang = defaultLocale } = Astro.props;
 const journeyCopy: Record<Locale, {
   title: string;
   back: string;
+  close: string;
 }> = {
   en: {
     title: 'Travel Atlas',
     back: 'Back Home',
+    close: 'Close place card',
   },
   zh: {
     title: '旅行星图',
     back: '返回首页',
+    close: '关闭地点卡片',
   },
   ja: {
     title: '旅の星図',
     back: 'ホームへ',
+    close: '地点カードを閉じる',
+  },
+};
+
+const journeyKindLabels: Record<Locale, Record<string, string>> = {
+  en: {
+    study: 'Study',
+    travel: 'Travel',
+    work: 'Work',
+    event: 'Event',
+  },
+  zh: {
+    study: '学习',
+    travel: '旅行',
+    work: '工作',
+    event: '事件',
+  },
+  ja: {
+    study: '学び',
+    travel: '旅',
+    work: '仕事',
+    event: 'イベント',
   },
 };
 
@@ -36,6 +61,7 @@ const scenePoints = travelPoints.map((point) => ({
   lon: point.lon,
   year: point.year,
   kind: point.kind,
+  kindLabel: journeyKindLabels[lang][point.kind] ?? point.kind,
 }));
 ---
 
@@ -55,6 +81,13 @@ const scenePoints = travelPoints.map((point) => ({
         {copy.back}
       </a>
     </div>
+
+    <div class="journey-place-card" data-place-card hidden>
+      <button class="journey-place-close" type="button" data-place-close aria-label={copy.close}>x</button>
+      <span class="journey-place-kicker" data-place-kicker></span>
+      <strong data-place-name></strong>
+      <span data-place-note></span>
+    </div>
   </section>
 </BaseLayout>
 
@@ -70,6 +103,11 @@ const scenePoints = travelPoints.map((point) => ({
 
       const canvas = root.querySelector('[data-earth-canvas]');
       if (!(canvas instanceof HTMLCanvasElement)) return;
+      const placeCard = root.querySelector('[data-place-card]');
+      const placeClose = root.querySelector('[data-place-close]');
+      const placeKicker = root.querySelector('[data-place-kicker]');
+      const placeName = root.querySelector('[data-place-name]');
+      const placeNote = root.querySelector('[data-place-note]');
 
       root.dataset.earthReady = 'true';
       const points = JSON.parse(root.dataset.points || '[]');
@@ -228,6 +266,12 @@ const scenePoints = travelPoints.map((point) => ({
       const routeGeometries = [];
       const routeMaterials = [];
       const lightMaterials = [];
+      const markerHitTargets = [];
+      const markerWorldPosition = new THREE.Vector3();
+      const markerScreenPosition = new THREE.Vector3();
+      const raycaster = new THREE.Raycaster();
+      const pointer = new THREE.Vector2();
+      let selectedMarker = null;
 
       function addCityLightCluster(lat, lon, count, radius, color = 0xf0c66a) {
         const positions = new Float32Array(count * 3);
@@ -236,7 +280,7 @@ const scenePoints = travelPoints.map((point) => ({
           const distance = Math.abs(seededNoise(lon, lat + index)) * radius;
           const pointLat = lat + Math.sin(angle) * distance;
           const pointLon = lon + Math.cos(angle) * distance * 1.25;
-          const position = latLonToVector3(pointLat, pointLon, 2.095);
+          const position = latLonToVector3(pointLat, pointLon, 2.044);
           positions[index * 3] = position.x;
           positions[index * 3 + 1] = position.y;
           positions[index * 3 + 2] = position.z;
@@ -294,7 +338,7 @@ const scenePoints = travelPoints.map((point) => ({
 
       Array.from({ length: 6 }, (_, index) => addMeridian((Math.PI / 6) * index));
 
-      function latLonToVector3(lat, lon, radius = 2.055) {
+      function latLonToVector3(lat, lon, radius = 2.028) {
         const phi = THREE.MathUtils.degToRad(90 - lat);
         const theta = THREE.MathUtils.degToRad(lon + 180);
 
@@ -325,8 +369,8 @@ const scenePoints = travelPoints.map((point) => ({
               .add(endNormal.clone().multiplyScalar(Math.sin(t * theta) / sinTheta));
           }
 
-          const lift = 0.026 + Math.sin(t * Math.PI) * (0.028 + theta * 0.014);
-          routePoints.push(point.normalize().multiplyScalar(2.065 + lift));
+          const lift = 0.006 + Math.sin(t * Math.PI) * (0.01 + theta * 0.004);
+          routePoints.push(point.normalize().multiplyScalar(2.026 + lift));
         }
 
         return new THREE.CatmullRomCurve3(routePoints);
@@ -390,9 +434,10 @@ const scenePoints = travelPoints.map((point) => ({
         [13.8, 100.5, 26, 0.45],
       ].forEach(([lat, lon, count, radius]) => addCityLightCluster(lat, lon, count, radius));
 
-      const markerGeometry = new THREE.SphereGeometry(0.024, 24, 24);
-      const markerRingGeometry = new THREE.TorusGeometry(0.042, 0.003, 8, 32);
-      const haloGeometry = new THREE.SphereGeometry(0.043, 20, 20);
+      const markerGeometry = new THREE.SphereGeometry(0.017, 24, 24);
+      const markerRingGeometry = new THREE.TorusGeometry(0.032, 0.0025, 8, 32);
+      const haloGeometry = new THREE.SphereGeometry(0.034, 20, 20);
+      const markerHitGeometry = new THREE.SphereGeometry(0.075, 16, 16);
       const markerMaterial = new THREE.MeshStandardMaterial({
         color: 0xd4af37,
         metalness: 0.82,
@@ -410,8 +455,14 @@ const scenePoints = travelPoints.map((point) => ({
       const markerHaloMaterial = new THREE.MeshBasicMaterial({
         color: 0xc9a227,
         transparent: true,
-        opacity: 0.1,
+        opacity: 0.07,
         blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      });
+      const markerHitMaterial = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0,
         depthWrite: false,
       });
 
@@ -420,23 +471,31 @@ const scenePoints = travelPoints.map((point) => ({
         const normal = position.clone().normalize();
         const marker = new THREE.Mesh(markerGeometry, markerMaterial);
         marker.position.copy(position);
+        marker.userData.point = point;
         globe.add(marker);
 
         const ring = new THREE.Mesh(markerRingGeometry, markerRingMaterial);
-        ring.position.copy(normal.clone().multiplyScalar(2.092));
+        ring.position.copy(normal.clone().multiplyScalar(2.038));
         ring.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), normal);
         globe.add(ring);
 
         const halo = new THREE.Mesh(haloGeometry, markerHaloMaterial);
-        halo.position.copy(position);
+        halo.position.copy(normal.clone().multiplyScalar(2.03));
         globe.add(halo);
+
+        const hitTarget = new THREE.Mesh(markerHitGeometry, markerHitMaterial);
+        hitTarget.position.copy(normal.clone().multiplyScalar(2.04));
+        hitTarget.userData.point = point;
+        hitTarget.userData.marker = marker;
+        globe.add(hitTarget);
+        markerHitTargets.push(hitTarget);
       });
 
       for (let index = 1; index < points.length; index += 1) {
         const previous = points[index - 1];
         const current = points[index];
-        const start = latLonToVector3(previous.lat, previous.lon, 2.065);
-        const end = latLonToVector3(current.lat, current.lon, 2.065);
+        const start = latLonToVector3(previous.lat, previous.lon, 2.028);
+        const end = latLonToVector3(current.lat, current.lon, 2.028);
         addBrassRoute(createSurfaceRouteCurve(start, end));
       }
 
@@ -468,6 +527,9 @@ const scenePoints = travelPoints.map((point) => ({
       let isDragging = false;
       let lastX = 0;
       let lastY = 0;
+      let pointerStartX = 0;
+      let pointerStartY = 0;
+      let dragDistance = 0;
       let finalGlobeScale = 1;
       let isMobileLayout = false;
       let sceneStartTime = 0;
@@ -521,19 +583,96 @@ const scenePoints = travelPoints.map((point) => ({
           globe.scale.setScalar(finalGlobeScale);
           arrivalFlare.visible = false;
         }
+
+        updatePlaceCardPosition();
+      }
+
+      function clamp(value, min, max) {
+        return Math.min(Math.max(value, min), max);
+      }
+
+      function setCardText(element, value) {
+        if (element instanceof HTMLElement) element.textContent = value;
+      }
+
+      function updatePlaceCardPosition() {
+        if (!(placeCard instanceof HTMLElement) || placeCard.hidden || !selectedMarker) return;
+
+        selectedMarker.getWorldPosition(markerWorldPosition);
+        markerScreenPosition.copy(markerWorldPosition).project(camera);
+
+        if (markerScreenPosition.z < -1 || markerScreenPosition.z > 1) {
+          placeCard.classList.remove('is-visible');
+          return;
+        }
+
+        const anchorX = (markerScreenPosition.x * 0.5 + 0.5) * root.clientWidth;
+        const anchorY = (-markerScreenPosition.y * 0.5 + 0.5) * root.clientHeight;
+        const cardWidth = placeCard.offsetWidth || 248;
+        const cardHeight = placeCard.offsetHeight || 116;
+        const inset = isMobileLayout ? 12 : 18;
+        const left = clamp(anchorX - cardWidth / 2, inset, root.clientWidth - cardWidth - inset);
+        const top = clamp(anchorY - cardHeight - 28, inset, root.clientHeight - cardHeight - inset);
+        const pinX = clamp(anchorX - left, 18, cardWidth - 18);
+
+        placeCard.style.left = `${left}px`;
+        placeCard.style.top = `${top}px`;
+        placeCard.style.setProperty('--pin-x', `${pinX}px`);
+        placeCard.classList.add('is-visible');
+      }
+
+      function showPlaceCard(target) {
+        if (!(placeCard instanceof HTMLElement)) return;
+
+        const point = target.userData.point;
+        selectedMarker = target.userData.marker || target;
+        setCardText(placeKicker, `${point.year} / ${point.kindLabel || point.kind}`);
+        setCardText(placeName, point.name);
+        setCardText(placeNote, point.note);
+        placeCard.hidden = false;
+        root.dataset.selectedPlace = point.id;
+        requestAnimationFrame(updatePlaceCardPosition);
+      }
+
+      function hidePlaceCard() {
+        selectedMarker = null;
+        delete root.dataset.selectedPlace;
+        if (placeCard instanceof HTMLElement) {
+          placeCard.classList.remove('is-visible');
+          placeCard.hidden = true;
+        }
+      }
+
+      function findMarkerFromPointer(event) {
+        const rect = canvas.getBoundingClientRect();
+        pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+        raycaster.setFromCamera(pointer, camera);
+        const hits = raycaster.intersectObjects(markerHitTargets, false);
+        return hits[0]?.object || null;
       }
 
       function onPointerDown(event) {
         isDragging = true;
+        dragDistance = 0;
+        pointerStartX = event.clientX;
+        pointerStartY = event.clientY;
         lastX = event.clientX;
         lastY = event.clientY;
         canvas.setPointerCapture(event.pointerId);
       }
 
       function onPointerMove(event) {
-        if (!isDragging) return;
+        if (!isDragging) {
+          canvas.style.cursor = findMarkerFromPointer(event) ? 'pointer' : 'grab';
+          return;
+        }
         const deltaX = event.clientX - lastX;
         const deltaY = event.clientY - lastY;
+        dragDistance = Math.max(
+          dragDistance,
+          Math.hypot(event.clientX - pointerStartX, event.clientY - pointerStartY)
+        );
         targetRotationY += deltaX * 0.004;
         targetRotationX = THREE.MathUtils.clamp(targetRotationX + deltaY * 0.002, -0.72, 0.34);
         lastX = event.clientX;
@@ -541,9 +680,23 @@ const scenePoints = travelPoints.map((point) => ({
       }
 
       function onPointerUp(event) {
+        const shouldSelect = dragDistance < 7;
         isDragging = false;
         if (canvas.hasPointerCapture(event.pointerId)) {
           canvas.releasePointerCapture(event.pointerId);
+        }
+        if (!shouldSelect) {
+          canvas.style.cursor = 'grab';
+          return;
+        }
+
+        const target = findMarkerFromPointer(event);
+        if (target) {
+          canvas.style.cursor = 'pointer';
+          showPlaceCard(target);
+        } else {
+          canvas.style.cursor = 'grab';
+          hidePlaceCard();
         }
       }
 
@@ -551,6 +704,7 @@ const scenePoints = travelPoints.map((point) => ({
       canvas.addEventListener('pointermove', onPointerMove);
       canvas.addEventListener('pointerup', onPointerUp);
       canvas.addEventListener('pointercancel', onPointerUp);
+      placeClose?.addEventListener('click', hidePlaceCard);
       window.addEventListener('resize', resize);
 
       let animationFrame = 0;
@@ -630,6 +784,7 @@ const scenePoints = travelPoints.map((point) => ({
         });
 
         renderer.render(scene, camera);
+        updatePlaceCardPosition();
         if (time - lastCanvasSample > 1200) {
           lastCanvasSample = time;
           sampleCanvasPixels();
@@ -647,6 +802,7 @@ const scenePoints = travelPoints.map((point) => ({
         canvas.removeEventListener('pointermove', onPointerMove);
         canvas.removeEventListener('pointerup', onPointerUp);
         canvas.removeEventListener('pointercancel', onPointerUp);
+        placeClose?.removeEventListener('click', hidePlaceCard);
         root.dataset.earthReady = 'false';
         renderer.dispose();
         earthGeometry.dispose();
@@ -656,9 +812,11 @@ const scenePoints = travelPoints.map((point) => ({
         cloudTexture?.dispose();
         markerGeometry.dispose();
         markerRingGeometry.dispose();
+        markerHitGeometry.dispose();
         haloGeometry.dispose();
         markerMaterial.dispose();
         markerRingMaterial.dispose();
+        markerHitMaterial.dispose();
         markerHaloMaterial.dispose();
         routeGeometries.forEach((geometry) => geometry.dispose());
         routeMaterials.forEach((material) => material.dispose());
@@ -683,14 +841,38 @@ const scenePoints = travelPoints.map((point) => ({
 <style>
   .journey-shell {
     position: relative;
-    min-height: calc(100vh - 4.5rem);
-    margin: calc(-1 * var(--space-xl)) 0 calc(-1 * var(--space-xl));
+    height: 100%;
+    min-height: 0;
+    margin: 0;
     overflow: hidden;
     isolation: isolate;
     background:
       radial-gradient(circle at 63% 42%, rgba(106, 171, 255, 0.22), transparent 34rem),
       radial-gradient(circle at 42% 70%, rgba(201, 162, 39, 0.17), transparent 22rem),
       rgba(8, 10, 18, 0.2);
+  }
+
+  :global(html:has(.journey-shell)),
+  :global(body:has(.journey-shell)) {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  :global(body:has(.journey-shell) .page-wrapper) {
+    height: 100dvh;
+    min-height: 100dvh;
+    overflow: hidden;
+  }
+
+  :global(body:has(.journey-shell) .main-content) {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  :global(body:has(.journey-shell) .site-footer) {
+    display: none;
   }
 
   .earth-canvas {
@@ -742,10 +924,122 @@ const scenePoints = travelPoints.map((point) => ({
     color: var(--color-brass-light);
   }
 
+  .journey-place-card {
+    position: absolute;
+    z-index: 3;
+    width: min(16.75rem, calc(100vw - 1.5rem));
+    min-height: 6.1rem;
+    padding: 0.72rem 2.1rem 0.78rem 0.82rem;
+    border: 1px solid rgba(201, 162, 39, 0.34);
+    border-radius: 6px;
+    background:
+      linear-gradient(180deg, rgba(201, 162, 39, 0.11), rgba(255, 255, 255, 0.025)),
+      rgba(10, 10, 15, 0.93);
+    box-shadow:
+      0 22px 54px rgba(0, 0, 0, 0.45),
+      0 0 22px rgba(201, 162, 39, 0.12);
+    color: var(--color-text-secondary);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(0.35rem) scale(0.98);
+    transform-origin: var(--pin-x, 50%) calc(100% + 1.35rem);
+    transition:
+      opacity 0.16s ease,
+      transform 0.16s ease;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .journey-place-card[hidden] {
+    display: none;
+  }
+
+  .journey-place-card.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+  }
+
+  .journey-place-card::before,
+  .journey-place-card::after {
+    content: '';
+    position: absolute;
+    left: var(--pin-x, 50%);
+    pointer-events: none;
+  }
+
+  .journey-place-card::before {
+    top: 100%;
+    width: 1px;
+    height: 1.35rem;
+    background: linear-gradient(180deg, rgba(231, 199, 108, 0.72), rgba(231, 199, 108, 0));
+    box-shadow: 0 0 12px rgba(201, 162, 39, 0.28);
+  }
+
+  .journey-place-card::after {
+    top: calc(100% + 1.2rem);
+    width: 0.42rem;
+    height: 0.42rem;
+    border-radius: 999px;
+    background: var(--color-brass);
+    box-shadow:
+      0 0 0 3px rgba(201, 162, 39, 0.12),
+      0 0 14px rgba(201, 162, 39, 0.38);
+    transform: translateX(-50%);
+  }
+
+  .journey-place-close {
+    position: absolute;
+    top: 0.48rem;
+    right: 0.5rem;
+    display: grid;
+    place-items: center;
+    width: 1.35rem;
+    height: 1.35rem;
+    border: 1px solid rgba(201, 162, 39, 0.24);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.035);
+    color: rgba(232, 229, 220, 0.72);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .journey-place-close:hover,
+  .journey-place-close:focus-visible {
+    border-color: rgba(201, 162, 39, 0.52);
+    color: var(--color-brass-light);
+  }
+
+  .journey-place-kicker {
+    display: block;
+    margin-bottom: 0.24rem;
+    color: var(--color-brass-light);
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .journey-place-card strong {
+    display: block;
+    margin-bottom: 0.24rem;
+    color: var(--color-text-primary);
+    font-size: 1.02rem;
+    line-height: 1.18;
+  }
+
+  .journey-place-card span:last-child {
+    display: block;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    line-height: 1.35;
+  }
+
   @media (max-width: 720px) {
     .journey-shell {
-      min-height: calc(100vh - 3.4rem);
-      margin: -1rem 0 calc(-1 * var(--space-lg));
       background:
         radial-gradient(circle at 52% 48%, rgba(106, 171, 255, 0.2), transparent 18rem),
         radial-gradient(circle at 48% 78%, rgba(201, 162, 39, 0.15), transparent 14rem),
@@ -765,6 +1059,11 @@ const scenePoints = travelPoints.map((point) => ({
 
     .journey-back {
       font-size: 0.74rem;
+    }
+
+    .journey-place-card {
+      width: min(15.5rem, calc(100vw - 1.5rem));
+      padding: 0.68rem 2rem 0.72rem 0.78rem;
     }
   }
 
