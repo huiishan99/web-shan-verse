@@ -868,6 +868,11 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     window.__shanJourneyTextureWarmup = warmup;
 
     function canUseHighResTexture() {
+      const isMobileLayout = window.matchMedia('(max-width: 719px)').matches;
+      const lowMemoryDevice = 'deviceMemory' in navigator
+        && Number((navigator as Navigator & { deviceMemory?: number }).deviceMemory) <= 4;
+      if (isMobileLayout || lowMemoryDevice) return false;
+
       const canvas = document.createElement('canvas');
       const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
       return !!gl && gl.getParameter(gl.MAX_TEXTURE_SIZE) >= 8192;
