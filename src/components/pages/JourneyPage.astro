@@ -60,6 +60,7 @@ const scenePoints = travelPoints.map((point) => ({
   lat: point.lat,
   lon: point.lon,
   year: point.year,
+  period: localizeString(point.period, lang),
   kind: point.kind,
   kindLabel: journeyKindLabels[lang][point.kind] ?? point.kind,
 }));
@@ -521,7 +522,9 @@ const scenePoints = travelPoints.map((point) => ({
         const point = target.userData.point;
         activeMarkerTarget = target;
         selectedMarker = target.userData.marker || target;
-        setCardText(placeKicker, `${point.year} / ${point.kindLabel || point.kind}`);
+        const pointDateLabel = point.period || point.year || '';
+        const pointKindLabel = point.kindLabel || point.kind;
+        setCardText(placeKicker, pointDateLabel ? `${pointDateLabel} / ${pointKindLabel}` : pointKindLabel);
         setCardText(placeName, point.name);
         setCardText(placeNote, point.note);
         placeCard.hidden = false;
