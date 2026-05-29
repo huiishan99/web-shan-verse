@@ -249,7 +249,8 @@ const scenePoints = travelPoints.map((point) => ({
 
       const earthGeometry = new THREE.SphereGeometry(2, 96, 96);
       const textureLoader = new THREE.TextureLoader();
-      const earthTexture = textureLoader.load('/images/earth-black-marble-2016.jpg');
+      // Derived from NASA Earth Observatory Blue Marble topography data.
+      const earthTexture = textureLoader.load('/images/earth-topography-dark.jpg');
       earthTexture.colorSpace = THREE.SRGBColorSpace;
       earthTexture.anisotropy = Math.min(16, renderer.capabilities.getMaxAnisotropy());
       const earthMaterial = new THREE.MeshBasicMaterial({
@@ -259,9 +260,6 @@ const scenePoints = travelPoints.map((point) => ({
       const earth = new THREE.Mesh(earthGeometry, earthMaterial);
       globe.add(earth);
 
-      const disposableGeometries = [];
-      const disposableMaterials = [];
-      const lightMaterials = [];
       const markerHitTargets = [];
       const markerSprites = [];
       const markerWorldPosition = new THREE.Vector3();
@@ -270,37 +268,6 @@ const scenePoints = travelPoints.map((point) => ({
       const pointer = new THREE.Vector2();
       let selectedMarker = null;
       let activeMarkerTarget = null;
-
-      function addCityLightCluster(lat, lon, count, radius, color = 0xf0c66a) {
-        const positions = new Float32Array(count * 3);
-        for (let index = 0; index < count; index += 1) {
-          const angle = seededNoise(lat + index, lon) * Math.PI * 2;
-          const distance = Math.abs(seededNoise(lon, lat + index)) * radius;
-          const pointLat = lat + Math.sin(angle) * distance;
-          const pointLon = lon + Math.cos(angle) * distance * 1.25;
-          const position = latLonToVector3(pointLat, pointLon, 2.01);
-          positions[index * 3] = position.x;
-          positions[index * 3 + 1] = position.y;
-          positions[index * 3 + 2] = position.z;
-        }
-
-        const geometry = new THREE.BufferGeometry();
-        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        const material = new THREE.PointsMaterial({
-          color,
-          size: 0.012,
-          transparent: true,
-          opacity: 0.48,
-          blending: THREE.AdditiveBlending,
-          depthWrite: false,
-        });
-        const lights = new THREE.Points(geometry, material);
-        lights.userData.phase = seededNoise(lat, lon) * Math.PI * 2;
-        globe.add(lights);
-        disposableGeometries.push(geometry);
-        disposableMaterials.push(material);
-        lightMaterials.push(material);
-      }
 
       function latLonToVector3(lat, lon, radius = 2.028) {
         const phi = THREE.MathUtils.degToRad(90 - lat);
@@ -312,19 +279,6 @@ const scenePoints = travelPoints.map((point) => ({
           radius * Math.sin(phi) * Math.sin(theta)
         );
       }
-
-      [
-        [39.9, 116.4, 46, 0.9],
-        [39.3, 117.4, 28, 0.6],
-        [31.2, 121.5, 54, 0.8],
-        [23.1, 113.3, 46, 0.75],
-        [22.5, 114.1, 42, 0.55],
-        [35.7, 139.7, 52, 0.65],
-        [34.7, 135.5, 42, 0.55],
-        [37.5, 127.0, 38, 0.55],
-        [25.0, 121.5, 32, 0.45],
-        [13.8, 100.5, 26, 0.45],
-      ].forEach(([lat, lon, count, radius]) => addCityLightCluster(lat, lon, count, radius));
 
       const markerHitGeometry = new THREE.SphereGeometry(0.075, 16, 16);
       const markerTexture = createMarkerStarTexture();
@@ -701,9 +655,6 @@ const scenePoints = travelPoints.map((point) => ({
         globe.rotation.y += (targetRotationY + idleRotationY - globe.rotation.y) * 0.055;
         stars.rotation.y += 0.00008;
         root.dataset.introProgress = introProgress.toFixed(3);
-        lightMaterials.forEach((material, index) => {
-          material.opacity = 0.34 + Math.sin(time * 0.0017 + index * 1.73) * 0.12;
-        });
         markerSprites.forEach((marker) => {
           const isActive = activeMarkerTarget?.userData.marker === marker;
           const baseScale = marker.userData.baseScale || 0.11;
@@ -750,8 +701,6 @@ const scenePoints = travelPoints.map((point) => ({
         markerMaterial.dispose();
         markerHitMaterial.dispose();
         markerSprites.forEach((marker) => marker.material.dispose());
-        disposableGeometries.forEach((geometry) => geometry.dispose());
-        disposableMaterials.forEach((material) => material.dispose());
         starGeometry.dispose();
       }
 
