@@ -196,6 +196,53 @@ const scenePoints = travelPoints.map((point) => ({
         return texture;
       }
 
+      function createMarkerStarTexture() {
+        const size = 256;
+        const markerCanvas = document.createElement('canvas');
+        markerCanvas.width = size;
+        markerCanvas.height = size;
+        const context = markerCanvas.getContext('2d');
+        if (!context) return null;
+
+        const center = size / 2;
+        const glow = context.createRadialGradient(center, center, 0, center, center, center * 0.86);
+        glow.addColorStop(0, 'rgba(255, 242, 188, 0.96)');
+        glow.addColorStop(0.24, 'rgba(240, 197, 86, 0.42)');
+        glow.addColorStop(0.68, 'rgba(156, 108, 28, 0.12)');
+        glow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        context.fillStyle = glow;
+        context.fillRect(0, 0, size, size);
+
+        context.save();
+        context.translate(center, center);
+        context.fillStyle = 'rgba(255, 229, 134, 0.94)';
+        context.beginPath();
+        for (let index = 0; index < 16; index += 1) {
+          const angle = -Math.PI / 2 + (Math.PI * 2 * index) / 16;
+          const radius = index % 2 === 0 ? 92 : 18;
+          const x = Math.cos(angle) * radius;
+          const y = Math.sin(angle) * radius;
+          if (index === 0) context.moveTo(x, y);
+          else context.lineTo(x, y);
+        }
+        context.closePath();
+        context.fill();
+
+        const core = context.createRadialGradient(0, 0, 0, 0, 0, 34);
+        core.addColorStop(0, 'rgba(255, 255, 238, 1)');
+        core.addColorStop(0.48, 'rgba(255, 218, 112, 0.9)');
+        core.addColorStop(1, 'rgba(201, 162, 39, 0)');
+        context.fillStyle = core;
+        context.beginPath();
+        context.arc(0, 0, 34, 0, Math.PI * 2);
+        context.fill();
+        context.restore();
+
+        const texture = new THREE.CanvasTexture(markerCanvas);
+        texture.colorSpace = THREE.SRGBColorSpace;
+        return texture;
+      }
+
       const flareTexture = createFlareTexture();
       const arrivalFlareMaterial = new THREE.SpriteMaterial({
         map: flareTexture || undefined,
@@ -267,11 +314,13 @@ const scenePoints = travelPoints.map((point) => ({
       const routeMaterials = [];
       const lightMaterials = [];
       const markerHitTargets = [];
+      const markerSprites = [];
       const markerWorldPosition = new THREE.Vector3();
       const markerScreenPosition = new THREE.Vector3();
       const raycaster = new THREE.Raycaster();
       const pointer = new THREE.Vector2();
       let selectedMarker = null;
+      let activeMarkerTarget = null;
 
       function addCityLightCluster(lat, lon, count, radius, color = 0xf0c66a) {
         const positions = new Float32Array(count * 3);
@@ -434,28 +483,13 @@ const scenePoints = travelPoints.map((point) => ({
         [13.8, 100.5, 26, 0.45],
       ].forEach(([lat, lon, count, radius]) => addCityLightCluster(lat, lon, count, radius));
 
-      const markerGeometry = new THREE.SphereGeometry(0.017, 24, 24);
-      const markerRingGeometry = new THREE.TorusGeometry(0.032, 0.0025, 8, 32);
-      const haloGeometry = new THREE.SphereGeometry(0.034, 20, 20);
       const markerHitGeometry = new THREE.SphereGeometry(0.075, 16, 16);
-      const markerMaterial = new THREE.MeshStandardMaterial({
-        color: 0xd4af37,
-        metalness: 0.82,
-        roughness: 0.2,
-        emissive: 0x5b3807,
-        emissiveIntensity: 0.25,
-      });
-      const markerRingMaterial = new THREE.MeshStandardMaterial({
-        color: 0xe7c76c,
-        metalness: 0.86,
-        roughness: 0.18,
-        emissive: 0x3c2606,
-        emissiveIntensity: 0.2,
-      });
-      const markerHaloMaterial = new THREE.MeshBasicMaterial({
-        color: 0xc9a227,
+      const markerTexture = createMarkerStarTexture();
+      const markerMaterial = new THREE.SpriteMaterial({
+        map: markerTexture || undefined,
+        color: 0xf4c95e,
         transparent: true,
-        opacity: 0.07,
+        opacity: 0.88,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
       });
@@ -469,19 +503,14 @@ const scenePoints = travelPoints.map((point) => ({
       points.forEach((point) => {
         const position = latLonToVector3(point.lat, point.lon);
         const normal = position.clone().normalize();
-        const marker = new THREE.Mesh(markerGeometry, markerMaterial);
-        marker.position.copy(position);
+        const marker = new THREE.Sprite(markerMaterial.clone());
+        marker.position.copy(normal.clone().multiplyScalar(2.034));
+        marker.scale.setScalar(0.11);
         marker.userData.point = point;
+        marker.userData.baseScale = 0.11;
+        marker.userData.phase = seededNoise(point.lat, point.lon) * Math.PI * 2;
         globe.add(marker);
-
-        const ring = new THREE.Mesh(markerRingGeometry, markerRingMaterial);
-        ring.position.copy(normal.clone().multiplyScalar(2.038));
-        ring.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), normal);
-        globe.add(ring);
-
-        const halo = new THREE.Mesh(haloGeometry, markerHaloMaterial);
-        halo.position.copy(normal.clone().multiplyScalar(2.03));
-        globe.add(halo);
+        markerSprites.push(marker);
 
         const hitTarget = new THREE.Mesh(markerHitGeometry, markerHitMaterial);
         hitTarget.position.copy(normal.clone().multiplyScalar(2.04));
@@ -625,6 +654,7 @@ const scenePoints = travelPoints.map((point) => ({
         if (!(placeCard instanceof HTMLElement)) return;
 
         const point = target.userData.point;
+        activeMarkerTarget = target;
         selectedMarker = target.userData.marker || target;
         setCardText(placeKicker, `${point.year} / ${point.kindLabel || point.kind}`);
         setCardText(placeName, point.name);
@@ -636,6 +666,7 @@ const scenePoints = travelPoints.map((point) => ({
 
       function hidePlaceCard() {
         selectedMarker = null;
+        activeMarkerTarget = null;
         delete root.dataset.selectedPlace;
         if (placeCard instanceof HTMLElement) {
           placeCard.classList.remove('is-visible');
@@ -664,7 +695,13 @@ const scenePoints = travelPoints.map((point) => ({
 
       function onPointerMove(event) {
         if (!isDragging) {
-          canvas.style.cursor = findMarkerFromPointer(event) ? 'pointer' : 'grab';
+          const target = findMarkerFromPointer(event);
+          canvas.style.cursor = target ? 'pointer' : 'grab';
+          if (target) {
+            showPlaceCard(target);
+          } else if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+            hidePlaceCard();
+          }
           return;
         }
         const deltaX = event.clientX - lastX;
@@ -700,10 +737,18 @@ const scenePoints = travelPoints.map((point) => ({
         }
       }
 
+      function onPointerLeave(event) {
+        canvas.style.cursor = 'grab';
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+          hidePlaceCard();
+        }
+      }
+
       canvas.addEventListener('pointerdown', onPointerDown);
       canvas.addEventListener('pointermove', onPointerMove);
       canvas.addEventListener('pointerup', onPointerUp);
       canvas.addEventListener('pointercancel', onPointerUp);
+      canvas.addEventListener('pointerleave', onPointerLeave);
       placeClose?.addEventListener('click', hidePlaceCard);
       window.addEventListener('resize', resize);
 
@@ -782,6 +827,16 @@ const scenePoints = travelPoints.map((point) => ({
         lightMaterials.forEach((material, index) => {
           material.opacity = 0.34 + Math.sin(time * 0.0017 + index * 1.73) * 0.12;
         });
+        markerSprites.forEach((marker) => {
+          const isActive = activeMarkerTarget?.userData.marker === marker;
+          const baseScale = marker.userData.baseScale || 0.11;
+          const twinkle = reducedMotion ? 0 : Math.sin(time * 0.0034 + marker.userData.phase) * 0.08;
+          const targetScale = baseScale * (isActive ? 1.48 : 1 + twinkle);
+          const currentScale = marker.scale.x || baseScale;
+          const nextScale = THREE.MathUtils.lerp(currentScale, targetScale, 0.18);
+          marker.scale.setScalar(nextScale);
+          marker.material.opacity = isActive ? 1 : 0.78 + Math.max(0, twinkle) * 0.32;
+        });
 
         renderer.render(scene, camera);
         updatePlaceCardPosition();
@@ -802,6 +857,7 @@ const scenePoints = travelPoints.map((point) => ({
         canvas.removeEventListener('pointermove', onPointerMove);
         canvas.removeEventListener('pointerup', onPointerUp);
         canvas.removeEventListener('pointercancel', onPointerUp);
+        canvas.removeEventListener('pointerleave', onPointerLeave);
         placeClose?.removeEventListener('click', hidePlaceCard);
         root.dataset.earthReady = 'false';
         renderer.dispose();
@@ -810,14 +866,11 @@ const scenePoints = travelPoints.map((point) => ({
         flareTexture?.dispose();
         arrivalFlareMaterial.dispose();
         cloudTexture?.dispose();
-        markerGeometry.dispose();
-        markerRingGeometry.dispose();
+        markerTexture?.dispose();
         markerHitGeometry.dispose();
-        haloGeometry.dispose();
         markerMaterial.dispose();
-        markerRingMaterial.dispose();
         markerHitMaterial.dispose();
-        markerHaloMaterial.dispose();
+        markerSprites.forEach((marker) => marker.material.dispose());
         routeGeometries.forEach((geometry) => geometry.dispose());
         routeMaterials.forEach((material) => material.dispose());
         starGeometry.dispose();
