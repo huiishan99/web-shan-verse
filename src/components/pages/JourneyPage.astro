@@ -12,22 +12,18 @@ const { lang = defaultLocale } = Astro.props;
 const journeyCopy: Record<Locale, {
   title: string;
   back: string;
-  close: string;
 }> = {
   en: {
     title: 'Travel Atlas',
     back: 'Back Home',
-    close: 'Close place card',
   },
   zh: {
     title: '旅行星图',
     back: '返回首页',
-    close: '关闭地点卡片',
   },
   ja: {
     title: '旅の星図',
     back: 'ホームへ',
-    close: '地点カードを閉じる',
   },
 };
 
@@ -84,10 +80,12 @@ const scenePoints = travelPoints.map((point) => ({
     </div>
 
     <div class="journey-place-card" data-place-card hidden>
-      <button class="journey-place-close" type="button" data-place-close aria-label={copy.close}>x</button>
+      <span class="journey-place-media" aria-hidden="true">
+        <span class="journey-place-orbit"></span>
+      </span>
       <span class="journey-place-kicker" data-place-kicker></span>
       <strong data-place-name></strong>
-      <span data-place-note></span>
+      <span class="journey-place-note" data-place-note></span>
     </div>
   </section>
 </BaseLayout>
@@ -105,7 +103,6 @@ const scenePoints = travelPoints.map((point) => ({
       const canvas = root.querySelector('[data-earth-canvas]');
       if (!(canvas instanceof HTMLCanvasElement)) return;
       const placeCard = root.querySelector('[data-place-card]');
-      const placeClose = root.querySelector('[data-place-close]');
       const placeKicker = root.querySelector('[data-place-kicker]');
       const placeName = root.querySelector('[data-place-name]');
       const placeNote = root.querySelector('[data-place-note]');
@@ -512,11 +509,11 @@ const scenePoints = travelPoints.map((point) => ({
 
         const anchorX = (markerScreenPosition.x * 0.5 + 0.5) * root.clientWidth;
         const anchorY = (-markerScreenPosition.y * 0.5 + 0.5) * root.clientHeight;
-        const cardWidth = placeCard.offsetWidth || 248;
-        const cardHeight = placeCard.offsetHeight || 116;
+        const cardWidth = placeCard.offsetWidth || 196;
+        const cardHeight = placeCard.offsetHeight || 252;
         const inset = isMobileLayout ? 12 : 18;
         const left = clamp(anchorX - cardWidth / 2, inset, root.clientWidth - cardWidth - inset);
-        const top = clamp(anchorY - cardHeight - 28, inset, root.clientHeight - cardHeight - inset);
+        const top = clamp(anchorY - cardHeight - 16, inset, root.clientHeight - cardHeight - inset);
         const pinX = clamp(anchorX - left, 18, cardWidth - 18);
 
         placeCard.style.left = `${left}px`;
@@ -650,7 +647,6 @@ const scenePoints = travelPoints.map((point) => ({
       canvas.addEventListener('wheel', onWheelZoom, { passive: false });
       canvas.addEventListener('gesturestart', onGestureStart, { passive: false });
       canvas.addEventListener('gesturechange', onGestureChange, { passive: false });
-      placeClose?.addEventListener('click', hidePlaceCard);
       window.addEventListener('resize', resize);
 
       let animationFrame = 0;
@@ -778,7 +774,6 @@ const scenePoints = travelPoints.map((point) => ({
         canvas.removeEventListener('wheel', onWheelZoom);
         canvas.removeEventListener('gesturestart', onGestureStart);
         canvas.removeEventListener('gesturechange', onGestureChange);
-        placeClose?.removeEventListener('click', hidePlaceCard);
         root.dataset.earthReady = 'false';
         renderer.dispose();
         earthGeometry.dispose();
@@ -902,17 +897,20 @@ const scenePoints = travelPoints.map((point) => ({
   .journey-place-card {
     position: absolute;
     z-index: 3;
-    width: min(16.75rem, calc(100vw - 1.5rem));
-    min-height: 6.1rem;
-    padding: 0.72rem 2.1rem 0.78rem 0.82rem;
-    border: 1px solid rgba(201, 162, 39, 0.34);
+    display: grid;
+    grid-template-rows: auto auto auto 1fr;
+    gap: 0.42rem;
+    width: min(12.25rem, calc(100vw - 1.5rem));
+    min-height: 15.4rem;
+    padding: 0.6rem 0.62rem 0.72rem;
+    border: 1px solid rgba(201, 162, 39, 0.26);
     border-radius: 6px;
     background:
-      linear-gradient(180deg, rgba(201, 162, 39, 0.11), rgba(255, 255, 255, 0.025)),
-      rgba(10, 10, 15, 0.93);
+      linear-gradient(180deg, rgba(201, 162, 39, 0.09), rgba(255, 255, 255, 0.025)),
+      rgba(10, 10, 15, 0.94);
     box-shadow:
-      0 22px 54px rgba(0, 0, 0, 0.45),
-      0 0 22px rgba(201, 162, 39, 0.12);
+      0 18px 42px rgba(0, 0, 0, 0.38),
+      0 0 18px rgba(201, 162, 39, 0.08);
     color: var(--color-text-secondary);
     opacity: 0;
     pointer-events: none;
@@ -931,60 +929,73 @@ const scenePoints = travelPoints.map((point) => ({
 
   .journey-place-card.is-visible {
     opacity: 1;
-    pointer-events: auto;
     transform: translateY(0) scale(1);
   }
 
-  .journey-place-card::before,
   .journey-place-card::after {
     content: '';
     position: absolute;
     left: var(--pin-x, 50%);
+    bottom: -0.38rem;
+    width: 0.7rem;
+    height: 0.7rem;
+    border-right: 1px solid rgba(201, 162, 39, 0.22);
+    border-bottom: 1px solid rgba(201, 162, 39, 0.22);
+    background: rgba(10, 10, 15, 0.94);
+    pointer-events: none;
+    transform: translateX(-50%) rotate(45deg);
+  }
+
+  .journey-place-media {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    background:
+      radial-gradient(circle at 50% 38%, rgba(201, 162, 39, 0.16), transparent 28%),
+      radial-gradient(circle at 44% 60%, rgba(123, 167, 217, 0.12), transparent 34%),
+      linear-gradient(150deg, rgba(201, 162, 39, 0.08), rgba(255, 255, 255, 0.025)),
+      rgba(255, 255, 255, 0.035);
+  }
+
+  .journey-place-media::before,
+  .journey-place-media::after {
+    content: '';
+    position: absolute;
+    border-radius: 999px;
     pointer-events: none;
   }
 
-  .journey-place-card::before {
-    top: 100%;
-    width: 1px;
-    height: 1.35rem;
-    background: linear-gradient(180deg, rgba(231, 199, 108, 0.72), rgba(231, 199, 108, 0));
-    box-shadow: 0 0 12px rgba(201, 162, 39, 0.28);
+  .journey-place-media::before {
+    inset: 18% 14%;
+    border: 1px solid rgba(201, 162, 39, 0.28);
+    box-shadow: inset 0 0 18px rgba(201, 162, 39, 0.08);
+    transform: rotate(-18deg);
   }
 
-  .journey-place-card::after {
-    top: calc(100% + 1.2rem);
-    width: 0.42rem;
-    height: 0.42rem;
-    border-radius: 999px;
-    background: var(--color-brass);
+  .journey-place-media::after {
+    width: 0.38rem;
+    height: 0.38rem;
+    background: rgba(245, 225, 162, 0.86);
     box-shadow:
-      0 0 0 3px rgba(201, 162, 39, 0.12),
-      0 0 14px rgba(201, 162, 39, 0.38);
-    transform: translateX(-50%);
+      0 0 8px rgba(245, 225, 162, 0.52),
+      1.55rem -1.15rem 0 -0.12rem rgba(123, 167, 217, 0.68),
+      -1.3rem 1.35rem 0 -0.1rem rgba(201, 162, 39, 0.55);
   }
 
-  .journey-place-close {
-    position: absolute;
-    top: 0.48rem;
-    right: 0.5rem;
-    display: grid;
-    place-items: center;
-    width: 1.35rem;
-    height: 1.35rem;
-    border: 1px solid rgba(201, 162, 39, 0.24);
+  .journey-place-orbit {
+    width: 64%;
+    aspect-ratio: 1;
+    border: 1px solid rgba(201, 162, 39, 0.3);
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.035);
-    color: rgba(232, 229, 220, 0.72);
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    line-height: 1;
-    cursor: pointer;
-  }
-
-  .journey-place-close:hover,
-  .journey-place-close:focus-visible {
-    border-color: rgba(201, 162, 39, 0.52);
-    color: var(--color-brass-light);
+    box-shadow:
+      0 0 16px rgba(201, 162, 39, 0.08),
+      inset 0 0 20px rgba(123, 167, 217, 0.08);
+    transform: rotate(24deg) scaleY(0.72);
   }
 
   .journey-place-kicker {
@@ -999,17 +1010,16 @@ const scenePoints = travelPoints.map((point) => ({
 
   .journey-place-card strong {
     display: block;
-    margin-bottom: 0.24rem;
     color: var(--color-text-primary);
-    font-size: 1.02rem;
-    line-height: 1.18;
+    font-size: 0.95rem;
+    line-height: 1.2;
   }
 
-  .journey-place-card span:last-child {
+  .journey-place-note {
     display: block;
     color: var(--color-text-muted);
     font-family: var(--font-mono);
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     line-height: 1.35;
   }
 
@@ -1037,8 +1047,9 @@ const scenePoints = travelPoints.map((point) => ({
     }
 
     .journey-place-card {
-      width: min(15.5rem, calc(100vw - 1.5rem));
-      padding: 0.68rem 2rem 0.72rem 0.78rem;
+      width: min(11.5rem, calc(100vw - 1.5rem));
+      min-height: 14.35rem;
+      padding: 0.56rem 0.58rem 0.68rem;
     }
   }
 
