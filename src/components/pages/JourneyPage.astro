@@ -112,15 +112,19 @@ const scenePoints = travelPoints.map((point) => ({
 
       root.dataset.earthReady = 'true';
       const points = JSON.parse(root.dataset.points || '[]');
+      const initialMobileLayout = window.matchMedia('(max-width: 719px)').matches;
+      const lowMemoryDevice = 'deviceMemory' in navigator
+        && Number((navigator as Navigator & { deviceMemory?: number }).deviceMemory) <= 4;
+      const mobilePerformanceMode = initialMobileLayout || lowMemoryDevice;
+      root.dataset.performanceMode = mobilePerformanceMode ? 'mobile' : 'full';
 
       const renderer = new THREE.WebGLRenderer({
         canvas,
         alpha: true,
-        antialias: true,
-        preserveDrawingBuffer: true,
+        antialias: !mobilePerformanceMode,
+        preserveDrawingBuffer: false,
       });
       renderer.outputColorSpace = THREE.SRGBColorSpace;
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
@@ -248,7 +252,8 @@ const scenePoints = travelPoints.map((point) => ({
       const arrivalFlare = new THREE.Sprite(arrivalFlareMaterial);
       scene.add(arrivalFlare);
 
-      const earthGeometry = new THREE.SphereGeometry(2, 96, 96);
+      const sphereSegments = mobilePerformanceMode ? 64 : 96;
+      const earthGeometry = new THREE.SphereGeometry(2, sphereSegments, sphereSegments);
       const textureLoader = new THREE.TextureLoader();
       const maxAnisotropy = Math.min(16, renderer.capabilities.getMaxAnisotropy());
       function configureEarthTexture(texture) {
@@ -266,7 +271,7 @@ const scenePoints = travelPoints.map((point) => ({
       let sceneDisposed = false;
       root.dataset.earthTexture = '4096';
 
-      if (renderer.capabilities.maxTextureSize >= 8192) {
+      if (!mobilePerformanceMode && renderer.capabilities.maxTextureSize >= 8192) {
         highResEarthTexture = textureLoader.load(
           '/images/earth-natural-muted-8192.jpg',
           (loadedTexture) => {
@@ -325,7 +330,7 @@ const scenePoints = travelPoints.map((point) => ({
         blending: THREE.AdditiveBlending,
         depthWrite: false,
       });
-      const earthRim = new THREE.Mesh(new THREE.SphereGeometry(2.026, 96, 96), earthRimMaterial);
+      const earthRim = new THREE.Mesh(new THREE.SphereGeometry(2.026, sphereSegments, sphereSegments), earthRimMaterial);
       globe.add(earthRim);
 
       const markerHitTargets = [];
@@ -460,7 +465,11 @@ const scenePoints = travelPoints.map((point) => ({
         const isMobile = width < 720;
         isMobileLayout = isMobile;
 
+        const pixelRatioCap = isMobile ? 1.35 : 2;
+        const pixelRatio = Math.min(window.devicePixelRatio || 1, pixelRatioCap);
+        renderer.setPixelRatio(pixelRatio);
         renderer.setSize(width, height, false);
+        root.dataset.renderPixelRatio = pixelRatio.toFixed(2);
         camera.aspect = width / height;
         camera.position.set(isMobile ? 0.02 : 0.06, isMobile ? 0.46 : 0.16, isMobile ? 5.65 : 5.08);
         camera.lookAt(isMobile ? 0.02 : 0.02, isMobile ? -0.12 : -0.14, 0);
