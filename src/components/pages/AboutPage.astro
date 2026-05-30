@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../Icon.astro';
+import TrustedInlineHtml from '../TrustedInlineHtml.astro';
 import { pageHeader, intro, profile, education, experience, awards, skills, languages, interests, type InterestItem } from '../../data/about';
 import { defaultLocale, localizeString, type Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
@@ -66,7 +67,7 @@ function getItunesSearchUrl(term: string, country = 'JP') {
         <!-- Intro -->
         <div class="intro-section">
           {intro.map((paragraph) => (
-            <p class="intro-text" set:html={localizeString(paragraph, lang)}></p>
+            <p class="intro-text"><TrustedInlineHtml html={localizeString(paragraph, lang)} /></p>
           ))}
         </div>
         
@@ -287,7 +288,7 @@ function getItunesSearchUrl(term: string, country = 'JP') {
           
           <div class="profile-links">
             {profile.links.map((link) => (
-              <a href={link.url} target="_blank" class="profile-link">
+              <a href={link.url} target="_blank" rel="noopener noreferrer" class="profile-link">
                 <Icon name={link.icon} size={18} />
                 <span>{link.name}</span>
               </a>

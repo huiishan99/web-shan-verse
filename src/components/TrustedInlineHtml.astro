@@ -1,0 +1,10 @@
+---
+interface Props {
+  html: string;
+}
+
+const { html } = Astro.props;
+---
+
+<!-- Repository-authored localized inline HTML only. Do not pass user input here. -->
+<Fragment set:html={html} />

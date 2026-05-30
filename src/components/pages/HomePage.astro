@@ -2,12 +2,14 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../Icon.astro';
 import SiteStats from '../SiteStats.astro';
+import TrustedInlineHtml from '../TrustedInlineHtml.astro';
 import { currentStatus } from '../../data/status';
 import { timelineData } from '../../data/timeline';
 import { getCollection } from 'astro:content';
 import { defaultLocale, localizeMonth, localizePath, localizeString, type Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
 import { getBlogPostPath, isPostVisibleInLocale } from '../../utils/blog';
+import { escapeHtml } from '../../utils/html';
 
 interface Props {
   lang?: Locale;
@@ -18,7 +20,7 @@ const t = useTranslations(lang);
 const aboutPath = localizePath('/about', lang);
 const introHtml = t.home.intro.replace(
   '{aboutLink}',
-  `<a class="highlight intro-link" href="${aboutPath}">${t.home.aboutButton}</a>`
+  `<a class="highlight intro-link" href="${escapeHtml(aboutPath)}">${escapeHtml(t.home.aboutButton)}</a>`
 );
 const dateLocale: Record<Locale, string> = {
   en: 'en-US',
@@ -310,7 +312,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
         <p class="hero-tagline">{t.home.tagline}</p>
         
         <div class="hero-intro">
-          <p set:html={introHtml}></p>
+          <p><TrustedInlineHtml html={introHtml} /></p>
         </div>
         
         <div class="hero-actions">
