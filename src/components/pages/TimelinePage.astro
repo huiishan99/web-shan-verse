@@ -167,13 +167,13 @@ function formatEventDate(event: TimelineEvent): string | undefined {
                           <section class={`timeline-event timeline-event--${weight} timeline-event--${signalType}`}>
                             <div class="event-body">
                               <div class="event-meta">
-                                {eventDate && (
-                                  <time class="event-date" datetime={event.date}>{eventDate}</time>
-                                )}
                                 <span class={`event-type event-type--${signalType}`}>{getSignalLabel(signalType)}</span>
                               </div>
                               <h3 class="event-title">{localizeString(event.title, lang)}</h3>
                               <p class="event-desc">{localizeString(event.description, lang)}</p>
+                              {eventDate && (
+                                <time class="event-date" datetime={event.date}>{eventDate}</time>
+                              )}
                             </div>
                           </section>
                         );
@@ -452,15 +452,13 @@ function formatEventDate(event: TimelineEvent): string | undefined {
   }
 
   .event-date {
+    display: block;
+    margin-top: 0.55rem;
     color: var(--color-text-muted);
     font-family: var(--font-mono);
     font-size: 0.68rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    padding: 0.1rem 0.38rem;
-    border: 1px solid color-mix(in srgb, var(--event-accent) 38%, transparent);
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--event-accent) 10%, transparent);
   }
 
   .event-type--activity {
