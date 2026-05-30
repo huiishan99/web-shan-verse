@@ -335,7 +335,7 @@ function formatEventDate(event: TimelineEvent): string | undefined {
   .month-marker {
     position: absolute;
     display: block;
-    top: 0.55rem;
+    top: 3.45rem;
     left: calc(var(--spine-left) - var(--month-offset) - 4.5px);
     z-index: 1;
     width: 9px;
@@ -360,6 +360,7 @@ function formatEventDate(event: TimelineEvent): string | undefined {
     align-items: baseline;
     justify-content: space-between;
     gap: var(--space-md);
+    padding-left: 1.15rem;
   }
 
   .month-label {
@@ -535,6 +536,14 @@ function formatEventDate(event: TimelineEvent): string | undefined {
 
     .month-label {
       font-size: 1.08rem;
+    }
+
+    .month-marker {
+      top: 3.05rem;
+    }
+
+    .month-header {
+      padding-left: 0.95rem;
     }
 
     .month-events {
