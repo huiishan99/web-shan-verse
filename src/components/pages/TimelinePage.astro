@@ -335,7 +335,7 @@ function formatEventDate(event: TimelineEvent): string | undefined {
   .month-marker {
     position: absolute;
     display: block;
-    top: 3.45rem;
+    top: 4.5rem;
     left: calc(var(--spine-left) - var(--month-offset) - 4.5px);
     z-index: 1;
     width: 9px;
@@ -381,12 +381,12 @@ function formatEventDate(event: TimelineEvent): string | undefined {
     display: block;
     min-width: 0;
     padding: 0.9rem 1.15rem 0.85rem;
-    border: 1px solid rgba(201, 162, 39, 0.2);
+    border: 1px solid rgba(201, 162, 39, 0.14);
     border-radius: 8px;
     background:
-      linear-gradient(135deg, rgba(201, 162, 39, 0.045), transparent 42%),
-      rgba(13, 13, 18, 0.62);
-    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.16);
+      linear-gradient(135deg, rgba(201, 162, 39, 0.026), transparent 42%),
+      rgba(13, 13, 18, 0.38);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     transition:
@@ -405,15 +405,34 @@ function formatEventDate(event: TimelineEvent): string | undefined {
 
   .timeline-event--major {
     --event-accent: var(--color-accent-gold);
-    border-color: rgba(201, 162, 39, 0.24);
+    border-color: rgba(201, 162, 39, 0.16);
   }
 
   .timeline-event--note {
     --event-accent: var(--color-brass);
-    border-color: rgba(201, 162, 39, 0.15);
+    border-color: rgba(201, 162, 39, 0.12);
     background:
-      linear-gradient(135deg, rgba(201, 162, 39, 0.028), transparent 42%),
-      rgba(13, 13, 18, 0.56);
+      linear-gradient(135deg, rgba(201, 162, 39, 0.018), transparent 42%),
+      rgba(13, 13, 18, 0.34);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .timeline-event {
+      border-color: transparent;
+      background: transparent;
+      box-shadow: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    .timeline-event:hover {
+      background: var(--surface-glass-hover);
+      border-color: var(--surface-border-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--surface-shadow-hover);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
   }
 
   .event-body {
@@ -539,7 +558,7 @@ function formatEventDate(event: TimelineEvent): string | undefined {
     }
 
     .month-marker {
-      top: 3.05rem;
+      top: 4.5rem;
     }
 
     .month-header {
