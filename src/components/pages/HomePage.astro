@@ -278,7 +278,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
     .replace(/^---[\s\S]*?---/m, '')  // 移除 frontmatter
     .replace(/!\[.*?\]\(.*?\)/g, '')  // 移除图片
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')  // 链接只保留文字
-    .replace(/[#*`>\-]/g, '')  // 移除 markdown 符号
+    .replace(/[#*`>-]/g, '')  // 移除 markdown 符号
     .replace(/\n+/g, ' ')  // 换行变空格
     .trim();
   
@@ -632,7 +632,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
               })}
             </div>
             <h3 class="post-title">{post.data.title}</h3>
-            <p class="post-excerpt">{getExcerpt(post.body)}</p>
+            <p class="post-excerpt">{getExcerpt(post.body ?? '')}</p>
           </a>
         ))}
       </div>

@@ -30,6 +30,12 @@ jobs:
       - name: Audit production dependencies
         run: npm audit --omit=dev
 
+      - name: Type check
+        run: npm run check
+
+      - name: Lint
+        run: npm run lint
+
       - name: Check project links
         run: npm run check:links
 

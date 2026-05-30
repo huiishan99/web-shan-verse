@@ -83,8 +83,10 @@
 </style>
 
 <script>
-  if (!(window as any).__shanCursorReady) {
-  (window as any).__shanCursorReady = true;
+  const cursorWindow = window as typeof window & { __shanCursorReady?: boolean };
+
+  if (!cursorWindow.__shanCursorReady) {
+  cursorWindow.__shanCursorReady = true;
 
   // 粒子系统配置
   const config = {
@@ -111,13 +113,6 @@
   function createSparkleSVG(color: string, size: number): string {
     return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${color}" xmlns="http://www.w3.org/2000/svg">
       <path d="M12 0L13.5 10.5L24 12L13.5 13.5L12 24L10.5 13.5L0 12L10.5 10.5L12 0Z"/>
-    </svg>`;
-  }
-  
-  // 菱形 SVG
-  function createDiamondSVG(color: string, size: number): string {
-    return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${color}" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 2L22 12L12 22L2 12L12 2Z" fill-opacity="0.8"/>
     </svg>`;
   }
   

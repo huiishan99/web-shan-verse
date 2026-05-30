@@ -12,21 +12,24 @@ interface Props {
 const { lang = defaultLocale } = Astro.props;
 const t = useTranslations(lang);
 
-type InterestObject = Exclude<InterestItem, string>;
+type RichInterestItem = Extract<InterestItem, { title: unknown }>;
 
-function hasInterestTitle(item: InterestItem): item is InterestObject & { title: NonNullable<InterestObject['title']> } {
+function hasInterestTitle(item: InterestItem): item is RichInterestItem {
   return typeof item === 'object' && item !== null && 'title' in item;
 }
 
-function isWikiInterestItem(item: InterestItem): item is InterestObject & { wikiPage: string } {
-  return typeof item === 'object' && item !== null && typeof item.wikiPage === 'string';
+function isWikiInterestItem(item: InterestItem): item is RichInterestItem & { wikiPage: string } {
+  return typeof item === 'object' && item !== null && 'wikiPage' in item && typeof item.wikiPage === 'string';
 }
 
-function isAudioInterestItem(item: InterestItem): item is InterestObject & ({ audioSrc: string } | { previewProvider: 'itunes' }) {
+function isAudioInterestItem(item: InterestItem): item is RichInterestItem & ({ audioSrc: string } | { previewProvider: 'itunes' }) {
   return (
     typeof item === 'object' &&
     item !== null &&
-    (typeof item.audioSrc === 'string' || item.previewProvider === 'itunes')
+    (
+      ('audioSrc' in item && typeof item.audioSrc === 'string') ||
+      ('previewProvider' in item && item.previewProvider === 'itunes')
+    )
   );
 }
 
@@ -432,7 +435,7 @@ function getItunesSearchUrl(term: string, country = 'JP') {
         if (data?.title) setTitle(link, data.title);
         setExtract(link, description);
         setImage(link, thumbnail);
-      } catch (error) {
+      } catch {
         link.dataset.previewLoaded = 'false';
         setExtract(link, 'Preview unavailable. Open Wikipedia for details.');
       }

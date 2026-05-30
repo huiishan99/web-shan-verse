@@ -6,7 +6,10 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check:links": "node scripts/check-project-links.mjs"
+    "check": "astro check",
+    "lint": "eslint . --max-warnings=0",
+    "check:links": "node scripts/check-project-links.mjs",
+    "verify": "npm run check && npm run lint && npm run build"
   },
   "repository": {
     "type": "git",
@@ -28,5 +31,15 @@
     "@astrojs/sitemap": "^3.7.2",
     "astro": "^6.3.1",
     "three": "^0.184.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "@eslint/js": "^10.0.1",
+    "@types/three": "^0.184.1",
+    "eslint": "^10.4.1",
+    "eslint-plugin-astro": "^1.7.0",
+    "globals": "^17.6.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.60.0"
   }
 }
