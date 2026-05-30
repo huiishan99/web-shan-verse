@@ -95,13 +95,42 @@ const scenePoints = travelPoints.map((point) => ({
 
   const atlasWindow = window as typeof window & { __shanJourneyEarthReady?: boolean };
 
+  interface JourneyPoint {
+    id: string;
+    name: string;
+    note: string;
+    lat: number;
+    lon: number;
+    year: number;
+    period: string;
+    kind: string;
+    kindLabel: string;
+  }
+
+  type GestureZoomEvent = Event & { scale?: number };
+  type MarkerSprite = THREE.Sprite & {
+    userData: {
+      point: JourneyPoint;
+      baseScale: number;
+      phase: number;
+    };
+  };
+  type MarkerHitTarget = THREE.Mesh & {
+    userData: {
+      point: JourneyPoint;
+      marker: MarkerSprite;
+    };
+  };
+
   function initJourneyEarthScenes() {
-    document.querySelectorAll('[data-earth-scene]').forEach((root) => {
-      if (!(root instanceof HTMLElement)) return;
+    document.querySelectorAll('[data-earth-scene]').forEach((rootElement) => {
+      if (!(rootElement instanceof HTMLElement)) return;
+      const root = rootElement;
       if (root.dataset.earthReady === 'true') return;
 
-      const canvas = root.querySelector('[data-earth-canvas]');
-      if (!(canvas instanceof HTMLCanvasElement)) return;
+      const canvasElement = root.querySelector('[data-earth-canvas]');
+      if (!(canvasElement instanceof HTMLCanvasElement)) return;
+      const canvas = canvasElement;
       const placeCard = root.querySelector('[data-place-card]');
       const placeInitial = root.querySelector('[data-place-initial]');
       const placeKicker = root.querySelector('[data-place-kicker]');
@@ -109,7 +138,7 @@ const scenePoints = travelPoints.map((point) => ({
       const placeNote = root.querySelector('[data-place-note]');
 
       root.dataset.earthReady = 'true';
-      const points = JSON.parse(root.dataset.points || '[]');
+      const points = JSON.parse(root.dataset.points || '[]') as JourneyPoint[];
       const initialMobileLayout = window.matchMedia('(max-width: 719px)').matches;
       const lowMemoryDevice = 'deviceMemory' in navigator
         && Number((navigator as Navigator & { deviceMemory?: number }).deviceMemory) <= 4;
@@ -138,7 +167,7 @@ const scenePoints = travelPoints.map((point) => ({
       const globe = new THREE.Group();
       scene.add(globe);
 
-      function seededNoise(x, y) {
+      function seededNoise(x: number, y: number) {
         return Math.sin(x * 12.9898 + y * 78.233) * 43758.5453 % 1;
       }
 
@@ -257,7 +286,7 @@ const scenePoints = travelPoints.map((point) => ({
       const maxAnisotropy = mobilePerformanceMode
         ? 1
         : Math.min(16, renderer.capabilities.getMaxAnisotropy());
-      function configureEarthTexture(texture) {
+      function configureEarthTexture(texture: THREE.Texture) {
         texture.colorSpace = THREE.SRGBColorSpace;
         texture.anisotropy = maxAnisotropy;
       }
@@ -269,7 +298,7 @@ const scenePoints = travelPoints.map((point) => ({
         : '/images/earth-natural-muted-4096.jpg';
       const earthTexture = textureLoader.load(baseTextureUrl);
       configureEarthTexture(earthTexture);
-      let highResEarthTexture = null;
+      let highResEarthTexture: THREE.Texture | null = null;
       let highResEarthReady = false;
       let highResEarthSwapped = false;
       let sceneDisposed = false;
@@ -278,7 +307,7 @@ const scenePoints = travelPoints.map((point) => ({
       if (!mobilePerformanceMode && renderer.capabilities.maxTextureSize >= 8192) {
         highResEarthTexture = textureLoader.load(
           '/images/earth-natural-muted-8192.jpg',
-          (loadedTexture) => {
+          (loadedTexture: THREE.Texture) => {
             if (sceneDisposed) {
               loadedTexture.dispose();
               return;
@@ -337,16 +366,16 @@ const scenePoints = travelPoints.map((point) => ({
       const earthRim = new THREE.Mesh(new THREE.SphereGeometry(2.026, sphereSegments, sphereSegments), earthRimMaterial);
       globe.add(earthRim);
 
-      const markerHitTargets = [];
-      const markerSprites = [];
+      const markerHitTargets: MarkerHitTarget[] = [];
+      const markerSprites: MarkerSprite[] = [];
       const markerWorldPosition = new THREE.Vector3();
       const markerScreenPosition = new THREE.Vector3();
       const raycaster = new THREE.Raycaster();
       const pointer = new THREE.Vector2();
-      let selectedMarker = null;
-      let activeMarkerTarget = null;
+      let selectedMarker: THREE.Object3D | null = null;
+      let activeMarkerTarget: MarkerHitTarget | null = null;
 
-      function latLonToVector3(lat, lon, radius = 2.028) {
+      function latLonToVector3(lat: number, lon: number, radius = 2.028) {
         const phi = THREE.MathUtils.degToRad(90 - lat);
         const theta = THREE.MathUtils.degToRad(lon + 180);
 
@@ -381,7 +410,7 @@ const scenePoints = travelPoints.map((point) => ({
       points.forEach((point) => {
         const position = latLonToVector3(point.lat, point.lon);
         const normal = position.clone().normalize();
-        const marker = new THREE.Sprite(markerMaterial.clone());
+        const marker = new THREE.Sprite(markerMaterial.clone()) as MarkerSprite;
         marker.position.copy(normal.clone().multiplyScalar(2.012));
         marker.scale.setScalar(0.092);
         marker.userData.point = point;
@@ -390,7 +419,7 @@ const scenePoints = travelPoints.map((point) => ({
         globe.add(marker);
         markerSprites.push(marker);
 
-        const hitTarget = new THREE.Mesh(markerHitGeometry, markerHitMaterial);
+        const hitTarget = new THREE.Mesh(markerHitGeometry, markerHitMaterial) as unknown as MarkerHitTarget;
         hitTarget.position.copy(normal.clone().multiplyScalar(2.018));
         hitTarget.userData.point = point;
         hitTarget.userData.marker = marker;
@@ -451,7 +480,7 @@ const scenePoints = travelPoints.map((point) => ({
       globe.rotation.y = targetRotationY;
       globe.rotation.z = 0.04;
 
-      function easeOutCubic(progress) {
+      function easeOutCubic(progress: number) {
         return 1 - Math.pow(1 - progress, 3);
       }
 
@@ -496,7 +525,7 @@ const scenePoints = travelPoints.map((point) => ({
         updatePlaceCardPosition();
       }
 
-      function clamp(value, min, max) {
+      function clamp(value: number, min: number, max: number) {
         return Math.min(Math.max(value, min), max);
       }
 
@@ -504,7 +533,7 @@ const scenePoints = travelPoints.map((point) => ({
         return finalGlobeScale * userZoom;
       }
 
-      function setCardText(element, value) {
+      function setCardText(element: Element | null, value: string) {
         if (element instanceof HTMLElement) element.textContent = value;
       }
 
@@ -533,7 +562,7 @@ const scenePoints = travelPoints.map((point) => ({
         placeCard.classList.add('is-visible');
       }
 
-      function showPlaceCard(target) {
+      function showPlaceCard(target: MarkerHitTarget) {
         if (!(placeCard instanceof HTMLElement)) return;
 
         const point = target.userData.point;
@@ -561,16 +590,16 @@ const scenePoints = travelPoints.map((point) => ({
         }
       }
 
-      function findMarkerFromPointer(event) {
+      function findMarkerFromPointer(event: PointerEvent): MarkerHitTarget | null {
         const rect = canvas.getBoundingClientRect();
         pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
         pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
         raycaster.setFromCamera(pointer, camera);
         const hits = raycaster.intersectObjects(markerHitTargets, false);
-        return hits[0]?.object || null;
+        return (hits[0]?.object as MarkerHitTarget | undefined) || null;
       }
 
-      function onPointerDown(event) {
+      function onPointerDown(event: PointerEvent) {
         isDragging = true;
         dragDistance = 0;
         pointerStartX = event.clientX;
@@ -580,7 +609,7 @@ const scenePoints = travelPoints.map((point) => ({
         canvas.setPointerCapture(event.pointerId);
       }
 
-      function onPointerMove(event) {
+      function onPointerMove(event: PointerEvent) {
         if (!isDragging) {
           const target = findMarkerFromPointer(event);
           canvas.style.cursor = target ? 'pointer' : 'grab';
@@ -607,7 +636,7 @@ const scenePoints = travelPoints.map((point) => ({
         lastY = event.clientY;
       }
 
-      function onPointerUp(event) {
+      function onPointerUp(event: PointerEvent) {
         const shouldSelect = dragDistance < 7;
         isDragging = false;
         if (canvas.hasPointerCapture(event.pointerId)) {
@@ -628,14 +657,14 @@ const scenePoints = travelPoints.map((point) => ({
         }
       }
 
-      function onPointerLeave(event) {
+      function onPointerLeave(event: PointerEvent) {
         canvas.style.cursor = 'grab';
         if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
           hidePlaceCard();
         }
       }
 
-      function onWheelZoom(event) {
+      function onWheelZoom(event: WheelEvent) {
         event.preventDefault();
         const zoomIntensity = event.ctrlKey ? 0.006 : 0.0014;
         userZoom = clamp(userZoom * Math.exp(-event.deltaY * zoomIntensity), minZoom, maxZoom);
@@ -643,12 +672,12 @@ const scenePoints = travelPoints.map((point) => ({
         updatePlaceCardPosition();
       }
 
-      function onGestureStart(event) {
+      function onGestureStart(event: GestureZoomEvent) {
         event.preventDefault();
         gestureStartZoom = userZoom;
       }
 
-      function onGestureChange(event) {
+      function onGestureChange(event: GestureZoomEvent) {
         event.preventDefault();
         const gestureScale = Number(event.scale) || 1;
         userZoom = clamp(gestureStartZoom * gestureScale, minZoom, maxZoom);

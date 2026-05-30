@@ -64,9 +64,8 @@ function formatDate(date: Date) {
                 {formatDate(post.data.date)}
               </time>
               {post.data.categories && post.data.categories[0] && (
-                <a href={getBlogCategoryPath(post.data.categories[0], lang)} 
-                   class="post-category" 
-                   onclick="event.stopPropagation()">
+                <a href={getBlogCategoryPath(post.data.categories[0], lang)}
+                   class="post-category">
                   {post.data.categories[0]}
                 </a>
               )}
@@ -84,9 +83,8 @@ function formatDate(date: Date) {
             {post.data.tags && post.data.tags.length > 0 && (
               <div class="post-tags">
                 {post.data.tags.map((tag: string) => (
-                  <a href={getBlogTagPath(tag, lang)} 
-                     class="tag-in-card"
-                     onclick="event.stopPropagation()">
+                  <a href={getBlogTagPath(tag, lang)}
+                     class="tag-in-card">
                     #{tag}
                   </a>
                 ))}

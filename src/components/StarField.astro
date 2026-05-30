@@ -34,9 +34,12 @@
   function setupStarField() {
     state.cleanup?.();
 
-    const canvas = document.getElementById('starCanvas') as HTMLCanvasElement | null;
-    const ctx = canvas?.getContext('2d');
-    if (!canvas || !ctx) return;
+    const canvasElement = document.getElementById('starCanvas') as HTMLCanvasElement | null;
+    const drawingContext = canvasElement?.getContext('2d');
+    if (!canvasElement || !drawingContext) return;
+
+    const canvas = canvasElement;
+    const ctx = drawingContext;
 
     let active = true;
     let width = window.innerWidth;
