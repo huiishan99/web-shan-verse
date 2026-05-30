@@ -1,25 +1,11 @@
 ---
-import { getCollection, type CollectionEntry } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
 import BlogTaxonomyPage from '../../../components/pages/BlogTaxonomyPage.astro';
 import { defaultLocale } from '../../../i18n/config';
-import { getTaxonomySlug, isPostVisibleInLocale } from '../../../utils/blog';
+import { getDefaultBlogTaxonomyStaticPaths } from '../../../utils/blog';
 
 export async function getStaticPaths() {
-  const posts = (await getCollection('blog', ({ data }) => {
-    return import.meta.env.PROD ? data.draft !== true : true;
-  })).filter((post) => isPostVisibleInLocale(post, defaultLocale));
-
-  const tags = [...new Set(posts.flatMap((post) => post.data.tags || []))];
-
-  return tags.map((tag) => ({
-    params: { tag: getTaxonomySlug(tag) },
-    props: {
-      tag,
-      posts: posts
-        .filter((post) => post.data.tags?.includes(tag))
-        .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()),
-    },
-  }));
+  return getDefaultBlogTaxonomyStaticPaths('tag');
 }
 
 type Props = {
