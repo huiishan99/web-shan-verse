@@ -395,8 +395,7 @@ function formatEventDate(event: TimelineEvent): string | undefined {
     align-items: baseline;
     justify-content: space-between;
     gap: var(--space-md);
-    padding-bottom: 0.7rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding-bottom: 0.35rem;
   }
 
   .month-label {
@@ -415,12 +414,7 @@ function formatEventDate(event: TimelineEvent): string | undefined {
   .timeline-event {
     --event-accent: var(--color-brass);
     display: block;
-    padding: var(--space-md) 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.055);
-  }
-
-  .timeline-event:first-child {
-    border-top: 0;
+    padding: 0.9rem 0 0.7rem;
   }
 
   .timeline-event--major {
@@ -440,7 +434,7 @@ function formatEventDate(event: TimelineEvent): string | undefined {
     flex-wrap: wrap;
     align-items: center;
     gap: 0.45rem;
-    margin-bottom: 0.36rem;
+    margin-bottom: 0.22rem;
   }
 
   .event-type {
@@ -453,7 +447,7 @@ function formatEventDate(event: TimelineEvent): string | undefined {
 
   .event-date {
     display: block;
-    margin-top: 0.55rem;
+    margin-top: 0.36rem;
     color: var(--color-text-muted);
     font-family: var(--font-mono);
     font-size: 0.68rem;
@@ -470,7 +464,7 @@ function formatEventDate(event: TimelineEvent): string | undefined {
   }
 
   .event-title {
-    margin: 0 0 0.42rem;
+    margin: 0 0 0.24rem;
     color: var(--color-text-primary);
     font-family: 'Cormorant Garamond', Georgia, serif;
     font-size: 1.22rem;
