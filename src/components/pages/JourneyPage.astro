@@ -523,10 +523,9 @@ const scenePoints = travelPoints.map((point) => ({
         const anchorY = (-markerScreenPosition.y * 0.5 + 0.5) * root.clientHeight;
         const cardWidth = placeCard.offsetWidth || 196;
         const cardHeight = placeCard.offsetHeight || 190;
-        const inset = isMobileLayout ? 12 : 18;
-        const left = clamp(anchorX - cardWidth / 2, inset, root.clientWidth - cardWidth - inset);
+        const left = anchorX - cardWidth / 2;
         const top = anchorY - cardHeight - 16;
-        const pinX = clamp(anchorX - left, 18, cardWidth - 18);
+        const pinX = cardWidth / 2;
 
         placeCard.style.left = `${left}px`;
         placeCard.style.top = `${top}px`;
