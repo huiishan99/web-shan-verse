@@ -1,20 +1,11 @@
 ---
-import { getCollection, type CollectionEntry } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
 import BlogPostPage from '../../components/pages/BlogPostPage.astro';
 import { defaultLocale } from '../../i18n/config';
-import { getPostSlug, isPostVisibleInLocale } from '../../utils/blog';
+import { getBlogPostStaticPaths } from '../../utils/blog';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog', ({ data }) => {
-    return import.meta.env.PROD ? data.draft !== true : true;
-  });
-
-  return posts
-    .filter((post) => isPostVisibleInLocale(post, defaultLocale))
-    .map((post) => ({
-      params: { slug: getPostSlug(post) },
-      props: { post },
-    }));
+  return getBlogPostStaticPaths(defaultLocale);
 }
 
 type Props = {

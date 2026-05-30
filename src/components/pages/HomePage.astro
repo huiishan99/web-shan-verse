@@ -5,10 +5,9 @@ import SiteStats from '../SiteStats.astro';
 import TrustedInlineHtml from '../TrustedInlineHtml.astro';
 import { currentStatus } from '../../data/status';
 import { timelineData } from '../../data/timeline';
-import { getCollection } from 'astro:content';
 import { defaultLocale, localizeMonth, localizePath, localizeString, type Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
-import { getBlogPostPath, isPostVisibleInLocale } from '../../utils/blog';
+import { getBlogPosts, getBlogPostsForLocale, getBlogPostPath, sortBlogPosts } from '../../utils/blog';
 import { escapeHtml } from '../../utils/html';
 
 interface Props {
@@ -32,11 +31,11 @@ const activityTimeZone = 'Asia/Tokyo';
 const activityWeekdayLabels = ['', 'Mon', '', 'Wed', '', 'Fri', ''];
 
 // 获取最新3篇博客文章
-const collectedPosts = await getCollection('blog', ({ data }) => !data.draft);
-const allPosts = collectedPosts.filter((post) => isPostVisibleInLocale(post, lang));
-const latestPosts = allPosts
-  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
-  .slice(0, 3);
+const allPosts = getBlogPostsForLocale(
+  (await getBlogPosts()).filter((post) => !post.data.draft),
+  lang
+);
+const latestPosts = sortBlogPosts(allPosts).slice(0, 3);
 
 type HomepagePetMood = 'idle' | 'waving' | 'failed';
 

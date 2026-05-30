@@ -1,13 +1,14 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
 import { defaultLocale, type Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
 import {
   getBlogCategoryPath,
+  getBlogPosts,
+  getBlogPostsForLocale,
   getBlogPostPath,
   getBlogTagPath,
-  isPostVisibleInLocale,
+  sortBlogPosts,
 } from '../../utils/blog';
 
 interface Props {
@@ -23,16 +24,10 @@ const dateLocale: Record<Locale, string> = {
 };
 
 // 从 content collection 获取博客文章
-const posts = await getCollection('blog', ({ data }) => {
-  // 在生产环境中排除草稿
-  return import.meta.env.PROD ? data.draft !== true : true;
-});
-const visiblePosts = posts.filter((post) => isPostVisibleInLocale(post, lang));
+const visiblePosts = getBlogPostsForLocale(await getBlogPosts(), lang);
 
 // 按日期排序（最新在前）
-const sortedPosts = visiblePosts.sort((a, b) => 
-  b.data.date.valueOf() - a.data.date.valueOf()
-);
+const sortedPosts = sortBlogPosts(visiblePosts);
 
 // 收集所有分类和标签
 const allCategories = [...new Set(visiblePosts.flatMap(post => post.data.categories || []))];
