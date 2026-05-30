@@ -443,20 +443,20 @@ function formatEventDate(event: TimelineEvent): string | undefined {
     margin-bottom: 0.36rem;
   }
 
-  .event-type,
+  .event-type {
+    padding-top: 0.1rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+  }
+
   .event-date {
     color: var(--color-text-muted);
     font-family: var(--font-mono);
     font-size: 0.68rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-  }
-
-  .event-type {
-    padding-top: 0.1rem;
-  }
-
-  .event-date {
     padding: 0.1rem 0.38rem;
     border: 1px solid color-mix(in srgb, var(--event-accent) 38%, transparent);
     border-radius: 999px;
