@@ -3,7 +3,6 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import {
   timelineData,
   type TimelineEvent,
-  type TimelineEventCategory,
   type TimelineEventWeight,
 } from '../../data/timeline';
 import { defaultLocale, localizeMonth, localizeString, type Locale } from '../../i18n/config';
@@ -21,26 +20,21 @@ const dateLocale: Record<Locale, string> = {
   ja: 'ja-JP',
 };
 
-const weightLabels: Record<TimelineEventWeight, { en: string; zh: string; ja: string }> = {
-  major: { en: 'Major', zh: '重要', ja: '重要' },
-  standard: { en: 'Signal', zh: '记录', ja: '記録' },
-  note: { en: 'Note', zh: '日常', ja: 'メモ' },
-};
+type TimelineSignalType = 'activity' | 'milestone';
 
-const categoryLabels: Record<TimelineEventCategory, { en: string; zh: string; ja: string }> = {
-  research: { en: 'Research', zh: '研究', ja: '研究' },
-  career: { en: 'Career', zh: '职业', ja: 'キャリア' },
-  education: { en: 'Education', zh: '教育', ja: '教育' },
-  life: { en: 'Life', zh: '生活', ja: '生活' },
-  travel: { en: 'Travel', zh: '旅行', ja: '旅' },
-  project: { en: 'Project', zh: '项目', ja: 'プロジェクト' },
-  award: { en: 'Award', zh: '奖项', ja: '受賞' },
-};
-
-const weightRank: Record<TimelineEventWeight, number> = {
-  major: 0,
-  standard: 1,
-  note: 2,
+const monthRank: Record<string, number> = {
+  january: 0,
+  february: 1,
+  march: 2,
+  april: 3,
+  may: 4,
+  june: 5,
+  july: 6,
+  august: 7,
+  september: 8,
+  october: 9,
+  november: 10,
+  december: 11,
 };
 
 type TimelineMonthGroup = {
@@ -53,12 +47,40 @@ function getEventWeight(event: TimelineEvent): TimelineEventWeight {
   return event.weight ?? 'standard';
 }
 
-function getEventCategory(event: TimelineEvent): TimelineEventCategory {
-  return event.category ?? 'life';
+function getSignalType(event: TimelineEvent): TimelineSignalType {
+  return getEventWeight(event) === 'major' ? 'milestone' : 'activity';
 }
 
-function getMonthGroups(events: TimelineEvent[]): TimelineMonthGroup[] {
-  return events.reduce<TimelineMonthGroup[]>((groups, event) => {
+function getSignalLabel(signalType: TimelineSignalType): string {
+  return signalType === 'milestone' ? t.home.signalTypeMilestone : t.home.signalTypeActivity;
+}
+
+function getEventMonthIndex(event: TimelineEvent): number {
+  return monthRank[localizeString(event.month, 'en').toLowerCase()] ?? 0;
+}
+
+function getEventSortTime(event: TimelineEvent, year: number): number {
+  if (event.date) {
+    return Date.parse(`${event.date}T00:00:00Z`);
+  }
+
+  return Date.UTC(year, getEventMonthIndex(event), 0);
+}
+
+function getSortedEvents(events: TimelineEvent[], year: number): TimelineEvent[] {
+  return events
+    .map((event, index) => ({ event, index }))
+    .sort((first, second) => {
+      const timeDifference = getEventSortTime(second.event, year) - getEventSortTime(first.event, year);
+      if (timeDifference !== 0) return timeDifference;
+
+      return first.index - second.index;
+    })
+    .map(({ event }) => event);
+}
+
+function getMonthGroups(events: TimelineEvent[], year: number): TimelineMonthGroup[] {
+  return getSortedEvents(events, year).reduce<TimelineMonthGroup[]>((groups, event) => {
     const key = localizeString(event.month, 'en');
     const previousGroup = groups[groups.length - 1];
 
@@ -83,33 +105,6 @@ function getDominantWeight(events: TimelineEvent[]): TimelineEventWeight {
   return 'note';
 }
 
-function getMonthSummary(events: TimelineEvent[]): string {
-  const summaryParts = (['major', 'standard', 'note'] as TimelineEventWeight[])
-    .map((weight) => {
-      const count = events.filter((event) => getEventWeight(event) === weight).length;
-      return count > 0 ? `${count} ${localizeString(weightLabels[weight], lang)}` : '';
-    })
-    .filter(Boolean);
-
-  return summaryParts.join(' / ');
-}
-
-function getSortedEvents(events: TimelineEvent[]): TimelineEvent[] {
-  return [...events].sort((firstEvent, secondEvent) => {
-    const rankDifference = weightRank[getEventWeight(firstEvent)] - weightRank[getEventWeight(secondEvent)];
-    if (rankDifference !== 0) return rankDifference;
-
-    if (firstEvent.date && secondEvent.date) {
-      return secondEvent.date.localeCompare(firstEvent.date);
-    }
-
-    if (firstEvent.date) return -1;
-    if (secondEvent.date) return 1;
-
-    return 0;
-  });
-}
-
 function formatEventDate(event: TimelineEvent): string | undefined {
   if (!event.date || event.datePrecision === 'month') return undefined;
 
@@ -129,7 +124,7 @@ function formatEventDate(event: TimelineEvent): string | undefined {
     </header>
 
     <div class="timeline">
-      {timelineData.map((yearData) => (
+      {[...timelineData].sort((firstYear, secondYear) => secondYear.year - firstYear.year).map((yearData) => (
         <section class="timeline-year" aria-labelledby={`year-${yearData.year}`}>
           <div class="year-marker">
             <span class="year-signal" aria-hidden="true">
@@ -149,7 +144,7 @@ function formatEventDate(event: TimelineEvent): string | undefined {
           </div>
 
           <div class="year-months">
-            {getMonthGroups(yearData.events).map((monthGroup) => {
+            {getMonthGroups(yearData.events, yearData.year).map((monthGroup) => {
               const dominantWeight = getDominantWeight(monthGroup.events);
 
               return (
@@ -159,24 +154,23 @@ function formatEventDate(event: TimelineEvent): string | undefined {
                     <header class="month-header">
                       <div>
                         <span class="month-label">{monthGroup.label}</span>
-                        <span class="month-summary">{getMonthSummary(monthGroup.events)}</span>
                       </div>
                     </header>
 
                     <div class="month-events">
-                      {getSortedEvents(monthGroup.events).map((event) => {
+                      {monthGroup.events.map((event) => {
                         const weight = getEventWeight(event);
-                        const category = getEventCategory(event);
+                        const signalType = getSignalType(event);
                         const eventDate = formatEventDate(event);
 
                         return (
-                          <section class={`timeline-event timeline-event--${weight} timeline-event--${category}`}>
+                          <section class={`timeline-event timeline-event--${weight} timeline-event--${signalType}`}>
                             <div class="event-body">
                               <div class="event-meta">
                                 {eventDate && (
                                   <time class="event-date" datetime={event.date}>{eventDate}</time>
                                 )}
-                                <span class="event-category">{localizeString(categoryLabels[category], lang)}</span>
+                                <span class={`event-type event-type--${signalType}`}>{getSignalLabel(signalType)}</span>
                               </div>
                               <h3 class="event-title">{localizeString(event.title, lang)}</h3>
                               <p class="event-desc">{localizeString(event.description, lang)}</p>
@@ -401,7 +395,7 @@ function formatEventDate(event: TimelineEvent): string | undefined {
     align-items: baseline;
     justify-content: space-between;
     gap: var(--space-md);
-    padding-bottom: var(--space-sm);
+    padding-bottom: 0.7rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   }
 
@@ -411,15 +405,6 @@ function formatEventDate(event: TimelineEvent): string | undefined {
     font-family: var(--font-display);
     font-size: 1.28rem;
     letter-spacing: 0.06em;
-  }
-
-  .month-summary {
-    display: block;
-    margin-top: 0.18rem;
-    color: var(--color-text-muted);
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.04em;
   }
 
   .month-events {
@@ -440,29 +425,10 @@ function formatEventDate(event: TimelineEvent): string | undefined {
 
   .timeline-event--major {
     --event-accent: var(--color-accent-gold);
-    padding: var(--space-md) 0 var(--space-lg);
-  }
-
-  .timeline-event--major .event-title {
-    color: var(--color-text-primary);
-    font-size: clamp(1.2rem, 2vw, 1.42rem);
-  }
-
-  .timeline-event--major .event-body {
-    padding-left: 0;
   }
 
   .timeline-event--note {
     --event-accent: var(--color-brass);
-    padding-block: var(--space-sm);
-  }
-
-  .timeline-event--note .event-title {
-    font-size: 1rem;
-  }
-
-  .timeline-event--note .event-desc {
-    font-size: 0.9rem;
   }
 
   .event-body {
@@ -477,7 +443,7 @@ function formatEventDate(event: TimelineEvent): string | undefined {
     margin-bottom: 0.36rem;
   }
 
-  .event-category,
+  .event-type,
   .event-date {
     color: var(--color-text-muted);
     font-family: var(--font-mono);
@@ -486,19 +452,8 @@ function formatEventDate(event: TimelineEvent): string | undefined {
     text-transform: uppercase;
   }
 
-  .event-category {
-    color: var(--color-brass);
-    padding-bottom: 0.08rem;
-    border-bottom: 1px solid rgba(201, 162, 39, 0.22);
-  }
-
-  .timeline-event--major .event-category {
-    color: var(--color-accent-gold);
-  }
-
-  .timeline-event--note .event-category {
-    color: var(--color-brass);
-    opacity: 0.72;
+  .event-type {
+    padding-top: 0.1rem;
   }
 
   .event-date {
@@ -506,6 +461,14 @@ function formatEventDate(event: TimelineEvent): string | undefined {
     border: 1px solid color-mix(in srgb, var(--event-accent) 38%, transparent);
     border-radius: 999px;
     background: color-mix(in srgb, var(--event-accent) 10%, transparent);
+  }
+
+  .event-type--activity {
+    color: rgb(148, 196, 179);
+  }
+
+  .event-type--milestone {
+    color: var(--color-brass);
   }
 
   .event-title {
