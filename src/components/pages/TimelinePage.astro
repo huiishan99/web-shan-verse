@@ -150,35 +150,31 @@ function formatEventDate(event: TimelineEvent): string | undefined {
               return (
                 <article class={`month-cluster month-cluster--${dominantWeight}`}>
                   <span class="month-marker" aria-hidden="true"></span>
-                  <div class="month-shell">
-                    <header class="month-header">
-                      <div>
-                        <span class="month-label">{monthGroup.label}</span>
-                      </div>
-                    </header>
+                  <header class="month-header">
+                    <span class="month-label">{monthGroup.label}</span>
+                  </header>
 
-                    <div class="month-events">
-                      {monthGroup.events.map((event) => {
-                        const weight = getEventWeight(event);
-                        const signalType = getSignalType(event);
-                        const eventDate = formatEventDate(event);
+                  <div class="month-events">
+                    {monthGroup.events.map((event) => {
+                      const weight = getEventWeight(event);
+                      const signalType = getSignalType(event);
+                      const eventDate = formatEventDate(event);
 
-                        return (
-                          <section class={`timeline-event timeline-event--${weight} timeline-event--${signalType}`}>
-                            <div class="event-body">
-                              <div class="event-meta">
-                                <span class={`event-type event-type--${signalType}`}>{getSignalLabel(signalType)}</span>
-                              </div>
-                              <h3 class="event-title">{localizeString(event.title, lang)}</h3>
-                              <p class="event-desc">{localizeString(event.description, lang)}</p>
-                              {eventDate && (
-                                <time class="event-date" datetime={event.date}>{eventDate}</time>
-                              )}
+                      return (
+                        <section class={`timeline-event timeline-event--${weight} timeline-event--${signalType}`}>
+                          <div class="event-body">
+                            <div class="event-meta">
+                              <span class={`event-type event-type--${signalType}`}>{getSignalLabel(signalType)}</span>
                             </div>
-                          </section>
-                        );
-                      })}
-                    </div>
+                            <h3 class="event-title">{localizeString(event.title, lang)}</h3>
+                            <p class="event-desc">{localizeString(event.description, lang)}</p>
+                            {eventDate && (
+                              <time class="event-date" datetime={event.date}>{eventDate}</time>
+                            )}
+                          </div>
+                        </section>
+                      );
+                    })}
                   </div>
                 </article>
               );
@@ -327,7 +323,8 @@ function formatEventDate(event: TimelineEvent): string | undefined {
 
   .month-cluster {
     --month-accent: var(--color-brass);
-    display: block;
+    display: grid;
+    gap: 0.55rem;
     position: relative;
   }
 
@@ -338,7 +335,7 @@ function formatEventDate(event: TimelineEvent): string | undefined {
   .month-marker {
     position: absolute;
     display: block;
-    top: 1.18rem;
+    top: 0.55rem;
     left: calc(var(--spine-left) - var(--month-offset) - 4.5px);
     z-index: 1;
     width: 9px;
@@ -352,42 +349,10 @@ function formatEventDate(event: TimelineEvent): string | undefined {
       box-shadow 0.3s ease;
   }
 
-  .month-shell {
-    min-width: 0;
-    padding: var(--space-md) var(--space-lg);
-    border: 1px solid rgba(201, 162, 39, 0.24);
-    border-radius: 8px;
-    background:
-      linear-gradient(135deg, rgba(201, 162, 39, 0.055), transparent 42%),
-      rgba(13, 13, 18, 0.66);
-    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.18);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    transition:
-      transform 0.3s ease,
-      background 0.3s ease,
-      border-color 0.3s ease,
-      box-shadow 0.3s ease;
-  }
-
-  .month-cluster:hover .month-shell {
-    background: var(--surface-glass-hover);
-    border-color: var(--surface-border-hover);
-    transform: translateY(-2px);
-    box-shadow: var(--surface-shadow-hover);
-  }
-
   .month-cluster:hover .month-marker {
     background: var(--color-accent-gold);
     transform: translateY(-2px) scale(1.12);
     box-shadow: 0 0 16px rgba(201, 162, 39, 0.4);
-  }
-
-  .month-cluster--note .month-shell {
-    border-color: rgba(201, 162, 39, 0.16);
-    background:
-      linear-gradient(135deg, rgba(201, 162, 39, 0.035), transparent 42%),
-      rgba(13, 13, 18, 0.6);
   }
 
   .month-header {
@@ -395,7 +360,6 @@ function formatEventDate(event: TimelineEvent): string | undefined {
     align-items: baseline;
     justify-content: space-between;
     gap: var(--space-md);
-    padding-bottom: 0.35rem;
   }
 
   .month-label {
@@ -408,21 +372,47 @@ function formatEventDate(event: TimelineEvent): string | undefined {
 
   .month-events {
     display: grid;
-    gap: 0;
+    gap: 0.72rem;
   }
 
   .timeline-event {
     --event-accent: var(--color-brass);
     display: block;
-    padding: 0.9rem 0 0.7rem;
+    min-width: 0;
+    padding: 0.9rem 1.15rem 0.85rem;
+    border: 1px solid rgba(201, 162, 39, 0.2);
+    border-radius: 8px;
+    background:
+      linear-gradient(135deg, rgba(201, 162, 39, 0.045), transparent 42%),
+      rgba(13, 13, 18, 0.62);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.16);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition:
+      transform 0.3s ease,
+      background 0.3s ease,
+      border-color 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+
+  .timeline-event:hover {
+    background: var(--surface-glass-hover);
+    border-color: var(--surface-border-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--surface-shadow-hover);
   }
 
   .timeline-event--major {
     --event-accent: var(--color-accent-gold);
+    border-color: rgba(201, 162, 39, 0.24);
   }
 
   .timeline-event--note {
     --event-accent: var(--color-brass);
+    border-color: rgba(201, 162, 39, 0.15);
+    background:
+      linear-gradient(135deg, rgba(201, 162, 39, 0.028), transparent 42%),
+      rgba(13, 13, 18, 0.56);
   }
 
   .event-body {
@@ -543,12 +533,16 @@ function formatEventDate(event: TimelineEvent): string | undefined {
       --spine-left: 0.45rem;
     }
 
-    .month-shell {
-      padding: var(--space-md);
-    }
-
     .month-label {
       font-size: 1.08rem;
+    }
+
+    .month-events {
+      gap: 0.62rem;
+    }
+
+    .timeline-event {
+      padding: 0.82rem 0.95rem 0.78rem;
     }
 
     .event-desc {
