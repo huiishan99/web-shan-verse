@@ -5,9 +5,10 @@ import SiteStats from '../SiteStats.astro';
 import TrustedInlineHtml from '../TrustedInlineHtml.astro';
 import { currentStatus } from '../../data/status';
 import { timelineData } from '../../data/timeline';
-import { defaultLocale, localizeMonth, localizePath, localizeString, type Locale } from '../../i18n/config';
+import { defaultLocale, localizePath, localizeString, type Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
 import { getBlogPosts, getBlogPostsForLocale, getBlogPostPath, sortBlogPosts } from '../../utils/blog';
+import { buildHomepageActivityModel, toDateKey } from '../../utils/home-activity';
 import { escapeHtml } from '../../utils/html';
 
 interface Props {
@@ -26,9 +27,6 @@ const dateLocale: Record<Locale, string> = {
   zh: 'zh-CN',
   ja: 'ja-JP',
 };
-const activityLabelLocale = 'en-US';
-const activityTimeZone = 'Asia/Tokyo';
-const activityWeekdayLabels = ['', 'Mon', '', 'Wed', '', 'Fri', ''];
 
 // 获取最新3篇博客文章
 const allPosts = getBlogPostsForLocale(
@@ -36,6 +34,36 @@ const allPosts = getBlogPostsForLocale(
   lang
 );
 const latestPosts = sortBlogPosts(allPosts).slice(0, 3);
+const {
+  activeDays,
+  activityLabel,
+  activityMonthLabels,
+  activityRangeLabel,
+  activitySignalCount,
+  activityWeekdayLabels,
+  activityWeeks,
+  activityYearLabels,
+  blogSignalCount,
+  compactActiveDays,
+  compactActivityLabel,
+  compactActivityMonthLabels,
+  compactActivityRangeLabel,
+  compactActivitySignalCount,
+  compactActivityWeeks,
+  compactActivityYearLabels,
+  compactBlogSignalCount,
+  compactGridStart,
+  compactMilestoneSignalCount,
+  gridEnd,
+  gridStart,
+  milestoneSignalCount,
+  recentSignals,
+} = buildHomepageActivityModel({
+  labels: t.home,
+  lang,
+  posts: allPosts,
+  timelineData,
+});
 
 type HomepagePetMood = 'idle' | 'waving' | 'failed';
 
@@ -51,222 +79,6 @@ const homepagePetRows: Record<HomepagePetMood, number> = {
   failed: 8,
 };
 const homepagePetRowOffset = `${homepagePetRows[homepagePetMood] * 12.5}%`;
-
-const monthIndex: Record<string, number> = {
-  January: 0,
-  February: 1,
-  March: 2,
-  April: 3,
-  May: 4,
-  June: 5,
-  July: 6,
-  August: 7,
-  September: 8,
-  October: 9,
-  November: 10,
-  December: 11,
-};
-
-type ActivitySignal = {
-  date: Date;
-  datetime: string;
-  displayDate: string;
-  dateSource: 'blog date' | 'timeline date' | 'timeline month';
-  href: string;
-  title: string;
-  type: 'blog' | 'activity' | 'milestone';
-};
-
-const postSignals: ActivitySignal[] = allPosts.map((post) => ({
-  date: post.data.date,
-  datetime: toDateKey(post.data.date),
-  displayDate: formatActivityDate(post.data.date),
-  dateSource: 'blog date',
-  href: getBlogPostPath(post, lang),
-  title: post.data.title,
-  type: 'blog',
-}));
-
-const timelineSignals: ActivitySignal[] = timelineData.flatMap((yearData) =>
-  yearData.events.map((event) => {
-    const englishMonth = localizeString(event.month, 'en');
-    const eventMonthIndex = monthIndex[englishMonth] ?? 0;
-    const eventMonth = localizeMonth(event.month, lang);
-    const preciseEventDate = event.date && event.datePrecision !== 'month'
-      ? new Date(`${event.date}T00:00:00Z`)
-      : undefined;
-    const eventDate = preciseEventDate ?? new Date(Date.UTC(yearData.year, eventMonthIndex, 15));
-
-    return {
-      // Month-level entries are placed at mid-month; exact dates can opt in with `event.date`.
-      date: eventDate,
-      datetime: preciseEventDate
-        ? toDateKey(preciseEventDate)
-        : `${yearData.year}-${String(eventMonthIndex + 1).padStart(2, '0')}`,
-      displayDate: `${eventMonth} ${yearData.year}`,
-      dateSource: preciseEventDate ? 'timeline date' as const : 'timeline month' as const,
-      href: localizePath('/timeline', lang),
-      title: localizeString(event.title, lang),
-      type: event.weight === 'major' ? 'milestone' as const : 'activity' as const,
-    };
-  })
-);
-
-const activitySignals = [...postSignals, ...timelineSignals];
-
-function toDateKey(date: Date): string {
-  return date.toISOString().slice(0, 10);
-}
-
-function startOfDay(date: Date): Date {
-  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
-}
-
-function addDays(date: Date, days: number): Date {
-  const nextDate = new Date(date);
-  nextDate.setUTCDate(nextDate.getUTCDate() + days);
-  return nextDate;
-}
-
-function formatActivityDate(date: Date): string {
-  return date.toLocaleDateString(dateLocale[lang], {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    timeZone: 'UTC',
-  });
-}
-
-function formatActivityMonthYear(date: Date): string {
-  return date.toLocaleDateString(activityLabelLocale, {
-    month: 'short',
-    year: 'numeric',
-    timeZone: 'UTC',
-  });
-}
-
-function filterCrowdedMonthLabels(labels: string[], minGap: number = 3): string[] {
-  const filteredLabels = [...labels];
-  let previousLabelIndex = -1;
-
-  labels.forEach((label, index) => {
-    if (!label) return;
-
-    if (previousLabelIndex >= 0 && index - previousLabelIndex < minGap) {
-      filteredLabels[previousLabelIndex] = '';
-    }
-
-    previousLabelIndex = index;
-  });
-
-  return filteredLabels;
-}
-
-function startOfTodayInTimeZone(timeZone: string): Date {
-  const parts = new Intl.DateTimeFormat('en-US', {
-    day: '2-digit',
-    month: '2-digit',
-    timeZone,
-    year: 'numeric',
-  }).formatToParts(new Date());
-  const getPart = (type: Intl.DateTimeFormatPartTypes): number =>
-    Number(parts.find((part) => part.type === type)?.value);
-
-  return new Date(Date.UTC(getPart('year'), getPart('month') - 1, getPart('day')));
-}
-
-const today = startOfTodayInTimeZone(activityTimeZone);
-const fullWeekCount = 52;
-const compactWeekCount = 26;
-const gridEnd = addDays(today, 6 - today.getUTCDay());
-const gridStart = addDays(gridEnd, -(fullWeekCount * 7 - 1));
-const compactGridStart = addDays(gridEnd, -(compactWeekCount * 7 - 1));
-const activityRangeLabel = `${formatActivityMonthYear(gridStart)} - ${formatActivityMonthYear(gridEnd)}`;
-const compactActivityRangeLabel = `${formatActivityMonthYear(compactGridStart)} - ${formatActivityMonthYear(gridEnd)}`;
-
-const signalsByDay = activitySignals.reduce<Record<string, ActivitySignal[]>>((acc, signal) => {
-  const key = toDateKey(startOfDay(signal.date));
-  acc[key] = [...(acc[key] || []), signal];
-  return acc;
-}, {});
-
-function buildActivityWeeks(startDate: Date, weekCount: number) {
-  return Array.from({ length: weekCount }, (_, weekIndex) =>
-    Array.from({ length: 7 }, (_, dayIndex) => {
-      const date = addDays(startDate, weekIndex * 7 + dayIndex);
-      const signals = signalsByDay[toDateKey(date)] || [];
-      const intensity = Math.min(signals.length, 4);
-
-      return {
-        date,
-        key: toDateKey(date),
-        signals,
-        intensity,
-      };
-    })
-  );
-}
-
-function getActivityMonthLabels(
-  weeks: ReturnType<typeof buildActivityWeeks>
-): string[] {
-  return filterCrowdedMonthLabels(weeks.map((week, weekIndex) => {
-    const firstOfMonth = week.find((day) => day.date.getUTCDate() === 1);
-    const labelDate = firstOfMonth?.date || (weekIndex === 0 ? week[0].date : null);
-
-    return labelDate
-      ? labelDate.toLocaleDateString(activityLabelLocale, { month: 'short', timeZone: 'UTC' })
-      : '';
-  }));
-}
-
-function getActivityYearLabels(
-  weeks: ReturnType<typeof buildActivityWeeks>
-): string[] {
-  return weeks.map((week, weekIndex) => {
-    const firstOfYear = week.find((day) => day.date.getUTCMonth() === 0 && day.date.getUTCDate() === 1);
-    const labelDate = firstOfYear?.date || (weekIndex === 0 ? week[0].date : null);
-
-    return labelDate ? String(labelDate.getUTCFullYear()) : '';
-  });
-}
-
-function getVisibleSignals(startDate: Date): ActivitySignal[] {
-  return activitySignals
-    .filter((signal) => {
-      const signalDate = startOfDay(signal.date);
-      return signalDate >= startDate && signalDate <= gridEnd;
-    })
-    .sort((a, b) => b.date.getTime() - a.date.getTime());
-}
-
-function getActiveDayCount(signals: ActivitySignal[]): number {
-  return new Set(signals.map((signal) => toDateKey(startOfDay(signal.date)))).size;
-}
-
-const activityWeeks = buildActivityWeeks(gridStart, fullWeekCount);
-const compactActivityWeeks = buildActivityWeeks(compactGridStart, compactWeekCount);
-
-const activityMonthLabels = getActivityMonthLabels(activityWeeks);
-const compactActivityMonthLabels = getActivityMonthLabels(compactActivityWeeks);
-const activityYearLabels = getActivityYearLabels(activityWeeks);
-const compactActivityYearLabels = getActivityYearLabels(compactActivityWeeks);
-
-const visibleSignals = getVisibleSignals(gridStart);
-const compactVisibleSignals = getVisibleSignals(compactGridStart);
-const activeDays = getActiveDayCount(visibleSignals);
-const compactActiveDays = getActiveDayCount(compactVisibleSignals);
-const totalSignals = visibleSignals.length;
-const compactTotalSignals = compactVisibleSignals.length;
-const activityLabel = `${t.home.signalMap} ${activityRangeLabel}: ${totalSignals} ${t.home.totalSignals}, ${activeDays} ${t.home.activeDays}.`;
-const compactActivityLabel = `${t.home.signalMap} ${compactActivityRangeLabel}: ${compactTotalSignals} ${t.home.totalSignals}, ${compactActiveDays} ${t.home.activeDays}.`;
-const recentSignals = visibleSignals.slice(0, 6);
-const blogSignalCount = visibleSignals.filter((signal) => signal.type === 'blog').length;
-const activitySignalCount = visibleSignals.filter((signal) => signal.type === 'activity').length;
-const milestoneSignalCount = visibleSignals.filter((signal) => signal.type === 'milestone').length;
-const compactBlogSignalCount = compactVisibleSignals.filter((signal) => signal.type === 'blog').length;
-const compactActivitySignalCount = compactVisibleSignals.filter((signal) => signal.type === 'activity').length;
-const compactMilestoneSignalCount = compactVisibleSignals.filter((signal) => signal.type === 'milestone').length;
 const githubUsername = 'huiishan99';
 const githubProfileUrl = `https://github.com/${githubUsername}`;
 const githubContributionChartUrl = `https://ghchart.rshah.org/C9A227/${githubUsername}`;
@@ -436,7 +248,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
                               : 'quiet';
                         const label = day.signals.length > 0
                           ? titles
-                          : `${formatActivityDate(day.date)}: ${t.home.noSignal}`;
+                          : `${day.displayDate}: ${t.home.noSignal}`;
 
                         return (
                           <span
@@ -493,7 +305,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
                               : 'quiet';
                         const label = day.signals.length > 0
                           ? titles
-                          : `${formatActivityDate(day.date)}: ${t.home.noSignal}`;
+                          : `${day.displayDate}: ${t.home.noSignal}`;
 
                         return (
                           <span
