@@ -18,7 +18,7 @@ const {
 } = Astro.props;
 
 const statsEndpoint = import.meta.env.PROD
-  ? (import.meta.env.PUBLIC_SITE_STATS_ENDPOINT || '/api/site-stats')
+  ? (import.meta.env.PUBLIC_SITE_STATS_ENDPOINT || '')
   : '';
 ---
 
