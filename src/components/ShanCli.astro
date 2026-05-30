@@ -1,12 +1,15 @@
 ---
 import type { Locale } from '../i18n/config';
 import { defaultLocale, localizePath } from '../i18n/config';
+import { useTranslations } from '../i18n/ui';
 
 interface Props {
   lang?: Locale;
 }
 
 const { lang = defaultLocale } = Astro.props;
+const t = useTranslations(lang);
+const cli = t.cli;
 
 const paths = {
   home: localizePath('/', lang),
@@ -26,8 +29,9 @@ const paths = {
   data-projects-path={paths.projects}
   data-timeline-path={paths.timeline}
   data-blog-path={paths.blog}
+  data-cli-labels={JSON.stringify(cli)}
 >
-  <button type="button" class="cli-trigger" aria-label="Open Shan CLI" data-cli-trigger>
+  <button type="button" class="cli-trigger" aria-label={cli.open} data-cli-trigger>
     <span>shan&gt;</span>
   </button>
 
@@ -36,11 +40,11 @@ const paths = {
       <div class="cli-topline">
         <span class="cli-dot"></span>
         <span class="cli-title">SHAN CLI</span>
-        <button type="button" class="cli-close" aria-label="Close Shan CLI" data-cli-close>×</button>
+        <button type="button" class="cli-close" aria-label={cli.close} data-cli-close>×</button>
       </div>
 
       <div class="cli-output" aria-live="polite" data-cli-output>
-        <p><span class="cli-muted">type</span> help <span class="cli-muted">for commands</span></p>
+        <p><span class="cli-muted">{cli.intro}</span></p>
       </div>
 
       <form class="cli-form" data-cli-form>
@@ -49,8 +53,8 @@ const paths = {
           type="text"
           autocomplete="off"
           spellcheck="false"
-          aria-label="Shan CLI command"
-          placeholder="help"
+          aria-label={cli.command}
+          placeholder={cli.placeholder}
           data-cli-input
         />
       </form>
@@ -65,6 +69,43 @@ const paths = {
 
     const localizedRoutes = new Set(['/', '/about', '/projects', '/timeline', '/blog']);
     const locales = ['en', 'zh', 'ja'];
+    const DEFAULT_LABELS = {
+      navigationHeading: 'navigation',
+      signalsHeading: 'signals',
+      linksHeading: 'outside links',
+      languageHeading: 'language',
+      utilityHeading: 'utility',
+      homeCommand: 'return to the landing page',
+      aboutCommand: 'open the about page',
+      projectsCommand: 'browse project work',
+      timelineCommand: 'view the personal timeline',
+      blogCommand: 'open blog posts',
+      statusCommand: 'show the current site signal',
+      musicCommand: 'toggle the background music',
+      githubCommand: 'open GitHub',
+      contactCommand: 'open LinkedIn',
+      langCommand: 'switch site language',
+      clearCommand: 'clear this terminal',
+      helpCommand: 'show this command list',
+      shortcuts: 'shortcuts: click shan>, press Ctrl/Cmd + K, or press ` to open. Esc closes.',
+      openingHome: 'opening home...',
+      openingAbout: 'opening about...',
+      openingProjects: 'opening projects...',
+      openingTimeline: 'opening timeline...',
+      openingBlog: 'opening blog...',
+      currentSignal: 'current signal:',
+      online: 'online',
+      siteStatsHint: 'site stats live in the footer.',
+      openingGithub: 'opening GitHub...',
+      openingContact: 'opening LinkedIn...',
+      musicToggled: 'music toggled.',
+      musicUnavailable: 'music control unavailable.',
+      availableLanguages: 'available languages: en, zh, ja',
+      switchingLanguage: 'switching language:',
+      unknownCommand: 'unknown command:',
+      tryHelp: 'try help.',
+      cleared: 'cleared.',
+    };
 
     function getCli() {
       return document.querySelector('[data-shan-cli]');
@@ -119,6 +160,10 @@ const paths = {
         timeline: root.dataset.timelinePath || '/timeline',
         blog: root.dataset.blogPath || '/blog',
       };
+      const labels = {
+        ...DEFAULT_LABELS,
+        ...JSON.parse(root.dataset.cliLabels || '{}'),
+      };
 
       function openCli(prefill = '') {
         root.classList.add('is-open');
@@ -148,24 +193,24 @@ const paths = {
 
       function printHelp() {
         [
-          '<span class="cli-help-heading">navigation</span>',
-          '<span class="cli-command">home</span> - return to the landing page',
-          '<span class="cli-command">about</span> - open the about page',
-          '<span class="cli-command">projects</span> - browse project work',
-          '<span class="cli-command">timeline</span> - view the personal timeline',
-          '<span class="cli-command">blog</span> or <span class="cli-command">blog latest</span> - open blog posts',
-          '<span class="cli-help-heading">signals</span>',
-          '<span class="cli-command">status</span> - show the current site signal',
-          '<span class="cli-command">music</span> or <span class="cli-command">music toggle</span> - toggle the background music',
-          '<span class="cli-help-heading">outside links</span>',
-          '<span class="cli-command">github</span> - open GitHub',
-          '<span class="cli-command">contact</span> - open LinkedIn',
-          '<span class="cli-help-heading">language</span>',
-          '<span class="cli-command">lang en</span> / <span class="cli-command">lang zh</span> / <span class="cli-command">lang ja</span> - switch site language',
-          '<span class="cli-help-heading">utility</span>',
-          '<span class="cli-command">clear</span> - clear this terminal',
-          '<span class="cli-command">help</span> or <span class="cli-command">?</span> - show this command list',
-          '<span class="cli-muted">shortcuts: click shan&gt;, press Ctrl/Cmd + K, or press ` to open. Esc closes.</span>',
+          `<span class="cli-help-heading">${escapeHtml(labels.navigationHeading)}</span>`,
+          `<span class="cli-command">home</span> - ${escapeHtml(labels.homeCommand)}`,
+          `<span class="cli-command">about</span> - ${escapeHtml(labels.aboutCommand)}`,
+          `<span class="cli-command">projects</span> - ${escapeHtml(labels.projectsCommand)}`,
+          `<span class="cli-command">timeline</span> - ${escapeHtml(labels.timelineCommand)}`,
+          `<span class="cli-command">blog</span> or <span class="cli-command">blog latest</span> - ${escapeHtml(labels.blogCommand)}`,
+          `<span class="cli-help-heading">${escapeHtml(labels.signalsHeading)}</span>`,
+          `<span class="cli-command">status</span> - ${escapeHtml(labels.statusCommand)}`,
+          `<span class="cli-command">music</span> or <span class="cli-command">music toggle</span> - ${escapeHtml(labels.musicCommand)}`,
+          `<span class="cli-help-heading">${escapeHtml(labels.linksHeading)}</span>`,
+          `<span class="cli-command">github</span> - ${escapeHtml(labels.githubCommand)}`,
+          `<span class="cli-command">contact</span> - ${escapeHtml(labels.contactCommand)}`,
+          `<span class="cli-help-heading">${escapeHtml(labels.languageHeading)}</span>`,
+          `<span class="cli-command">lang en</span> / <span class="cli-command">lang zh</span> / <span class="cli-command">lang ja</span> - ${escapeHtml(labels.langCommand)}`,
+          `<span class="cli-help-heading">${escapeHtml(labels.utilityHeading)}</span>`,
+          `<span class="cli-command">clear</span> - ${escapeHtml(labels.clearCommand)}`,
+          `<span class="cli-command">help</span> or <span class="cli-command">?</span> - ${escapeHtml(labels.helpCommand)}`,
+          `<span class="cli-muted">${escapeHtml(labels.shortcuts)}</span>`,
         ].forEach(print);
       }
 
@@ -195,53 +240,53 @@ const paths = {
         }
 
         if (command === 'clear') {
-          output.innerHTML = '<p><span class="cli-muted">cleared.</span></p>';
+          output.innerHTML = `<p><span class="cli-muted">${escapeHtml(labels.cleared)}</span></p>`;
           return;
         }
 
         if (command === 'home') {
-          print('opening home...');
+          print(escapeHtml(labels.openingHome));
           navigateTo(paths.home);
           return;
         }
 
         if (command === 'about') {
-          print('opening about...');
+          print(escapeHtml(labels.openingAbout));
           navigateTo(paths.about);
           return;
         }
 
         if (command === 'projects' || command === 'project') {
-          print('opening projects...');
+          print(escapeHtml(labels.openingProjects));
           navigateTo(paths.projects);
           return;
         }
 
         if (command === 'timeline') {
-          print('opening timeline...');
+          print(escapeHtml(labels.openingTimeline));
           navigateTo(paths.timeline);
           return;
         }
 
         if (command === 'blog' || command === 'blog latest') {
-          print('opening blog...');
+          print(escapeHtml(labels.openingBlog));
           navigateTo(paths.blog);
           return;
         }
 
         if (command === 'status') {
-          print('current signal: <span class="cli-accent">online</span>. site stats live in the footer.');
+          print(`${escapeHtml(labels.currentSignal)} <span class="cli-accent">${escapeHtml(labels.online)}</span>. ${escapeHtml(labels.siteStatsHint)}`);
           return;
         }
 
         if (command === 'github') {
-          print('opening GitHub...');
+          print(escapeHtml(labels.openingGithub));
           window.open('https://github.com/huiishan99', '_blank', 'noopener');
           return;
         }
 
         if (command === 'contact') {
-          print('opening LinkedIn...');
+          print(escapeHtml(labels.openingContact));
           window.open('https://linkedin.com/in/laihuishan/', '_blank', 'noopener');
           return;
         }
@@ -250,9 +295,9 @@ const paths = {
           const toggle = document.querySelector('[data-music-toggle]');
           if (toggle instanceof HTMLButtonElement) {
             toggle.click();
-            print('music toggled.');
+            print(escapeHtml(labels.musicToggled));
           } else {
-            print('music control unavailable.');
+            print(escapeHtml(labels.musicUnavailable));
           }
           return;
         }
@@ -260,15 +305,15 @@ const paths = {
         if (command.startsWith('lang ')) {
           const locale = command.split(/\s+/)[1];
           if (!locales.includes(locale)) {
-            print('available languages: en, zh, ja');
+            print(escapeHtml(labels.availableLanguages));
             return;
           }
-          print(`switching language: <span class="cli-accent">${locale}</span>`);
+          print(`${escapeHtml(labels.switchingLanguage)} <span class="cli-accent">${escapeHtml(locale)}</span>`);
           navigateTo(localizeCurrentPath(locale));
           return;
         }
 
-        print(`unknown command: <span class="cli-accent">${escapeHtml(rawCommand.trim())}</span>. try help.`);
+        print(`${escapeHtml(labels.unknownCommand)} <span class="cli-accent">${escapeHtml(rawCommand.trim())}</span>. ${escapeHtml(labels.tryHelp)}`);
       }
 
       trigger.addEventListener('click', () => openCli());
