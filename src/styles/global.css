@@ -26,7 +26,7 @@
   /* 交互色 - 克制的赛博蓝 */
   --color-link: #6aabff;
   --color-link-hover: #a0c8ff;
-  --color-signal-milestone: rgb(158, 188, 230);
+  --color-signal-milestone: var(--color-copper);
   
   /* 边框和装饰 - 柔和的边框 */
   --color-border: rgba(255, 255, 255, 0.08);
