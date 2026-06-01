@@ -41,11 +41,6 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
       <h1>{post.data.title}</h1>
       <div class="post-meta">
         <time datetime={post.data.date.toISOString()}>{formattedDate}</time>
-        {postKind === 'reflection' && (
-          <span class="post-kind-badge post-kind-badge--reflection">
-            {t.blog.reflectionLabel}
-          </span>
-        )}
         {postCategories.length > 0 && (
           <span class="categories">
             {postCategories.map((cat: string) => (
@@ -206,23 +201,6 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
     color: var(--color-accent-gold);
   }
 
-  .post-kind-badge {
-    padding: 0.16rem 0.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 4px;
-    color: var(--color-text-muted);
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    line-height: 1.35;
-    text-transform: uppercase;
-  }
-
-  .post-kind-badge--reflection {
-    color: var(--color-link-hover);
-    border-color: rgba(106, 171, 255, 0.24);
-    background: rgba(106, 171, 255, 0.07);
-  }
-
   .categories {
     display: flex;
     flex-wrap: wrap;
@@ -242,16 +220,6 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
   .category:hover {
     background: rgba(201, 162, 39, 0.3);
     color: var(--color-accent-copper);
-  }
-
-  .blog-post--reflection .category {
-    background: rgba(106, 171, 255, 0.06);
-    color: var(--color-link-hover);
-  }
-
-  .blog-post--reflection .category:hover {
-    background: rgba(106, 171, 255, 0.12);
-    color: var(--color-link-hover);
   }
 
   .tags {
