@@ -19,6 +19,38 @@ export function getBlogPostKind(post: BlogPost): BlogPostKind {
   return post.data.kind || 'article';
 }
 
+export function getPlainTextExcerpt(body: string, maxLength = 150): string {
+  const cleanText = body
+    .replace(/^---[\s\S]*?---/m, '')
+    .replace(/import\s+.+?;\s*/g, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/!\[.*?\]\(.*?\)/g, ' ')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/[#*`>]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (cleanText.length <= maxLength) return cleanText;
+
+  return `${cleanText.slice(0, maxLength).trim()}...`;
+}
+
+export function getBlogPostExcerpt(post: BlogPost, maxLength = 150): string | undefined {
+  if (getBlogPostKind(post) === 'reflection') {
+    return getPlainTextExcerpt(post.body ?? '', maxLength) || post.data.description;
+  }
+
+  return post.data.description;
+}
+
+export function getBlogPostMetaDescription(post: BlogPost, maxLength = 160): string | undefined {
+  return getBlogPostExcerpt(post, maxLength) || post.data.description;
+}
+
 export function isGenericBlogTaxonomy(value: string): boolean {
   return genericTaxonomyValues.has(value.trim().toLowerCase());
 }
