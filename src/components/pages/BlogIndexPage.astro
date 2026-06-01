@@ -4,10 +4,13 @@ import { defaultLocale, type Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
 import {
   getBlogCategoryPath,
+  getBlogPostKind,
   getBlogPosts,
   getBlogPostsForLocale,
   getBlogPostPath,
   getBlogTagPath,
+  getInformativeBlogCategories,
+  getInformativeBlogTags,
   sortBlogPosts,
 } from '../../utils/blog';
 
@@ -28,10 +31,17 @@ const visiblePosts = getBlogPostsForLocale(await getBlogPosts(), lang);
 
 // 按日期排序（最新在前）
 const sortedPosts = sortBlogPosts(visiblePosts);
+const articleCount = sortedPosts.filter((post) => getBlogPostKind(post) === 'article').length;
+const reflectionCount = sortedPosts.filter((post) => getBlogPostKind(post) === 'reflection').length;
+const postKindFilters = [
+  { kind: 'all', label: t.blog.allPosts, count: sortedPosts.length },
+  { kind: 'article', label: t.blog.articlesLabel, count: articleCount },
+  { kind: 'reflection', label: t.blog.reflectionsLabel, count: reflectionCount },
+] as const;
 
 // 收集所有分类和标签
-const allCategories = [...new Set(visiblePosts.flatMap(post => post.data.categories || []))];
-const allTags = [...new Set(visiblePosts.flatMap(post => post.data.tags || []))];
+const allCategories = [...new Set(visiblePosts.flatMap(post => getInformativeBlogCategories(post)))];
+const allTags = [...new Set(visiblePosts.flatMap(post => getInformativeBlogTags(post)))];
 
 // 格式化日期的辅助函数
 function formatDate(date: Date) {
@@ -41,6 +51,26 @@ function formatDate(date: Date) {
     day: 'numeric'
   });
 }
+
+function getPlainTextExcerpt(body: string, maxLength = 150) {
+  const cleanText = body
+    .replace(/^---[\s\S]*?---/m, '')
+    .replace(/import\s+.+?;\s*/g, '')
+    .replace(/<[^>]+>/g, '')
+    .replace(/!\[.*?\]\(.*?\)/g, '')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/[#*`>-]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  return cleanText.length > maxLength ? `${cleanText.slice(0, maxLength).trim()}...` : cleanText;
+}
+
+function getCardExcerpt(post: (typeof sortedPosts)[number]) {
+  if (post.data.description) return post.data.description;
+  if (getBlogPostKind(post) !== 'reflection') return undefined;
+  return getPlainTextExcerpt(post.body ?? '');
+}
 ---
 
 <BaseLayout title={t.blog.title} lang={lang}>
@@ -48,48 +78,85 @@ function formatDate(date: Date) {
     <header class="page-header">
       <h1>{t.blog.title}</h1>
       <p class="subtitle">{t.blog.subtitle}</p>
+      <div class="kind-filters" aria-label={t.blog.title}>
+        {postKindFilters.map((filter) => (
+          <button
+            type="button"
+            class:list={['kind-filter', { 'is-active': filter.kind === 'all' }]}
+            data-kind-filter={filter.kind}
+            aria-pressed={filter.kind === 'all' ? 'true' : 'false'}
+          >
+            <span>{filter.label}</span>
+            <span class="kind-count">{filter.count}</span>
+          </button>
+        ))}
+      </div>
     </header>
     
     <div class="blog-layout">
       <main class="posts-list">
-        {sortedPosts.map((post) => (
-          <article class="post-card" data-href={getBlogPostPath(post, lang)}>
-            <div class="post-meta">
-              <time class="post-date" datetime={post.data.date.toISOString()}>
-                {formatDate(post.data.date)}
-              </time>
-              {post.data.categories && post.data.categories[0] && (
-                <a href={getBlogCategoryPath(post.data.categories[0], lang)}
-                   class="post-category">
-                  {post.data.categories[0]}
-                </a>
-              )}
-              {post.data.draft && (
-                <span class="draft-badge">{t.blog.draft}</span>
-              )}
-              {post.data.deprecated && (
-                <span class="deprecated-badge">{t.blog.deprecated}</span>
-              )}
-            </div>
-            <h2 class="post-title">{post.data.title}</h2>
-            {post.data.description && (
-              <p class="post-excerpt">{post.data.description}</p>
-            )}
-            {post.data.tags && post.data.tags.length > 0 && (
-              <div class="post-tags">
-                {post.data.tags.map((tag: string) => (
-                  <a href={getBlogTagPath(tag, lang)}
-                     class="tag-in-card">
-                    #{tag}
+        {sortedPosts.map((post) => {
+          const postKind = getBlogPostKind(post);
+          const cardExcerpt = getCardExcerpt(post);
+          const cardCategory = getInformativeBlogCategories(post)[0];
+          const cardTags = getInformativeBlogTags(post);
+          const visibleCardTags = cardTags.slice(0, 3);
+          const hiddenTagCount = cardTags.length - visibleCardTags.length;
+
+          return (
+            <article
+              class:list={['post-card', `post-card--${postKind}`]}
+              data-href={getBlogPostPath(post, lang)}
+              data-kind={postKind}
+            >
+              <div class="post-meta">
+                <time class="post-date" datetime={post.data.date.toISOString()}>
+                  {formatDate(post.data.date)}
+                </time>
+                {postKind === 'reflection' && (
+                  <span class="post-kind-badge post-kind-badge--reflection">
+                    {t.blog.reflectionLabel}
+                  </span>
+                )}
+                {cardCategory && (
+                  <a href={getBlogCategoryPath(cardCategory, lang)}
+                     class="post-category">
+                    {cardCategory}
                   </a>
-                ))}
+                )}
+                {post.data.draft && (
+                  <span class="draft-badge">{t.blog.draft}</span>
+                )}
+                {post.data.deprecated && (
+                  <span class="deprecated-badge">{t.blog.deprecated}</span>
+                )}
               </div>
-            )}
-          </article>
-        ))}
+              <h2 class="post-title">{post.data.title}</h2>
+              {cardExcerpt && (
+                <p class="post-excerpt">{cardExcerpt}</p>
+              )}
+              {visibleCardTags.length > 0 && (
+                <div class="post-tags">
+                  {visibleCardTags.map((tag: string) => (
+                    <a href={getBlogTagPath(tag, lang)}
+                       class="tag-in-card">
+                      #{tag}
+                    </a>
+                  ))}
+                  {hiddenTagCount > 0 && (
+                    <span class="tag-more">+{hiddenTagCount}</span>
+                  )}
+                </div>
+              )}
+            </article>
+          );
+        })}
         
         {sortedPosts.length === 0 && (
           <p class="no-posts">{t.blog.noPosts}</p>
+        )}
+        {sortedPosts.length > 0 && (
+          <p class="no-posts no-posts--filtered" data-kind-empty hidden>{t.blog.noPostsForKind}</p>
         )}
       </main>
       
@@ -144,6 +211,49 @@ function formatDate(date: Date) {
 
   setupPostCards();
   document.addEventListener('astro:page-load', setupPostCards);
+
+  function setupKindFilters() {
+    const buttons = document.querySelectorAll<HTMLButtonElement>('[data-kind-filter]');
+    const cards = document.querySelectorAll<HTMLElement>('.post-card[data-kind]');
+    const emptyMessage = document.querySelector<HTMLElement>('[data-kind-empty]');
+
+    if (buttons.length === 0 || cards.length === 0) return;
+
+    function applyFilter(kind: string) {
+      let visibleCount = 0;
+
+      cards.forEach((card) => {
+        const isVisible = kind === 'all' || card.dataset.kind === kind;
+        card.hidden = !isVisible;
+        if (isVisible) visibleCount += 1;
+      });
+
+      buttons.forEach((button) => {
+        const isActive = button.dataset.kindFilter === kind;
+        button.classList.toggle('is-active', isActive);
+        button.setAttribute('aria-pressed', String(isActive));
+      });
+
+      if (emptyMessage) {
+        emptyMessage.hidden = visibleCount > 0;
+      }
+    }
+
+    buttons.forEach((button) => {
+      if (button.dataset.filterReady === 'true') return;
+      button.dataset.filterReady = 'true';
+
+      button.addEventListener('click', () => {
+        applyFilter(button.dataset.kindFilter || 'all');
+      });
+    });
+
+    const activeButton = document.querySelector<HTMLButtonElement>('[data-kind-filter].is-active');
+    applyFilter(activeButton?.dataset.kindFilter || 'all');
+  }
+
+  setupKindFilters();
+  document.addEventListener('astro:page-load', setupKindFilters);
 </script>
 
 <style>
@@ -156,6 +266,59 @@ function formatDate(date: Date) {
     color: var(--color-text-secondary);
     font-style: italic;
     margin-top: var(--space-sm);
+  }
+
+  .kind-filters {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-top: var(--space-lg);
+    padding: 0.25rem;
+    border: 1px solid var(--surface-border);
+    border-radius: 6px;
+    background: rgba(10, 10, 15, 0.52);
+    box-shadow: var(--surface-shadow);
+    backdrop-filter: blur(var(--surface-blur));
+    -webkit-backdrop-filter: blur(var(--surface-blur));
+  }
+
+  .kind-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-height: 2.35rem;
+    padding: 0.35rem 0.8rem;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--color-text-secondary);
+    font-family: var(--font-body);
+    font-size: 0.98rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .kind-filter:hover,
+  .kind-filter.is-active {
+    color: var(--color-accent-gold);
+    border-color: rgba(201, 162, 39, 0.32);
+    background: rgba(201, 162, 39, 0.1);
+  }
+
+  .kind-count {
+    min-width: 1.5rem;
+    padding: 0 0.35rem;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.055);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1.5;
+  }
+
+  .kind-filter.is-active .kind-count {
+    color: var(--color-accent-gold);
+    background: rgba(201, 162, 39, 0.14);
   }
   
   .blog-layout {
@@ -189,10 +352,22 @@ function formatDate(date: Date) {
     box-shadow: var(--surface-shadow-hover);
     transform: translateY(-2px);
   }
+
+  .post-card--reflection {
+    background:
+      linear-gradient(180deg, rgba(30, 28, 35, 0.68), rgba(12, 12, 18, 0.46)),
+      rgba(14, 14, 20, 0.48);
+  }
+
+  .post-card--reflection:hover {
+    border-color: rgba(106, 171, 255, 0.28);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.24), 0 0 18px rgba(106, 171, 255, 0.07);
+  }
   
   .post-meta {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: var(--space-md);
     margin-bottom: var(--space-sm);
   }
@@ -201,6 +376,23 @@ function formatDate(date: Date) {
     font-family: var(--font-mono);
     font-size: 0.9rem;
     color: var(--color-text-muted);
+  }
+
+  .post-kind-badge {
+    padding: 0.15rem 0.48rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    line-height: 1.35;
+    text-transform: uppercase;
+  }
+
+  .post-kind-badge--reflection {
+    color: var(--color-link-hover);
+    border-color: rgba(106, 171, 255, 0.22);
+    background: rgba(106, 171, 255, 0.07);
   }
 
   .post-category {
@@ -248,12 +440,27 @@ function formatDate(date: Date) {
   .post-card:hover .post-title {
     color: var(--color-accent-gold);
   }
+
+  .post-card--reflection:hover .post-title {
+    color: var(--color-link-hover);
+  }
   
   .post-excerpt {
     color: var(--color-text-secondary);
     font-size: 1rem;
     line-height: 1.7;
     margin-bottom: var(--space-md);
+  }
+
+  .post-card--reflection .post-title {
+    font-size: 1.5rem;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
+  .post-card--reflection .post-excerpt {
+    color: rgba(245, 245, 245, 0.76);
+    font-style: italic;
   }
   
   .post-tags {
@@ -285,12 +492,23 @@ function formatDate(date: Date) {
     border-color: var(--color-accent-gold);
     background: rgba(201, 162, 39, 0.1);
   }
+
+  .tag-more {
+    align-self: center;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+  }
   
   .no-posts {
     color: var(--color-text-muted);
     text-align: center;
     padding: var(--space-xl);
     font-style: italic;
+  }
+
+  .no-posts[hidden] {
+    display: none;
   }
   
   /* Sidebar */
@@ -380,6 +598,19 @@ function formatDate(date: Date) {
   }
 
   @media (max-width: 600px) {
+    .kind-filters {
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .kind-filter {
+      flex: 1;
+      justify-content: center;
+      min-width: max-content;
+      padding: 0.35rem 0.65rem;
+    }
+
     .post-card {
       padding: var(--space-md);
     }

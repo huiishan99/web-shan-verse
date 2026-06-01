@@ -3,7 +3,12 @@ import type { CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { defaultLocale, localizePath, type Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
-import { getBlogPostPath } from '../../utils/blog';
+import {
+  getBlogPostKind,
+  getBlogPostPath,
+  getInformativeBlogCategories,
+  getInformativeBlogTags,
+} from '../../utils/blog';
 
 type Props = {
   kind: 'category' | 'tag';
@@ -40,15 +45,25 @@ function formatDate(date: Date) {
     </header>
 
     <div class="posts-list">
-      {posts.map((post) => (
-        <a href={getBlogPostPath(post, lang)} class="post-card-link">
-          <article class="post-card">
+      {posts.map((post) => {
+        const postKind = getBlogPostKind(post);
+        const postCategory = getInformativeBlogCategories(post)[0];
+        const postTags = getInformativeBlogTags(post);
+
+        return (
+          <a href={getBlogPostPath(post, lang)} class="post-card-link">
+            <article class:list={['post-card', `post-card--${postKind}`]}>
             <div class="post-meta">
               <time class="post-date" datetime={post.data.date.toISOString()}>
                 {formatDate(post.data.date)}
               </time>
-              {kind === 'tag' && post.data.categories && post.data.categories[0] && (
-                <span class="post-category">{post.data.categories[0]}</span>
+              {postKind === 'reflection' && (
+                <span class="post-kind-badge post-kind-badge--reflection">
+                  {t.blog.reflectionLabel}
+                </span>
+              )}
+              {kind === 'tag' && postCategory && (
+                <span class="post-category">{postCategory}</span>
               )}
               {post.data.draft && (
                 <span class="draft-badge">{t.blog.draft}</span>
@@ -58,16 +73,17 @@ function formatDate(date: Date) {
             {post.data.description && (
               <p class="post-excerpt">{post.data.description}</p>
             )}
-            {post.data.tags && post.data.tags.length > 0 && (
+            {postTags.length > 0 && (
               <div class="post-tags">
-                {post.data.tags.map((tag: string) => (
+                {postTags.map((tag: string) => (
                   <span class:list={['tag', { current: kind === 'tag' && tag === value }]}>#{tag}</span>
                 ))}
               </div>
             )}
-          </article>
-        </a>
-      ))}
+            </article>
+          </a>
+        );
+      })}
     </div>
   </div>
 </BaseLayout>
@@ -136,9 +152,15 @@ function formatDate(date: Date) {
     transform: translateY(-2px);
   }
 
+  .post-card--reflection:hover {
+    border-color: rgba(106, 171, 255, 0.28);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.24), 0 0 18px rgba(106, 171, 255, 0.07);
+  }
+
   .post-meta {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: var(--space-md);
     margin-bottom: var(--space-sm);
   }
@@ -154,6 +176,23 @@ function formatDate(date: Date) {
     color: var(--color-brass);
     text-transform: uppercase;
     letter-spacing: 0.05em;
+  }
+
+  .post-kind-badge {
+    padding: 0.15rem 0.48rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    line-height: 1.35;
+    text-transform: uppercase;
+  }
+
+  .post-kind-badge--reflection {
+    color: var(--color-link-hover);
+    border-color: rgba(106, 171, 255, 0.22);
+    background: rgba(106, 171, 255, 0.07);
   }
 
   .draft-badge {
