@@ -4,33 +4,33 @@ type Props = {
   items: string[];
 };
 
-const { label = 'Source', items } = Astro.props;
+const { label = 'Sync', items } = Astro.props;
 ---
 
-<aside class="source-note" aria-label={`${label}: ${items.join(', ')}`}>
-  <span class="source-note__label">{label}</span>
+<aside class="sync-note" aria-label={`${label}: ${items.join(', ')}`}>
+  <span class="sync-note__label">{label}</span>
   {items.map((item) => (
-    <span class="source-note__item">{item}</span>
+    <span class="sync-note__item">{item}</span>
   ))}
 </aside>
 
 <style>
-  .source-note {
+  .sync-note {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     gap: 0.4rem;
     width: fit-content;
     max-width: 100%;
-    margin: 0 0 1.6rem;
+    margin: 2.2rem 0 0;
     color: var(--color-text-muted);
     font-family: var(--font-mono);
     font-size: 0.78rem;
     line-height: 1.5;
   }
 
-  .source-note__label,
-  .source-note__item {
+  .sync-note__label,
+  .sync-note__item {
     display: inline-flex;
     align-items: center;
     min-height: 1.65rem;
@@ -40,7 +40,7 @@ const { label = 'Source', items } = Astro.props;
     background: rgba(255, 255, 255, 0.025);
   }
 
-  .source-note__label {
+  .sync-note__label {
     color: var(--color-accent-gold);
     border-color: rgba(201, 162, 39, 0.22);
     background: rgba(201, 162, 39, 0.055);
