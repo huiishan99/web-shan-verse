@@ -45,14 +45,12 @@ tags:
 
 ## Source Notes for Republished Writing
 
-When a reflection was originally written somewhere else, add a short source note near the top of every language version. Use a `Callout` when the post is MDX:
+When a reflection was originally written somewhere else, add a compact source note near the top of every language version:
 
 ```mdx
-import Callout from '../../components/blog/Callout.astro';
+import SourceNote from '../../components/blog/SourceNote.astro';
 
-<Callout type="note" title="Source note">
-Originally written in Chinese and posted on WeChat Moments. This English version is a translation that keeps the tone and intent of the original.
-</Callout>
+<SourceNote label="Source" items={['Chinese original', 'WeChat Moments', 'Translation']} />
 ```
 
 For Chinese originals, keep the Chinese post as the source text and mark translated versions clearly in their own language.
