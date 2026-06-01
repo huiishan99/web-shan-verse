@@ -4,7 +4,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { defaultLocale, localizePath, type Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
 import {
-  getBlogPostExcerpt,
+  getBlogCardExcerpt,
   getBlogPostKind,
   getBlogPostPath,
   getInformativeBlogCategories,
@@ -48,7 +48,7 @@ function formatDate(date: Date) {
     <div class="posts-list">
       {posts.map((post) => {
         const postKind = getBlogPostKind(post);
-        const postExcerpt = getBlogPostExcerpt(post, 110);
+        const postExcerpt = getBlogCardExcerpt(post, lang);
         const postCategory = getInformativeBlogCategories(post)[0];
         const postTags = getInformativeBlogTags(post);
 
