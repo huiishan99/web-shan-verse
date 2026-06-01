@@ -14,6 +14,7 @@ Existing `.md` posts do not need to change. Use `.mdx` only when a post needs co
 title: "Post title"
 date: 2026-05-16
 description: "Short summary for blog cards and SEO."
+kind: article
 categories:
   - Blog
 tags:
@@ -25,6 +26,22 @@ image: /images/blog/cover.jpg
 ```
 
 Set `draft: true` while writing. Production builds hide draft posts.
+
+Use `kind: article` for structured posts, tutorials, project write-ups, and longer retrospectives. This is the default, so old posts do not need to change.
+
+Use `kind: reflection` for essays, prose, mood notes, life observations, and poems:
+
+```yaml
+---
+title: "A quiet thought"
+date: 2026-06-01
+kind: reflection
+categories:
+  - Life
+tags:
+  - Growth
+---
+```
 
 ## Markdown Images
 

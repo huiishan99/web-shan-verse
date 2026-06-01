@@ -1,8 +1,11 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { defaultLocale, localeNames, translatedLocales, type Locale } from '../i18n/config';
 
-type BlogPost = CollectionEntry<'blog'>;
+export type BlogPost = CollectionEntry<'blog'>;
 type BlogTaxonomyKind = 'category' | 'tag';
+export type BlogPostKind = 'article' | 'reflection';
+
+const genericTaxonomyValues = new Set(['blog', 'blogs', 'article', 'articles', 'reflection', 'reflections']);
 
 export function isPostVisibleInLocale(post: BlogPost, locale: Locale): boolean {
   return !post.data.lang || post.data.lang === locale;
@@ -10,6 +13,22 @@ export function isPostVisibleInLocale(post: BlogPost, locale: Locale): boolean {
 
 export function getPostSlug(post: BlogPost): string {
   return post.data.postSlug || post.id;
+}
+
+export function getBlogPostKind(post: BlogPost): BlogPostKind {
+  return post.data.kind || 'article';
+}
+
+export function isGenericBlogTaxonomy(value: string): boolean {
+  return genericTaxonomyValues.has(value.trim().toLowerCase());
+}
+
+export function getInformativeBlogCategories(post: BlogPost): string[] {
+  return (post.data.categories || []).filter((category) => !isGenericBlogTaxonomy(category));
+}
+
+export function getInformativeBlogTags(post: BlogPost): string[] {
+  return (post.data.tags || []).filter((tag) => !isGenericBlogTaxonomy(tag));
 }
 
 export function getBlogPostPath(post: BlogPost, locale: Locale): string {

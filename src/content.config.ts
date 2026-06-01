@@ -10,6 +10,7 @@ const blogCollection = defineCollection({
     title: z.string(),
     date: z.date(),
     description: z.string().optional(),
+    kind: z.enum(['article', 'reflection']).optional().default('article'), // article: 结构化长文；reflection: 随笔/散文/心情短文
     categories: z.array(z.string()).optional().default([]),
     tags: z.array(z.string()).optional().default([]),
     lang: z.enum(locales).optional(), // 可选：指定文章语言；未指定时在所有语言页面显示

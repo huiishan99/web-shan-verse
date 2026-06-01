@@ -5,7 +5,10 @@ import { defaultLocale, localizePath, type Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
 import {
   getBlogCategoryPath,
+  getBlogPostKind,
   getBlogTagPath,
+  getInformativeBlogCategories,
+  getInformativeBlogTags,
 } from '../../utils/blog';
 
 type Props = {
@@ -16,6 +19,9 @@ type Props = {
 const { post, lang = defaultLocale } = Astro.props;
 const { Content } = await render(post);
 const t = useTranslations(lang);
+const postKind = getBlogPostKind(post);
+const postCategories = getInformativeBlogCategories(post);
+const postTags = getInformativeBlogTags(post);
 const dateLocale: Record<Locale, string> = {
   en: 'en-US',
   zh: 'zh-CN',
@@ -30,14 +36,19 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
 ---
 
 <BaseLayout title={post.data.title} description={post.data.description} lang={lang}>
-  <article class="blog-post">
+  <article class:list={['blog-post', `blog-post--${postKind}`]}>
     <header class="post-header">
       <h1>{post.data.title}</h1>
       <div class="post-meta">
         <time datetime={post.data.date.toISOString()}>{formattedDate}</time>
-        {post.data.categories && post.data.categories.length > 0 && (
+        {postKind === 'reflection' && (
+          <span class="post-kind-badge post-kind-badge--reflection">
+            {t.blog.reflectionLabel}
+          </span>
+        )}
+        {postCategories.length > 0 && (
           <span class="categories">
-            {post.data.categories.map((cat: string) => (
+            {postCategories.map((cat: string) => (
               <a href={getBlogCategoryPath(cat, lang)} class="category">
                 {cat}
               </a>
@@ -45,9 +56,9 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
           </span>
         )}
       </div>
-      {post.data.tags && post.data.tags.length > 0 && (
+      {postTags.length > 0 && (
         <div class="tags">
-          {post.data.tags.map((tag: string) => (
+          {postTags.map((tag: string) => (
             <a href={getBlogTagPath(tag, lang)} class="tag">
               #{tag}
             </a>
@@ -95,10 +106,39 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
     margin-bottom: 2.5rem;
   }
 
+  .blog-post--reflection {
+    max-width: 700px;
+    padding: 2.75rem 3.25rem;
+    background:
+      linear-gradient(180deg, rgba(22, 22, 30, 0.78), rgba(11, 11, 17, 0.68)),
+      rgba(13, 13, 18, 0.72);
+    border: 1px solid rgba(106, 171, 255, 0.1);
+    box-shadow: 0 18px 46px rgba(0, 0, 0, 0.26), 0 0 28px rgba(106, 171, 255, 0.045);
+  }
+
   .post-header {
     margin-bottom: 2rem;
     padding-bottom: 1.5rem;
     border-bottom: 1px solid var(--color-border);
+  }
+
+  .blog-post--reflection .post-header {
+    position: relative;
+    margin-bottom: 2.35rem;
+    padding-bottom: 1.75rem;
+    text-align: center;
+    border-bottom: 0;
+  }
+
+  .blog-post--reflection .post-header::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 5rem;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(106, 171, 255, 0.5), transparent);
+    transform: translateX(-50%);
   }
 
   .deprecated-notice {
@@ -142,6 +182,13 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
     line-height: 1.2;
   }
 
+  .blog-post--reflection .post-header h1 {
+    font-family: var(--font-body);
+    font-size: 2.35rem;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
   .post-meta {
     display: flex;
     align-items: center;
@@ -151,8 +198,29 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
     font-size: 0.95rem;
   }
 
+  .blog-post--reflection .post-meta {
+    justify-content: center;
+  }
+
   .post-meta time {
     color: var(--color-accent-gold);
+  }
+
+  .post-kind-badge {
+    padding: 0.16rem 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    line-height: 1.35;
+    text-transform: uppercase;
+  }
+
+  .post-kind-badge--reflection {
+    color: var(--color-link-hover);
+    border-color: rgba(106, 171, 255, 0.24);
+    background: rgba(106, 171, 255, 0.07);
   }
 
   .categories {
@@ -176,11 +244,26 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
     color: var(--color-accent-copper);
   }
 
+  .blog-post--reflection .category {
+    background: rgba(106, 171, 255, 0.06);
+    color: var(--color-link-hover);
+  }
+
+  .blog-post--reflection .category:hover {
+    background: rgba(106, 171, 255, 0.12);
+    color: var(--color-link-hover);
+  }
+
   .tags {
     margin-top: 1rem;
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
+  }
+
+  .blog-post--reflection .tags {
+    justify-content: center;
+    opacity: 0.82;
   }
 
   .tag {
@@ -216,6 +299,11 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
     line-height: 1.8;
   }
 
+  .blog-post--reflection .post-content {
+    font-size: 1.16rem;
+    line-height: 1.95;
+  }
+
   .post-content :global(h2),
   .post-content :global(h3),
   .post-content :global(h4) {
@@ -224,8 +312,22 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
     font-family: var(--font-display);
   }
 
+  .blog-post--reflection .post-content :global(h2),
+  .blog-post--reflection .post-content :global(h3),
+  .blog-post--reflection .post-content :global(h4) {
+    border-bottom: 0;
+    color: var(--color-text-primary);
+    font-family: var(--font-body);
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
   .post-content :global(p) {
     margin-bottom: 1.25rem;
+  }
+
+  .blog-post--reflection .post-content :global(p) {
+    margin-bottom: 1.55rem;
   }
 
   .post-content :global(img) {
@@ -295,6 +397,15 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
     margin: 1.5rem 0;
     color: var(--color-text-muted);
     font-style: italic;
+  }
+
+  .blog-post--reflection .post-content :global(blockquote) {
+    max-width: 34rem;
+    margin: 2.25rem auto;
+    padding: 0;
+    border-left: 0;
+    color: rgba(245, 245, 245, 0.78);
+    text-align: center;
   }
 
   .post-content :global(code) {
@@ -441,9 +552,17 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
       border-radius: 0;
     }
 
+    .blog-post--reflection {
+      padding: 2rem 1.35rem;
+    }
+
     .post-header h1 {
       font-size: 1.75rem;
       line-height: 1.3;
+    }
+
+    .blog-post--reflection .post-header h1 {
+      font-size: 1.85rem;
     }
 
     .post-meta {
