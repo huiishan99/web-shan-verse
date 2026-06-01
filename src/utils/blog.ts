@@ -6,6 +6,11 @@ type BlogTaxonomyKind = 'category' | 'tag';
 export type BlogPostKind = 'article' | 'reflection';
 
 const genericTaxonomyValues = new Set(['blog', 'blogs', 'article', 'articles', 'reflection', 'reflections']);
+const blogCardExcerptLengths: Record<Locale, number> = {
+  en: 110,
+  zh: 60,
+  ja: 60,
+};
 
 export function isPostVisibleInLocale(post: BlogPost, locale: Locale): boolean {
   return !post.data.lang || post.data.lang === locale;
@@ -45,6 +50,10 @@ export function getBlogPostExcerpt(post: BlogPost, maxLength = 150): string | un
   }
 
   return post.data.description;
+}
+
+export function getBlogCardExcerpt(post: BlogPost, locale: Locale): string | undefined {
+  return getBlogPostExcerpt(post, blogCardExcerptLengths[locale]);
 }
 
 export function getBlogPostMetaDescription(post: BlogPost, maxLength = 160): string | undefined {

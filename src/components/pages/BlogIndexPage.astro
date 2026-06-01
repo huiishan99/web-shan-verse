@@ -4,7 +4,7 @@ import { defaultLocale, type Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
 import {
   getBlogCategoryPath,
-  getBlogPostExcerpt,
+  getBlogCardExcerpt,
   getBlogPostKind,
   getBlogPosts,
   getBlogPostsForLocale,
@@ -54,7 +54,7 @@ function formatDate(date: Date) {
 }
 
 function getCardExcerpt(post: (typeof sortedPosts)[number]) {
-  return getBlogPostExcerpt(post, 110);
+  return getBlogCardExcerpt(post, lang);
 }
 ---
 
