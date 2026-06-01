@@ -113,11 +113,6 @@ function getCardExcerpt(post: (typeof sortedPosts)[number]) {
                 <time class="post-date" datetime={post.data.date.toISOString()}>
                   {formatDate(post.data.date)}
                 </time>
-                {postKind === 'reflection' && (
-                  <span class="post-kind-badge post-kind-badge--reflection">
-                    {t.blog.reflectionLabel}
-                  </span>
-                )}
                 {cardCategory && (
                   <a href={getBlogCategoryPath(cardCategory, lang)}
                      class="post-category">
@@ -376,23 +371,6 @@ function getCardExcerpt(post: (typeof sortedPosts)[number]) {
     font-family: var(--font-mono);
     font-size: 0.9rem;
     color: var(--color-text-muted);
-  }
-
-  .post-kind-badge {
-    padding: 0.15rem 0.48rem;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 4px;
-    color: var(--color-text-muted);
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    line-height: 1.35;
-    text-transform: uppercase;
-  }
-
-  .post-kind-badge--reflection {
-    color: var(--color-link-hover);
-    border-color: rgba(106, 171, 255, 0.22);
-    background: rgba(106, 171, 255, 0.07);
   }
 
   .post-category {
