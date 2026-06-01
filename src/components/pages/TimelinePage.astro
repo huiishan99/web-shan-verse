@@ -323,9 +323,30 @@ function formatEventDate(event: TimelineEvent): string | undefined {
 
   .month-cluster {
     --month-accent: var(--color-brass);
+    --month-marker-top: 4.5rem;
     display: grid;
     gap: 0.55rem;
     position: relative;
+  }
+
+  .month-cluster::before {
+    content: '';
+    position: absolute;
+    top: calc(var(--month-marker-top) - 0.86rem);
+    left: calc(var(--spine-left) - var(--month-offset) - 0.48rem);
+    z-index: 1;
+    width: 0.96rem;
+    height: 1.72rem;
+    border-radius: 999px;
+    background:
+      linear-gradient(
+        180deg,
+        rgba(10, 10, 15, 0),
+        rgba(10, 10, 15, 0.96) 28%,
+        rgba(10, 10, 15, 0.98) 72%,
+        rgba(10, 10, 15, 0)
+      );
+    pointer-events: none;
   }
 
   .month-cluster--note {
@@ -335,9 +356,9 @@ function formatEventDate(event: TimelineEvent): string | undefined {
   .month-marker {
     position: absolute;
     display: block;
-    top: 4.5rem;
+    top: var(--month-marker-top);
     left: calc(var(--spine-left) - var(--month-offset) - 4.5px);
-    z-index: 1;
+    z-index: 2;
     width: 9px;
     height: 9px;
     border-radius: 999px;
