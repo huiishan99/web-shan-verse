@@ -1,0 +1,48 @@
+---
+type Props = {
+  label?: string;
+  items: string[];
+};
+
+const { label = 'Source', items } = Astro.props;
+---
+
+<aside class="source-note" aria-label={`${label}: ${items.join(', ')}`}>
+  <span class="source-note__label">{label}</span>
+  {items.map((item) => (
+    <span class="source-note__item">{item}</span>
+  ))}
+</aside>
+
+<style>
+  .source-note {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 0 1.6rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    line-height: 1.5;
+  }
+
+  .source-note__label,
+  .source-note__item {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.65rem;
+    padding: 0.1rem 0.48rem;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.025);
+  }
+
+  .source-note__label {
+    color: var(--color-accent-gold);
+    border-color: rgba(201, 162, 39, 0.22);
+    background: rgba(201, 162, 39, 0.055);
+  }
+</style>
