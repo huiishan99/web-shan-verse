@@ -43,17 +43,17 @@ tags:
 ---
 ```
 
-## Source Notes for Republished Writing
+## Sync Notes for Republished Writing
 
-When a reflection was originally written somewhere else, add a compact source note near the top of every language version:
+When a reflection was originally written somewhere else, add a compact sync note at the end of every language version:
 
 ```mdx
-import SourceNote from '../../components/blog/SourceNote.astro';
+import SyncNote from '../../components/blog/SyncNote.astro';
 
-<SourceNote label="Source" items={['Chinese original', 'WeChat Moments', 'Translation']} />
+<SyncNote label="Sync" items={['Chinese original', 'WeChat Moments']} />
 ```
 
-For Chinese originals, keep the Chinese post as the source text and mark translated versions clearly in their own language.
+For Chinese originals, keep the Chinese post as the source text and use concise localized labels such as `同步`, `Sync`, or `同期`.
 
 ## Markdown Images
 
