@@ -5,6 +5,7 @@ import { defaultLocale, localizePath, type Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
 import {
   getBlogCategoryPath,
+  getBlogPostMetaDescription,
   getBlogPostKind,
   getBlogTagPath,
   getInformativeBlogCategories,
@@ -20,6 +21,7 @@ const { post, lang = defaultLocale } = Astro.props;
 const { Content } = await render(post);
 const t = useTranslations(lang);
 const postKind = getBlogPostKind(post);
+const metaDescription = getBlogPostMetaDescription(post);
 const postCategories = getInformativeBlogCategories(post);
 const postTags = getInformativeBlogTags(post);
 const dateLocale: Record<Locale, string> = {
@@ -35,7 +37,7 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
 });
 ---
 
-<BaseLayout title={post.data.title} description={post.data.description} lang={lang}>
+<BaseLayout title={post.data.title} description={metaDescription} lang={lang}>
   <article class:list={['blog-post', `blog-post--${postKind}`]}>
     <header class="post-header">
       <h1>{post.data.title}</h1>

@@ -4,6 +4,7 @@ import { defaultLocale, type Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
 import {
   getBlogCategoryPath,
+  getBlogPostExcerpt,
   getBlogPostKind,
   getBlogPosts,
   getBlogPostsForLocale,
@@ -52,24 +53,8 @@ function formatDate(date: Date) {
   });
 }
 
-function getPlainTextExcerpt(body: string, maxLength = 150) {
-  const cleanText = body
-    .replace(/^---[\s\S]*?---/m, '')
-    .replace(/import\s+.+?;\s*/g, '')
-    .replace(/<[^>]+>/g, '')
-    .replace(/!\[.*?\]\(.*?\)/g, '')
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-    .replace(/[#*`>-]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-
-  return cleanText.length > maxLength ? `${cleanText.slice(0, maxLength).trim()}...` : cleanText;
-}
-
 function getCardExcerpt(post: (typeof sortedPosts)[number]) {
-  if (post.data.description) return post.data.description;
-  if (getBlogPostKind(post) !== 'reflection') return undefined;
-  return getPlainTextExcerpt(post.body ?? '');
+  return getBlogPostExcerpt(post, 110);
 }
 ---
 

@@ -7,7 +7,7 @@ import { currentStatus } from '../../data/status';
 import { timelineData } from '../../data/timeline';
 import { defaultLocale, localizePath, localizeString, type Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
-import { getBlogPosts, getBlogPostsForLocale, getBlogPostPath, sortBlogPosts } from '../../utils/blog';
+import { getBlogPosts, getBlogPostsForLocale, getBlogPostPath, getPlainTextExcerpt, sortBlogPosts } from '../../utils/blog';
 import { buildHomepageActivityModel, toDateKey } from '../../utils/home-activity';
 import { escapeHtml } from '../../utils/html';
 
@@ -84,20 +84,6 @@ const githubProfileUrl = `https://github.com/${githubUsername}`;
 const githubContributionChartUrl = `https://ghchart.rshah.org/C9A227/${githubUsername}`;
 const sponsorContactUrl = 'https://linkedin.com/in/laihuishan/';
 
-// 提取文章第一段内容
-function getExcerpt(body: string, maxLength: number = 100): string {
-  // 移除 markdown 语法，提取纯文本
-  const cleanText = body
-    .replace(/^---[\s\S]*?---/m, '')  // 移除 frontmatter
-    .replace(/!\[.*?\]\(.*?\)/g, '')  // 移除图片
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')  // 链接只保留文字
-    .replace(/[#*`>-]/g, '')  // 移除 markdown 符号
-    .replace(/\n+/g, ' ')  // 换行变空格
-    .trim();
-  
-  if (cleanText.length <= maxLength) return cleanText;
-  return cleanText.slice(0, maxLength).trim() + '...';
-}
 ---
 
 <BaseLayout title={t.home.title} lang={lang}>
@@ -445,7 +431,7 @@ function getExcerpt(body: string, maxLength: number = 100): string {
               })}
             </div>
             <h3 class="post-title">{post.data.title}</h3>
-            <p class="post-excerpt">{getExcerpt(post.body ?? '')}</p>
+            <p class="post-excerpt">{getPlainTextExcerpt(post.body ?? '', 100)}</p>
           </a>
         ))}
       </div>
