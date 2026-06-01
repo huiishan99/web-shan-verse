@@ -43,6 +43,20 @@ tags:
 ---
 ```
 
+## Source Notes for Republished Writing
+
+When a reflection was originally written somewhere else, add a short source note near the top of every language version. Use a `Callout` when the post is MDX:
+
+```mdx
+import Callout from '../../components/blog/Callout.astro';
+
+<Callout type="note" title="Source note">
+Originally written in Chinese and posted on WeChat Moments. This English version is a translation that keeps the tone and intent of the original.
+</Callout>
+```
+
+For Chinese originals, keep the Chinese post as the source text and mark translated versions clearly in their own language.
+
 ## Markdown Images
 
 The simple Markdown image syntax still works:
