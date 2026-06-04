@@ -1,0 +1,10 @@
+---
+import BlogIndexPage from '../../../components/pages/BlogIndexPage.astro';
+import { getDefaultBlogPaginationStaticPaths } from '../../../utils/blog';
+
+export const getStaticPaths = getDefaultBlogPaginationStaticPaths;
+
+const { currentPage } = Astro.props;
+---
+
+<BlogIndexPage lang="en" currentPage={currentPage} />

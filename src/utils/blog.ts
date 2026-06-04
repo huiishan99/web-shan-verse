@@ -5,6 +5,8 @@ export type BlogPost = CollectionEntry<'blog'>;
 type BlogTaxonomyKind = 'category' | 'tag';
 export type BlogPostKind = 'article' | 'reflection';
 
+export const blogPostsPerPage = 6;
+
 const genericTaxonomyValues = new Set(['blog', 'blogs', 'article', 'articles', 'reflection', 'reflections']);
 const blogCardExcerptLengths: Record<Locale, number> = {
   en: 110,
@@ -77,8 +79,26 @@ export function getBlogPostPath(post: BlogPost, locale: Locale): string {
   return locale === defaultLocale ? path : `/${locale}${path}`;
 }
 
+export function getBlogIndexPagePath(page: number, locale: Locale): string {
+  const path = page <= 1 ? '/blog' : `/blog/page/${page}`;
+  return locale === defaultLocale ? path : `/${locale}${path}`;
+}
+
 export function sortBlogPosts(posts: BlogPost[]): BlogPost[] {
   return [...posts].sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+}
+
+export function getBlogPageCount(posts: BlogPost[], postsPerPage = blogPostsPerPage): number {
+  return Math.max(1, Math.ceil(posts.length / postsPerPage));
+}
+
+export function getBlogPagePosts(
+  posts: BlogPost[],
+  page: number,
+  postsPerPage = blogPostsPerPage
+): BlogPost[] {
+  const start = (page - 1) * postsPerPage;
+  return posts.slice(start, start + postsPerPage);
 }
 
 export async function getBlogPosts(): Promise<BlogPost[]> {
@@ -109,6 +129,41 @@ export async function getLocalizedBlogPostStaticPaths() {
       props: { post, lang },
     }))
   );
+}
+
+export async function getBlogPaginationStaticPaths(locale: Locale) {
+  const posts = getBlogPostsForLocale(await getBlogPosts(), locale);
+  const totalPages = getBlogPageCount(posts);
+
+  return Array.from({ length: Math.max(totalPages - 1, 0) }, (_, index) => {
+    const currentPage = index + 2;
+
+    return {
+      params: { page: String(currentPage) },
+      props: { lang: locale, currentPage },
+    };
+  });
+}
+
+export async function getDefaultBlogPaginationStaticPaths() {
+  return getBlogPaginationStaticPaths(defaultLocale);
+}
+
+export async function getLocalizedBlogPaginationStaticPaths() {
+  const posts = await getBlogPosts();
+
+  return translatedLocales.flatMap((lang) => {
+    const totalPages = getBlogPageCount(getBlogPostsForLocale(posts, lang));
+
+    return Array.from({ length: Math.max(totalPages - 1, 0) }, (_, index) => {
+      const currentPage = index + 2;
+
+      return {
+        params: { lang, page: String(currentPage) },
+        props: { lang, currentPage },
+      };
+    });
+  });
 }
 
 export function getTaxonomySlug(value: string): string {
