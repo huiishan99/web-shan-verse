@@ -6,7 +6,7 @@ import {
   localizeString,
   type Locale,
 } from '../i18n/config';
-import { getBlogPostPath } from './blog';
+import { getBlogPostDisplayTitle, getBlogPostPath } from './blog';
 
 type BlogPost = CollectionEntry<'blog'>;
 
@@ -193,7 +193,7 @@ export function buildHomepageActivityModel({
     displayDate: formatActivityDate(post.data.date, lang),
     dateSource: 'blog date',
     href: getBlogPostPath(post, lang),
-    title: post.data.title,
+    title: getBlogPostDisplayTitle(post, lang),
     type: 'blog',
   }));
 

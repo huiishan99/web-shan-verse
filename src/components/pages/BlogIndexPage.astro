@@ -7,6 +7,7 @@ import {
   getBlogIndexPagePath,
   getBlogCategoryPath,
   getBlogCardExcerpt,
+  getBlogPostDisplayTitle,
   getBlogPageCount,
   getBlogPagePosts,
   getBlogPostKind,
@@ -48,11 +49,11 @@ const totalPostCount = sortedPosts.length;
 const pageStart = totalPostCount === 0 ? 0 : (currentPage - 1) * blogPostsPerPage + 1;
 const pageEnd = Math.min(currentPage * blogPostsPerPage, totalPostCount);
 const articleCount = sortedPosts.filter((post) => getBlogPostKind(post) === 'article').length;
-const reflectionCount = sortedPosts.filter((post) => getBlogPostKind(post) === 'reflection').length;
+const noteCount = sortedPosts.filter((post) => getBlogPostKind(post) === 'note').length;
 const postKindFilters = [
   { kind: 'all', label: t.blog.allPosts, count: totalPostCount },
   { kind: 'article', label: t.blog.articlesLabel, count: articleCount },
-  { kind: 'reflection', label: t.blog.reflectionsLabel, count: reflectionCount },
+  { kind: 'note', label: t.blog.notesLabel, count: noteCount },
 ] as const;
 
 // 收集所有分类和标签
@@ -168,7 +169,7 @@ const nextPagePath = currentPage < totalPages ? getBlogIndexPagePath(currentPage
                   <span class="deprecated-badge">{t.blog.deprecated}</span>
                 )}
               </div>
-              <h2 class="post-title">{post.data.title}</h2>
+              <h2 class="post-title">{getBlogPostDisplayTitle(post, lang)}</h2>
               {cardExcerpt && (
                 <p class="post-excerpt">{cardExcerpt}</p>
               )}
@@ -446,7 +447,7 @@ const nextPagePath = currentPage < totalPages ? getBlogIndexPagePath(currentPage
     transform: translateY(-2px);
   }
 
-  .post-card--reflection {
+  .post-card--note {
     background:
       linear-gradient(180deg, rgba(30, 28, 35, 0.68), rgba(12, 12, 18, 0.46)),
       rgba(14, 14, 20, 0.48);
@@ -519,13 +520,13 @@ const nextPagePath = currentPage < totalPages ? getBlogIndexPagePath(currentPage
     margin-bottom: var(--space-md);
   }
 
-  .post-card--reflection .post-title {
+  .post-card--note .post-title {
     font-size: 1.5rem;
     font-weight: 500;
     letter-spacing: 0;
   }
 
-  .post-card--reflection .post-excerpt {
+  .post-card--note .post-excerpt {
     color: rgba(245, 245, 245, 0.76);
     font-style: italic;
   }

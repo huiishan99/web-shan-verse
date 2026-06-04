@@ -7,7 +7,14 @@ import { currentStatus } from '../../data/status';
 import { timelineData } from '../../data/timeline';
 import { defaultLocale, localizePath, localizeString, type Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
-import { getBlogPosts, getBlogPostsForLocale, getBlogPostPath, getPlainTextExcerpt, sortBlogPosts } from '../../utils/blog';
+import {
+  getBlogPostDisplayTitle,
+  getBlogPosts,
+  getBlogPostsForLocale,
+  getBlogPostPath,
+  getPlainTextExcerpt,
+  sortBlogPosts,
+} from '../../utils/blog';
 import { buildHomepageActivityModel, toDateKey } from '../../utils/home-activity';
 import { escapeHtml } from '../../utils/html';
 
@@ -430,7 +437,7 @@ const sponsorContactUrl = 'https://linkedin.com/in/laihuishan/';
                 day: 'numeric' 
               })}
             </div>
-            <h3 class="post-title">{post.data.title}</h3>
+            <h3 class="post-title">{getBlogPostDisplayTitle(post, lang)}</h3>
             <p class="post-excerpt">{getPlainTextExcerpt(post.body ?? '', 100)}</p>
           </a>
         ))}
