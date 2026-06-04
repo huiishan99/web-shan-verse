@@ -29,23 +29,21 @@ Set `draft: true` while writing. Production builds hide draft posts.
 
 Use `kind: article` for structured posts, tutorials, project write-ups, and longer retrospectives. This is the default, so old posts do not need to change.
 
-Use `kind: reflection` for essays, prose, mood notes, life observations, and poems:
+Use `kind: note` for essays, prose, mood notes, life observations, and poems:
 
 ```yaml
 ---
-title: "A quiet thought"
+title: "2026年6月1日随笔"
 date: 2026-06-01
-kind: reflection
+kind: note
 categories:
   - Life
-tags:
-  - Growth
 ---
 ```
 
 ## Sync Notes for Republished Writing
 
-When a reflection was originally written somewhere else, add a compact sync note at the end of every language version:
+When a note was originally written somewhere else, add a compact sync note at the end of every language version:
 
 ```mdx
 import SyncNote from '../../components/blog/SyncNote.astro';
@@ -54,6 +52,43 @@ import SyncNote from '../../components/blog/SyncNote.astro';
 ```
 
 For Chinese originals, keep the Chinese post as the source text and use concise localized labels such as `同步`, `Sync`, or `同期`.
+
+## Translation Workflow for Chinese-Origin Notes
+
+For personal notes, the translation goal is fidelity, not polish. The translated post should feel like the same person speaking through another language, not like a rewritten essay.
+
+When Google Translate output is available, use it as the baseline because it usually preserves sentence order, repetition, and the original shape better than a free AI rewrite. Strict Google Translate output requires either a real Google translation result pasted by the author or an approved Google Cloud Translation run. Do not claim a translation came from Google unless it actually did.
+
+For Google Cloud Translation Basic v2, use:
+
+```sh
+GOOGLE_TRANSLATE_API_KEY=... node scripts/google-translate-note.mjs src/content/blog/2026-06-01-if-immortality-arrives.mdx en
+GOOGLE_TRANSLATE_API_KEY=... node scripts/google-translate-note.mjs src/content/blog/2026-06-01-if-immortality-arrives.mdx ja
+```
+
+The script prints an MDX-ready draft body and does not edit files. Paste or apply the result manually, then do the minimal review pass below.
+
+After the baseline translation, make only minimal edits:
+
+- Preserve paragraph boundaries, line breaks, short standalone lines, and repeated sentence patterns.
+- Preserve casual markers such as `哈哈`, `其实`, `但是又何必呢`, pauses, abrupt turns, and direct emotional phrasing.
+- Preserve metaphors and odd-but-personal wording unless the target language becomes genuinely unreadable.
+- Do not make the text more literary, more elegant, more logical, or more explanatory than the Chinese original.
+- Do not soften sharp statements or add nuance that the original did not include.
+- Do not invent a meaningful title for notes. Use date-based internal titles only; the UI hides note titles.
+- Do not add tags just to make the post look categorized. Categories are for broad grouping; tags are only for recurring searchable topics.
+
+English notes should stay plain, direct, and close to the Chinese syntax. A little awkwardness is acceptable when it carries the original rhythm.
+
+Japanese notes should be natural enough to read, but still close to the Chinese order and emotional pressure. Avoid turning the text into polished Japanese essay prose.
+
+Recommended process for future Codex runs:
+
+1. Read the Chinese source first and identify whether it is an article or a note.
+2. For notes, draft the target language by following Google Translate-style literal preservation.
+3. Compare the translation paragraph by paragraph against the Chinese source.
+4. Only adjust grammar and readability where the target language would otherwise sound broken.
+5. Keep the final `SyncNote` at the end, using `同步`, `Sync`, or `同期` as appropriate.
 
 ## Markdown Images
 
