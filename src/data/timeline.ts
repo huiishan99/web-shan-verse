@@ -104,9 +104,41 @@ export const timelineData: TimelineYear[] = [
         category: "career",
         date: "2026-04-27",
         description: {
-          en: "Completed the Tokyo Head Office training on April 23, returned to Iwaki on April 24, and started the first day at the assigned workplace, Iwaki Development Center, as a new employee.",
-          zh: "4 月 23 日结束东京本社研修，4 月 24 日回到配属地磐城，并于 4 月 27 日作为新人在磐城开发中心开始配属后的第一天工作。",
-          ja: "4月23日に東京本社での研修を終え、4月24日に配属地のいわきへ戻り、4月27日に新人としていわき開発センターで配属初日を迎えました。"
+          en: "Started my first day as a new employee at the assigned workplace, Iwaki Development Center.",
+          zh: "作为新人，在配属地磐城开发中心开始第一天工作。",
+          ja: "新人として、配属先のいわき開発センターで初日を迎えました。"
+        }
+      },
+      {
+        month: { en: "April", zh: "四月", ja: "4月" },
+        title: {
+          en: "Return to Iwaki",
+          zh: "回到磐城",
+          ja: "いわきへ戻る"
+        },
+        weight: "standard",
+        category: "travel",
+        date: "2026-04-24",
+        description: {
+          en: "Returned to Iwaki, my assigned location, after completing the Tokyo Head Office training.",
+          zh: "结束东京本社研修后，回到配属地磐城。",
+          ja: "東京本社での研修を終え、配属地のいわきへ戻りました。"
+        }
+      },
+      {
+        month: { en: "April", zh: "四月", ja: "4月" },
+        title: {
+          en: "Tokyo Head Office Training Completion",
+          zh: "东京本社研修结束",
+          ja: "東京本社研修修了"
+        },
+        weight: "standard",
+        category: "career",
+        date: "2026-04-23",
+        description: {
+          en: "Completed the new-employee training at the Alps Alpine Tokyo Head Office.",
+          zh: "结束在 Alps Alpine 东京本社的新人研修。",
+          ja: "Alps Alpine 東京本社での新人研修を修了しました。"
         }
       },
       {
