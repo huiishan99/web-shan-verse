@@ -190,6 +190,22 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: { en: "March", zh: "三月", ja: "3月" },
+        title: {
+          en: "Moved from Aizuwakamatsu to Iwaki",
+          zh: "从会津若松搬到磐城",
+          ja: "会津若松からいわきへ引っ越し"
+        },
+        weight: "standard",
+        category: "life",
+        date: "2026-03-04",
+        description: {
+          en: "Moved from Aizuwakamatsu to Iwaki.",
+          zh: "从会津若松搬到磐城。",
+          ja: "会津若松からいわきへ引っ越しました。"
+        }
+      },
+      {
         month: { en: "January", zh: "一月", ja: "1月" },
         title: {
           en: "Driving School Intensive Camp Completion",
