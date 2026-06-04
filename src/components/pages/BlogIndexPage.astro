@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { defaultLocale, type Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
 import {
+  type BlogIndexKind,
   blogPostsPerPage,
   getBlogIndexPagePath,
   getBlogCategoryPath,
@@ -12,6 +13,7 @@ import {
   getBlogPagePosts,
   getBlogPostKind,
   getBlogPosts,
+  getBlogPostsForIndexKind,
   getBlogPostsForLocale,
   getBlogPostPath,
   getBlogTagPath,
@@ -23,13 +25,14 @@ import {
 interface Props {
   lang?: Locale;
   currentPage?: number;
+  activeKind?: BlogIndexKind;
 }
 
 type PaginationItem =
   | { type: 'page'; page: number; href: string; isCurrent: boolean }
   | { type: 'gap'; key: string };
 
-const { lang = defaultLocale, currentPage: requestedPage = 1 } = Astro.props;
+const { lang = defaultLocale, currentPage: requestedPage = 1, activeKind = 'all' } = Astro.props;
 const t = useTranslations(lang);
 const dateLocale: Record<Locale, string> = {
   en: 'en-US',
@@ -42,16 +45,18 @@ const visiblePosts = getBlogPostsForLocale(await getBlogPosts(), lang);
 
 // 按日期排序（最新在前）
 const sortedPosts = sortBlogPosts(visiblePosts);
-const totalPages = getBlogPageCount(sortedPosts);
+const filteredPosts = getBlogPostsForIndexKind(sortedPosts, activeKind);
+const totalPages = getBlogPageCount(filteredPosts);
 const currentPage = Math.min(Math.max(1, Math.floor(requestedPage)), totalPages);
-const pagePosts = getBlogPagePosts(sortedPosts, currentPage, blogPostsPerPage);
-const totalPostCount = sortedPosts.length;
+const pagePosts = getBlogPagePosts(filteredPosts, currentPage, blogPostsPerPage);
+const totalPostCount = filteredPosts.length;
 const pageStart = totalPostCount === 0 ? 0 : (currentPage - 1) * blogPostsPerPage + 1;
 const pageEnd = Math.min(currentPage * blogPostsPerPage, totalPostCount);
+const allPostCount = sortedPosts.length;
 const articleCount = sortedPosts.filter((post) => getBlogPostKind(post) === 'article').length;
 const noteCount = sortedPosts.filter((post) => getBlogPostKind(post) === 'note').length;
 const postKindFilters = [
-  { kind: 'all', label: t.blog.allPosts, count: totalPostCount },
+  { kind: 'all', label: t.blog.allPosts, count: allPostCount },
   { kind: 'article', label: t.blog.articlesLabel, count: articleCount },
   { kind: 'note', label: t.blog.notesLabel, count: noteCount },
 ] as const;
@@ -92,7 +97,7 @@ function getPaginationItems(): PaginationItem[] {
     items.push({
       type: 'page',
       page,
-      href: getBlogIndexPagePath(page, lang),
+      href: getBlogIndexPagePath(page, lang, activeKind),
       isCurrent: page === currentPage,
     });
 
@@ -109,8 +114,12 @@ const paginationRange = t.blog.paginationRange
   .replace('{end}', String(pageEnd))
   .replace('{total}', String(totalPostCount));
 const pageTitle = currentPage === 1 ? t.blog.title : `${t.blog.title} ${paginationSummary}`;
-const previousPagePath = currentPage > 1 ? getBlogIndexPagePath(currentPage - 1, lang) : undefined;
-const nextPagePath = currentPage < totalPages ? getBlogIndexPagePath(currentPage + 1, lang) : undefined;
+const previousPagePath = currentPage > 1
+  ? getBlogIndexPagePath(currentPage - 1, lang, activeKind)
+  : undefined;
+const nextPagePath = currentPage < totalPages
+  ? getBlogIndexPagePath(currentPage + 1, lang, activeKind)
+  : undefined;
 ---
 
 <BaseLayout title={pageTitle} lang={lang}>
@@ -120,15 +129,15 @@ const nextPagePath = currentPage < totalPages ? getBlogIndexPagePath(currentPage
       <p class="subtitle">{t.blog.subtitle}</p>
       <div class="kind-filters" aria-label={t.blog.title}>
         {postKindFilters.map((filter) => (
-          <button
-            type="button"
-            class:list={['kind-filter', { 'is-active': filter.kind === 'all' }]}
+          <a
+            href={getBlogIndexPagePath(1, lang, filter.kind)}
+            class:list={['kind-filter', { 'is-active': filter.kind === activeKind }]}
             data-kind-filter={filter.kind}
-            aria-pressed={filter.kind === 'all' ? 'true' : 'false'}
+            aria-current={filter.kind === activeKind ? 'page' : undefined}
           >
             <span>{filter.label}</span>
             <span class="kind-count">{filter.count}</span>
-          </button>
+          </a>
         ))}
       </div>
       {totalPostCount > 0 && (
@@ -301,49 +310,6 @@ const nextPagePath = currentPage < totalPages ? getBlogIndexPagePath(currentPage
 
   setupPostCards();
   document.addEventListener('astro:page-load', setupPostCards);
-
-  function setupKindFilters() {
-    const buttons = document.querySelectorAll<HTMLButtonElement>('[data-kind-filter]');
-    const cards = document.querySelectorAll<HTMLElement>('.post-card[data-kind]');
-    const emptyMessage = document.querySelector<HTMLElement>('[data-kind-empty]');
-
-    if (buttons.length === 0 || cards.length === 0) return;
-
-    function applyFilter(kind: string) {
-      let visibleCount = 0;
-
-      cards.forEach((card) => {
-        const isVisible = kind === 'all' || card.dataset.kind === kind;
-        card.hidden = !isVisible;
-        if (isVisible) visibleCount += 1;
-      });
-
-      buttons.forEach((button) => {
-        const isActive = button.dataset.kindFilter === kind;
-        button.classList.toggle('is-active', isActive);
-        button.setAttribute('aria-pressed', String(isActive));
-      });
-
-      if (emptyMessage) {
-        emptyMessage.hidden = visibleCount > 0;
-      }
-    }
-
-    buttons.forEach((button) => {
-      if (button.dataset.filterReady === 'true') return;
-      button.dataset.filterReady = 'true';
-
-      button.addEventListener('click', () => {
-        applyFilter(button.dataset.kindFilter || 'all');
-      });
-    });
-
-    const activeButton = document.querySelector<HTMLButtonElement>('[data-kind-filter].is-active');
-    applyFilter(activeButton?.dataset.kindFilter || 'all');
-  }
-
-  setupKindFilters();
-  document.addEventListener('astro:page-load', setupKindFilters);
 </script>
 
 <style>
@@ -384,6 +350,7 @@ const nextPagePath = currentPage < totalPages ? getBlogIndexPagePath(currentPage
     color: var(--color-text-secondary);
     font-family: var(--font-body);
     font-size: 0.98rem;
+    text-decoration: none;
     cursor: pointer;
     transition: all 0.2s ease;
   }
