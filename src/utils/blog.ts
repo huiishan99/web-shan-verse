@@ -3,16 +3,36 @@ import { defaultLocale, localeNames, translatedLocales, type Locale } from '../i
 
 export type BlogPost = CollectionEntry<'blog'>;
 type BlogTaxonomyKind = 'category' | 'tag';
-export type BlogPostKind = 'article' | 'reflection';
+type LegacyBlogPostKind = 'article' | 'note' | 'reflection';
+export type BlogPostKind = 'article' | 'note';
 
 export const blogPostsPerPage = 6;
 
-const genericTaxonomyValues = new Set(['blog', 'blogs', 'article', 'articles', 'reflection', 'reflections']);
+const genericTaxonomyValues = new Set([
+  'blog',
+  'blogs',
+  'article',
+  'articles',
+  'note',
+  'notes',
+  'reflection',
+  'reflections',
+]);
 const blogCardExcerptLengths: Record<Locale, number> = {
   en: 110,
   zh: 60,
   ja: 60,
 };
+const blogDisplayTitleLengths: Record<Locale, number> = {
+  en: 120,
+  zh: 58,
+  ja: 58,
+};
+const generatedNoteTitlePatterns = [
+  /^\d{4}年\d{1,2}月\d{1,2}日(?:随笔|札记)(?:（[一二三四五六七八九十]+）)?$/,
+  /^\d{4}年\d{1,2}月\d{1,2}日の(?:随筆|ノート)(?:（[一二三四五六七八九十]+）)?$/,
+  /^[A-Z][a-z]+ \d{1,2}, \d{4} (?:Reflection|Note)(?: [IVX]+)?$/,
+];
 
 export function isPostVisibleInLocale(post: BlogPost, locale: Locale): boolean {
   return !post.data.lang || post.data.lang === locale;
@@ -23,13 +43,19 @@ export function getPostSlug(post: BlogPost): string {
 }
 
 export function getBlogPostKind(post: BlogPost): BlogPostKind {
-  return post.data.kind || 'article';
+  const kind = (post.data.kind || 'article') as LegacyBlogPostKind;
+  return kind === 'reflection' ? 'note' : kind;
 }
 
-export function getPlainTextExcerpt(body: string, maxLength = 150): string {
-  const cleanText = body
+function getPlainText(body: string, preserveLineBreaks = false): string {
+  const lineBreak = preserveLineBreaks ? '\n' : ' ';
+
+  return body
     .replace(/^---[\s\S]*?---/m, '')
     .replace(/import\s+.+?;\s*/g, ' ')
+    .replace(/<SyncNote[\s\S]*?\/>/g, ' ')
+    .replace(/<br\s*\/?>/gi, lineBreak)
+    .replace(/<\/p>/gi, lineBreak)
     .replace(/<[^>]+>/g, ' ')
     .replace(/!\[.*?\]\(.*?\)/g, ' ')
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
@@ -38,16 +64,58 @@ export function getPlainTextExcerpt(body: string, maxLength = 150): string {
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
     .replace(/[#*`>]/g, '')
-    .replace(/\s+/g, ' ')
+    .replace(preserveLineBreaks ? /[^\S\n]+/g : /\s+/g, ' ')
+    .replace(/\n\s+/g, '\n')
+    .replace(/\n{2,}/g, '\n')
     .trim();
+}
+
+function truncatePlainText(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text;
+
+  return `${text.slice(0, maxLength).trim()}...`;
+}
+
+function stripTerminalPunctuation(text: string): string {
+  return text.replace(/[。！？!?.,，、；;：:]+$/u, '').trim();
+}
+
+function isGeneratedNoteTitle(title: string): boolean {
+  return generatedNoteTitlePatterns.some((pattern) => pattern.test(title.trim()));
+}
+
+function getPlainTextTitle(body: string, maxLength: number): string | undefined {
+  const firstBlock = getPlainText(body, true)
+    .split('\n')
+    .map((line) => line.trim())
+    .find(Boolean);
+
+  if (!firstBlock) return undefined;
+
+  const firstSentence = firstBlock.match(/^.+?[。！？!?.](?=\s|$|.)/)?.[0] || firstBlock;
+  const title = stripTerminalPunctuation(firstSentence);
+
+  return truncatePlainText(title, maxLength);
+}
+
+export function getBlogPostDisplayTitle(post: BlogPost, locale: Locale): string {
+  if (getBlogPostKind(post) !== 'note' || !isGeneratedNoteTitle(post.data.title)) {
+    return post.data.title;
+  }
+
+  return getPlainTextTitle(post.body ?? '', blogDisplayTitleLengths[locale]) || post.data.title;
+}
+
+export function getPlainTextExcerpt(body: string, maxLength = 150): string {
+  const cleanText = getPlainText(body);
 
   if (cleanText.length <= maxLength) return cleanText;
 
-  return `${cleanText.slice(0, maxLength).trim()}...`;
+  return truncatePlainText(cleanText, maxLength);
 }
 
 export function getBlogPostExcerpt(post: BlogPost, maxLength = 150): string | undefined {
-  if (getBlogPostKind(post) === 'reflection') {
+  if (getBlogPostKind(post) === 'note') {
     return getPlainTextExcerpt(post.body ?? '', maxLength) || post.data.description;
   }
 
