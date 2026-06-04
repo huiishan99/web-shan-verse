@@ -9,6 +9,7 @@ import { defaultLocale, localizePath, localizeString, type Locale } from '../../
 import { useTranslations } from '../../i18n/ui';
 import {
   getBlogPostDisplayTitle,
+  getBlogPostKind,
   getBlogPosts,
   getBlogPostsForLocale,
   getBlogPostPath,
@@ -428,19 +429,26 @@ const sponsorContactUrl = 'https://linkedin.com/in/laihuishan/';
       <h2>{t.home.latestPosts}</h2>
       
       <div class="posts-grid">
-        {latestPosts.map((post) => (
-          <a href={getBlogPostPath(post, lang)} class="post-card">
-            <div class="post-date">
-              {new Date(post.data.date).toLocaleDateString(dateLocale[lang], { 
-                year: 'numeric', 
-                month: 'short', 
-                day: 'numeric' 
-              })}
-            </div>
-            <h3 class="post-title">{getBlogPostDisplayTitle(post, lang)}</h3>
-            <p class="post-excerpt">{getPlainTextExcerpt(post.body ?? '', 100)}</p>
-          </a>
-        ))}
+        {latestPosts.map((post) => {
+          const postKind = getBlogPostKind(post);
+          const showPostTitle = postKind === 'article';
+
+          return (
+            <a href={getBlogPostPath(post, lang)} class:list={['post-card', `post-card--${postKind}`]}>
+              <div class="post-date">
+                {new Date(post.data.date).toLocaleDateString(dateLocale[lang], {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric'
+                })}
+              </div>
+              {showPostTitle && (
+                <h3 class="post-title">{getBlogPostDisplayTitle(post, lang)}</h3>
+              )}
+              <p class="post-excerpt">{getPlainTextExcerpt(post.body ?? '', 100)}</p>
+            </a>
+          );
+        })}
       </div>
       
       <div class="posts-action">
@@ -1858,6 +1866,13 @@ const sponsorContactUrl = 'https://linkedin.com/in/laihuishan/';
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+
+  .post-card--note .post-excerpt {
+    color: rgba(245, 245, 245, 0.82);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    -webkit-line-clamp: 3;
   }
   
   .posts-action {
