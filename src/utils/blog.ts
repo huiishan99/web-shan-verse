@@ -5,8 +5,10 @@ export type BlogPost = CollectionEntry<'blog'>;
 type BlogTaxonomyKind = 'category' | 'tag';
 type LegacyBlogPostKind = 'article' | 'note' | 'reflection';
 export type BlogPostKind = 'article' | 'note';
+export type BlogIndexKind = 'all' | BlogPostKind;
 
 export const blogPostsPerPage = 6;
+export const blogIndexKinds = ['article', 'note'] as const satisfies readonly BlogPostKind[];
 
 const genericTaxonomyValues = new Set([
   'blog',
@@ -33,6 +35,10 @@ const generatedNoteTitlePatterns = [
   /^\d{4}年\d{1,2}月\d{1,2}日の(?:随筆|ノート)(?:（[一二三四五六七八九十]+）)?$/,
   /^[A-Z][a-z]+ \d{1,2}, \d{4} (?:Reflection|Note)(?: [IVX]+)?$/,
 ];
+const blogKindSlugs: Record<BlogPostKind, string> = {
+  article: 'articles',
+  note: 'notes',
+};
 
 export function isPostVisibleInLocale(post: BlogPost, locale: Locale): boolean {
   return !post.data.lang || post.data.lang === locale;
@@ -45,6 +51,10 @@ export function getPostSlug(post: BlogPost): string {
 export function getBlogPostKind(post: BlogPost): BlogPostKind {
   const kind = (post.data.kind || 'article') as LegacyBlogPostKind;
   return kind === 'reflection' ? 'note' : kind;
+}
+
+export function getBlogIndexKindFromSlug(slug: string): BlogPostKind | undefined {
+  return blogIndexKinds.find((kind) => blogKindSlugs[kind] === slug);
 }
 
 function getPlainText(body: string, preserveLineBreaks = false): string {
@@ -147,9 +157,22 @@ export function getBlogPostPath(post: BlogPost, locale: Locale): string {
   return locale === defaultLocale ? path : `/${locale}${path}`;
 }
 
-export function getBlogIndexPagePath(page: number, locale: Locale): string {
-  const path = page <= 1 ? '/blog' : `/blog/page/${page}`;
+export function getBlogIndexPagePath(
+  page: number,
+  locale: Locale,
+  kind: BlogIndexKind = 'all'
+): string {
+  const path = kind === 'all'
+    ? page <= 1 ? '/blog' : `/blog/page/${page}`
+    : page <= 1
+      ? `/blog/kind/${blogKindSlugs[kind]}`
+      : `/blog/kind/${blogKindSlugs[kind]}/page/${page}`;
+
   return locale === defaultLocale ? path : `/${locale}${path}`;
+}
+
+export function getBlogPostsForIndexKind(posts: BlogPost[], kind: BlogIndexKind): BlogPost[] {
+  return kind === 'all' ? posts : posts.filter((post) => getBlogPostKind(post) === kind);
 }
 
 export function sortBlogPosts(posts: BlogPost[]): BlogPost[] {
@@ -200,7 +223,7 @@ export async function getLocalizedBlogPostStaticPaths() {
 }
 
 export async function getBlogPaginationStaticPaths(locale: Locale) {
-  const posts = getBlogPostsForLocale(await getBlogPosts(), locale);
+  const posts = getBlogPostsForIndexKind(getBlogPostsForLocale(await getBlogPosts(), locale), 'all');
   const totalPages = getBlogPageCount(posts);
 
   return Array.from({ length: Math.max(totalPages - 1, 0) }, (_, index) => {
@@ -230,6 +253,68 @@ export async function getLocalizedBlogPaginationStaticPaths() {
         params: { lang, page: String(currentPage) },
         props: { lang, currentPage },
       };
+    });
+  });
+}
+
+export async function getBlogKindStaticPaths(locale: Locale) {
+  return blogIndexKinds.map((kind) => ({
+    params: { kind: blogKindSlugs[kind] },
+    props: { lang: locale, activeKind: kind },
+  }));
+}
+
+export async function getDefaultBlogKindStaticPaths() {
+  return getBlogKindStaticPaths(defaultLocale);
+}
+
+export async function getLocalizedBlogKindStaticPaths() {
+  return translatedLocales.flatMap((lang) =>
+    blogIndexKinds.map((kind) => ({
+      params: { lang, kind: blogKindSlugs[kind] },
+      props: { lang, activeKind: kind },
+    }))
+  );
+}
+
+export async function getBlogKindPaginationStaticPaths(locale: Locale) {
+  const posts = getBlogPostsForLocale(await getBlogPosts(), locale);
+
+  return blogIndexKinds.flatMap((kind) => {
+    const totalPages = getBlogPageCount(getBlogPostsForIndexKind(posts, kind));
+
+    return Array.from({ length: Math.max(totalPages - 1, 0) }, (_, index) => {
+      const currentPage = index + 2;
+
+      return {
+        params: { kind: blogKindSlugs[kind], page: String(currentPage) },
+        props: { lang: locale, activeKind: kind, currentPage },
+      };
+    });
+  });
+}
+
+export async function getDefaultBlogKindPaginationStaticPaths() {
+  return getBlogKindPaginationStaticPaths(defaultLocale);
+}
+
+export async function getLocalizedBlogKindPaginationStaticPaths() {
+  const posts = await getBlogPosts();
+
+  return translatedLocales.flatMap((lang) => {
+    const visiblePosts = getBlogPostsForLocale(posts, lang);
+
+    return blogIndexKinds.flatMap((kind) => {
+      const totalPages = getBlogPageCount(getBlogPostsForIndexKind(visiblePosts, kind));
+
+      return Array.from({ length: Math.max(totalPages - 1, 0) }, (_, index) => {
+        const currentPage = index + 2;
+
+        return {
+          params: { lang, kind: blogKindSlugs[kind], page: String(currentPage) },
+          props: { lang, activeKind: kind, currentPage },
+        };
+      });
     });
   });
 }

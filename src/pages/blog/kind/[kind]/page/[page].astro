@@ -1,0 +1,10 @@
+---
+import BlogIndexPage from '../../../../../components/pages/BlogIndexPage.astro';
+import { getDefaultBlogKindPaginationStaticPaths } from '../../../../../utils/blog';
+
+export const getStaticPaths = getDefaultBlogKindPaginationStaticPaths;
+
+const { activeKind, currentPage } = Astro.props;
+---
+
+<BlogIndexPage lang="en" activeKind={activeKind} currentPage={currentPage} />
