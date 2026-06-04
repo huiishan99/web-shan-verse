@@ -3,8 +3,12 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { defaultLocale, type Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
 import {
+  blogPostsPerPage,
+  getBlogIndexPagePath,
   getBlogCategoryPath,
   getBlogCardExcerpt,
+  getBlogPageCount,
+  getBlogPagePosts,
   getBlogPostKind,
   getBlogPosts,
   getBlogPostsForLocale,
@@ -17,9 +21,14 @@ import {
 
 interface Props {
   lang?: Locale;
+  currentPage?: number;
 }
 
-const { lang = defaultLocale } = Astro.props;
+type PaginationItem =
+  | { type: 'page'; page: number; href: string; isCurrent: boolean }
+  | { type: 'gap'; key: string };
+
+const { lang = defaultLocale, currentPage: requestedPage = 1 } = Astro.props;
 const t = useTranslations(lang);
 const dateLocale: Record<Locale, string> = {
   en: 'en-US',
@@ -32,10 +41,16 @@ const visiblePosts = getBlogPostsForLocale(await getBlogPosts(), lang);
 
 // 按日期排序（最新在前）
 const sortedPosts = sortBlogPosts(visiblePosts);
+const totalPages = getBlogPageCount(sortedPosts);
+const currentPage = Math.min(Math.max(1, Math.floor(requestedPage)), totalPages);
+const pagePosts = getBlogPagePosts(sortedPosts, currentPage, blogPostsPerPage);
+const totalPostCount = sortedPosts.length;
+const pageStart = totalPostCount === 0 ? 0 : (currentPage - 1) * blogPostsPerPage + 1;
+const pageEnd = Math.min(currentPage * blogPostsPerPage, totalPostCount);
 const articleCount = sortedPosts.filter((post) => getBlogPostKind(post) === 'article').length;
 const reflectionCount = sortedPosts.filter((post) => getBlogPostKind(post) === 'reflection').length;
 const postKindFilters = [
-  { kind: 'all', label: t.blog.allPosts, count: sortedPosts.length },
+  { kind: 'all', label: t.blog.allPosts, count: totalPostCount },
   { kind: 'article', label: t.blog.articlesLabel, count: articleCount },
   { kind: 'reflection', label: t.blog.reflectionsLabel, count: reflectionCount },
 ] as const;
@@ -56,9 +71,48 @@ function formatDate(date: Date) {
 function getCardExcerpt(post: (typeof sortedPosts)[number]) {
   return getBlogCardExcerpt(post, lang);
 }
+
+function getPaginationItems(): PaginationItem[] {
+  const visiblePages = new Set(
+    [1, totalPages, currentPage - 1, currentPage, currentPage + 1].filter(
+      (page) => page >= 1 && page <= totalPages
+    )
+  );
+  const orderedPages = [...visiblePages].sort((a, b) => a - b);
+
+  return orderedPages.flatMap((page, index) => {
+    const previousPage = orderedPages[index - 1];
+    const items: PaginationItem[] = [];
+
+    if (previousPage && page - previousPage > 1) {
+      items.push({ type: 'gap', key: `${previousPage}-${page}` });
+    }
+
+    items.push({
+      type: 'page',
+      page,
+      href: getBlogIndexPagePath(page, lang),
+      isCurrent: page === currentPage,
+    });
+
+    return items;
+  });
+}
+
+const paginationItems = getPaginationItems();
+const paginationSummary = t.blog.paginationSummary
+  .replace('{current}', String(currentPage))
+  .replace('{total}', String(totalPages));
+const paginationRange = t.blog.paginationRange
+  .replace('{start}', String(pageStart))
+  .replace('{end}', String(pageEnd))
+  .replace('{total}', String(totalPostCount));
+const pageTitle = currentPage === 1 ? t.blog.title : `${t.blog.title} ${paginationSummary}`;
+const previousPagePath = currentPage > 1 ? getBlogIndexPagePath(currentPage - 1, lang) : undefined;
+const nextPagePath = currentPage < totalPages ? getBlogIndexPagePath(currentPage + 1, lang) : undefined;
 ---
 
-<BaseLayout title={t.blog.title} lang={lang}>
+<BaseLayout title={pageTitle} lang={lang}>
   <div class="container">
     <header class="page-header">
       <h1>{t.blog.title}</h1>
@@ -76,11 +130,14 @@ function getCardExcerpt(post: (typeof sortedPosts)[number]) {
           </button>
         ))}
       </div>
+      {totalPostCount > 0 && (
+        <p class="page-range">{paginationRange}</p>
+      )}
     </header>
     
     <div class="blog-layout">
       <main class="posts-list">
-        {sortedPosts.map((post) => {
+        {pagePosts.map((post) => {
           const postKind = getBlogPostKind(post);
           const cardExcerpt = getCardExcerpt(post);
           const cardCategory = getInformativeBlogCategories(post)[0];
@@ -132,11 +189,60 @@ function getCardExcerpt(post: (typeof sortedPosts)[number]) {
           );
         })}
         
-        {sortedPosts.length === 0 && (
+        {pagePosts.length === 0 && (
           <p class="no-posts">{t.blog.noPosts}</p>
         )}
-        {sortedPosts.length > 0 && (
+        {pagePosts.length > 0 && (
           <p class="no-posts no-posts--filtered" data-kind-empty hidden>{t.blog.noPostsForKind}</p>
+        )}
+        {totalPages > 1 && (
+          <nav class="pagination" aria-label={t.blog.paginationLabel}>
+            <p class="pagination-summary">{paginationSummary}</p>
+            <div class="pagination-controls">
+              {previousPagePath ? (
+                <a href={previousPagePath} class="pagination-link pagination-step" rel="prev">
+                  <span aria-hidden="true">←</span>
+                  <span>{t.blog.paginationPrevious}</span>
+                </a>
+              ) : (
+                <span class="pagination-link pagination-step is-disabled" aria-disabled="true">
+                  <span aria-hidden="true">←</span>
+                  <span>{t.blog.paginationPrevious}</span>
+                </span>
+              )}
+
+              {paginationItems.map((item) => (
+                item.type === 'gap' ? (
+                  <span class="pagination-gap" aria-hidden="true">...</span>
+                ) : (
+                  <a
+                    href={item.href}
+                    class:list={['pagination-link', 'pagination-number', { 'is-active': item.isCurrent }]}
+                    aria-label={
+                      item.isCurrent
+                        ? `${t.blog.paginationCurrentPage}: ${item.page}`
+                        : `${t.blog.paginationPage} ${item.page}`
+                    }
+                    aria-current={item.isCurrent ? 'page' : undefined}
+                  >
+                    {item.page}
+                  </a>
+                )
+              ))}
+
+              {nextPagePath ? (
+                <a href={nextPagePath} class="pagination-link pagination-step" rel="next">
+                  <span>{t.blog.paginationNext}</span>
+                  <span aria-hidden="true">→</span>
+                </a>
+              ) : (
+                <span class="pagination-link pagination-step is-disabled" aria-disabled="true">
+                  <span>{t.blog.paginationNext}</span>
+                  <span aria-hidden="true">→</span>
+                </span>
+              )}
+            </div>
+          </nav>
         )}
       </main>
       
@@ -299,6 +405,13 @@ function getCardExcerpt(post: (typeof sortedPosts)[number]) {
   .kind-filter.is-active .kind-count {
     color: var(--color-accent-gold);
     background: rgba(201, 162, 39, 0.14);
+  }
+
+  .page-range {
+    margin-top: var(--space-md);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
   }
   
   .blog-layout {
@@ -464,6 +577,75 @@ function getCardExcerpt(post: (typeof sortedPosts)[number]) {
   .no-posts[hidden] {
     display: none;
   }
+
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    margin-top: var(--space-sm);
+    padding-top: var(--space-md);
+  }
+
+  .pagination-summary {
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.86rem;
+  }
+
+  .pagination-controls {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .pagination-link,
+  .pagination-gap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.35rem;
+    min-height: 2.35rem;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+  }
+
+  .pagination-link {
+    gap: 0.35rem;
+    border: 1px solid var(--surface-border);
+    background: rgba(10, 10, 15, 0.48);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .pagination-link:hover,
+  .pagination-link.is-active {
+    color: var(--color-accent-gold);
+    border-color: rgba(201, 162, 39, 0.38);
+    background: rgba(201, 162, 39, 0.1);
+  }
+
+  .pagination-link.is-active {
+    cursor: default;
+  }
+
+  .pagination-link.is-disabled {
+    color: var(--color-text-muted);
+    opacity: 0.45;
+    pointer-events: none;
+  }
+
+  .pagination-step {
+    min-width: 4.85rem;
+    padding: 0 0.7rem;
+  }
+
+  .pagination-gap {
+    color: var(--color-text-muted);
+  }
   
   /* Sidebar */
   .blog-sidebar {
@@ -577,6 +759,23 @@ function getCardExcerpt(post: (typeof sortedPosts)[number]) {
 
     .blog-sidebar {
       gap: var(--space-md);
+    }
+
+    .pagination {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .pagination-summary {
+      text-align: center;
+    }
+
+    .pagination-controls {
+      justify-content: center;
+    }
+
+    .pagination-step {
+      min-width: 4.3rem;
     }
   }
 </style>
