@@ -52,6 +52,7 @@ function formatDate(date: Date) {
         const postExcerpt = getBlogCardExcerpt(post, lang);
         const postCategory = getInformativeBlogCategories(post)[0];
         const postTags = getInformativeBlogTags(post);
+        const showCardTitle = postKind === 'article';
 
         return (
           <a href={getBlogPostPath(post, lang)} class="post-card-link">
@@ -67,7 +68,9 @@ function formatDate(date: Date) {
                 <span class="draft-badge">{t.blog.draft}</span>
               )}
             </div>
-            <h2 class="post-title">{getBlogPostDisplayTitle(post, lang)}</h2>
+            {showCardTitle && (
+              <h2 class="post-title">{getBlogPostDisplayTitle(post, lang)}</h2>
+            )}
             {postExcerpt && (
               <p class="post-excerpt">{postExcerpt}</p>
             )}
@@ -199,6 +202,12 @@ function formatDate(date: Date) {
     font-size: 1rem;
     line-height: 1.7;
     margin-bottom: var(--space-md);
+  }
+
+  .post-card--note .post-excerpt {
+    color: rgba(245, 245, 245, 0.84);
+    font-size: 1.08rem;
+    line-height: 1.85;
   }
 
   .post-tags {

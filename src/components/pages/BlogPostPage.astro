@@ -23,6 +23,7 @@ const { Content } = await render(post);
 const t = useTranslations(lang);
 const postKind = getBlogPostKind(post);
 const displayTitle = getBlogPostDisplayTitle(post, lang);
+const showPostTitle = postKind === 'article';
 const metaDescription = getBlogPostMetaDescription(post);
 const postCategories = getInformativeBlogCategories(post);
 const postTags = getInformativeBlogTags(post);
@@ -42,7 +43,9 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
 <BaseLayout title={displayTitle} description={metaDescription} lang={lang}>
   <article class:list={['blog-post', `blog-post--${postKind}`]}>
     <header class="post-header">
-      <h1>{displayTitle}</h1>
+      {showPostTitle && (
+        <h1>{displayTitle}</h1>
+      )}
       <div class="post-meta">
         <time datetime={post.data.date.toISOString()}>{formattedDate}</time>
         {postCategories.length > 0 && (
@@ -179,13 +182,6 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
     font-size: 2.5rem;
     margin-bottom: 1rem;
     line-height: 1.2;
-  }
-
-  .blog-post--note .post-header h1 {
-    font-family: var(--font-body);
-    font-size: 2.35rem;
-    font-weight: 500;
-    letter-spacing: 0;
   }
 
   .post-meta {
@@ -531,10 +527,6 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
     .post-header h1 {
       font-size: 1.75rem;
       line-height: 1.3;
-    }
-
-    .blog-post--note .post-header h1 {
-      font-size: 1.85rem;
     }
 
     .post-meta {
