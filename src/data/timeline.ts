@@ -64,6 +64,22 @@ export const timelineData: TimelineYear[] = [
       {
         month: { en: "May", zh: "五月", ja: "5月" },
         title: {
+          en: "Company Softball Tournament and Department BBQ",
+          zh: "公司垒球大会与部门 BBQ",
+          ja: "会社のソフトボール大会と部署BBQ"
+        },
+        weight: "standard",
+        category: "career",
+        date: "2026-05-30",
+        description: {
+          en: "Joined the company softball tournament as an attendee rather than a player, and took part in the department BBQ event.",
+          zh: "参加公司的ソフトボール大会（没有上场比赛），并参加了部门的 BBQ 活动。",
+          ja: "会社のソフトボール大会に参加しました（試合には出場せず）。その後、部署のBBQにも参加しました。"
+        }
+      },
+      {
+        month: { en: "May", zh: "五月", ja: "5月" },
+        title: {
           en: "Department Welcome Party",
           zh: "部门欢迎会",
           ja: "部署の歓迎会"
