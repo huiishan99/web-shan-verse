@@ -28,20 +28,18 @@ export const intro = [
   {
     en: `For a long time, I lived with the belief that life had no inherent meaning and that everything we know would eventually fade into nothing.
   It drove me to <span class="highlight">live for myself</span> and to explore this world as an adventurer who seeks to experience every possibility.`,
-    zh: `很长一段时间，我一直带着这样的信念生活：人生没有内在的意义，而我们所知道的一切最终都会消失为虚无。
-  这推动我 <span class="highlight">为自己而活</span>，并像一个寻求体验每一种可能性的冒险者一样探索这个世界。`,
-    ja: `長い間、私は人生には本質的な意味がなく、私たちが知っているすべてのものはいずれ無へと消えていくという信念を持って生きていました。
-  それが、私を <span class="highlight">自分のために生きる</span> こと、そしてあらゆる可能性を経験しようとする冒険者としてこの世界を探検することへと駆り立てました。`
+    zh: `很长一段时间以来，我一直认为生命没有内在意义，我们所知的一切最终都会消逝于虚无。这种想法驱使我为自己而活，像个冒险家一样探索这个世界，渴望体验每一种可能性。`,
+    ja: `長い間、私は人生には本来的な意味はなく、私たちが知っていることはすべていずれ虚無へと消え去るという考えを持って生きてきました。その考えが、私自身のために生き、あらゆる可能性を体験しようとする冒険家としてこの世界を探求する原動力となったのです。`
   },
   {
     en: `Coming to Japan on my own was the moment I finally let go of my past. I found a way to heal the wounds of my childhood and rediscovered the <span class="highlight">capacity to love</span>. On that day, the questions I had been asking the world for years finally found their peace.`,
-    zh: `独自来到日本，是我终于放下过去的那个时刻。我找到了一种治愈童年伤口的方法，并重新发现了 <span class="highlight">爱的能力</span>。那一天，我多年来一直向世界提出的问题，终于找到了平静。`,
-    ja: `一人で日本に来たことは、私がついに過去を手放した瞬間でした。幼少期の傷を癒す方法を見つけ、<span class="highlight">愛する能力</span> を再び見つけました。その日、私が何年も世界に問いかけてきた質問は、ついに平穏を見つけました。`
+    zh: `独自来到日本的那一刻，我终于放下了过去。我找到了治愈童年创伤的方法，也重新找回了爱的能力。在那一天，我多年来一直追问世界的那些问题，终于得到了解答。`,
+    ja: `一人で日本に来たことで、私はついに過去を手放すことができました。幼少期の心の傷を癒す方法を見つけ、愛する力を取り戻しました。その日、私が長年世界に問い続けてきた疑問に、ようやく答えを得ました。`
   },
   {
     en: `I no longer seek faith in things I cannot see because I have found truth in what I have lived. As Carl Jung once said: <span class="highlight">"I don't need to believe; I know."</span>`,
-    zh: `我不再在看不见的事物中寻求信仰，因为我已经在自己经历过的事情中找到了真理。正如卡尔·荣格曾经说过：<span class="highlight">“我不需要相信；我知道。”</span>`,
-    ja: `私はもう、見ることのできないものに信仰を求めていません。なぜなら、自分が生きてきたものの中に真実を見つけたからです。カール・ユングがかつて言ったように：<span class="highlight">「私は信じる必要はない。私は知っている。」</span>`
+    zh: `我不再对看不见的事物寻求信仰，因为我已在亲身经历中找到了真理。正如卡尔·荣格所说：<span class="highlight">“我不需要相信；我知道。”</span>`,
+    ja: `私はもはや目に見えないものに信仰を求めることはありません。なぜなら、自分の経験の中に真実を見出したからです。カール・ユングがかつて言ったように、<span class="highlight">「信じる必要はない。私は知っているのだ。」</span>`
   }
 ];
 
