@@ -77,6 +77,8 @@ const categoryRoutes = projectCategories.map((category) => ({
 
             return (
               <article class={`project-card project-card--${status} ${project.featured ? 'featured' : ''}`}>
+                {project.featured && <div class="featured-banner">{t.projects.featured}</div>}
+
                 {project.image && (
                   <div class="project-image">
                     <img src={project.image} alt={localizeString(project.title, lang)} />
@@ -84,8 +86,6 @@ const categoryRoutes = projectCategories.map((category) => ({
                 )}
                 
                 <div class="project-content">
-                  {project.featured && <div class="featured-banner">{t.projects.featured}</div>}
-
                   <div class="project-header">
                     <h3>{localizeString(project.title, lang)}</h3>
                     <div class="project-links">
@@ -266,47 +266,33 @@ const categoryRoutes = projectCategories.map((category) => ({
     box-shadow: var(--surface-shadow-hover);
   }
   
-  /* Featured marker: compact in-flow label + a quiet top accent. */
+  /* Featured marker: top ribbon, tuned down from the original banner. */
   .featured-banner {
-    display: inline-flex;
-    align-items: center;
-    align-self: flex-start;
-    gap: 0.35rem;
-    margin-bottom: 0.75rem;
-    padding: 0.2rem 0.48rem;
-    border: 1px solid rgba(201, 162, 39, 0.2);
-    border-left: 2px solid var(--color-brass);
-    border-radius: 4px;
-    background: rgba(201, 162, 39, 0.055);
-    color: var(--color-brass-light);
-    font-family: var(--font-mono);
-    font-size: 0.62rem;
-    font-weight: 600;
-    letter-spacing: 0.11em;
-    line-height: 1.2;
-    text-transform: uppercase;
-  }
-
-  .featured-banner::before {
-    content: "";
-    width: 0.42rem;
-    height: 1px;
-    background: currentColor;
-    opacity: 0.7;
-  }
-  
-  .project-card.featured {
-    border-color: rgba(201, 162, 39, 0.28);
-  }
-
-  .project-card.featured::before {
-    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, rgba(201, 162, 39, 0.78), rgba(201, 162, 39, 0.18), transparent 72%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 1.35rem;
+    padding: 0.22rem 0;
+    border-top: 1px solid rgba(201, 162, 39, 0.72);
+    border-bottom: 1px solid rgba(201, 162, 39, 0.08);
+    background: linear-gradient(90deg, transparent 6%, rgba(201, 162, 39, 0.1) 50%, transparent 94%);
+    color: rgba(232, 204, 126, 0.86);
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.13em;
+    line-height: 1;
+    pointer-events: none;
+    text-transform: uppercase;
+    z-index: 1;
+  }
+  
+  .project-card.featured {
+    border-color: rgba(201, 162, 39, 0.28);
   }
 
   .project-card--live {
@@ -364,6 +350,10 @@ const categoryRoutes = projectCategories.map((category) => ({
     flex: 1;
     display: flex;
     flex-direction: column;
+  }
+
+  .project-card.featured .project-content {
+    padding-top: calc(var(--space-lg) + 1.1rem);
   }
 
   .project-meta-row {
@@ -474,6 +464,10 @@ const categoryRoutes = projectCategories.map((category) => ({
 
     .project-content {
       padding: var(--space-md);
+    }
+
+    .project-card.featured .project-content {
+      padding-top: calc(var(--space-md) + 1rem);
     }
 
     .project-image img {
