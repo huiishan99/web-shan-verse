@@ -266,7 +266,7 @@ const categoryRoutes = projectCategories.map((category) => ({
     box-shadow: var(--surface-shadow-hover);
   }
   
-  /* Featured marker: top ribbon, tuned down from the original banner. */
+  /* Featured marker: editorial ribbon, light enough to avoid reading as a status badge. */
   .featured-banner {
     position: absolute;
     top: 0;
@@ -275,20 +275,32 @@ const categoryRoutes = projectCategories.map((category) => ({
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 1.35rem;
-    padding: 0.22rem 0;
-    border-top: 1px solid rgba(201, 162, 39, 0.72);
-    border-bottom: 1px solid rgba(201, 162, 39, 0.08);
-    background: linear-gradient(90deg, transparent 6%, rgba(201, 162, 39, 0.1) 50%, transparent 94%);
-    color: rgba(232, 204, 126, 0.86);
-    font-family: var(--font-mono);
-    font-size: 0.66rem;
-    font-weight: 600;
-    letter-spacing: 0.13em;
-    line-height: 1;
+    gap: 0.6rem;
+    min-height: 1.6rem;
+    padding: 0.22rem 1.1rem 0;
+    border-top: 1px solid rgba(201, 162, 39, 0.42);
+    background: linear-gradient(90deg, transparent 4%, rgba(201, 162, 39, 0.045) 50%, transparent 96%);
+    color: rgba(236, 211, 141, 0.82);
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-style: italic;
+    font-weight: 500;
+    letter-spacing: 0.035em;
+    line-height: 1.1;
     pointer-events: none;
-    text-transform: uppercase;
     z-index: 1;
+  }
+
+  .featured-banner::before,
+  .featured-banner::after {
+    content: "";
+    flex: 0 1 4.6rem;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(201, 162, 39, 0.42));
+  }
+
+  .featured-banner::after {
+    background: linear-gradient(90deg, rgba(201, 162, 39, 0.42), transparent);
   }
   
   .project-card.featured {
@@ -353,7 +365,7 @@ const categoryRoutes = projectCategories.map((category) => ({
   }
 
   .project-card.featured .project-content {
-    padding-top: calc(var(--space-lg) + 1.1rem);
+    padding-top: calc(var(--space-lg) + 1.25rem);
   }
 
   .project-meta-row {
@@ -467,7 +479,7 @@ const categoryRoutes = projectCategories.map((category) => ({
     }
 
     .project-card.featured .project-content {
-      padding-top: calc(var(--space-md) + 1rem);
+      padding-top: calc(var(--space-md) + 1.15rem);
     }
 
     .project-image img {
