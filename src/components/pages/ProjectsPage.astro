@@ -421,8 +421,18 @@ const categoryRoutes = projectCategories.map((category) => ({
   .project-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-xs);
+    gap: 0.35rem;
     margin-top: 0;
+  }
+
+  .project-tags .tag {
+    padding: 0.22rem 0.42rem;
+    border-color: rgba(255, 255, 255, 0.045);
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.018);
+    color: var(--color-text-muted);
+    font-size: 0.72rem;
+    line-height: 1.25;
   }
   
   @media (max-width: 768px) {
