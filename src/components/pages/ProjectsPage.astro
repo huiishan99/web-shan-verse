@@ -86,12 +86,6 @@ const categoryRoutes = projectCategories.map((category) => ({
                 )}
                 
                 <div class="project-content">
-                  <div class="project-meta-row">
-                    <span class={`project-status project-status--${status}`} title={meta.title}>
-                      {meta.label}
-                    </span>
-                  </div>
-
                   <div class="project-header">
                     <h3>{localizeString(project.title, lang)}</h3>
                     <div class="project-links">
@@ -113,6 +107,12 @@ const categoryRoutes = projectCategories.map((category) => ({
                   </div>
                   
                   <p class="project-desc">{localizeString(project.description, lang)}</p>
+
+                  <div class="project-meta-row">
+                    <span class={`project-status project-status--${status}`} title={meta.title}>
+                      {meta.label}
+                    </span>
+                  </div>
                   
                   {project.tags && project.tags.length > 0 && (
                     <div class="project-tags">
@@ -421,7 +421,7 @@ const categoryRoutes = projectCategories.map((category) => ({
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-xs);
-    margin-top: auto;
+    margin-top: 0;
   }
   
   @media (max-width: 768px) {
