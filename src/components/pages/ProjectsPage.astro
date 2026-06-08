@@ -51,7 +51,9 @@ const categoryRoutes = projectCategories.map((category) => ({
       <div class="category-route-grid">
         {categoryRoutes.map((category) => (
           <a href={`#${category.id}`} class="category-route-item">
-            <Icon name={category.icon} size={18} />
+            <span class="category-route-logo" aria-hidden="true">
+              <Icon name={category.icon} size={18} />
+            </span>
             <span class="category-route-title">{category.title}</span>
             <span class="category-route-count">{category.count}</span>
           </a>
@@ -62,8 +64,10 @@ const categoryRoutes = projectCategories.map((category) => ({
     {projectCategories.map((category) => (
       <section class="project-section" id={category.id}>
         <h2>
-          <Icon name={category.icon} size={24} />
-          {localizeString(category.title, lang)}
+          <span class="section-logo" aria-hidden="true">
+            <Icon name={category.icon} size={24} />
+          </span>
+          <span>{localizeString(category.title, lang)}</span>
         </h2>
         
         <div class="projects-grid">
@@ -84,7 +88,7 @@ const categoryRoutes = projectCategories.map((category) => ({
                 <div class="project-content">
                   <div class="project-meta-row">
                     <span class={`project-status project-status--${status}`} title={meta.title}>
-                      <i></i>{meta.label}
+                      {meta.label}
                     </span>
                   </div>
 
@@ -165,10 +169,10 @@ const categoryRoutes = projectCategories.map((category) => ({
   .category-route-item {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
-    gap: 0.55rem;
+    gap: 0.7rem;
     align-items: center;
     min-height: 58px;
-    padding: 0.7rem 0.85rem;
+    padding: 0.65rem 0.8rem;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--surface-radius);
     background: rgba(10, 10, 15, 0.72);
@@ -180,6 +184,28 @@ const categoryRoutes = projectCategories.map((category) => ({
   .category-route-item:hover {
     background: rgba(201, 162, 39, 0.1);
     color: var(--color-brass-light);
+  }
+
+  .category-route-logo,
+  .section-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(201, 162, 39, 0.24);
+    background: rgba(201, 162, 39, 0.07);
+    color: var(--color-brass);
+    box-shadow: inset 0 0 16px rgba(201, 162, 39, 0.05);
+  }
+
+  .category-route-logo {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+  }
+
+  .category-route-item:hover .category-route-logo {
+    border-color: rgba(201, 162, 39, 0.5);
+    background: rgba(201, 162, 39, 0.12);
   }
 
   .category-route-title {
@@ -204,6 +230,12 @@ const categoryRoutes = projectCategories.map((category) => ({
     display: flex;
     align-items: center;
     gap: var(--space-sm);
+  }
+
+  .section-logo {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
   }
   
   .projects-grid {
@@ -313,30 +345,34 @@ const categoryRoutes = projectCategories.map((category) => ({
     flex-direction: column;
   }
 
+  .project-card.featured .project-content {
+    padding-top: calc(var(--space-lg) + 1.4rem);
+  }
+
   .project-meta-row {
     display: flex;
     justify-content: flex-start;
-    margin-bottom: var(--space-sm);
+    margin-bottom: 0.6rem;
   }
 
   .project-status {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    color: var(--status-color);
+    gap: 0.45rem;
+    color: var(--color-text-muted);
     font-family: var(--font-mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.08em;
+    font-size: 0.64rem;
+    letter-spacing: 0.11em;
     line-height: 1;
     text-transform: uppercase;
   }
 
-  .project-status i {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
+  .project-status::before {
+    content: "";
+    width: 14px;
+    height: 1px;
     background: var(--status-color);
-    box-shadow: 0 0 10px var(--status-glow);
+    opacity: 0.7;
   }
   
   .project-header {
@@ -410,6 +446,10 @@ const categoryRoutes = projectCategories.map((category) => ({
 
     .project-content {
       padding: var(--space-md);
+    }
+
+    .project-card.featured .project-content {
+      padding-top: calc(var(--space-md) + 1.4rem);
     }
 
     .project-image img {
