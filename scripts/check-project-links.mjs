@@ -2,6 +2,8 @@ import fs from 'node:fs/promises';
 
 const PROJECTS_FILE = new URL('../src/data/projects.ts', import.meta.url);
 const REQUEST_TIMEOUT_MS = 15_000;
+const GET_REQUEST_ATTEMPTS = 2;
+const RETRY_DELAY_MS = 500;
 const WARNING_STATUSES = new Set([401, 403]);
 
 function loadProjectCategories(source) {
@@ -39,7 +41,42 @@ function collectLinks(projectCategories) {
   return links;
 }
 
-async function request(url, method) {
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+function isTransientRequestError(error) {
+  if (!(error instanceof Error)) return false;
+
+  const cause = error.cause instanceof Error ? error.cause : undefined;
+  const code = error.code || error.cause?.code || '';
+  const message = `${error.name} ${error.message} ${cause?.message ?? ''}`.toLowerCase();
+
+  return (
+    error.name === 'AbortError' ||
+    error.name === 'TimeoutError' ||
+    [
+      'ECONNRESET',
+      'EAI_AGAIN',
+      'ETIMEDOUT',
+      'UND_ERR_ABORTED',
+      'UND_ERR_BODY_TIMEOUT',
+      'UND_ERR_CONNECT_TIMEOUT',
+      'UND_ERR_HEADERS_TIMEOUT',
+      'UND_ERR_SOCKET',
+    ].includes(code) ||
+    message.includes('aborted') ||
+    message.includes('fetch failed') ||
+    message.includes('network') ||
+    message.includes('socket') ||
+    message.includes('terminated') ||
+    message.includes('timed out')
+  );
+}
+
+async function requestOnce(url, method) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
@@ -58,12 +95,42 @@ async function request(url, method) {
   }
 }
 
+async function request(url, method, attempts = 1) {
+  let lastError;
+
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      return await requestOnce(url, method);
+    } catch (error) {
+      lastError = error;
+
+      if (!isTransientRequestError(error) || attempt === attempts) {
+        throw error;
+      }
+
+      await sleep(RETRY_DELAY_MS * attempt);
+    }
+  }
+
+  throw lastError;
+}
+
 async function checkLink(link) {
   try {
-    let response = await request(link.url, 'HEAD');
+    let response;
+
+    try {
+      response = await request(link.url, 'HEAD');
+    } catch (error) {
+      if (!isTransientRequestError(error)) {
+        throw error;
+      }
+
+      response = await request(link.url, 'GET', GET_REQUEST_ATTEMPTS);
+    }
 
     if (response.status === 405 || response.status >= 400) {
-      response = await request(link.url, 'GET');
+      response = await request(link.url, 'GET', GET_REQUEST_ATTEMPTS);
     }
 
     return {
