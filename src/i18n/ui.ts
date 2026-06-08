@@ -155,6 +155,10 @@ export const ui = {
       featured: 'Featured',
       sourceTitle: 'View Source',
       siteTitle: 'Visit Site',
+      routes: {
+        label: 'Category Routes',
+        hint: 'Jump to section',
+      },
       status: {
         live: ['Live', 'Public demo or site is available'],
         prototype: ['Prototype', 'Prototype, research build, or proof of concept'],
@@ -325,6 +329,10 @@ export const ui = {
       featured: '精选',
       sourceTitle: '查看源码',
       siteTitle: '访问网站',
+      routes: {
+        label: '分类导航',
+        hint: '快速跳转',
+      },
       status: {
         live: ['在线', '公开演示或网站可用'],
         prototype: ['原型', '原型、研究构建或概念验证'],
@@ -495,6 +503,10 @@ export const ui = {
       featured: '注目',
       sourceTitle: 'ソースを見る',
       siteTitle: 'サイトを見る',
+      routes: {
+        label: 'カテゴリールート',
+        hint: 'セクションへ移動',
+      },
       status: {
         live: ['Live', '公開デモまたはサイトが利用可能です'],
         prototype: ['プロトタイプ', 'プロトタイプ、研究用ビルド、概念実証'],
