@@ -22,7 +22,7 @@ export interface ProjectItem {
 export interface ProjectCategory {
     id: string;             // 用于 HTML id 锚点
     title: LocalizedString;          // 显示的标题
-    icon: string;           // 图标名称: 'gamepad' | 'vr' | 'globe' | 'file' | 'gear'
+    icon: string;           // 图标名称，参考 src/components/Icon.astro
     items: ProjectItem[];
 }
 
@@ -86,7 +86,7 @@ export const projectCategories: ProjectCategory[] = [
     {
         id: "unity",
         title: { en: "Unity Projects", zh: "Unity 项目", ja: "Unity プロジェクト" },
-        icon: "gamepad",
+        icon: "cube",
         items: [
             {
                 title: "Solar System",
@@ -351,7 +351,7 @@ export const projectCategories: ProjectCategory[] = [
     {
         id: "other",
         title: { en: "Other Project", zh: "其他项目", ja: "その他のプロジェクト" },
-        icon: "menu",
+        icon: "folder",
         items: [
             {
                 title: "Tetris Clone",
