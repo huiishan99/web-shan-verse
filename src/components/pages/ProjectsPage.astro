@@ -101,27 +101,24 @@ const categoryRoutes = projectCategories.map((category) => ({
                   )}
 
                   <div class="project-meta-row">
+                    {(project.github || project.website) && (
+                      <div class="project-links">
+                      {project.github && (
+                        <a href={project.github} target="_blank" rel="noopener noreferrer" class="icon-link" title={t.projects.sourceTitle} aria-label={t.projects.sourceTitle}>
+                          <Icon name="github" size={13} class="icon-link-symbol" />
+                        </a>
+                      )}
+                      {project.website && (
+                        <a href={project.website} target="_blank" rel="noopener noreferrer" class="icon-link" title={t.projects.siteTitle} aria-label={t.projects.siteTitle}>
+                          <Icon name="externalLink" size={13} class="icon-link-symbol" />
+                        </a>
+                      )}
+                      </div>
+                    )}
                     <span class={`project-status project-status--${status}`} title={meta.title}>
                       {meta.label}
                     </span>
                   </div>
-
-                  {(project.github || project.website) && (
-                    <div class="project-actions">
-                      {project.github && (
-                        <a href={project.github} target="_blank" rel="noopener noreferrer" class="project-action" title={t.projects.sourceTitle} aria-label={t.projects.sourceTitle}>
-                          <Icon name="github" size={14} class="project-action-icon" />
-                          <span>{t.projects.sourceLabel}</span>
-                        </a>
-                      )}
-                      {project.website && (
-                        <a href={project.website} target="_blank" rel="noopener noreferrer" class="project-action" title={t.projects.siteTitle} aria-label={t.projects.siteTitle}>
-                          <Icon name="externalLink" size={14} class="project-action-icon" />
-                          <span>{t.projects.siteLabel}</span>
-                        </a>
-                      )}
-                    </div>
-                  )}
                 </div>
               </article>
             );
@@ -371,9 +368,12 @@ const categoryRoutes = projectCategories.map((category) => ({
 
   .project-meta-row {
     display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.44rem 0.62rem;
     justify-content: flex-start;
-    margin-top: 0.65rem;
-    padding-top: 0.15rem;
+    margin-top: 0.7rem;
+    padding-top: 0.1rem;
   }
 
   .project-status {
@@ -382,7 +382,7 @@ const categoryRoutes = projectCategories.map((category) => ({
     gap: 0.45rem;
     color: var(--color-text-muted);
     font-family: var(--font-mono);
-    font-size: 0.64rem;
+    font-size: 0.63rem;
     letter-spacing: 0.11em;
     line-height: 1;
     text-transform: uppercase;
@@ -390,10 +390,10 @@ const categoryRoutes = projectCategories.map((category) => ({
 
   .project-status::before {
     content: "";
-    width: 14px;
+    width: 12px;
     height: 1px;
     background: var(--status-color);
-    opacity: 0.7;
+    opacity: 0.62;
   }
   
   .project-header {
@@ -409,46 +409,52 @@ const categoryRoutes = projectCategories.map((category) => ({
     overflow-wrap: break-word;
   }
   
-  .project-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.45rem 0.95rem;
-    align-items: center;
-    margin-top: auto;
-    padding-top: 0.85rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.055);
-  }
-
-  .project-action {
+  .project-links {
     display: inline-flex;
     align-items: center;
-    gap: 0.38rem;
-    min-height: 1.45rem;
-    color: rgba(217, 217, 217, 0.56);
-    font-family: var(--font-mono);
-    font-size: 0.66rem;
-    letter-spacing: 0.08em;
-    line-height: 1;
-    text-transform: uppercase;
-    transition:
-      color 0.22s ease,
-      transform 0.22s ease;
+    gap: 0.08rem;
+    flex-shrink: 0;
+    padding: 0.08rem;
+    border: 1px solid rgba(255, 255, 255, 0.045);
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.014);
   }
   
-  .project-action :global(.project-action-icon) {
-    color: currentColor;
-    flex-shrink: 0;
+  .icon-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.38rem;
+    height: 1.38rem;
+    border-radius: 3px;
+    color: rgba(217, 217, 217, 0.5);
+    text-decoration: none;
+    transition:
+      background 0.22s ease,
+      color 0.22s ease,
+      transform 0.22s ease,
+      box-shadow 0.22s ease;
+  }
+  
+  .icon-link:visited {
+    color: rgba(217, 217, 217, 0.5);
   }
 
-  .project-action:hover,
-  .project-action:focus-visible {
-    color: var(--color-brass-light);
+  .icon-link :global(.icon-link-symbol) {
+    color: currentColor;
+  }
+
+  .icon-link:hover,
+  .icon-link:focus-visible {
+    background: rgba(255, 255, 255, 0.045);
+    color: rgba(242, 242, 242, 0.82);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.055);
     transform: translateY(-1px);
   }
 
-  .project-action:focus-visible {
-    outline: 1px solid rgba(201, 162, 39, 0.55);
-    outline-offset: 4px;
+  .icon-link:focus-visible {
+    outline: 1px solid rgba(217, 217, 217, 0.35);
+    outline-offset: 2px;
   }
   
   .project-desc {
