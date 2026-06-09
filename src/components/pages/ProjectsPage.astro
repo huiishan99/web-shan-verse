@@ -88,18 +88,6 @@ const categoryRoutes = projectCategories.map((category) => ({
                 <div class="project-content">
                   <div class="project-header">
                     <h3>{localizeString(project.title, lang)}</h3>
-                    <div class="project-links">
-                      {project.github && (
-                        <a href={project.github} target="_blank" rel="noopener noreferrer" class="icon-link" title={t.projects.sourceTitle} aria-label={t.projects.sourceTitle}>
-                          <Icon name="github" size={16} class="icon-link-symbol" />
-                        </a>
-                      )}
-                      {project.website && (
-                        <a href={project.website} target="_blank" rel="noopener noreferrer" class="icon-link" title={t.projects.siteTitle} aria-label={t.projects.siteTitle}>
-                          <Icon name="externalLink" size={16} class="icon-link-symbol" />
-                        </a>
-                      )}
-                    </div>
                   </div>
                   
                   <p class="project-desc">{localizeString(project.description, lang)}</p>
@@ -117,6 +105,23 @@ const categoryRoutes = projectCategories.map((category) => ({
                       {meta.label}
                     </span>
                   </div>
+
+                  {(project.github || project.website) && (
+                    <div class="project-actions">
+                      {project.github && (
+                        <a href={project.github} target="_blank" rel="noopener noreferrer" class="project-action" title={t.projects.sourceTitle} aria-label={t.projects.sourceTitle}>
+                          <Icon name="github" size={14} class="project-action-icon" />
+                          <span>{t.projects.sourceLabel}</span>
+                        </a>
+                      )}
+                      {project.website && (
+                        <a href={project.website} target="_blank" rel="noopener noreferrer" class="project-action" title={t.projects.siteTitle} aria-label={t.projects.siteTitle}>
+                          <Icon name="externalLink" size={14} class="project-action-icon" />
+                          <span>{t.projects.siteLabel}</span>
+                        </a>
+                      )}
+                    </div>
+                  )}
                 </div>
               </article>
             );
@@ -392,10 +397,6 @@ const categoryRoutes = projectCategories.map((category) => ({
   }
   
   .project-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: var(--space-sm);
     margin-bottom: var(--space-sm);
   }
   
@@ -405,50 +406,49 @@ const categoryRoutes = projectCategories.map((category) => ({
     font-weight: 700;
     line-height: 1.35;
     min-width: 0;
+    overflow-wrap: break-word;
   }
   
-  .project-links {
-    display: inline-flex;
+  .project-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem 0.95rem;
     align-items: center;
-    gap: 0.12rem;
-    flex-shrink: 0;
-    padding: 0.12rem;
-    border: 1px solid rgba(255, 255, 255, 0.055);
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.026);
-    box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.018);
-  }
-  
-  .icon-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.72rem;
-    height: 1.72rem;
-    border-radius: 4px;
-    color: rgba(217, 217, 217, 0.58);
-    transition:
-      background 0.22s ease,
-      color 0.22s ease,
-      transform 0.22s ease,
-      box-shadow 0.22s ease;
-  }
-  
-  .icon-link :global(.icon-link-symbol) {
-    color: currentColor;
+    margin-top: auto;
+    padding-top: 0.85rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.055);
   }
 
-  .icon-link:hover,
-  .icon-link:focus-visible {
-    background: rgba(201, 162, 39, 0.1);
+  .project-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.38rem;
+    min-height: 1.45rem;
+    color: rgba(217, 217, 217, 0.56);
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    text-transform: uppercase;
+    transition:
+      color 0.22s ease,
+      transform 0.22s ease;
+  }
+  
+  .project-action :global(.project-action-icon) {
+    color: currentColor;
+    flex-shrink: 0;
+  }
+
+  .project-action:hover,
+  .project-action:focus-visible {
     color: var(--color-brass-light);
-    box-shadow: 0 0 0 1px rgba(201, 162, 39, 0.18);
     transform: translateY(-1px);
   }
 
-  .icon-link:focus-visible {
+  .project-action:focus-visible {
     outline: 1px solid rgba(201, 162, 39, 0.55);
-    outline-offset: 2px;
+    outline-offset: 4px;
   }
   
   .project-desc {
