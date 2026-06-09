@@ -154,6 +154,8 @@ export const ui = {
       subtitle: "A collection of things I've built",
       featured: 'Selected Work',
       sourceTitle: 'View Source',
+      paperTitle: 'View Paper',
+      caseStudyTitle: 'Read Case Study',
       siteTitle: 'Visit Site',
       routes: {
         label: 'Category Routes',
@@ -328,6 +330,8 @@ export const ui = {
       subtitle: '我构建过的东西集合',
       featured: '精选作品',
       sourceTitle: '查看源码',
+      paperTitle: '查看论文',
+      caseStudyTitle: '阅读介绍页',
       siteTitle: '访问网站',
       routes: {
         label: '分类导航',
@@ -502,6 +506,8 @@ export const ui = {
       subtitle: '私が作ったもののコレクション',
       featured: '注目作品',
       sourceTitle: 'ソースを見る',
+      paperTitle: '論文を見る',
+      caseStudyTitle: '紹介ページを読む',
       siteTitle: 'サイトを見る',
       routes: {
         label: 'カテゴリールート',

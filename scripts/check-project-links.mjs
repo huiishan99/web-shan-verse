@@ -24,7 +24,7 @@ function collectLinks(projectCategories) {
 
   for (const category of projectCategories) {
     for (const item of category.items) {
-      for (const field of ['github', 'website']) {
+      for (const field of ['github', 'paper', 'caseStudy', 'website']) {
         const url = item[field];
         if (typeof url !== 'string' || url.trim() === '') continue;
 

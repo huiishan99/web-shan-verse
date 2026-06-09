@@ -19,7 +19,7 @@ const statusMeta = Object.fromEntries(
 function getProjectStatus(project: ProjectItem, category: ProjectCategory): ProjectStatus {
   if (project.status) return project.status;
   if (category.id === 'publications') return 'publication';
-  if (!project.github && !project.website) return 'private';
+  if (!project.github && !project.paper && !project.caseStudy && !project.website) return 'private';
   if (category.id === 'school') return 'coursework';
   if (category.id === 'vr') return 'prototype';
   if (category.id === 'unity') return project.website ? 'live' : 'practice';
@@ -101,11 +101,21 @@ const categoryRoutes = projectCategories.map((category) => ({
                   )}
 
                   <div class="project-meta-row">
-                    {(project.github || project.website) && (
+                    {(project.github || project.paper || project.caseStudy || project.website) && (
                       <div class="project-links">
                       {project.github && (
                         <a href={project.github} target="_blank" rel="noopener noreferrer" class="icon-link" title={t.projects.sourceTitle} aria-label={t.projects.sourceTitle}>
                           <Icon name="github" size={13} class="icon-link-symbol" />
+                        </a>
+                      )}
+                      {project.paper && (
+                        <a href={project.paper} target="_blank" rel="noopener noreferrer" class="icon-link" title={t.projects.paperTitle} aria-label={t.projects.paperTitle}>
+                          <Icon name="publication" size={13} class="icon-link-symbol" />
+                        </a>
+                      )}
+                      {project.caseStudy && (
+                        <a href={project.caseStudy} target="_blank" rel="noopener noreferrer" class="icon-link" title={t.projects.caseStudyTitle} aria-label={t.projects.caseStudyTitle}>
+                          <Icon name="book" size={13} class="icon-link-symbol" />
                         </a>
                       )}
                       {project.website && (
