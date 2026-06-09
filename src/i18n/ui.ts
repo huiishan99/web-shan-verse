@@ -155,6 +155,8 @@ export const ui = {
       featured: 'Selected Work',
       sourceTitle: 'View Source',
       siteTitle: 'Visit Site',
+      sourceLabel: 'GitHub',
+      siteLabel: 'Site',
       routes: {
         label: 'Category Routes',
         hint: 'Jump to section',
@@ -329,6 +331,8 @@ export const ui = {
       featured: '精选作品',
       sourceTitle: '查看源码',
       siteTitle: '访问网站',
+      sourceLabel: 'GitHub',
+      siteLabel: '网站',
       routes: {
         label: '分类导航',
         hint: '快速跳转',
@@ -503,6 +507,8 @@ export const ui = {
       featured: '注目作品',
       sourceTitle: 'ソースを見る',
       siteTitle: 'サイトを見る',
+      sourceLabel: 'GitHub',
+      siteLabel: 'サイト',
       routes: {
         label: 'カテゴリールート',
         hint: 'セクションへ移動',
