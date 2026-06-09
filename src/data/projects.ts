@@ -14,6 +14,8 @@ export interface ProjectItem {
     status?: ProjectStatus;
     // 可选字段
     github?: string;        // GitHub 链接
+    paper?: string;         // ACM / IEEE / DOI 等官方论文页
+    caseStudy?: string;     // 自己网站上的项目或论文介绍页
     website?: string;       // 网站/演示链接
     image?: string;         // 预览图路径 (放在 public/images/projects/)
     featured?: boolean;     // 是否为精选项目
@@ -459,7 +461,7 @@ export const projectCategories: ProjectCategory[] = [
                 },
                 featured: true,
                 github: "https://github.com/huiishan99/uoa-master-research-unity",
-                website: "https://doi.org/10.1109/GEM66882.2025.11155841",
+                paper: "https://doi.org/10.1109/GEM66882.2025.11155841",
                 tags: ["AI-driven Education", "Virtual Reality", "Embodied Avatar","IEEE GEM 2025"]
             },
             {
