@@ -483,35 +483,144 @@ const categoryRoutes = projectCategories.map((category) => ({
   }
   
   @media (max-width: 768px) {
+    .category-routes {
+      margin-bottom: var(--space-lg);
+    }
+
     .category-routes-header {
       display: block;
+      margin-bottom: 0.55rem;
+      font-size: 0.66rem;
     }
 
     .category-routes-header span:last-child {
       display: block;
-      margin-top: 0.25rem;
+      margin-top: 0.18rem;
     }
 
     .category-route-grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.5rem;
+    }
+
+    .category-route-item {
+      min-height: 46px;
+      gap: 0.45rem;
+      padding: 0.45rem 0.52rem;
+      border-radius: 7px;
+    }
+
+    .category-route-logo {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+    }
+
+    .category-route-title {
+      font-size: 0.8rem;
+      line-height: 1.15;
+    }
+
+    .category-route-count {
+      font-size: 0.76rem;
+    }
+
+    .project-section {
+      margin-bottom: var(--space-lg);
+    }
+
+    .project-section h2 {
+      gap: 0.6rem;
+    }
+
+    .section-logo {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
     }
 
     .projects-grid {
       grid-template-columns: 1fr;
-      gap: var(--space-md);
-      margin-top: var(--space-md);
+      gap: 0.8rem;
+      margin-top: 0.85rem;
     }
 
     .project-content {
-      padding: var(--space-md);
+      padding: 0.85rem;
     }
 
     .project-card.featured .project-content {
-      padding-top: calc(var(--space-md) + 1.15rem);
+      padding-top: calc(0.85rem + 1rem);
+    }
+
+    .featured-banner {
+      min-height: 1.35rem;
+      padding-top: 0.16rem;
+      font-size: 0.72rem;
+    }
+
+    .featured-banner::before,
+    .featured-banner::after {
+      flex-basis: 2.8rem;
+    }
+
+    .project-header {
+      margin-bottom: 0.45rem;
+    }
+
+    .project-header h3 {
+      font-size: 1.12rem;
+      line-height: 1.25;
+    }
+
+    .project-desc {
+      display: -webkit-box;
+      font-size: 0.88rem;
+      line-height: 1.48;
+      margin-bottom: 0.7rem;
+      overflow: hidden;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+    }
+
+    .project-tags {
+      gap: 0.25rem;
+    }
+
+    .project-tags .tag {
+      padding: 0.16rem 0.34rem;
+      font-size: 0.66rem;
+      line-height: 1.18;
+    }
+
+    .project-meta-row {
+      gap: 0.34rem 0.5rem;
+      margin-top: 0.55rem;
+    }
+
+    .project-status {
+      gap: 0.34rem;
+      font-size: 0.58rem;
+      letter-spacing: 0.095em;
+    }
+
+    .project-status::before {
+      width: 10px;
+    }
+
+    .project-links {
+      gap: 0.04rem;
+      padding: 0.06rem;
+      border-radius: 4px;
+    }
+
+    .icon-link {
+      width: 1.26rem;
+      height: 1.26rem;
     }
 
     .project-image img {
-      height: 140px;
+      height: 112px;
     }
   }
 </style>
