@@ -701,48 +701,186 @@ const nextPagePath = currentPage < totalPages
   }
 
   @media (max-width: 600px) {
+    .page-header {
+      margin-bottom: var(--space-lg);
+    }
+
+    .subtitle {
+      margin-top: 0.4rem;
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
     .kind-filters {
       display: flex;
       width: 100%;
+      margin-top: 0.85rem;
+      padding: 0.18rem;
       overflow-x: auto;
+      border-radius: 5px;
     }
 
     .kind-filter {
       flex: 1;
       justify-content: center;
       min-width: max-content;
-      padding: 0.35rem 0.65rem;
+      min-height: 2rem;
+      padding: 0.26rem 0.52rem;
+      font-size: 0.86rem;
+      gap: 0.32rem;
+    }
+
+    .kind-count {
+      min-width: 1.25rem;
+      padding: 0 0.28rem;
+      font-size: 0.66rem;
+      line-height: 1.35;
+    }
+
+    .page-range {
+      margin-top: 0.65rem;
+      font-size: 0.72rem;
+    }
+
+    .posts-list {
+      gap: 0.8rem;
     }
 
     .post-card {
-      padding: var(--space-md);
+      padding: 0.85rem;
+      border-radius: 7px;
     }
 
     .post-meta {
-      align-items: flex-start;
-      flex-direction: column;
-      gap: 0.35rem;
+      align-items: center;
+      flex-direction: row;
+      gap: 0.28rem 0.55rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .post-date {
+      font-size: 0.74rem;
+    }
+
+    .post-category {
+      font-size: 0.68rem;
+      letter-spacing: 0.045em;
+    }
+
+    .draft-badge,
+    .deprecated-badge {
+      padding: 0.12rem 0.36rem;
+      font-size: 0.62rem;
+    }
+
+    .post-title {
+      font-size: 1.1rem;
+      line-height: 1.25;
+      margin-bottom: 0.45rem;
+    }
+
+    .post-excerpt {
+      display: -webkit-box;
+      margin-bottom: 0.65rem;
+      overflow: hidden;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+    }
+
+    .post-card--note .post-excerpt {
+      font-size: 0.92rem;
+      line-height: 1.52;
+      margin-top: 0;
+    }
+
+    .post-tags {
+      gap: 0.25rem;
+    }
+
+    .tag-in-card {
+      padding: 0.12rem 0.32rem;
+      border-radius: 3px;
+      font-size: 0.68rem;
+    }
+
+    .tag-more {
+      font-size: 0.68rem;
     }
 
     .blog-sidebar {
-      gap: var(--space-md);
+      gap: 0.75rem;
+    }
+
+    .sidebar-section {
+      min-width: 0;
+      padding: 0.8rem;
+      border-radius: 7px;
+    }
+
+    .sidebar-section h3 {
+      margin-bottom: 0.65rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+    }
+
+    .category-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+    }
+
+    .category-list li {
+      margin-bottom: 0;
+    }
+
+    .category-link,
+    .tag-link {
+      display: inline-flex;
+      align-items: center;
+      min-height: 1.55rem;
+      padding: 0.12rem 0.38rem;
+      border: 1px solid rgba(255, 255, 255, 0.055);
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.018);
+      font-size: 0.72rem;
+      line-height: 1.15;
+    }
+
+    .tag-cloud {
+      max-height: 7.4rem;
+      overflow-y: auto;
+      gap: 0.3rem;
     }
 
     .pagination {
       align-items: stretch;
       flex-direction: column;
+      gap: 0.6rem;
+      padding-top: 0.8rem;
     }
 
     .pagination-summary {
+      font-size: 0.72rem;
       text-align: center;
     }
 
     .pagination-controls {
+      gap: 0.25rem;
       justify-content: center;
     }
 
+    .pagination-link,
+    .pagination-gap {
+      min-width: 2rem;
+      min-height: 2rem;
+      font-size: 0.78rem;
+    }
+
     .pagination-step {
-      min-width: 4.3rem;
+      min-width: 3.8rem;
+      padding: 0 0.45rem;
     }
   }
 </style>
