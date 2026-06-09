@@ -90,17 +90,13 @@ const categoryRoutes = projectCategories.map((category) => ({
                     <h3>{localizeString(project.title, lang)}</h3>
                     <div class="project-links">
                       {project.github && (
-                        <a href={project.github} target="_blank" rel="noopener noreferrer" class="icon-link" title={t.projects.sourceTitle}>
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-                          </svg>
+                        <a href={project.github} target="_blank" rel="noopener noreferrer" class="icon-link" title={t.projects.sourceTitle} aria-label={t.projects.sourceTitle}>
+                          <Icon name="github" size={16} class="icon-link-symbol" />
                         </a>
                       )}
                       {project.website && (
-                        <a href={project.website} target="_blank" rel="noopener noreferrer" class="icon-link" title={t.projects.siteTitle}>
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>
-                          </svg>
+                        <a href={project.website} target="_blank" rel="noopener noreferrer" class="icon-link" title={t.projects.siteTitle} aria-label={t.projects.siteTitle}>
+                          <Icon name="externalLink" size={16} class="icon-link-symbol" />
                         </a>
                       )}
                     </div>
@@ -408,25 +404,51 @@ const categoryRoutes = projectCategories.map((category) => ({
     font-size: 1.22rem;
     font-weight: 700;
     line-height: 1.35;
+    min-width: 0;
   }
   
   .project-links {
-    display: flex;
-    gap: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.12rem;
     flex-shrink: 0;
+    padding: 0.12rem;
+    border: 1px solid rgba(255, 255, 255, 0.055);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.026);
+    box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.018);
   }
   
   .icon-link {
-    color: var(--color-text-muted);
-    padding: 4px;
-    transition: color 0.2s ease;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    width: 1.72rem;
+    height: 1.72rem;
+    border-radius: 4px;
+    color: rgba(217, 217, 217, 0.58);
+    transition:
+      background 0.22s ease,
+      color 0.22s ease,
+      transform 0.22s ease,
+      box-shadow 0.22s ease;
   }
   
-  .icon-link:hover {
-    color: var(--color-brass);
+  .icon-link :global(.icon-link-symbol) {
+    color: currentColor;
+  }
+
+  .icon-link:hover,
+  .icon-link:focus-visible {
+    background: rgba(201, 162, 39, 0.1);
+    color: var(--color-brass-light);
+    box-shadow: 0 0 0 1px rgba(201, 162, 39, 0.18);
+    transform: translateY(-1px);
+  }
+
+  .icon-link:focus-visible {
+    outline: 1px solid rgba(201, 162, 39, 0.55);
+    outline-offset: 2px;
   }
   
   .project-desc {
