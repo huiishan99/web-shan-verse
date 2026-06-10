@@ -260,55 +260,6 @@ const bottomPaginationLabel = `${t.blog.paginationLabel} (${t.blog.paginationBot
         {pagePosts.length > 0 && (
           <p class="no-posts no-posts--filtered" data-kind-empty hidden>{t.blog.noPostsForKind}</p>
         )}
-        {totalPages > 1 && (
-          <nav class="pagination" aria-label={bottomPaginationLabel}>
-            <p class="pagination-summary">{paginationSummary}</p>
-            <div class="pagination-controls">
-              {previousPagePath ? (
-                <a href={previousPagePath} class="pagination-link pagination-step" rel="prev">
-                  <span aria-hidden="true">←</span>
-                  <span>{t.blog.paginationPrevious}</span>
-                </a>
-              ) : (
-                <span class="pagination-link pagination-step is-disabled" aria-disabled="true">
-                  <span aria-hidden="true">←</span>
-                  <span>{t.blog.paginationPrevious}</span>
-                </span>
-              )}
-
-              {paginationItems.map((item) => (
-                item.type === 'gap' ? (
-                  <span class="pagination-gap" aria-hidden="true">...</span>
-                ) : (
-                  <a
-                    href={item.href}
-                    class:list={['pagination-link', 'pagination-number', { 'is-active': item.isCurrent }]}
-                    aria-label={
-                      item.isCurrent
-                        ? `${t.blog.paginationCurrentPage}: ${item.page}`
-                        : `${t.blog.paginationPage} ${item.page}`
-                    }
-                    aria-current={item.isCurrent ? 'page' : undefined}
-                  >
-                    {item.page}
-                  </a>
-                )
-              ))}
-
-              {nextPagePath ? (
-                <a href={nextPagePath} class="pagination-link pagination-step" rel="next">
-                  <span>{t.blog.paginationNext}</span>
-                  <span aria-hidden="true">→</span>
-                </a>
-              ) : (
-                <span class="pagination-link pagination-step is-disabled" aria-disabled="true">
-                  <span>{t.blog.paginationNext}</span>
-                  <span aria-hidden="true">→</span>
-                </span>
-              )}
-            </div>
-          </nav>
-        )}
       </main>
       
       <aside class="blog-sidebar">
@@ -337,6 +288,55 @@ const bottomPaginationLabel = `${t.blog.paginationLabel} (${t.blog.paginationBot
         </div>
       </aside>
     </div>
+    {totalPages > 1 && (
+      <nav class="pagination pagination--bottom" aria-label={bottomPaginationLabel}>
+        <p class="pagination-summary">{paginationSummary}</p>
+        <div class="pagination-controls">
+          {previousPagePath ? (
+            <a href={previousPagePath} class="pagination-link pagination-step" rel="prev">
+              <span aria-hidden="true">←</span>
+              <span>{t.blog.paginationPrevious}</span>
+            </a>
+          ) : (
+            <span class="pagination-link pagination-step is-disabled" aria-disabled="true">
+              <span aria-hidden="true">←</span>
+              <span>{t.blog.paginationPrevious}</span>
+            </span>
+          )}
+
+          {paginationItems.map((item) => (
+            item.type === 'gap' ? (
+              <span class="pagination-gap" aria-hidden="true">...</span>
+            ) : (
+              <a
+                href={item.href}
+                class:list={['pagination-link', 'pagination-number', { 'is-active': item.isCurrent }]}
+                aria-label={
+                  item.isCurrent
+                    ? `${t.blog.paginationCurrentPage}: ${item.page}`
+                    : `${t.blog.paginationPage} ${item.page}`
+                }
+                aria-current={item.isCurrent ? 'page' : undefined}
+              >
+                {item.page}
+              </a>
+            )
+          ))}
+
+          {nextPagePath ? (
+            <a href={nextPagePath} class="pagination-link pagination-step" rel="next">
+              <span>{t.blog.paginationNext}</span>
+              <span aria-hidden="true">→</span>
+            </a>
+          ) : (
+            <span class="pagination-link pagination-step is-disabled" aria-disabled="true">
+              <span>{t.blog.paginationNext}</span>
+              <span aria-hidden="true">→</span>
+            </span>
+          )}
+        </div>
+      </nav>
+    )}
   </div>
 </BaseLayout>
 
@@ -628,6 +628,11 @@ const bottomPaginationLabel = `${t.blog.paginationLabel} (${t.blog.paginationBot
   .pagination--top .pagination-step {
     min-width: 4.25rem;
     padding: 0 0.58rem;
+  }
+
+  .pagination--bottom {
+    max-width: 42rem;
+    margin: var(--space-lg) auto 0;
   }
 
   .pagination-summary {
@@ -935,7 +940,7 @@ const bottomPaginationLabel = `${t.blog.paginationLabel} (${t.blog.paginationBot
       gap: 0.3rem;
     }
 
-    .blog-layout .pagination,
+    .container > .pagination,
     .container > .page-header .pagination {
       align-items: stretch;
       flex-direction: column;
@@ -943,20 +948,20 @@ const bottomPaginationLabel = `${t.blog.paginationLabel} (${t.blog.paginationBot
       padding-top: 0.8rem;
     }
 
-    .blog-layout .pagination-summary,
+    .container > .pagination .pagination-summary,
     .container > .page-header .pagination-summary {
       font-size: 0.72rem;
       text-align: center;
     }
 
-    .blog-layout .pagination-controls,
+    .container > .pagination .pagination-controls,
     .container > .page-header .pagination-controls {
       gap: 0.25rem;
       justify-content: center;
     }
 
-    .blog-layout .pagination-link,
-    .blog-layout .pagination-gap,
+    .container > .pagination .pagination-link,
+    .container > .pagination .pagination-gap,
     .container > .page-header .pagination-link,
     .container > .page-header .pagination-gap {
       min-width: 2rem;
@@ -964,7 +969,7 @@ const bottomPaginationLabel = `${t.blog.paginationLabel} (${t.blog.paginationBot
       font-size: 0.78rem;
     }
 
-    .blog-layout .pagination-step,
+    .container > .pagination .pagination-step,
     .container > .page-header .pagination-step {
       min-width: 3.8rem;
       padding: 0 0.45rem;
