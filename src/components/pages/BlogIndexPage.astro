@@ -599,31 +599,23 @@ const bottomPaginationLabel = `${t.blog.paginationLabel} (${t.blog.paginationBot
 
   .pagination {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    gap: var(--space-md);
+    justify-content: center;
+    gap: 0.6rem;
     margin-top: var(--space-sm);
     padding-top: var(--space-md);
   }
 
   .pagination--top {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     max-width: 42rem;
     margin: var(--space-md) auto 0;
     padding-top: var(--space-sm);
     border-top: 1px solid rgba(255, 255, 255, 0.06);
-    gap: 0.6rem;
   }
 
   .pagination--top .pagination-summary {
     font-size: 0.78rem;
-    text-align: center;
-  }
-
-  .pagination--top .pagination-controls {
-    justify-content: center;
   }
 
   .pagination--top .pagination-link,
@@ -642,6 +634,7 @@ const bottomPaginationLabel = `${t.blog.paginationLabel} (${t.blog.paginationBot
     color: var(--color-text-muted);
     font-family: var(--font-mono);
     font-size: 0.86rem;
+    text-align: center;
   }
 
   .pagination-controls {
@@ -649,6 +642,7 @@ const bottomPaginationLabel = `${t.blog.paginationLabel} (${t.blog.paginationBot
     align-items: center;
     flex-wrap: wrap;
     gap: 0.35rem;
+    justify-content: center;
   }
 
   .pagination-link,
@@ -742,6 +736,9 @@ const bottomPaginationLabel = `${t.blog.paginationLabel} (${t.blog.paginationBot
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-xs);
+    max-height: 9rem;
+    overflow-y: auto;
+    padding-right: 0.15rem;
   }
   
   .tag-link {
