@@ -228,92 +228,112 @@ const paths = {
         window.location.href = path;
       }
 
+      const commandHandlers = [
+        {
+          matches: (command) => command === 'help' || command === '?',
+          run: () => printHelp(),
+        },
+        {
+          matches: (command) => command === 'clear',
+          run: () => {
+            output.innerHTML = `<p><span class="cli-muted">${escapeHtml(labels.cleared)}</span></p>`;
+          },
+        },
+        {
+          matches: (command) => command === 'home',
+          run: () => {
+            print(escapeHtml(labels.openingHome));
+            navigateTo(paths.home);
+          },
+        },
+        {
+          matches: (command) => command === 'about',
+          run: () => {
+            print(escapeHtml(labels.openingAbout));
+            navigateTo(paths.about);
+          },
+        },
+        {
+          matches: (command) => command === 'projects' || command === 'project',
+          run: () => {
+            print(escapeHtml(labels.openingProjects));
+            navigateTo(paths.projects);
+          },
+        },
+        {
+          matches: (command) => command === 'timeline',
+          run: () => {
+            print(escapeHtml(labels.openingTimeline));
+            navigateTo(paths.timeline);
+          },
+        },
+        {
+          matches: (command) => command === 'blog' || command === 'blog latest',
+          run: () => {
+            print(escapeHtml(labels.openingBlog));
+            navigateTo(paths.blog);
+          },
+        },
+        {
+          matches: (command) => command === 'status',
+          run: () => {
+            print(`${escapeHtml(labels.currentSignal)} <span class="cli-accent">${escapeHtml(labels.online)}</span>. ${escapeHtml(labels.siteStatsHint)}`);
+          },
+        },
+        {
+          matches: (command) => command === 'github',
+          run: () => {
+            print(escapeHtml(labels.openingGithub));
+            window.open('https://github.com/huiishan99', '_blank', 'noopener');
+          },
+        },
+        {
+          matches: (command) => command === 'contact',
+          run: () => {
+            print(escapeHtml(labels.openingContact));
+            window.open('https://linkedin.com/in/laihuishan/', '_blank', 'noopener');
+          },
+        },
+        {
+          matches: (command) => command === 'music' || command === 'music toggle',
+          run: () => {
+            const toggle = document.querySelector('[data-music-toggle]');
+            if (toggle instanceof HTMLButtonElement) {
+              toggle.click();
+              print(escapeHtml(labels.musicToggled));
+            } else {
+              print(escapeHtml(labels.musicUnavailable));
+            }
+          },
+        },
+        {
+          matches: (command) => command.startsWith('lang '),
+          run: (command) => {
+            const locale = command.split(/\s+/)[1];
+            if (!locales.includes(locale)) {
+              print(escapeHtml(labels.availableLanguages));
+              return;
+            }
+            print(`${escapeHtml(labels.switchingLanguage)} <span class="cli-accent">${escapeHtml(locale)}</span>`);
+            navigateTo(localizeCurrentPath(locale));
+          },
+        },
+      ];
+
       function runCommand(rawCommand) {
-        const command = rawCommand.trim().toLowerCase();
+        const displayCommand = rawCommand.trim();
+        const command = displayCommand.toLowerCase();
         if (!command) return;
 
-        printCommand(rawCommand.trim());
+        printCommand(displayCommand);
 
-        if (command === 'help' || command === '?') {
-          printHelp();
+        const handler = commandHandlers.find((item) => item.matches(command));
+        if (handler) {
+          handler.run(command, displayCommand);
           return;
         }
 
-        if (command === 'clear') {
-          output.innerHTML = `<p><span class="cli-muted">${escapeHtml(labels.cleared)}</span></p>`;
-          return;
-        }
-
-        if (command === 'home') {
-          print(escapeHtml(labels.openingHome));
-          navigateTo(paths.home);
-          return;
-        }
-
-        if (command === 'about') {
-          print(escapeHtml(labels.openingAbout));
-          navigateTo(paths.about);
-          return;
-        }
-
-        if (command === 'projects' || command === 'project') {
-          print(escapeHtml(labels.openingProjects));
-          navigateTo(paths.projects);
-          return;
-        }
-
-        if (command === 'timeline') {
-          print(escapeHtml(labels.openingTimeline));
-          navigateTo(paths.timeline);
-          return;
-        }
-
-        if (command === 'blog' || command === 'blog latest') {
-          print(escapeHtml(labels.openingBlog));
-          navigateTo(paths.blog);
-          return;
-        }
-
-        if (command === 'status') {
-          print(`${escapeHtml(labels.currentSignal)} <span class="cli-accent">${escapeHtml(labels.online)}</span>. ${escapeHtml(labels.siteStatsHint)}`);
-          return;
-        }
-
-        if (command === 'github') {
-          print(escapeHtml(labels.openingGithub));
-          window.open('https://github.com/huiishan99', '_blank', 'noopener');
-          return;
-        }
-
-        if (command === 'contact') {
-          print(escapeHtml(labels.openingContact));
-          window.open('https://linkedin.com/in/laihuishan/', '_blank', 'noopener');
-          return;
-        }
-
-        if (command === 'music' || command === 'music toggle') {
-          const toggle = document.querySelector('[data-music-toggle]');
-          if (toggle instanceof HTMLButtonElement) {
-            toggle.click();
-            print(escapeHtml(labels.musicToggled));
-          } else {
-            print(escapeHtml(labels.musicUnavailable));
-          }
-          return;
-        }
-
-        if (command.startsWith('lang ')) {
-          const locale = command.split(/\s+/)[1];
-          if (!locales.includes(locale)) {
-            print(escapeHtml(labels.availableLanguages));
-            return;
-          }
-          print(`${escapeHtml(labels.switchingLanguage)} <span class="cli-accent">${escapeHtml(locale)}</span>`);
-          navigateTo(localizeCurrentPath(locale));
-          return;
-        }
-
-        print(`${escapeHtml(labels.unknownCommand)} <span class="cli-accent">${escapeHtml(rawCommand.trim())}</span>. ${escapeHtml(labels.tryHelp)}`);
+        print(`${escapeHtml(labels.unknownCommand)} <span class="cli-accent">${escapeHtml(displayCommand)}</span>. ${escapeHtml(labels.tryHelp)}`);
       }
 
       trigger.addEventListener('click', () => openCli());
