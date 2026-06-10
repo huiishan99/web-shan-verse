@@ -10,6 +10,7 @@ type LocalizedString = string | {
 export interface ProjectItem {
     title: LocalizedString;
     description: LocalizedString;
+    authors?: LocalizedString;
     tags?: LocalizedString[];
     status?: ProjectStatus;
     // 可选字段
@@ -454,6 +455,11 @@ export const projectCategories: ProjectCategory[] = [
         items: [
             {
                 title: "VR Math Bridge: Bridging Interactivity in Online Education with AI and VR",
+                authors: {
+                    en: "Hui Shan (first author) and collaborators",
+                    zh: "Hui Shan（一作）与合作者",
+                    ja: "Hui Shan（第一著者）と共著者"
+                },
                 description: {
                     en: "We present VR Math Bridge, a virtual reality (VR)-based application designed to enhance calculus education by combining immersive virtual environments with artificial intelligence (AI)-driven teaching assistance. VR Math Bridge creates a virtual classroom where students interact with Khan Academy videos and a 3D AI assistant that provides real-time, personalized feedback to their questions. This system leverages a floating panel for chapter selection, a virtual blackboard for video playback, and Cognitive 3D for analyzing user engagement. To demonstrate the system’s capabilities, we developed a prototype on Quest 3, focusing on derivatives as the initial test topic. We conducted a preliminary subjective evaluation (n=2) of the prototype to collect early insights for future user study evaluation.",
                     zh: "我们提出 VR Math Bridge，一个基于虚拟现实（VR）的微积分学习应用，通过沉浸式虚拟环境与 AI 驱动的教学辅助提升在线教育互动性。系统构建了一个虚拟教室，学生可以观看 Khan Academy 视频，并与 3D AI 助手互动，获得实时、个性化的问题反馈。原型使用浮动面板进行章节选择、虚拟黑板播放视频，并结合 Cognitive 3D 分析用户参与情况。为展示系统能力，我们在 Quest 3 上开发了以导数为初始主题的原型，并进行了初步主观评价（n=2），为未来用户研究收集早期洞察。",
@@ -466,6 +472,11 @@ export const projectCategories: ProjectCategory[] = [
             },
             {
                 title: "Assessing the Security of Vibe Coding: Baseline vs. Security-Oriented Prompts in LLM Code Generation",
+                authors: {
+                    en: "Hui Shan (second author) and collaborators",
+                    zh: "Hui Shan（二作）与合作者",
+                    ja: "Hui Shan（第二著者）と共著者"
+                },
                 description: {
                     en: "Large Language Models (LLMs) are increasingly used in software development through so-called “vibe coding,” where developers specify tasks in natural language and rely on the model to produce executable code. While this paradigm lowers barriers to entry and accelerates prototyping, it raises concerns about security. Prior studies show that a substantial fraction of AI-generated code contains exploitable vulnerabilities, and functional correctness does not guarantee safety. This paper investigates whether security-oriented prompting improves the security of LLM-generated code. We design ten representative Python tasks inspired by OWASP Top 10 and CWE categories, and evaluate outputs from an open-source 20B-parameter model using static analysis (Bandit) and lightweight runtime probes.",
                     zh: "大语言模型（LLMs）正越来越多地被用于所谓的 “vibe coding” 软件开发流程中：开发者用自然语言描述任务，并依赖模型生成可执行代码。虽然这种方式降低了开发门槛并加速原型构建，但也带来了安全风险。已有研究显示，AI 生成代码中有相当一部分包含可被利用的漏洞，功能正确并不等同于安全。本文研究面向安全的提示词是否能提升 LLM 生成代码的安全性。我们设计了十个受 OWASP Top 10 与 CWE 类别启发的代表性 Python 任务，并使用静态分析（Bandit）和轻量级运行时探针对一个开源 20B 参数模型的输出进行评估。",
@@ -477,6 +488,11 @@ export const projectCategories: ProjectCategory[] = [
             },
             {
                 title: "Enhancing VR Mandala Drawing and Natural Immersion for Attention Restoration with AI-Driven Bioadaptive Multimodal Interaction",
+                authors: {
+                    en: "Hui Shan (second author) and collaborators",
+                    zh: "Hui Shan（二作）与合作者",
+                    ja: "Hui Shan（第二著者）と共著者"
+                },
                 description: {
                     en: "Digital attention fatigue is a pervasive challenge, yet most virtual reality (VR) interventions for restoration rely on passive nature exposure that lacks responsiveness to the user's internal state. Integrating Attention Restoration Theory (ART) with physiological computing, we propose a bioadaptive VR system that combines active mandala drawing within a 360° nature scene, using real-time heart rate variability (HRV) to modulate visual fog, ambient music, and haptic feedback. In a within-subject pilot study (N=11), we compared an AI-driven bioadaptive multimodal condition (AI) against an otherwise identical VR condition without bioadaptive multimodal feedback (NF), using behavioral (Oddball task), neural (EEG), autonomic (HRV), and subjective measures.",
                     zh: "数字注意疲劳是一个普遍挑战，但多数用于恢复注意力的虚拟现实（VR）干预仍依赖被动自然暴露，缺乏对用户内部状态的响应。结合注意恢复理论（ART）与生理计算，我们提出一个生物自适应 VR 系统：用户在 360° 自然场景中主动绘制曼陀罗，系统使用实时心率变异性（HRV）调节视觉雾效、环境音乐和触觉反馈。在一项被试内预实验（N=11）中，我们比较了 AI 驱动的生物自适应多模态条件（AI）与无生物自适应反馈的相同 VR 条件（NF），评估指标包括行为（Oddball 任务）、神经（EEG）、自主神经（HRV）和主观量表。",

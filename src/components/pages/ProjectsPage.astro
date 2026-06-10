@@ -89,6 +89,13 @@ const categoryRoutes = projectCategories.map((category) => ({
                   <div class="project-header">
                     <h3>{localizeString(project.title, lang)}</h3>
                   </div>
+
+                  {project.authors && (
+                    <p class="project-authors">
+                      <span>{t.projects.authorsLabel}</span>
+                      <span>{localizeString(project.authors, lang)}</span>
+                    </p>
+                  )}
                   
                   <p class="project-desc">{localizeString(project.description, lang)}</p>
                   
@@ -468,11 +475,44 @@ const categoryRoutes = projectCategories.map((category) => ({
   }
   
   .project-desc {
+    display: -webkit-box;
     color: var(--color-text-secondary);
     font-size: 0.95rem;
     margin-bottom: var(--space-md);
     line-height: 1.6;
     flex: 1;
+    max-height: calc(1.6em * 4);
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+  }
+
+  .project-authors {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.36rem 0.5rem;
+    margin: -0.12rem 0 0.58rem;
+    color: rgba(218, 218, 218, 0.72);
+    font-size: 0.78rem;
+    line-height: 1.35;
+  }
+
+  .project-authors span:first-child {
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .project-authors span:first-child::after {
+    content: ":";
+  }
+
+  .project-authors span:last-child {
+    font-family: var(--font-body);
+    font-style: italic;
   }
   
   .project-tags {
@@ -584,13 +624,23 @@ const categoryRoutes = projectCategories.map((category) => ({
     }
 
     .project-desc {
-      display: -webkit-box;
       font-size: 0.88rem;
       line-height: 1.48;
+      max-height: calc(1.48em * 3);
       margin-bottom: 0.7rem;
-      overflow: hidden;
-      -webkit-box-orient: vertical;
       -webkit-line-clamp: 3;
+    }
+
+    .project-authors {
+      gap: 0.28rem 0.42rem;
+      margin-bottom: 0.46rem;
+      font-size: 0.72rem;
+      line-height: 1.3;
+    }
+
+    .project-authors span:first-child {
+      font-size: 0.58rem;
+      letter-spacing: 0.085em;
     }
 
     .project-tags {
