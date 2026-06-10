@@ -14,6 +14,7 @@ export interface ProjectItem {
     conference?: LocalizedString;
     tags?: LocalizedString[];
     status?: ProjectStatus;
+    featuredLabel?: LocalizedString;
     // 可选字段
     github?: string;        // GitHub 链接
     paper?: string;         // ACM / IEEE / DOI 等官方论文页
@@ -472,6 +473,11 @@ export const projectCategories: ProjectCategory[] = [
                     ja: "VR Math Bridge は、没入型仮想環境と AI 駆動の教育支援を組み合わせ、微積分教育を強化する VR アプリケーションです。仮想教室内で学生は Khan Academy の動画を視聴し、3D AI アシスタントと対話して、質問に対するリアルタイムで個別化されたフィードバックを受け取れます。章選択用のフローティングパネル、動画再生用の仮想黒板、ユーザーエンゲージメント分析のための Cognitive 3D を活用しています。システムの能力を示すため、導関数を初期テーマとして Quest 3 上にプロトタイプを開発し、今後のユーザー研究に向けた初期知見を得るために予備的な主観評価（n=2）を実施しました。"
                 },
                 featured: true,
+                featuredLabel: {
+                    en: "Presentation Award",
+                    zh: "Presentation Award",
+                    ja: "Presentation Award"
+                },
                 github: "https://github.com/huiishan99/uoa-master-research-unity",
                 paper: "https://doi.org/10.1109/GEM66882.2025.11155841",
                 tags: ["AI-driven Education", "Virtual Reality", "Embodied Avatar","IEEE GEM 2025"]

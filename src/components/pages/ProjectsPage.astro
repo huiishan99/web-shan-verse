@@ -89,7 +89,11 @@ function getAuthorParts(authors: string) {
 
             return (
               <article class={`project-card project-card--${status} ${project.featured ? 'featured' : ''}`}>
-                {project.featured && <div class="featured-banner">{t.projects.featured}</div>}
+                {project.featured && (
+                  <div class="featured-banner">
+                    {project.featuredLabel ? localizeString(project.featuredLabel, lang) : t.projects.featured}
+                  </div>
+                )}
 
                 {project.image && (
                   <div class="project-image">
@@ -200,18 +204,25 @@ function getAuthorParts(authors: string) {
   }
 
   .category-route-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-    gap: var(--space-sm);
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.45rem;
+    min-width: 0;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    padding-bottom: 0.15rem;
+    scrollbar-width: thin;
   }
 
   .category-route-item {
     display: grid;
+    flex: 1 0 0;
     grid-template-columns: auto minmax(0, 1fr) auto;
-    gap: 0.7rem;
+    gap: 0.46rem;
     align-items: center;
-    min-height: 58px;
-    padding: 0.65rem 0.8rem;
+    min-width: 0;
+    min-height: 50px;
+    padding: 0.52rem 0.58rem;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--surface-radius);
     background: rgba(10, 10, 15, 0.72);
@@ -237,8 +248,8 @@ function getAuthorParts(authors: string) {
   }
 
   .category-route-logo {
-    width: 34px;
-    height: 34px;
+    width: 30px;
+    height: 30px;
     border-radius: 8px;
   }
 
@@ -249,16 +260,18 @@ function getAuthorParts(authors: string) {
 
   .category-route-title {
     min-width: 0;
-    overflow-wrap: anywhere;
-    font-size: 0.96rem;
+    overflow: hidden;
+    font-size: 0.82rem;
     font-weight: 600;
-    line-height: 1.25;
+    line-height: 1.15;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .category-route-count {
     color: var(--color-brass-light);
     font-family: var(--font-mono);
-    font-size: 0.95rem;
+    font-size: 0.78rem;
   }
   
   .project-section {
@@ -645,12 +658,14 @@ function getAuthorParts(authors: string) {
     }
 
     .category-route-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 0.5rem;
+      margin: 0 calc(var(--space-md) * -1);
+      padding: 0 var(--space-md) 0.18rem;
     }
 
     .category-route-item {
-      min-height: 46px;
+      flex: 0 0 138px;
+      min-height: 44px;
       gap: 0.45rem;
       padding: 0.45rem 0.52rem;
       border-radius: 7px;
