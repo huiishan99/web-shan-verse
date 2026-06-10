@@ -29,6 +29,7 @@ const paths = {
   data-projects-path={paths.projects}
   data-timeline-path={paths.timeline}
   data-blog-path={paths.blog}
+  data-cli-index-path="/cli-index.json"
   data-cli-labels={JSON.stringify(cli)}
 >
   <button type="button" class="cli-trigger" aria-label={cli.open} data-cli-trigger>
@@ -80,6 +81,10 @@ const paths = {
       projectsCommand: 'browse project work',
       timelineCommand: 'view the personal timeline',
       blogCommand: 'open blog posts',
+      archiveHeading: 'archive',
+      latestCommand: 'show the latest blog posts',
+      randomCommand: 'surface a random blog post',
+      searchCommand: 'search posts, projects, and timeline',
       statusCommand: 'show the current site signal',
       musicCommand: 'toggle the background music',
       githubCommand: 'open GitHub',
@@ -93,6 +98,15 @@ const paths = {
       openingProjects: 'opening projects...',
       openingTimeline: 'opening timeline...',
       openingBlog: 'opening blog...',
+      latestHeading: 'latest posts:',
+      randomHeading: 'random signal:',
+      searchHeading: 'search results:',
+      noSearchQuery: 'type a keyword after search.',
+      noSearchResults: 'no matching signal found.',
+      indexUnavailable: 'CLI index unavailable.',
+      typePost: 'post',
+      typeProject: 'project',
+      typeTimeline: 'timeline',
       currentSignal: 'current signal:',
       online: 'online',
       siteStatsHint: 'site stats live in the footer.',
@@ -105,6 +119,38 @@ const paths = {
       unknownCommand: 'unknown command:',
       tryHelp: 'try help.',
       cleared: 'cleared.',
+    };
+    const LOCALIZED_FALLBACK_LABELS = {
+      zh: {
+        archiveHeading: '档案',
+        latestCommand: '显示最新博客文章',
+        randomCommand: '随机浮现一篇博客',
+        searchCommand: '搜索文章、项目和时间线',
+        latestHeading: '最新文章：',
+        randomHeading: '随机信号：',
+        searchHeading: '搜索结果：',
+        noSearchQuery: '请在 search 后面输入关键词。',
+        noSearchResults: '没有找到匹配的信号。',
+        indexUnavailable: 'CLI 索引暂时不可用。',
+        typePost: '文章',
+        typeProject: '项目',
+        typeTimeline: '时间线',
+      },
+      ja: {
+        archiveHeading: 'アーカイブ',
+        latestCommand: '最新のブログ記事を表示',
+        randomCommand: 'ランダムにブログ記事を表示',
+        searchCommand: '記事、プロジェクト、タイムラインを検索',
+        latestHeading: '最新記事:',
+        randomHeading: 'ランダムシグナル:',
+        searchHeading: '検索結果:',
+        noSearchQuery: 'search の後にキーワードを入力してください。',
+        noSearchResults: '一致するシグナルが見つかりませんでした。',
+        indexUnavailable: 'CLI インデックスを利用できません。',
+        typePost: '記事',
+        typeProject: 'プロジェクト',
+        typeTimeline: 'タイムライン',
+      },
     };
 
     function getCli() {
@@ -160,10 +206,13 @@ const paths = {
         timeline: root.dataset.timelinePath || '/timeline',
         blog: root.dataset.blogPath || '/blog',
       };
+      const lang = root.dataset.lang || 'en';
       const labels = {
         ...DEFAULT_LABELS,
+        ...(LOCALIZED_FALLBACK_LABELS[lang] || {}),
         ...JSON.parse(root.dataset.cliLabels || '{}'),
       };
+      let cliIndexPromise;
 
       function openCli(prefill = '') {
         root.classList.add('is-open');
@@ -199,6 +248,10 @@ const paths = {
           `<span class="cli-command">projects</span> - ${escapeHtml(labels.projectsCommand)}`,
           `<span class="cli-command">timeline</span> - ${escapeHtml(labels.timelineCommand)}`,
           `<span class="cli-command">blog</span> or <span class="cli-command">blog latest</span> - ${escapeHtml(labels.blogCommand)}`,
+          `<span class="cli-help-heading">${escapeHtml(labels.archiveHeading)}</span>`,
+          `<span class="cli-command">latest</span> - ${escapeHtml(labels.latestCommand)}`,
+          `<span class="cli-command">random</span> - ${escapeHtml(labels.randomCommand)}`,
+          `<span class="cli-command">search &lt;keyword&gt;</span> - ${escapeHtml(labels.searchCommand)}`,
           `<span class="cli-help-heading">${escapeHtml(labels.signalsHeading)}</span>`,
           `<span class="cli-command">status</span> - ${escapeHtml(labels.statusCommand)}`,
           `<span class="cli-command">music</span> or <span class="cli-command">music toggle</span> - ${escapeHtml(labels.musicCommand)}`,
@@ -226,6 +279,151 @@ const paths = {
 
       function navigateTo(path) {
         window.location.href = path;
+      }
+
+      function getCliIndexPath() {
+        return root.dataset.cliIndexPath || '/cli-index.json';
+      }
+
+      async function loadCliIndex() {
+        if (!cliIndexPromise) {
+          cliIndexPromise = fetch(getCliIndexPath(), {
+            headers: { Accept: 'application/json' },
+          }).then((response) => {
+            if (!response.ok) throw new Error(`CLI index request failed: ${response.status}`);
+            return response.json();
+          });
+        }
+
+        const payload = await cliIndexPromise;
+        const entries = payload?.locales?.[lang] || payload?.locales?.en || [];
+        return Array.isArray(entries) ? entries : [];
+      }
+
+      function getEntryTypeLabel(type) {
+        const typeLabels = {
+          post: labels.typePost,
+          project: labels.typeProject,
+          timeline: labels.typeTimeline,
+        };
+
+        return typeLabels[type] || type;
+      }
+
+      function truncateText(value, maxLength = 130) {
+        if (!value || value.length <= maxLength) return value || '';
+        return `${value.slice(0, maxLength).trim()}...`;
+      }
+
+      function normalizeForSearch(value) {
+        return String(value || '').toLocaleLowerCase();
+      }
+
+      function getCommandArgument(displayCommand) {
+        const trimmed = displayCommand.trim();
+        const commandName = trimmed.split(/\s+/)[0] || '';
+        return trimmed.slice(commandName.length).trim();
+      }
+
+      function getEntryDateValue(entry) {
+        return entry.date ? Date.parse(`${entry.date}T00:00:00Z`) || 0 : 0;
+      }
+
+      function compareEntryDates(first, second) {
+        return getEntryDateValue(second) - getEntryDateValue(first) || String(first.title).localeCompare(String(second.title));
+      }
+
+      function renderEntry(entry) {
+        const tags = Array.isArray(entry.tags) ? entry.tags.slice(0, 2) : [];
+        const meta = [
+          getEntryTypeLabel(entry.type),
+          entry.date,
+          ...tags,
+        ].filter(Boolean).join(' / ');
+        const description = truncateText(entry.description);
+
+        return [
+          `<a class="cli-result-link" href="${escapeHtml(entry.url || '#')}">${escapeHtml(entry.title || '')}</a>`,
+          meta ? `<span class="cli-result-meta">${escapeHtml(meta)}</span>` : '',
+          description ? `<br><span class="cli-muted">${escapeHtml(description)}</span>` : '',
+        ].join(' ');
+      }
+
+      function printEntries(entries) {
+        entries.forEach((entry, index) => {
+          print(`${index + 1}. ${renderEntry(entry)}`);
+        });
+      }
+
+      function scoreEntry(entry, query) {
+        const normalizedQuery = normalizeForSearch(query);
+        const tokens = normalizedQuery.split(/\s+/).filter(Boolean);
+        const title = normalizeForSearch(entry.title);
+        const description = normalizeForSearch(entry.description);
+        const source = normalizeForSearch(entry.source);
+        const tags = normalizeForSearch(Array.isArray(entry.tags) ? entry.tags.join(' ') : '');
+
+        return tokens.reduce((score, token) => {
+          let nextScore = score;
+          if (title.includes(token)) nextScore += 6;
+          if (tags.includes(token)) nextScore += 4;
+          if (source.includes(token)) nextScore += 2;
+          if (description.includes(token)) nextScore += 1;
+          return nextScore;
+        }, title.includes(normalizedQuery) ? 4 : 0);
+      }
+
+      function searchEntries(entries, query) {
+        return entries
+          .map((entry) => ({ entry, score: scoreEntry(entry, query) }))
+          .filter((result) => result.score > 0)
+          .sort((first, second) => second.score - first.score || compareEntryDates(first.entry, second.entry))
+          .map((result) => result.entry);
+      }
+
+      async function printLatestPosts() {
+        const posts = (await loadCliIndex())
+          .filter((entry) => entry.type === 'post')
+          .sort(compareEntryDates)
+          .slice(0, 5);
+
+        if (posts.length === 0) {
+          print(escapeHtml(labels.noSearchResults));
+          return;
+        }
+
+        print(`<span class="cli-help-heading">${escapeHtml(labels.latestHeading)}</span>`);
+        printEntries(posts);
+      }
+
+      async function printRandomPost() {
+        const posts = (await loadCliIndex()).filter((entry) => entry.type === 'post');
+
+        if (posts.length === 0) {
+          print(escapeHtml(labels.noSearchResults));
+          return;
+        }
+
+        const entry = posts[Math.floor(Math.random() * posts.length)];
+        print(`<span class="cli-help-heading">${escapeHtml(labels.randomHeading)}</span>`);
+        printEntries([entry]);
+      }
+
+      async function printSearchResults(displayCommand) {
+        const query = getCommandArgument(displayCommand);
+        if (!query) {
+          print(escapeHtml(labels.noSearchQuery));
+          return;
+        }
+
+        const results = searchEntries(await loadCliIndex(), query).slice(0, 5);
+        if (results.length === 0) {
+          print(escapeHtml(labels.noSearchResults));
+          return;
+        }
+
+        print(`<span class="cli-help-heading">${escapeHtml(labels.searchHeading)}</span>`);
+        printEntries(results);
       }
 
       const commandHandlers = [
@@ -273,6 +471,18 @@ const paths = {
             print(escapeHtml(labels.openingBlog));
             navigateTo(paths.blog);
           },
+        },
+        {
+          matches: (command) => command === 'latest',
+          run: () => printLatestPosts(),
+        },
+        {
+          matches: (command) => command === 'random' || command === 'random post',
+          run: () => printRandomPost(),
+        },
+        {
+          matches: (command) => command === 'search' || command.startsWith('search ') || command === 's' || command.startsWith('s '),
+          run: (_command, displayCommand) => printSearchResults(displayCommand),
         },
         {
           matches: (command) => command === 'status',
@@ -329,7 +539,9 @@ const paths = {
 
         const handler = commandHandlers.find((item) => item.matches(command));
         if (handler) {
-          handler.run(command, displayCommand);
+          Promise.resolve(handler.run(command, displayCommand)).catch(() => {
+            print(escapeHtml(labels.indexUnavailable));
+          });
           return;
         }
 
@@ -548,6 +760,23 @@ const paths = {
 
   :global(.cli-command) {
     color: var(--color-brass-light);
+  }
+
+  :global(.cli-result-link) {
+    color: var(--color-text-primary);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(201, 162, 39, 0.34);
+  }
+
+  :global(.cli-result-link:hover),
+  :global(.cli-result-link:focus-visible) {
+    color: var(--color-brass-light);
+    border-bottom-color: rgba(201, 162, 39, 0.72);
+  }
+
+  :global(.cli-result-meta) {
+    color: var(--color-text-muted);
+    font-size: 0.78em;
   }
 
   .cli-form {
