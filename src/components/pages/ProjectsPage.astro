@@ -34,6 +34,18 @@ const categoryRoutes = projectCategories.map((category) => ({
   title: localizeString(category.title, lang),
   count: category.items.length,
 }));
+
+const highlightedAuthorPattern = /(HuiShan Lai|Huishan Lai)/g;
+const highlightedAuthorNames = new Set(['HuiShan Lai', 'Huishan Lai']);
+
+function getAuthorParts(authors: string) {
+  return authors.split(highlightedAuthorPattern)
+    .filter(Boolean)
+    .map((text) => ({
+      text,
+      highlighted: highlightedAuthorNames.has(text),
+    }));
+}
 ---
 
 <BaseLayout title={t.projects.title} lang={lang}>
@@ -86,59 +98,67 @@ const categoryRoutes = projectCategories.map((category) => ({
                 )}
                 
                 <div class="project-content">
-                  <div class="project-header">
-                    <h3>{localizeString(project.title, lang)}</h3>
-                  </div>
-
-                  {(project.authors || project.conference) && (
-                    <div class="project-publication-meta">
-                      {project.authors && (
-                        <p class="project-authors">{localizeString(project.authors, lang)}</p>
-                      )}
-                      {project.conference && (
-                        <p class="project-conference">{localizeString(project.conference, lang)}</p>
-                      )}
+                  <div class="project-main">
+                    <div class="project-header">
+                      <h3>{localizeString(project.title, lang)}</h3>
                     </div>
-                  )}
-                  
-                  <p class="project-desc">{localizeString(project.description, lang)}</p>
-                  
-                  {project.tags && project.tags.length > 0 && (
-                    <div class="project-tags">
-                      {project.tags.map((tag) => (
-                        <span class="tag">{localizeString(tag, lang)}</span>
-                      ))}
-                    </div>
-                  )}
 
-                  <div class="project-meta-row">
-                    {(project.github || project.paper || project.caseStudy || project.website) && (
-                      <div class="project-links">
-                      {project.github && (
-                        <a href={project.github} target="_blank" rel="noopener noreferrer" class="icon-link" title={t.projects.sourceTitle} aria-label={t.projects.sourceTitle}>
-                          <Icon name="github" size={13} class="icon-link-symbol" />
-                        </a>
-                      )}
-                      {project.paper && (
-                        <a href={project.paper} target="_blank" rel="noopener noreferrer" class="icon-link" title={t.projects.paperTitle} aria-label={t.projects.paperTitle}>
-                          <Icon name="publication" size={13} class="icon-link-symbol" />
-                        </a>
-                      )}
-                      {project.caseStudy && (
-                        <a href={project.caseStudy} target="_blank" rel="noopener noreferrer" class="icon-link" title={t.projects.caseStudyTitle} aria-label={t.projects.caseStudyTitle}>
-                          <Icon name="book" size={13} class="icon-link-symbol" />
-                        </a>
-                      )}
-                      {project.website && (
-                        <a href={project.website} target="_blank" rel="noopener noreferrer" class="icon-link" title={t.projects.siteTitle} aria-label={t.projects.siteTitle}>
-                          <Icon name="externalLink" size={13} class="icon-link-symbol" />
-                        </a>
-                      )}
+                    {(project.authors || project.conference) && (
+                      <div class="project-publication-meta">
+                        {project.authors && (
+                          <p class="project-authors">
+                            {getAuthorParts(localizeString(project.authors, lang)).map((part) => (
+                              part.highlighted ? <strong>{part.text}</strong> : <span>{part.text}</span>
+                            ))}
+                          </p>
+                        )}
+                        {project.conference && (
+                          <p class="project-conference">{localizeString(project.conference, lang)}</p>
+                        )}
                       </div>
                     )}
-                    <span class={`project-status project-status--${status}`} title={meta.title}>
-                      {meta.label}
-                    </span>
+
+                    <p class="project-desc">{localizeString(project.description, lang)}</p>
+                  </div>
+
+                  <div class="project-card-footer">
+                    {project.tags && project.tags.length > 0 && (
+                      <div class="project-tags">
+                        {project.tags.map((tag) => (
+                          <span class="tag">{localizeString(tag, lang)}</span>
+                        ))}
+                      </div>
+                    )}
+
+                    <div class="project-meta-row">
+                      {(project.github || project.paper || project.caseStudy || project.website) && (
+                        <div class="project-links">
+                        {project.github && (
+                          <a href={project.github} target="_blank" rel="noopener noreferrer" class="icon-link" title={t.projects.sourceTitle} aria-label={t.projects.sourceTitle}>
+                            <Icon name="github" size={13} class="icon-link-symbol" />
+                          </a>
+                        )}
+                        {project.paper && (
+                          <a href={project.paper} target="_blank" rel="noopener noreferrer" class="icon-link" title={t.projects.paperTitle} aria-label={t.projects.paperTitle}>
+                            <Icon name="publication" size={13} class="icon-link-symbol" />
+                          </a>
+                        )}
+                        {project.caseStudy && (
+                          <a href={project.caseStudy} target="_blank" rel="noopener noreferrer" class="icon-link" title={t.projects.caseStudyTitle} aria-label={t.projects.caseStudyTitle}>
+                            <Icon name="book" size={13} class="icon-link-symbol" />
+                          </a>
+                        )}
+                        {project.website && (
+                          <a href={project.website} target="_blank" rel="noopener noreferrer" class="icon-link" title={t.projects.siteTitle} aria-label={t.projects.siteTitle}>
+                            <Icon name="externalLink" size={13} class="icon-link-symbol" />
+                          </a>
+                        )}
+                        </div>
+                      )}
+                      <span class={`project-status project-status--${status}`} title={meta.title}>
+                        {meta.label}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </article>
@@ -383,6 +403,20 @@ const categoryRoutes = projectCategories.map((category) => ({
     flex-direction: column;
   }
 
+  .project-main {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .project-card-footer {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    margin-top: auto;
+  }
+
   .project-card.featured .project-content {
     padding-top: calc(var(--space-lg) + 1.25rem);
   }
@@ -510,6 +544,12 @@ const categoryRoutes = projectCategories.map((category) => ({
     font-style: italic;
   }
 
+  .project-authors strong {
+    color: var(--color-text-primary);
+    font-style: normal;
+    font-weight: 700;
+  }
+
   .project-conference {
     display: flex;
     align-items: baseline;
@@ -540,6 +580,60 @@ const categoryRoutes = projectCategories.map((category) => ({
     color: var(--color-text-muted);
     font-size: 0.72rem;
     line-height: 1.25;
+  }
+
+  .project-section#publications .projects-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .project-section#publications .project-content {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(190px, 250px);
+    gap: 1.2rem;
+    align-items: stretch;
+    padding: 1.12rem 1.25rem;
+  }
+
+  .project-section#publications .project-card.featured .project-content {
+    padding-top: calc(1.12rem + 1.2rem);
+  }
+
+  .project-section#publications .project-main {
+    gap: 0.5rem;
+  }
+
+  .project-section#publications .project-header {
+    margin-bottom: 0;
+  }
+
+  .project-section#publications .project-publication-meta {
+    margin: 0;
+  }
+
+  .project-section#publications .project-desc {
+    flex: initial;
+    max-height: calc(1.52em * 3);
+    margin-bottom: 0;
+    line-height: 1.52;
+    -webkit-line-clamp: 3;
+  }
+
+  .project-section#publications .project-card-footer {
+    gap: 0.8rem;
+    margin-top: 0;
+    padding-left: 1rem;
+    border-left: 1px solid rgba(255, 255, 255, 0.07);
+    justify-content: space-between;
+  }
+
+  .project-section#publications .project-tags {
+    gap: 0.28rem;
+  }
+
+  .project-section#publications .project-meta-row {
+    margin-top: auto;
+    padding-top: 0.55rem;
   }
   
   @media (max-width: 768px) {
@@ -696,6 +790,38 @@ const categoryRoutes = projectCategories.map((category) => ({
 
     .project-image img {
       height: 112px;
+    }
+
+    .project-section#publications .project-content {
+      display: flex;
+      padding: 0.85rem;
+    }
+
+    .project-section#publications .project-card.featured .project-content {
+      padding-top: calc(0.85rem + 1rem);
+    }
+
+    .project-section#publications .project-main {
+      gap: 0;
+    }
+
+    .project-section#publications .project-card-footer {
+      gap: 0;
+      margin-top: auto;
+      padding-left: 0;
+      border-left: 0;
+    }
+
+    .project-section#publications .project-desc {
+      max-height: calc(1.48em * 3);
+      margin-bottom: 0.7rem;
+      line-height: 1.48;
+      -webkit-line-clamp: 3;
+    }
+
+    .project-section#publications .project-meta-row {
+      margin-top: 0.55rem;
+      padding-top: 0.1rem;
     }
   }
 </style>
