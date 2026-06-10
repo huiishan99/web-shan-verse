@@ -545,8 +545,8 @@ function getAuthorParts(authors: string) {
   }
 
   .project-authors strong {
-    color: var(--color-text-primary);
-    font-style: normal;
+    color: inherit;
+    font-style: inherit;
     font-weight: 700;
   }
 
@@ -588,10 +588,6 @@ function getAuthorParts(authors: string) {
   }
 
   .project-section#publications .project-content {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(190px, 250px);
-    gap: 1.2rem;
-    align-items: stretch;
     padding: 1.12rem 1.25rem;
   }
 
@@ -620,11 +616,7 @@ function getAuthorParts(authors: string) {
   }
 
   .project-section#publications .project-card-footer {
-    gap: 0.8rem;
-    margin-top: 0;
-    padding-left: 1rem;
-    border-left: 1px solid rgba(255, 255, 255, 0.07);
-    justify-content: space-between;
+    margin-top: 0.85rem;
   }
 
   .project-section#publications .project-tags {
@@ -632,8 +624,8 @@ function getAuthorParts(authors: string) {
   }
 
   .project-section#publications .project-meta-row {
-    margin-top: auto;
-    padding-top: 0.55rem;
+    margin-top: 0.7rem;
+    padding-top: 0.1rem;
   }
   
   @media (max-width: 768px) {
@@ -793,7 +785,6 @@ function getAuthorParts(authors: string) {
     }
 
     .project-section#publications .project-content {
-      display: flex;
       padding: 0.85rem;
     }
 
@@ -806,10 +797,7 @@ function getAuthorParts(authors: string) {
     }
 
     .project-section#publications .project-card-footer {
-      gap: 0;
       margin-top: auto;
-      padding-left: 0;
-      border-left: 0;
     }
 
     .project-section#publications .project-desc {
