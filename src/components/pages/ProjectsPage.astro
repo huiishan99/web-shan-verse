@@ -658,14 +658,15 @@ function getAuthorParts(authors: string) {
     }
 
     .category-route-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 0.5rem;
-      margin: 0 calc(var(--space-md) * -1);
-      padding: 0 var(--space-md) 0.18rem;
+      overflow-x: visible;
+      padding-bottom: 0;
     }
 
     .category-route-item {
-      flex: 0 0 138px;
-      min-height: 44px;
+      min-height: 46px;
       gap: 0.45rem;
       padding: 0.45rem 0.52rem;
       border-radius: 7px;
@@ -678,8 +679,12 @@ function getAuthorParts(authors: string) {
     }
 
     .category-route-title {
+      overflow: visible;
+      overflow-wrap: anywhere;
       font-size: 0.8rem;
       line-height: 1.15;
+      text-overflow: clip;
+      white-space: normal;
     }
 
     .category-route-count {
