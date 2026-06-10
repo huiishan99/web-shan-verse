@@ -607,14 +607,23 @@ const bottomPaginationLabel = `${t.blog.paginationLabel} (${t.blog.paginationBot
   }
 
   .pagination--top {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     max-width: 42rem;
     margin: var(--space-md) auto 0;
     padding-top: var(--space-sm);
     border-top: 1px solid rgba(255, 255, 255, 0.06);
+    gap: 0.6rem;
   }
 
   .pagination--top .pagination-summary {
     font-size: 0.78rem;
+    text-align: center;
+  }
+
+  .pagination--top .pagination-controls {
+    justify-content: center;
   }
 
   .pagination--top .pagination-link,
