@@ -157,6 +157,7 @@ export const ui = {
       paperTitle: 'View Paper',
       caseStudyTitle: 'Read Case Study',
       siteTitle: 'Visit Site',
+      authorsLabel: 'Authors',
       routes: {
         label: 'Category Routes',
         hint: 'Jump to section',
@@ -333,6 +334,7 @@ export const ui = {
       paperTitle: '查看论文',
       caseStudyTitle: '阅读介绍页',
       siteTitle: '访问网站',
+      authorsLabel: '作者',
       routes: {
         label: '分类导航',
         hint: '快速跳转',
@@ -509,6 +511,7 @@ export const ui = {
       paperTitle: '論文を見る',
       caseStudyTitle: '紹介ページを読む',
       siteTitle: 'サイトを見る',
+      authorsLabel: '著者',
       routes: {
         label: 'カテゴリールート',
         hint: 'セクションへ移動',
