@@ -50,9 +50,13 @@
     let lastDrawTime = 0;
     let mouseX = width / 2;
     let mouseY = height / 2;
+    let paused = document.visibilityState === 'hidden';
 
     const stars: Star[] = [];
     const BASE_STAR_COUNT = 150;
+    const MOBILE_STAR_COUNT = 82;
+    const NARROW_MOBILE_STAR_COUNT = 68;
+    const REDUCED_MOTION_STAR_COUNT = 52;
     let starCount = BASE_STAR_COUNT;
     const starTypes = [
       { color: 'rgba(255, 255, 255,', glow: 'rgba(200, 220, 255,' },
@@ -111,14 +115,31 @@
       height = window.innerHeight;
       const viewportArea = width * height;
       const isLargeCanvas = viewportArea > 3_500_000;
+      const isMobileCanvas = width <= 700 || window.matchMedia('(pointer: coarse)').matches;
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       renderScale = isLargeCanvas ? Math.max(0.62, Math.sqrt(3_500_000 / viewportArea)) : 1;
       glowScale = isLargeCanvas ? 0.78 : 1;
       minFrameInterval = isLargeCanvas ? 1000 / 45 : 0;
       starCount = isLargeCanvas ? 130 : BASE_STAR_COUNT;
 
+      if (isMobileCanvas) {
+        renderScale = Math.min(renderScale, 0.84);
+        glowScale = Math.min(glowScale, 0.84);
+        minFrameInterval = Math.max(minFrameInterval, 1000 / 42);
+        starCount = width <= 430 ? NARROW_MOBILE_STAR_COUNT : MOBILE_STAR_COUNT;
+      }
+
+      if (prefersReducedMotion) {
+        minFrameInterval = Math.max(minFrameInterval, 1000 / 30);
+        starCount = Math.min(starCount, REDUCED_MOTION_STAR_COUNT);
+      }
+
       canvas.width = Math.max(1, Math.floor(width * renderScale));
       canvas.height = Math.max(1, Math.floor(height * renderScale));
+      canvas.dataset.starCount = String(starCount);
+      canvas.dataset.renderScale = renderScale.toFixed(2);
+      canvas.dataset.minFrameInterval = String(Math.round(minFrameInterval));
       ctx.setTransform(renderScale, 0, 0, renderScale, 0, 0);
 
       stars.forEach((star) => {
@@ -175,6 +196,11 @@
 
     function animate(timestamp = 0) {
       if (!active) return;
+      if (paused) {
+        state.frameId = requestAnimationFrame(animate);
+        return;
+      }
+
       if (minFrameInterval > 0 && timestamp - lastDrawTime < minFrameInterval) {
         state.frameId = requestAnimationFrame(animate);
         return;
@@ -219,8 +245,16 @@
       }
     };
 
+    const handleVisibilityChange = () => {
+      paused = document.visibilityState === 'hidden';
+      if (!paused) {
+        lastDrawTime = 0;
+      }
+    };
+
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('touchmove', handleTouchMove);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('resize', resize);
 
     resize();
@@ -233,6 +267,7 @@
       if (state.fillFrameId) cancelAnimationFrame(state.fillFrameId);
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('resize', resize);
     };
   }
