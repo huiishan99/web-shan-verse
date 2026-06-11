@@ -556,9 +556,9 @@ const labels = { ...defaultLabels, ...Astro.props.labels };
     .music-player::before {
       inset: 0.38rem;
       z-index: -1;
-      background: rgba(201, 162, 39, 0.14);
+      background: rgba(201, 162, 39, 0.1);
       filter: blur(13px);
-      opacity: 0.36;
+      opacity: 0.22;
     }
 
     .music-player::after {
@@ -571,8 +571,8 @@ const labels = { ...defaultLabels, ...Astro.props.labels };
     }
 
     .music-player.is-playing::before {
-      background: rgba(201, 162, 39, 0.2);
-      opacity: 0.76;
+      background: rgba(201, 162, 39, 0.16);
+      opacity: 0.52;
     }
 
     .music-toggle {
@@ -580,19 +580,19 @@ const labels = { ...defaultLabels, ...Astro.props.labels };
       z-index: 1;
       width: 3.15rem;
       height: 3.15rem;
-      border-color: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.26);
       background:
-        radial-gradient(circle at 28% 18%, rgba(255, 255, 255, 0.32), transparent 31%),
-        linear-gradient(145deg, rgba(255, 255, 255, 0.17), rgba(255, 255, 255, 0.055) 48%, rgba(255, 255, 255, 0.11)),
-        rgba(20, 20, 28, 0.34);
+        radial-gradient(circle at 28% 18%, rgba(255, 255, 255, 0.18), transparent 32%),
+        linear-gradient(145deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.012) 48%, rgba(255, 255, 255, 0.045)),
+        rgba(255, 255, 255, 0.035);
       color: rgba(244, 224, 154, 0.95);
       box-shadow:
-        0 16px 34px rgba(0, 0, 0, 0.4),
-        0 3px 12px rgba(201, 162, 39, 0.035),
-        inset 0 1px 0 rgba(255, 255, 255, 0.42),
-        inset 0 -12px 18px rgba(0, 0, 0, 0.2);
-      backdrop-filter: blur(18px) saturate(170%);
-      -webkit-backdrop-filter: blur(18px) saturate(170%);
+        0 12px 24px rgba(0, 0, 0, 0.24),
+        0 2px 10px rgba(201, 162, 39, 0.012),
+        inset 0 1px 0 rgba(255, 255, 255, 0.48),
+        inset 0 -10px 16px rgba(0, 0, 0, 0.08);
+      backdrop-filter: blur(22px) saturate(190%) brightness(1.08);
+      -webkit-backdrop-filter: blur(22px) saturate(190%) brightness(1.08);
       isolation: isolate;
       transition:
         transform 0.16s cubic-bezier(0.2, 0.8, 0.2, 1),
@@ -613,8 +613,8 @@ const labels = { ...defaultLabels, ...Astro.props.labels };
     .music-toggle::before {
       inset: 0;
       z-index: -1;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), transparent 38%, rgba(255, 255, 255, 0.06));
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.13), transparent 42%, rgba(255, 255, 255, 0.045));
       mask-image: linear-gradient(#000, transparent 72%);
       -webkit-mask-image: linear-gradient(#000, transparent 72%);
     }
@@ -625,7 +625,7 @@ const labels = { ...defaultLabels, ...Astro.props.labels };
       z-index: -1;
       width: 1.05rem;
       height: 0.45rem;
-      background: rgba(255, 255, 255, 0.32);
+      background: rgba(255, 255, 255, 0.22);
       filter: blur(0.14rem);
       transform: rotate(-24deg);
     }
@@ -635,27 +635,27 @@ const labels = { ...defaultLabels, ...Astro.props.labels };
       transform: scale(0.94);
       border-color: rgba(255, 255, 255, 0.24);
       background:
-        radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.22), transparent 32%),
-        linear-gradient(145deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.035) 48%, rgba(255, 255, 255, 0.08)),
-        rgba(12, 12, 18, 0.46);
+        radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.12), transparent 32%),
+        linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01) 48%, rgba(255, 255, 255, 0.032)),
+        rgba(255, 255, 255, 0.026);
       box-shadow:
-        0 10px 22px rgba(0, 0, 0, 0.34),
-        inset 0 2px 8px rgba(0, 0, 0, 0.28),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        0 8px 18px rgba(0, 0, 0, 0.2),
+        inset 0 2px 8px rgba(0, 0, 0, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18);
     }
 
     .music-toggle.is-playing {
       border-color: rgba(255, 255, 255, 0.24);
       background:
-        radial-gradient(circle at 28% 18%, rgba(255, 255, 255, 0.34), transparent 31%),
-        linear-gradient(145deg, rgba(255, 255, 255, 0.18), rgba(201, 162, 39, 0.1) 52%, rgba(255, 255, 255, 0.11)),
-        rgba(22, 20, 18, 0.42);
+        radial-gradient(circle at 28% 18%, rgba(255, 255, 255, 0.2), transparent 32%),
+        linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(201, 162, 39, 0.035) 52%, rgba(255, 255, 255, 0.045)),
+        rgba(255, 255, 255, 0.044);
       color: var(--color-text-primary);
       box-shadow:
-        0 16px 34px rgba(0, 0, 0, 0.42),
-        0 0 18px rgba(201, 162, 39, 0.09),
-        inset 0 1px 0 rgba(255, 255, 255, 0.42),
-        inset 0 -12px 18px rgba(139, 105, 20, 0.18);
+        0 12px 24px rgba(0, 0, 0, 0.26),
+        0 0 12px rgba(201, 162, 39, 0.035),
+        inset 0 1px 0 rgba(255, 255, 255, 0.48),
+        inset 0 -10px 16px rgba(139, 105, 20, 0.06);
     }
 
     .music-toggle:active.is-playing,
