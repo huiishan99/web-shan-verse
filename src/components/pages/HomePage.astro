@@ -4,17 +4,14 @@ import Icon from '../Icon.astro';
 import SiteStats from '../SiteStats.astro';
 import TrustedInlineHtml from '../TrustedInlineHtml.astro';
 import HomeInteractions from '../home/HomeInteractions.astro';
+import HomeShowcase from '../home/HomeShowcase.astro';
 import { currentStatus } from '../../data/status';
 import { timelineData } from '../../data/timeline';
 import { defaultLocale, localizePath, localizeString, type Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
 import {
-  getBlogPostDisplayTitle,
-  getBlogPostKind,
   getBlogPosts,
   getBlogPostsForLocale,
-  getBlogPostPath,
-  getPlainTextExcerpt,
   sortBlogPosts,
 } from '../../utils/blog';
 import { buildHomepageActivityModel, toDateKey } from '../../utils/home-activity';
@@ -31,12 +28,6 @@ const introHtml = t.home.intro.replace(
   '{aboutLink}',
   `<a class="highlight intro-link" href="${escapeHtml(aboutPath)}">${escapeHtml(t.home.aboutButton)}</a>`
 );
-const dateLocale: Record<Locale, string> = {
-  en: 'en-US',
-  zh: 'zh-CN',
-  ja: 'ja-JP',
-};
-
 // 获取最新3篇博客文章
 const allPosts = getBlogPostsForLocale(
   (await getBlogPosts()).filter((post) => !post.data.draft),
@@ -392,90 +383,13 @@ const sponsorContactUrl = 'https://linkedin.com/in/laihuishan/';
       </div>
     </section>
     
-    <!-- Featured Section -->
-    <section class="featured">
-      <div class="divider">
-        <span class="divider-icon">◈</span>
-      </div>
-      
-      <h2>{t.home.featuredWorks}</h2>
-      
-      <div class="featured-grid">
-        <a href={`${localizePath('/projects', lang)}#unity`} class="featured-card">
-          <div class="featured-icon"><Icon name="gamepad" size={28} /></div>
-          <h3>{t.home.unityTitle}</h3>
-          <p>{t.home.unityDesc}</p>
-        </a>
-        
-        <a href={`${localizePath('/projects', lang)}#web`} class="featured-card">
-          <div class="featured-icon"><Icon name="globe" size={28} /></div>
-          <h3>{t.home.webTitle}</h3>
-          <p>{t.home.webDesc}</p>
-        </a>
-        
-        <a href={localizePath('/blog', lang)} class="featured-card">
-          <div class="featured-icon"><Icon name="pen" size={28} /></div>
-          <h3>{t.home.blogTitle}</h3>
-          <p>{t.home.blogDesc}</p>
-        </a>
-      </div>
-    </section>
-    
-    <!-- Latest Posts Preview -->
-    <section class="latest">
-      <div class="divider">
-        <Icon name="gear" size={20} class="divider-icon" />
-      </div>
-      
-      <h2>{t.home.latestPosts}</h2>
-      
-      <div class="posts-grid">
-        {latestPosts.map((post) => {
-          const postKind = getBlogPostKind(post);
-          const showPostTitle = postKind === 'article';
-
-          return (
-            <a href={getBlogPostPath(post, lang)} class:list={['post-card', `post-card--${postKind}`]}>
-              <div class="post-date">
-                {new Date(post.data.date).toLocaleDateString(dateLocale[lang], {
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric'
-                })}
-              </div>
-              {showPostTitle && (
-                <h3 class="post-title">{getBlogPostDisplayTitle(post, lang)}</h3>
-              )}
-              <p class="post-excerpt">{getPlainTextExcerpt(post.body ?? '', 100)}</p>
-            </a>
-          );
-        })}
-      </div>
-      
-      <div class="posts-action">
-        <a href={localizePath('/blog', lang)} class="btn">
-          <span>→</span> {t.home.viewAllPosts}
-        </a>
-      </div>
-    </section>
-
-    <section class="support-note" aria-labelledby="support-note-title">
-      <div class="support-note-copy">
-        <p class="section-kicker">{t.home.supportKicker}</p>
-        <h2 id="support-note-title">{t.home.supportTitle}</h2>
-        <p>{t.home.supportBody}</p>
-        <span>{t.home.supportFinePrint}</span>
-      </div>
-
-      <div class="support-note-actions">
-        <a href={githubProfileUrl} class="support-note-link" target="_blank" rel="noopener noreferrer">
-          <Icon name="github" size={16} /> {t.home.supportGithub}
-        </a>
-        <a href={sponsorContactUrl} class="support-note-link support-note-link--primary" target="_blank" rel="noopener noreferrer">
-          <Icon name="heart" size={16} /> {t.home.supportContact}
-        </a>
-      </div>
-    </section>
+    <HomeShowcase
+      lang={lang}
+      labels={t.home}
+      latestPosts={latestPosts}
+      githubProfileUrl={githubProfileUrl}
+      sponsorContactUrl={sponsorContactUrl}
+    />
   </div>
 </BaseLayout>
 
@@ -582,8 +496,7 @@ const sponsorContactUrl = 'https://linkedin.com/in/laihuishan/';
     gap: var(--space-md);
   }
 
-  .hero-actions .btn,
-  .posts-action .btn {
+  .hero-actions .btn {
     background: transparent;
     border: 1px solid var(--color-brass);
     border-radius: 0;
@@ -598,8 +511,7 @@ const sponsorContactUrl = 'https://linkedin.com/in/laihuishan/';
     transition: color 0.3s ease;
   }
 
-  .hero-actions .btn:hover,
-  .posts-action .btn:hover {
+  .hero-actions .btn:hover {
     background: var(--color-brass);
     border-color: var(--color-brass);
     color: var(--color-bg-primary);
@@ -1366,243 +1278,6 @@ const sponsorContactUrl = 'https://linkedin.com/in/laihuishan/';
     transition: color 0.2s ease;
   }
   
-  /* Featured Section */
-  .featured, .latest {
-    padding: var(--space-lg) 0;
-  }
-  
-  .featured-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-lg);
-    margin-top: var(--space-lg);
-  }
-  
-  .featured-card {
-    background: var(--surface-glass);
-    border: 1px solid var(--surface-border);
-    border-radius: var(--surface-radius);
-    padding: var(--space-lg);
-    text-align: center;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    box-shadow: var(--surface-shadow);
-    backdrop-filter: blur(var(--surface-blur));
-    -webkit-backdrop-filter: blur(var(--surface-blur));
-  }
-  
-  .featured-card:hover {
-    background: var(--surface-glass-hover);
-    border-color: var(--surface-border-hover);
-    transform: translateY(-3px);
-    box-shadow: var(--surface-shadow-hover);
-  }
-  
-  .featured-icon {
-    margin-bottom: var(--space-md);
-    display: flex;
-    justify-content: center;
-  }
-  
-  .featured-card h3 {
-    color: var(--color-text-primary);
-    font-size: 1.2rem;
-    margin-bottom: var(--space-sm);
-  }
-  
-  .featured-card p {
-    color: var(--color-text-secondary);
-    font-size: 0.95rem;
-  }
-  
-  /* Latest Posts */
-  .posts-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-lg);
-    margin-bottom: var(--space-lg);
-  }
-  
-  .post-card {
-    display: block;
-    padding: var(--space-lg);
-    background: var(--surface-glass);
-    border: 1px solid var(--surface-border);
-    border-radius: var(--surface-radius);
-    text-decoration: none;
-    transition: all 0.3s ease;
-    box-shadow: var(--surface-shadow);
-    backdrop-filter: blur(var(--surface-blur));
-    -webkit-backdrop-filter: blur(var(--surface-blur));
-  }
-  
-  .post-card:hover {
-    background: var(--surface-glass-hover);
-    border-color: var(--surface-border-hover);
-    transform: translateY(-2px);
-    box-shadow: var(--surface-shadow-hover);
-  }
-  
-  .post-date {
-    font-size: 0.8rem;
-    color: var(--color-text-muted);
-    margin-bottom: var(--space-sm);
-  }
-  
-  .post-title {
-    font-size: 1.1rem;
-    color: var(--color-text-primary);
-    margin-bottom: var(--space-sm);
-    line-height: 1.4;
-  }
-  
-  .post-card:hover .post-title {
-    color: var(--color-brass-light);
-  }
-  
-  .post-excerpt {
-    font-size: 0.9rem;
-    color: var(--color-text-secondary);
-    line-height: 1.5;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .post-card--note .post-excerpt {
-    color: rgba(245, 245, 245, 0.82);
-    font-size: 0.95rem;
-    line-height: 1.6;
-    -webkit-line-clamp: 3;
-  }
-  
-  .posts-action {
-    text-align: center;
-    padding-top: var(--space-md);
-  }
-
-  .support-note {
-    position: relative;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: var(--space-lg);
-    align-items: center;
-    margin: var(--space-lg) 0 0;
-    padding: var(--space-lg);
-    overflow: hidden;
-    background:
-      linear-gradient(135deg, rgba(106, 171, 255, 0.07), transparent 38%),
-      linear-gradient(180deg, rgba(201, 162, 39, 0.07), rgba(255, 255, 255, 0.025)),
-      rgba(13, 13, 18, 0.58);
-    border: 1px solid rgba(255, 255, 255, 0.085);
-    border-radius: var(--surface-radius);
-    box-shadow: var(--surface-shadow);
-    backdrop-filter: blur(var(--surface-blur));
-    -webkit-backdrop-filter: blur(var(--surface-blur));
-  }
-
-  .support-note::before,
-  .support-note::after {
-    content: '◈';
-    position: absolute;
-    color: var(--color-brass);
-    font-size: 0.7rem;
-    opacity: 0.48;
-  }
-
-  .support-note::before {
-    top: 0.7rem;
-    left: 0.8rem;
-  }
-
-  .support-note::after {
-    right: 0.8rem;
-    bottom: 0.7rem;
-  }
-
-  .support-note-copy {
-    min-width: 0;
-    padding-left: 0.15rem;
-  }
-
-  .support-note-copy h2 {
-    margin: 0 0 0.55rem;
-    padding: 0;
-    border: 0;
-    color: var(--color-text-primary);
-    font-size: clamp(1.2rem, 2.4vw, 1.55rem);
-    letter-spacing: 0.04em;
-  }
-
-  .support-note-copy p {
-    max-width: 42rem;
-    margin: 0;
-    color: var(--color-text-secondary);
-    font-size: 0.96rem;
-    line-height: 1.65;
-  }
-
-  .support-note-copy span {
-    display: block;
-    margin-top: 0.55rem;
-    color: var(--color-text-muted);
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    line-height: 1.5;
-  }
-
-  .support-note-actions {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    gap: var(--space-sm);
-  }
-
-  .support-note-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.45rem;
-    min-height: 2.35rem;
-    padding: 0.48rem 0.8rem;
-    color: var(--color-text-secondary);
-    font-family: var(--font-body);
-    font-size: 0.94rem;
-    line-height: 1.1;
-    text-decoration: none;
-    white-space: nowrap;
-    background: rgba(255, 255, 255, 0.035);
-    border: 1px solid rgba(255, 255, 255, 0.085);
-    border-radius: 4px;
-    transition:
-      background 0.2s ease,
-      border-color 0.2s ease,
-      color 0.2s ease,
-      transform 0.2s ease;
-  }
-
-  .support-note-link:hover,
-  .support-note-link:focus-visible {
-    color: var(--color-text-primary);
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(201, 162, 39, 0.26);
-    transform: translateY(-1px);
-  }
-
-  .support-note-link--primary {
-    color: var(--color-brass-light);
-    background: rgba(201, 162, 39, 0.1);
-    border-color: rgba(201, 162, 39, 0.26);
-  }
-
-  .support-note-link--primary:hover,
-  .support-note-link--primary:focus-visible {
-    color: var(--color-bg-primary);
-    background: var(--color-brass);
-    border-color: var(--color-brass);
-  }
-  
   .coming-soon {
     color: var(--color-text-muted);
     font-style: italic;
@@ -1623,20 +1298,6 @@ const sponsorContactUrl = 'https://linkedin.com/in/laihuishan/';
       font-size: 2.5rem;
     }
     
-    .featured-grid,
-    .posts-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .support-note {
-      grid-template-columns: 1fr;
-      align-items: start;
-    }
-
-    .support-note-actions {
-      justify-content: flex-start;
-    }
-
     .activity-header {
       align-items: flex-start;
       flex-direction: column;
@@ -1675,8 +1336,7 @@ const sponsorContactUrl = 'https://linkedin.com/in/laihuishan/';
       justify-content: center;
     }
 
-    .hero-actions .btn,
-    .posts-action .btn {
+    .hero-actions .btn {
       background:
         linear-gradient(180deg, rgba(201, 162, 39, 0.11), rgba(201, 162, 39, 0.045)),
         var(--surface-glass);
@@ -1687,8 +1347,7 @@ const sponsorContactUrl = 'https://linkedin.com/in/laihuishan/';
       -webkit-backdrop-filter: blur(var(--surface-blur));
     }
 
-    .hero-actions .btn:hover,
-    .posts-action .btn:hover {
+    .hero-actions .btn:hover {
       background:
         linear-gradient(180deg, rgba(201, 162, 39, 0.18), rgba(201, 162, 39, 0.08)),
         var(--surface-glass-hover);
@@ -1700,42 +1359,6 @@ const sponsorContactUrl = 'https://linkedin.com/in/laihuishan/';
 
     .hero-actions .btn:hover :global(.icon) {
       color: currentColor;
-    }
-
-    .featured,
-    .latest {
-      padding: var(--space-md) 0;
-    }
-
-    .featured-grid,
-    .posts-grid {
-      gap: var(--space-md);
-      margin-top: var(--space-md);
-    }
-
-    .featured-card,
-    .post-card {
-      padding: var(--space-md);
-    }
-
-    .support-note {
-      gap: var(--space-md);
-      padding: var(--space-md);
-    }
-
-    .support-note-copy p {
-      font-size: 0.92rem;
-    }
-
-    .support-note-actions {
-      display: grid;
-      grid-template-columns: 1fr;
-      width: 100%;
-    }
-
-    .support-note-link {
-      width: 100%;
-      white-space: normal;
     }
 
     .activity {
