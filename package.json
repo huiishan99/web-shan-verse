@@ -27,9 +27,9 @@
   "homepage": "https://github.com/huiishan99/web-blog#readme",
   "description": "",
   "dependencies": {
-    "@astrojs/mdx": "^5.0.3",
+    "@astrojs/mdx": "^7.0.2",
     "@astrojs/sitemap": "^3.7.2",
-    "astro": "^6.4.8",
+    "astro": "^7.0.6",
     "three": "^0.184.0"
   },
   "devDependencies": {
