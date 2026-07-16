@@ -30,6 +30,22 @@ export const timelineData: TimelineYear[] = [
     year: 2026,
     events: [
       {
+        month: { en: "July", zh: "七月", ja: "7月" },
+        title: {
+          en: "Marriage Registration at Iwaki City Hall",
+          zh: "在磐城市役所登记结婚",
+          ja: "いわき市役所で結婚・入籍"
+        },
+        weight: "major",
+        category: "life",
+        date: "2026-07-09",
+        description: {
+          en: "My partner and I submitted our marriage registration at Iwaki City Hall and officially became a married couple.",
+          zh: "我和伴侣在磐城市役所提交婚姻届，正式登记结婚。",
+          ja: "パートナーといわき市役所に婚姻届を提出し、正式に結婚しました。"
+        }
+      },
+      {
         month: { en: "May", zh: "五月", ja: "5月" },
         title: {
           en: "ICICS 2026 Short Paper Acceptance",
