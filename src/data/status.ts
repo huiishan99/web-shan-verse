@@ -20,13 +20,14 @@ export const currentStatus = {
   // 可选值建议：Celebrating | Traveling | Working | Gaming 
   //            Learning | Vacation | Resting | Busy
   badge: {
-    en: "New Employee",
-    zh: "新员工",
-    ja: "新入社員"
+    en: "Newlywed",
+    zh: "新婚",
+    ja: "新婚"
   },
   
   // 状态列表 - 添加/删除/修改都很容易
   items: [
+    { icon: "heart", text: { en: "Married · July 9, 2026", zh: "结婚 · 2026年7月9日", ja: "結婚 · 2026年7月9日" } },
     { icon: "briefcase", text: "Alps Alpine Co., Ltd", url: "https://www.alpsalpine.com" },
     { icon: "map", text: { en: "Iwaki, Japan", zh: "日本磐城", ja: "いわき市、日本" }, url: "https://www.google.com/maps/place/Iwaki" },
     { icon: "gamepad", text: { en: "Embedded Software Development", zh: "嵌入式软件开发", ja: "組込みソフトウェア開発" } },
