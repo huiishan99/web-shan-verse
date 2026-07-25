@@ -25,15 +25,17 @@ function jsonResponse(data, init = {}) {
   });
 }
 
-function corsHeaders(request, env) {
-  const requestOrigin = request.headers.get('Origin') || '';
-  const allowedOrigins = (env.ALLOWED_ORIGINS || DEFAULT_ALLOWED_ORIGINS.join(','))
+function getAllowedOrigins(env) {
+  return (env.ALLOWED_ORIGINS || DEFAULT_ALLOWED_ORIGINS.join(','))
     .split(',')
     .map((origin) => origin.trim())
     .filter(Boolean);
+}
 
+function corsHeaders(request, env) {
+  const requestOrigin = request.headers.get('Origin') || '';
   const headers = new Headers();
-  if (allowedOrigins.includes(requestOrigin)) {
+  if (getAllowedOrigins(env).includes(requestOrigin)) {
     headers.set('Access-Control-Allow-Origin', requestOrigin);
     headers.set('Vary', 'Origin');
   }
@@ -43,11 +45,16 @@ function corsHeaders(request, env) {
   return headers;
 }
 
+function isAllowedWriteOrigin(request, env) {
+  const requestOrigin = request.headers.get('Origin') || '';
+  return getAllowedOrigins(env).includes(requestOrigin);
+}
+
 async function readJson(request) {
   try {
     return await request.json();
   } catch {
-    return {};
+    return null;
   }
 }
 
@@ -62,7 +69,11 @@ function getClientIp(request) {
 
 async function hashVisitor(ip, env) {
   const encoder = new TextEncoder();
-  const salt = env.VISITOR_HASH_SALT || 'shan-verse-site-stats';
+  if (!env.VISITOR_HASH_SALT) {
+    throw new Error('VISITOR_HASH_SALT is missing');
+  }
+
+  const salt = env.VISITOR_HASH_SALT;
   const input = encoder.encode(`${salt}:${ip || 'unknown'}`);
   const digest = await crypto.subtle.digest('SHA-256', input);
 
@@ -89,12 +100,14 @@ async function refreshActiveVisitor(kv, key) {
   const now = Date.now();
   const lastActiveAt = Number(await kv.get(key));
   if (Number.isFinite(lastActiveAt) && now - lastActiveAt < ACTIVE_REFRESH_INTERVAL_MS) {
-    return;
+    return false;
   }
 
   await kv.put(key, String(now), {
     expirationTtl: ACTIVE_TTL_SECONDS,
   });
+  await kv.delete(ONLINE_CACHE_KEY);
+  return true;
 }
 
 async function listAllKeys(kv, prefix) {
@@ -130,16 +143,29 @@ async function handleStats(request, env) {
     return jsonResponse({ ok: false, error: 'SITE_STATS KV binding is missing' }, { status: 500 });
   }
 
-  const payload = request.method === 'POST' ? await readJson(request) : {};
-  const eventType = payload.event === 'heartbeat' ? 'heartbeat' : 'pageview';
+  let views = await getCounter(env.SITE_STATS, COUNTER_KEYS.views);
+  let visitors = await getCounter(env.SITE_STATS, COUNTER_KEYS.visitors);
+
+  if (request.method === 'GET') {
+    return jsonResponse({
+      ok: true,
+      views,
+      visitors,
+      online: await getOnlineCount(env.SITE_STATS),
+      updatedAt: new Date().toISOString(),
+    });
+  }
+
+  const payload = await readJson(request);
+  if (!payload || !['pageview', 'heartbeat'].includes(payload.event)) {
+    return jsonResponse({ ok: false, error: 'Invalid stats event' }, { status: 400 });
+  }
+
   const visitorHash = await hashVisitor(getClientIp(request), env);
   const visitorKey = `visitor:${visitorHash}`;
   const activeKey = `active:${visitorHash}`;
 
-  let views = await getCounter(env.SITE_STATS, COUNTER_KEYS.views);
-  let visitors = await getCounter(env.SITE_STATS, COUNTER_KEYS.visitors);
-
-  if (request.method === 'POST' && eventType === 'pageview') {
+  if (payload.event === 'pageview') {
     views = await incrementCounter(env.SITE_STATS, COUNTER_KEYS.views, views);
   }
 
@@ -179,7 +205,18 @@ export default {
       return jsonResponse({ ok: false, error: 'Method not allowed' }, { status: 405, headers });
     }
 
-    const response = await handleStats(request, env);
+    if (request.method === 'POST' && !isAllowedWriteOrigin(request, env)) {
+      return jsonResponse({ ok: false, error: 'Origin not allowed' }, { status: 403, headers });
+    }
+
+    let response;
+    try {
+      response = await handleStats(request, env);
+    } catch (error) {
+      console.error('Site stats request failed:', error);
+      response = jsonResponse({ ok: false, error: 'Stats service unavailable' }, { status: 500 });
+    }
+
     headers.forEach((value, key) => response.headers.set(key, value));
     return response;
   },

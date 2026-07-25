@@ -15,7 +15,7 @@ import {
   sortBlogPosts,
 } from '../../utils/blog';
 import { buildHomepageActivityModel, toDateKey } from '../../utils/home-activity';
-import { escapeHtml } from '../../utils/html';
+import { asTrustedInlineHtml, escapeHtml } from '../../utils/html';
 
 interface Props {
   lang?: Locale;
@@ -24,9 +24,11 @@ interface Props {
 const { lang = defaultLocale } = Astro.props;
 const t = useTranslations(lang);
 const aboutPath = localizePath('/about', lang);
-const introHtml = t.home.intro.replace(
-  '{aboutLink}',
-  `<a class="highlight intro-link" href="${escapeHtml(aboutPath)}">${escapeHtml(t.home.aboutButton)}</a>`
+const introHtml = asTrustedInlineHtml(
+  t.home.intro.replace(
+    '{aboutLink}',
+    `<a class="highlight intro-link" href="${escapeHtml(aboutPath)}">${escapeHtml(t.home.aboutButton)}</a>`
+  )
 );
 // 获取最新3篇博客文章
 const allPosts = getBlogPostsForLocale(

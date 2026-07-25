@@ -5,6 +5,7 @@ import TrustedInlineHtml from '../TrustedInlineHtml.astro';
 import { pageHeader, intro, profile, education, experience, awards, skills, languages, interests, type InterestItem } from '../../data/about';
 import { defaultLocale, localizeString, type Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
+import { asTrustedInlineHtml } from '../../utils/html';
 
 interface Props {
   lang?: Locale;
@@ -67,7 +68,9 @@ function getItunesSearchUrl(term: string, country = 'JP') {
         <!-- Intro -->
         <div class="intro-section">
           {intro.map((paragraph) => (
-            <p class="intro-text"><TrustedInlineHtml html={localizeString(paragraph, lang)} /></p>
+            <p class="intro-text">
+              <TrustedInlineHtml html={asTrustedInlineHtml(localizeString(paragraph, lang))} />
+            </p>
           ))}
         </div>
         

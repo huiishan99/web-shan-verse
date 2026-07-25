@@ -69,6 +69,7 @@ const scenePoints = travelPoints.map((point) => ({
     data-points={JSON.stringify(scenePoints)}
     aria-label={copy.title}
   >
+    <h1 class="visually-hidden">{copy.title}</h1>
     <canvas class="earth-canvas" data-earth-canvas aria-label={copy.title}></canvas>
     <div class="journey-vignette" aria-hidden="true"></div>
 

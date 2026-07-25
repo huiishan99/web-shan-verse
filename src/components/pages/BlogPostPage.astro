@@ -43,9 +43,7 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
 <BaseLayout title={displayTitle} description={metaDescription} lang={lang}>
   <article class:list={['blog-post', `blog-post--${postKind}`]}>
     <header class="post-header">
-      {showPostTitle && (
-        <h1>{displayTitle}</h1>
-      )}
+      <h1 class:list={{ 'visually-hidden': !showPostTitle }}>{displayTitle}</h1>
       <div class="post-meta">
         <time datetime={post.data.date.toISOString()}>{formattedDate}</time>
         {postCategories.length > 0 && (
