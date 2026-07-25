@@ -1,28 +1,16 @@
-import fs from 'node:fs/promises';
+import { pathToFileURL } from 'node:url';
+import { projectCategories } from '../src/data/projects.ts';
 
-const PROJECTS_FILE = new URL('../src/data/projects.ts', import.meta.url);
 const REQUEST_TIMEOUT_MS = 15_000;
 const GET_REQUEST_ATTEMPTS = 2;
 const RETRY_DELAY_MS = 500;
+const MAX_CONCURRENT_REQUESTS = 6;
 const WARNING_STATUSES = new Set([401, 403]);
 
-function loadProjectCategories(source) {
-  const executableSource = source
-    .replace(/export interface\s+\w+\s*\{[\s\S]*?\n\}/g, '')
-    .replace(/(?:export\s+)?type\s+\w+\s*=\s*string\s*\|\s*\{[\s\S]*?\};\n/g, '')
-    .replace(/(?:export\s+)?type\s+\w+\s*=[\s\S]*?;\n/g, '')
-    .replace(
-      /export const projectCategories:\s*ProjectCategory\[\]\s*=/,
-      'const projectCategories ='
-    );
-
-  return Function(`${executableSource}; return projectCategories;`)();
-}
-
-function collectLinks(projectCategories) {
+export function collectLinks(categories) {
   const links = [];
 
-  for (const category of projectCategories) {
+  for (const category of categories) {
     for (const item of category.items) {
       for (const field of ['github', 'paper', 'caseStudy', 'website']) {
         const url = item[field];
@@ -151,39 +139,46 @@ async function checkLink(link) {
   }
 }
 
-function formatResult(result) {
+export function formatResult(result) {
   const status = result.error
     ? result.error
     : `${result.status} ${result.statusText}`.trim();
   return `${result.title} [${result.field}] ${result.url} -> ${status}`;
 }
 
-const source = await fs.readFile(PROJECTS_FILE, 'utf8');
-const projectCategories = loadProjectCategories(source);
-const links = collectLinks(projectCategories);
-const results = [];
+export async function runProjectLinkCheck(categories = projectCategories) {
+  const links = collectLinks(categories);
+  const results = [];
 
-for (const link of links) {
-  results.push(await checkLink(link));
-}
-
-const failures = results.filter((result) => !result.ok && !result.warning);
-const warnings = results.filter((result) => result.warning);
-
-for (const result of results) {
-  if (result.ok) {
-    console.log(`ok: ${formatResult(result)}`);
-  } else if (result.warning) {
-    console.warn(`warn: ${formatResult(result)}`);
-  } else {
-    console.error(`fail: ${formatResult(result)}`);
+  for (let index = 0; index < links.length; index += MAX_CONCURRENT_REQUESTS) {
+    const batch = links.slice(index, index + MAX_CONCURRENT_REQUESTS);
+    results.push(...await Promise.all(batch.map(checkLink)));
   }
+
+  const failures = results.filter((result) => !result.ok && !result.warning);
+  const warnings = results.filter((result) => result.warning);
+
+  for (const result of results) {
+    if (result.ok) {
+      console.log(`ok: ${formatResult(result)}`);
+    } else if (result.warning) {
+      console.warn(`warn: ${formatResult(result)}`);
+    } else {
+      console.error(`fail: ${formatResult(result)}`);
+    }
+  }
+
+  console.log(
+    `Checked ${results.length} project links: ${results.length - failures.length - warnings.length} ok, ${warnings.length} warnings, ${failures.length} failures.`
+  );
+
+  return { results, failures, warnings };
 }
 
-console.log(
-  `Checked ${results.length} project links: ${results.length - failures.length - warnings.length} ok, ${warnings.length} warnings, ${failures.length} failures.`
-);
-
-if (failures.length > 0) {
-  process.exitCode = 1;
+const entryPath = process.argv[1] ? pathToFileURL(process.argv[1]).href : '';
+if (import.meta.url === entryPath) {
+  const { failures } = await runProjectLinkCheck();
+  if (failures.length > 0) {
+    process.exitCode = 1;
+  }
 }

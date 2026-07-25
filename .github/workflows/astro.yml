@@ -47,9 +47,8 @@ jobs:
         run: npm ci
         working-directory: ${{ env.BUILD_PATH }}
 
-      - name: Build with Astro
-        run: |
-          npx astro build
+      - name: Verify and build
+        run: npm run verify
         working-directory: ${{ env.BUILD_PATH }}
 
       - name: Upload artifact

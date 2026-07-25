@@ -1,6 +1,8 @@
 ---
+import type { TrustedInlineHtml } from '../utils/html';
+
 interface Props {
-  html: string;
+  html: TrustedInlineHtml;
 }
 
 const { html } = Astro.props;

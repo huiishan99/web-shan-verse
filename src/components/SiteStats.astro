@@ -55,7 +55,11 @@ const statsEndpoint = import.meta.env.PROD
     globalWindow.__shanSiteStatsReady = true;
 
     const heartbeatMs = 240000;
+    const retryBaseMs = 15000;
     let heartbeatTimer = 0;
+    let retryTimer = 0;
+    let consecutiveFailures = 0;
+    let pendingPageviewPath = '';
     let unavailableLogged = false;
 
     function formatCount(value: unknown): string {
@@ -76,6 +80,8 @@ const statsEndpoint = import.meta.env.PROD
         root.querySelector<HTMLElement>('[data-site-stat="visitors"]')!.textContent = formatCount(data.visitors);
         root.querySelector<HTMLElement>('[data-site-stat="online"]')!.textContent = formatCount(data.online);
       });
+      consecutiveFailures = 0;
+      unavailableLogged = false;
     }
 
     function markUnavailable(error: unknown) {
@@ -83,12 +89,18 @@ const statsEndpoint = import.meta.env.PROD
         root.classList.add('is-unavailable');
       });
 
-      window.clearInterval(heartbeatTimer);
-      heartbeatTimer = 0;
-
       if (!unavailableLogged) {
         console.warn('Site stats unavailable:', error);
         unavailableLogged = true;
+      }
+
+      consecutiveFailures += 1;
+      if (!retryTimer && document.visibilityState === 'visible') {
+        const retryDelay = Math.min(retryBaseMs * (2 ** (consecutiveFailures - 1)), heartbeatMs);
+        retryTimer = window.setTimeout(() => {
+          retryTimer = 0;
+          sendStatsEvent('heartbeat');
+        }, retryDelay);
       }
     }
 
@@ -102,12 +114,12 @@ const statsEndpoint = import.meta.env.PROD
       if (eventType === 'pageview' && globalWindow.__shanSiteStatsLastPath === path) {
         return;
       }
-
-      if (eventType === 'pageview') {
-        globalWindow.__shanSiteStatsLastPath = path;
+      if (eventType === 'pageview' && pendingPageviewPath === path) {
+        return;
       }
 
       try {
+        if (eventType === 'pageview') pendingPageviewPath = path;
         const response = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -121,9 +133,16 @@ const statsEndpoint = import.meta.env.PROD
 
         if (!response.ok) throw new Error(`Stats request failed with ${response.status}`);
         updateStats(await response.json());
+        if (eventType === 'pageview') {
+          globalWindow.__shanSiteStatsLastPath = path;
+        }
         startHeartbeat();
       } catch (error) {
         markUnavailable(error);
+      } finally {
+        if (eventType === 'pageview' && pendingPageviewPath === path) {
+          pendingPageviewPath = '';
+        }
       }
     }
 
@@ -133,7 +152,6 @@ const statsEndpoint = import.meta.env.PROD
 
     function startHeartbeat() {
       if (heartbeatTimer) return;
-      window.clearInterval(heartbeatTimer);
       heartbeatTimer = window.setInterval(() => {
         sendStatsEvent('heartbeat');
       }, heartbeatMs);

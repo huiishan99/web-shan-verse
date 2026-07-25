@@ -27,4 +27,19 @@ After the route is active, the static site can call `/api/site-stats` without mo
 
 The Astro dev server leaves the stats endpoint empty, so local development does not call the live Worker or spend KV quota. In production, the frontend sends a heartbeat every 4 minutes while the page is visible. Online counts are cached briefly, and active visitor keys are only refreshed when they are stale, keeping KV writes/list operations comfortably small for a personal site.
 
+`GET /api/site-stats` is read-only. Counter and presence updates require a valid
+`POST` event from an origin listed in `ALLOWED_ORIGINS`. The Worker fails closed
+when `VISITOR_HASH_SALT` is missing.
+
+Run the repository test suite after Worker changes:
+
+```sh
+npm test
+```
+
+Cloudflare KV does not provide an atomic increment primitive. The current
+read-modify-write counters are appropriate as best-effort personal-site metrics,
+but strict accounting under high concurrency would require migrating the
+counters to a Durable Object or another transactional store.
+
 `wrangler.toml.example` is included for a CLI deploy later, but the dashboard setup above is enough.
