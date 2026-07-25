@@ -4,13 +4,15 @@ import worker from '../workers/site-stats/worker.js';
 
 class MemoryKv {
   values = new Map();
+  puts = [];
 
   async get(key) {
     return this.values.get(key) ?? null;
   }
 
-  async put(key, value) {
+  async put(key, value, options) {
     this.values.set(key, String(value));
+    this.puts.push({ key, options });
   }
 
   async delete(key) {
@@ -60,6 +62,22 @@ test('GET reads counters without creating a visitor or active session', async ()
   assert.equal(Number.isNaN(Date.parse(body.updatedAt)), false);
   assert.equal([...kv.values.keys()].some((key) => key.startsWith('visitor:')), false);
   assert.equal([...kv.values.keys()].some((key) => key.startsWith('active:')), false);
+  assert.deepEqual(
+    kv.puts.find(({ key }) => key === 'cache:online')?.options,
+    { expirationTtl: 60 }
+  );
+});
+
+test('GET rebuilds a missing online cache from active visitor keys', async () => {
+  const kv = new MemoryKv();
+  kv.values.set('active:visitor-a', String(Date.now()));
+
+  const response = await worker.fetch(createRequest('GET'), createEnv(kv));
+  const body = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(body.online, 1);
+  assert.equal(await kv.get('cache:online'), '1');
 });
 
 test('pageviews increment once while heartbeats only refresh presence', async () => {

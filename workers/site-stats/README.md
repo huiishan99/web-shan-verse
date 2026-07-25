@@ -25,7 +25,7 @@ It stores hashed visitor IDs in Cloudflare KV and does not store raw IP addresse
 
 After the route is active, the static site can call `/api/site-stats` without moving away from GitHub Pages.
 
-The Astro dev server leaves the stats endpoint empty, so local development does not call the live Worker or spend KV quota. In production, the frontend sends a heartbeat every 4 minutes while the page is visible. Online counts are cached briefly, and active visitor keys are only refreshed when they are stale, keeping KV writes/list operations comfortably small for a personal site.
+The Astro dev server leaves the stats endpoint empty, so local development does not call the live Worker or spend KV quota. In production, the frontend sends a heartbeat every 4 minutes while the page is visible. Online counts are cached for 60 seconds, and active visitor keys are only refreshed when they are stale, keeping KV writes/list operations comfortably small for a personal site.
 
 `GET /api/site-stats` is read-only. Counter and presence updates require a valid
 `POST` event from an origin listed in `ALLOWED_ORIGINS`. The Worker fails closed
