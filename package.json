@@ -1,6 +1,7 @@
 {
   "name": "shan-verse",
   "version": "2.0.0",
+  "private": true,
   "type": "module",
   "scripts": {
     "dev": "astro dev",
@@ -27,7 +28,7 @@
   "bugs": {
     "url": "https://github.com/huiishan99/web-blog/issues"
   },
-  "homepage": "https://github.com/huiishan99/web-blog#readme",
+  "homepage": "https://shan-verse.com",
   "description": "Personal multilingual Astro site for essays, projects, timelines, and interactive experiments.",
   "dependencies": {
     "@astrojs/markdown-remark": "^7.2.1",
