@@ -59,7 +59,7 @@ const statsEndpoint = import.meta.env.PROD
     let heartbeatTimer = 0;
     let retryTimer = 0;
     let consecutiveFailures = 0;
-    let pendingPageviewPath = '';
+    const pendingPageviewPaths = new Set<string>();
     let unavailableLogged = false;
 
     function formatCount(value: unknown): string {
@@ -114,12 +114,12 @@ const statsEndpoint = import.meta.env.PROD
       if (eventType === 'pageview' && globalWindow.__shanSiteStatsLastPath === path) {
         return;
       }
-      if (eventType === 'pageview' && pendingPageviewPath === path) {
+      if (eventType === 'pageview' && pendingPageviewPaths.has(path)) {
         return;
       }
 
       try {
-        if (eventType === 'pageview') pendingPageviewPath = path;
+        if (eventType === 'pageview') pendingPageviewPaths.add(path);
         const response = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -133,16 +133,15 @@ const statsEndpoint = import.meta.env.PROD
 
         if (!response.ok) throw new Error(`Stats request failed with ${response.status}`);
         updateStats(await response.json());
-        if (eventType === 'pageview') {
+        const currentPath = `${window.location.pathname}${window.location.search}`;
+        if (eventType === 'pageview' && currentPath === path) {
           globalWindow.__shanSiteStatsLastPath = path;
         }
         startHeartbeat();
       } catch (error) {
         markUnavailable(error);
       } finally {
-        if (eventType === 'pageview' && pendingPageviewPath === path) {
-          pendingPageviewPath = '';
-        }
+        if (eventType === 'pageview') pendingPageviewPaths.delete(path);
       }
     }
 

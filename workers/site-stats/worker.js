@@ -6,7 +6,7 @@ const COUNTER_KEYS = {
 const ONLINE_CACHE_KEY = 'cache:online';
 const ACTIVE_TTL_SECONDS = 300;
 const ACTIVE_REFRESH_INTERVAL_MS = 240000;
-const ONLINE_CACHE_TTL_SECONDS = 300;
+const ONLINE_CACHE_TTL_SECONDS = 60;
 const DEFAULT_ALLOWED_ORIGINS = [
   'https://shan-verse.com',
   'https://www.shan-verse.com',
@@ -124,9 +124,12 @@ async function listAllKeys(kv, prefix) {
 }
 
 async function getOnlineCount(kv, minimum = 0) {
-  const cachedOnline = Number(await kv.get(ONLINE_CACHE_KEY));
-  if (Number.isFinite(cachedOnline) && cachedOnline >= 0) {
-    return Math.max(cachedOnline, minimum);
+  const cachedValue = await kv.get(ONLINE_CACHE_KEY);
+  if (cachedValue !== null) {
+    const cachedOnline = Number(cachedValue);
+    if (Number.isFinite(cachedOnline) && cachedOnline >= 0) {
+      return Math.max(cachedOnline, minimum);
+    }
   }
 
   const activeKeys = await listAllKeys(kv, 'active:');
