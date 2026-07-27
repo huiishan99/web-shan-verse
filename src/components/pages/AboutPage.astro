@@ -292,7 +292,7 @@ function getItunesSearchUrl(term: string, country = 'JP') {
           <div class="profile-links">
             {profile.links.map((link) => (
               <a href={link.url} target="_blank" rel="noopener noreferrer" class="profile-link">
-                <Icon name={link.icon} size={18} />
+                <Icon name={link.icon} size={link.icon === 'linkedin' ? 20 : 18} />
                 <span>{link.name}</span>
               </a>
             ))}
