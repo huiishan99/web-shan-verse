@@ -484,6 +484,16 @@ export const projectCategories: ProjectCategory[] = [
             },
             {
                 title: "Assessing the Security of Vibe Coding: Baseline vs. Security-Oriented Prompts in LLM Code Generation",
+                authors: {
+                    en: "Runtong He, Huishan Lai, Jingxue Chen, Chunhua Su",
+                    zh: "Runtong He, Huishan Lai, Jingxue Chen, Chunhua Su",
+                    ja: "Runtong He, Huishan Lai, Jingxue Chen, Chunhua Su"
+                },
+                conference: {
+                    en: "ISPEC 2025: 20th International Conference on Information Security Practice and Experience",
+                    zh: "ISPEC 2025: 20th International Conference on Information Security Practice and Experience",
+                    ja: "ISPEC 2025: 20th International Conference on Information Security Practice and Experience"
+                },
                 description: {
                     en: "Large Language Models (LLMs) are increasingly used in software development through so-called “vibe coding,” where developers specify tasks in natural language and rely on the model to produce executable code. While this paradigm lowers barriers to entry and accelerates prototyping, it raises concerns about security. Prior studies show that a substantial fraction of AI-generated code contains exploitable vulnerabilities, and functional correctness does not guarantee safety. This paper investigates whether security-oriented prompting improves the security of LLM-generated code. We design ten representative Python tasks inspired by OWASP Top 10 and CWE categories, and evaluate outputs from an open-source 20B-parameter model using static analysis (Bandit) and lightweight runtime probes.",
                     zh: "大语言模型（LLMs）正越来越多地被用于所谓的 “vibe coding” 软件开发流程中：开发者用自然语言描述任务，并依赖模型生成可执行代码。虽然这种方式降低了开发门槛并加速原型构建，但也带来了安全风险。已有研究显示，AI 生成代码中有相当一部分包含可被利用的漏洞，功能正确并不等同于安全。本文研究面向安全的提示词是否能提升 LLM 生成代码的安全性。我们设计了十个受 OWASP Top 10 与 CWE 类别启发的代表性 Python 任务，并使用静态分析（Bandit）和轻量级运行时探针对一个开源 20B 参数模型的输出进行评估。",
