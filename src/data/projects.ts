@@ -490,7 +490,7 @@ export const projectCategories: ProjectCategory[] = [
                     ja: "大規模言語モデル（LLM）は、開発者が自然言語でタスクを指定し、モデルに実行可能なコード生成を任せる “vibe coding” を通じて、ソフトウェア開発でますます利用されています。この手法は参入障壁を下げ、プロトタイピングを高速化する一方で、セキュリティ上の懸念も生みます。先行研究では、AI 生成コードの相当数に悪用可能な脆弱性が含まれ、機能的な正しさが安全性を保証しないことが示されています。本研究では、セキュリティ指向のプロンプトが LLM 生成コードの安全性を改善するかを調査します。OWASP Top 10 と CWE カテゴリに着想を得た10個の代表的な Python タスクを設計し、オープンソースの 20B パラメータモデルの出力を静的解析（Bandit）と軽量な実行時プローブで評価します。"
                 },
                 github: "https://github.com/huiishan99/vibe-sec-experiment",
-                website: "",
+                website: "https://link.springer.com/chapter/10.1007/978-981-95-9284-5_27",
                 tags: ["Large Language Models","Software Security","Vibe Coding","ISPEC 2025"]
             },
             {
