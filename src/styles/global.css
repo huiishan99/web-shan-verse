@@ -42,13 +42,12 @@
   --surface-blur: 8px;
   --surface-radius: 6px;
   
-  /* 字体 */
-  --font-display: 'Cinzel', 'Georgia', serif;
-  --font-body: 'Crimson Pro', 'LXGW WenKai', 'LXGW WenKai TC', 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-  
-  /* 中日文字体 */
-  --font-cjk: 'LXGW WenKai', 'LXGW WenKai TC', serif;
+  /* 字体：拉丁字符优先使用英文页字体，CJK 字符按页面语言回退 */
+  --font-cjk: 'LXGW WenKai', 'LXGW WenKai TC', 'Microsoft YaHei';
+  --font-display: 'Cinzel', var(--font-cjk), Georgia, serif;
+  --font-editorial: 'Cormorant Garamond', var(--font-cjk), Georgia, serif;
+  --font-body: 'Crimson Pro', var(--font-cjk), 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', var(--font-cjk), monospace;
   
   /* 间距 */
   --space-xs: 0.25rem;
@@ -56,6 +55,14 @@
   --space-md: 1rem;
   --space-lg: 2rem;
   --space-xl: 4rem;
+}
+
+html[lang='zh'] {
+  --font-cjk: 'LXGW WenKai', 'LXGW WenKai TC', 'Microsoft YaHei';
+}
+
+html[lang='ja'] {
+  --font-cjk: 'Klee One', 'Yu Mincho', 'Hiragino Mincho ProN';
 }
 
 /* --- 全局样式 --- */
@@ -90,7 +97,7 @@ body {
 
   .language-toggle[lang='zh'],
   .language-toggle[lang='ja'] {
-    font-family: var(--font-cjk) !important;
+    font-family: var(--font-body) !important;
     font-size: 0.72rem !important;
     letter-spacing: 0 !important;
   }
