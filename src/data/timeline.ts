@@ -30,6 +30,22 @@ export const timelineData: TimelineYear[] = [
     year: 2026,
     events: [
       {
+        month: { en: "August", zh: "八月", ja: "8月" },
+        title: {
+          en: "Obon Holiday Trip to Tokyo",
+          zh: "盂兰盆假期东京旅行",
+          ja: "お盆休みの東京旅行"
+        },
+        weight: "standard",
+        category: "travel",
+        date: "2026-08-09",
+        description: {
+          en: "Traveled to Tokyo with my partner for the Obon holiday from August 9 to 13.",
+          zh: "8月9日至13日，和伴侣一起在东京度过盂兰盆假期。",
+          ja: "8月9日から13日まで、パートナーと一緒に東京でお盆休みを過ごしました。"
+        }
+      },
+      {
         month: { en: "July", zh: "七月", ja: "7月" },
         title: {
           en: "Marriage Registration at Iwaki City Hall",
