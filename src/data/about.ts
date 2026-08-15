@@ -330,60 +330,60 @@ export const interests: InterestCategory[] = [
     name: { en: "Games", zh: "游戏", ja: "ゲーム" },
     icon: "gamepad",
     items: [
-      { title: "The Legend of Zelda: Breath of the Wild", wikiPage: "The Legend of Zelda: Breath of the Wild" },
-      { title: "Baldur's Gate 3", wikiPage: "Baldur's Gate 3" },
-      { title: "Stardew Valley", wikiPage: "Stardew Valley" },
-      { title: "Persona 5", wikiPage: "Persona 5" },
-      { title: "Crusader Kings III", wikiPage: "Crusader Kings III" },
-      { title: "Cyberpunk 2077", wikiPage: "Cyberpunk 2077" },
-      { title: "Disco Elysium: The Final Cut", wikiPage: "Disco Elysium" },
-      { title: "Uncharted Waters: New Horizons", wikiPage: "Uncharted Waters: New Horizons" },
-      { title: "Resident Evil 4", wikiPage: "Resident Evil 4" },
-      { title: "The Legend of Sword and Fairy 4", wikiPage: "The Legend of Sword and Fairy 4" }
+      { title: { en: "The Legend of Zelda: Breath of the Wild", zh: "塞尔达传说 旷野之息", ja: "ゼルダの伝説 ブレス オブ ザ ワイルド" }, wikiPage: "The Legend of Zelda: Breath of the Wild" },
+      { title: { en: "Baldur's Gate 3", zh: "博德之门3", ja: "バルダーズ・ゲート3" }, wikiPage: "Baldur's Gate 3" },
+      { title: { en: "Stardew Valley", zh: "星露谷物语", ja: "Stardew Valley" }, wikiPage: "Stardew Valley" },
+      { title: { en: "Persona 5", zh: "女神异闻录5", ja: "ペルソナ5" }, wikiPage: "Persona 5" },
+      { title: { en: "Crusader Kings III", zh: "十字军之王 III", ja: "クルセイダーキングス Ⅲ" }, wikiPage: "Crusader Kings III" },
+      { title: { en: "Cyberpunk 2077", zh: "赛博朋克2077", ja: "サイバーパンク2077" }, wikiPage: "Cyberpunk 2077" },
+      { title: { en: "Disco Elysium: The Final Cut", zh: "极乐迪斯科：最终剪辑版", ja: "ディスコ エリジウム ザ ファイナル カット" }, wikiPage: "Disco Elysium" },
+      { title: { en: "Uncharted Waters: New Horizons", zh: "大航海时代II", ja: "大航海時代II" }, wikiPage: "Uncharted Waters: New Horizons" },
+      { title: { en: "Resident Evil 4", zh: "生化危机4", ja: "バイオハザード4" }, wikiPage: "Resident Evil 4" },
+      { title: { en: "The Legend of Sword and Fairy 4", zh: "仙剑奇侠传四", ja: "仙剣奇侠伝四" }, wikiPage: "The Legend of Sword and Fairy 4" }
     ]
   },
   {
     name: { en: "Movies", zh: "电影", ja: "映画" },
     icon: "film",
     items: [
-      { title: "Coco", wikiPage: "Coco (2017 film)" },
-      { title: "Flipped", wikiPage: "Flipped (2010 film)" },
-      { title: "Howl's Moving Castle", wikiPage: "Howl's Moving Castle (film)" },
-      { title: "The Truman Show", wikiPage: "The Truman Show" },
-      { title: "Interstellar", wikiPage: "Interstellar (film)" },
-      { title: "The Lord of the Rings", wikiPage: "The Lord of the Rings (film series)" },
-      { title: "The Reluctant Fundamentalist", wikiPage: "The Reluctant Fundamentalist (film)" },
-      { title: "Maharaja", wikiPage: "Maharaja (2024 film)" }
+      { title: { en: "Coco", zh: "寻梦环游记", ja: "リメンバー・ミー" }, wikiPage: "Coco (2017 film)" },
+      { title: { en: "Flipped", zh: "怦然心动", ja: "Flipped" }, wikiPage: "Flipped (2010 film)" },
+      { title: { en: "Howl's Moving Castle", zh: "哈尔的移动城堡", ja: "ハウルの動く城" }, wikiPage: "Howl's Moving Castle (film)" },
+      { title: { en: "The Truman Show", zh: "楚门的世界", ja: "トゥルーマン・ショー" }, wikiPage: "The Truman Show" },
+      { title: { en: "Interstellar", zh: "星际穿越", ja: "インターステラー" }, wikiPage: "Interstellar (film)" },
+      { title: { en: "The Lord of the Rings", zh: "指环王", ja: "ロード・オブ・ザ・リング" }, wikiPage: "The Lord of the Rings (film series)" },
+      { title: { en: "The Reluctant Fundamentalist", zh: "拉合尔茶馆的陌生人", ja: "ミッシング・ポイント" }, wikiPage: "The Reluctant Fundamentalist (film)" },
+      { title: { en: "Maharaja", zh: "因果报应", ja: "Maharaja" }, wikiPage: "Maharaja (2024 film)" }
     ]
   },
   {
     name: { en: "Drama & Anime", zh: "剧集与动画", ja: "ドラマ・アニメ" },
     icon: "layers",
     items: [
-      { title: "Love, Death & Robots", wikiPage: "Love, Death & Robots" },
-      { title: "Cyberpunk: Edgerunners", wikiPage: "Cyberpunk: Edgerunners" },
-      { title: "The Queen's Gambit", wikiPage: "The Queen's Gambit (miniseries)" },
-      { title: "Gin Tama", wikiPage: "Gin Tama" },
-      { title: "Doraemon", wikiPage: "Doraemon" }
+      { title: { en: "Love, Death & Robots", zh: "爱，死亡和机器人", ja: "ラブ、デス&ロボット" }, wikiPage: "Love, Death & Robots" },
+      { title: { en: "Cyberpunk: Edgerunners", zh: "赛博朋克：边缘行者", ja: "サイバーパンク エッジランナーズ" }, wikiPage: "Cyberpunk: Edgerunners" },
+      { title: { en: "The Queen's Gambit", zh: "后翼弃兵", ja: "クイーンズ・ギャンビット" }, wikiPage: "The Queen's Gambit (miniseries)" },
+      { title: { en: "Gin Tama", zh: "银魂", ja: "銀魂" }, wikiPage: "Gin Tama" },
+      { title: { en: "Doraemon", zh: "哆啦A梦", ja: "ドラえもん" }, wikiPage: "Doraemon" }
     ]
   },
   {
     name: { en: "Books", zh: "书", ja: "本" },
     icon: "book",
     items: [
-      { title: "Les Misérables", wikiPage: "Les Misérables" },
-      { title: "A Thousand Splendid Suns", wikiPage: "A Thousand Splendid Suns" },
-      { title: "To Live", wikiPage: "To Live (novel)" },
-      { title: "Tristan and Iseult", wikiPage: "Tristan and Iseult" },
-      { title: "Kinder- und Hausmärchen", wikiPage: "Grimms' Fairy Tales" }
+      { title: { en: "Les Misérables", zh: "悲惨世界", ja: "レ・ミゼラブル" }, wikiPage: "Les Misérables" },
+      { title: { en: "A Thousand Splendid Suns", zh: "灿烂千阳", ja: "千の輝く太陽" }, wikiPage: "A Thousand Splendid Suns" },
+      { title: { en: "To Live", zh: "活着", ja: "活きる" }, wikiPage: "To Live (novel)" },
+      { title: { en: "Tristan and Iseult", zh: "特里斯坦与伊索尔德", ja: "トリスタンとイゾルデ" }, wikiPage: "Tristan and Iseult" },
+      { title: { en: "Kinder- und Hausmärchen", zh: "格林童话", ja: "グリム童話" }, wikiPage: "Grimms' Fairy Tales" }
     ]
   },
   {
     name: { en: "Music", zh: "音乐", ja: "音楽" },
     icon: "music",
     items: [
-      { title: "Bohemian Rhapsody", artist: "Queen", wikiPage: "Bohemian Rhapsody", previewProvider: "itunes", itunesCountry: "JP" },
-      { title: "We Are the Champions", artist: "Queen", wikiPage: "We Are the Champions", previewProvider: "itunes", itunesCountry: "JP" },
+      { title: { en: "Bohemian Rhapsody", zh: "波西米亚狂想曲", ja: "ボヘミアン・ラプソディ" }, artist: "Queen", wikiPage: "Bohemian Rhapsody", previewProvider: "itunes", itunesCountry: "JP", itunesTerm: "Bohemian Rhapsody Queen" },
+      { title: { en: "We Are the Champions", zh: "我们是冠军", ja: "伝説のチャンピオン" }, artist: "Queen", wikiPage: "We Are the Champions", previewProvider: "itunes", itunesCountry: "JP", itunesTerm: "We Are the Champions Queen" },
       { title: "Lemon", artist: "Kenshi Yonezu", wikiPage: "Lemon (Kenshi Yonezu song)", previewProvider: "itunes", itunesCountry: "JP" }
     ]
   },
