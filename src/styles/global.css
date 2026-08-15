@@ -43,7 +43,7 @@
   --surface-radius: 6px;
   
   /* 字体：拉丁字符优先使用英文页字体，CJK 字符按页面语言回退 */
-  --font-cjk: 'LXGW WenKai', 'LXGW WenKai TC', 'Microsoft YaHei';
+  --font-cjk: 'Noto Serif SC', 'Songti SC', SimSun;
   --font-display: 'Cinzel', var(--font-cjk), Georgia, serif;
   --font-editorial: 'Cormorant Garamond', var(--font-cjk), Georgia, serif;
   --font-body: 'Crimson Pro', var(--font-cjk), 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
@@ -58,11 +58,11 @@
 }
 
 html[lang='zh'] {
-  --font-cjk: 'LXGW WenKai', 'LXGW WenKai TC', 'Microsoft YaHei';
+  --font-cjk: 'Noto Serif SC', 'Songti SC', SimSun;
 }
 
 html[lang='ja'] {
-  --font-cjk: 'Klee One', 'Yu Mincho', 'Hiragino Mincho ProN';
+  --font-cjk: 'Shippori Mincho', 'Yu Mincho', 'Hiragino Mincho ProN';
 }
 
 /* --- 全局样式 --- */
