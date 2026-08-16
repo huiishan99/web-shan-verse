@@ -47,6 +47,7 @@
   --font-display: 'Cinzel', var(--font-cjk), Georgia, serif;
   --font-editorial: 'Cormorant Garamond', var(--font-cjk), Georgia, serif;
   --font-body: 'Crimson Pro', var(--font-cjk), 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+  --font-navigation: var(--font-body);
   --font-mono: 'JetBrains Mono', 'Fira Code', var(--font-cjk), monospace;
   
   /* 间距 */
@@ -59,6 +60,7 @@
 
 html[lang='zh'] {
   --font-cjk: 'Noto Serif SC', 'Songti SC', SimSun;
+  --font-navigation: 'Crimson Pro', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
 }
 
 html[lang='ja'] {
