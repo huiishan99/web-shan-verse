@@ -2,6 +2,15 @@
    SHAN-VERSE - 深空星尘 × 蒸汽朋克 主题
    ═══════════════════════════════════════════════════════════ */
 
+@font-face {
+  font-family: 'Zhuque Fangsong Navigation';
+  src: url('/fonts/ZhuqueFangsong-Navigation.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+4E8E, U+5173, U+535A, U+5BA2, U+65F6, U+76EE, U+7EBF, U+95F4, U+9879;
+}
+
 /* --- 基础变量 --- */
 :root {
   /* 深空背景色 */
@@ -60,7 +69,7 @@
 
 html[lang='zh'] {
   --font-cjk: 'Noto Serif SC', 'Songti SC', SimSun;
-  --font-navigation: 'Crimson Pro', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+  --font-navigation: 'Crimson Pro', 'Zhuque Fangsong Navigation', 'Noto Serif SC', 'Songti SC', SimSun;
 }
 
 html[lang='ja'] {
