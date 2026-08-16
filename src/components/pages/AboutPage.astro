@@ -2,7 +2,19 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../Icon.astro';
 import TrustedInlineHtml from '../TrustedInlineHtml.astro';
-import { pageHeader, intro, profile, education, experience, awards, skills, languages, interests, type InterestItem } from '../../data/about';
+import {
+  pageHeader,
+  intro,
+  profile,
+  education,
+  experience,
+  awards,
+  skills,
+  languages,
+  interests,
+  localizedWikipediaPages,
+  type InterestItem,
+} from '../../data/about';
 import { defaultLocale, localizeString, type Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
 import { asTrustedInlineHtml } from '../../utils/html';
@@ -13,6 +25,27 @@ interface Props {
 
 const { lang = defaultLocale } = Astro.props;
 const t = useTranslations(lang);
+
+const wikipediaPreviewCopy = {
+  en: {
+    prompt: 'Hover to load a cover preview.',
+    loading: 'Loading Wikipedia preview...',
+    details: 'Open Wikipedia for more details.',
+    unavailable: 'Preview unavailable. Open Wikipedia for details.',
+  },
+  zh: {
+    prompt: '悬停以加载封面预览。',
+    loading: '正在加载维基百科预览…',
+    details: '在维基百科查看更多信息。',
+    unavailable: '暂时无法加载预览，请打开维基百科查看详情。',
+  },
+  ja: {
+    prompt: 'ホバーするとカバープレビューを読み込みます。',
+    loading: 'Wikipediaのプレビューを読み込んでいます…',
+    details: 'Wikipediaで詳細を見る。',
+    unavailable: 'プレビューを読み込めません。Wikipediaで詳細をご覧ください。',
+  },
+}[lang];
 
 type RichInterestItem = Extract<InterestItem, { title: unknown }>;
 
@@ -39,8 +72,24 @@ function getInterestTitle(item: InterestItem) {
   return hasInterestTitle(item) ? localizeString(item.title, lang) : localizeString(item, lang);
 }
 
-function getWikipediaUrl(page: string) {
-  return `https://en.wikipedia.org/wiki/${encodeURIComponent(page).replace(/%20/g, '_')}`;
+function getWikipediaTarget(page: string) {
+  const localizedPage = lang === 'en' ? undefined : localizedWikipediaPages[page]?.[lang];
+
+  return {
+    language: localizedPage ? lang : 'en',
+    page: localizedPage ?? page,
+    fallbackPage: page,
+  };
+}
+
+function getWikipediaUrl(page: string, language: Locale) {
+  return `https://${language}.wikipedia.org/wiki/${encodeURIComponent(page).replace(/%20/g, '_')}`;
+}
+
+function getWikipediaAriaLabel(title: string) {
+  if (lang === 'zh') return `在维基百科查看${title}`;
+  if (lang === 'ja') return `Wikipediaで${title}を見る`;
+  return `${title} on Wikipedia`;
 }
 
 function getItunesSearchUrl(term: string, country = 'JP') {
@@ -207,6 +256,7 @@ function getItunesSearchUrl(term: string, country = 'JP') {
                       ? localizeString(item.itunesTerm, lang)
                       : [title, artist].filter(Boolean).join(' ');
                     const itunesCountry = hasInterestTitle(item) ? item.itunesCountry ?? 'JP' : 'JP';
+                    const wikipediaTarget = isWikiInterestItem(item) ? getWikipediaTarget(item.wikiPage) : undefined;
 
                     return isAudioInterestItem(item) ? (
                       <a
@@ -222,7 +272,9 @@ function getItunesSearchUrl(term: string, country = 'JP') {
                         data-itunes-preview={item.previewProvider === 'itunes' ? true : undefined}
                         data-itunes-term={itunesTerm}
                         data-itunes-country={itunesCountry}
-                        data-wiki-page={isWikiInterestItem(item) ? item.wikiPage : undefined}
+                        data-wiki-page={wikipediaTarget?.page}
+                        data-wiki-language={wikipediaTarget?.language}
+                        data-wiki-fallback-page={wikipediaTarget?.fallbackPage}
                         aria-label={`Play ${title}`}
                         aria-pressed="false"
                       >
@@ -242,15 +294,20 @@ function getItunesSearchUrl(term: string, country = 'JP') {
                           </span>
                         </span>
                       </a>
-                    ) : isWikiInterestItem(item) ? (
+                    ) : wikipediaTarget ? (
                       <a
                         class="interest-tag interest-tag--work"
-                        href={getWikipediaUrl(item.wikiPage)}
+                        href={getWikipediaUrl(wikipediaTarget.page, wikipediaTarget.language)}
                         target="_blank"
                         rel="noopener noreferrer"
                         data-wiki-preview
-                        data-wiki-page={item.wikiPage}
-                        aria-label={`${title} on Wikipedia`}
+                        data-wiki-page={wikipediaTarget.page}
+                        data-wiki-language={wikipediaTarget.language}
+                        data-wiki-fallback-page={wikipediaTarget.fallbackPage}
+                        data-wiki-loading={wikipediaPreviewCopy.loading}
+                        data-wiki-details={wikipediaPreviewCopy.details}
+                        data-wiki-unavailable={wikipediaPreviewCopy.unavailable}
+                        aria-label={getWikipediaAriaLabel(title)}
                       >
                         <span>{title}</span>
                         <span class="interest-preview" aria-hidden="true">
@@ -260,7 +317,7 @@ function getItunesSearchUrl(term: string, country = 'JP') {
                           <span class="interest-preview-body">
                             <span class="interest-preview-kicker">Wikipedia</span>
                             <strong data-wiki-title>{title}</strong>
-                            <span data-wiki-extract>Hover to load a cover preview.</span>
+                            <span data-wiki-extract>{wikipediaPreviewCopy.prompt}</span>
                           </span>
                         </span>
                       </a>
@@ -310,11 +367,37 @@ function getItunesSearchUrl(term: string, country = 'JP') {
 
     const summaryCache = new Map();
     const itunesCache = new Map();
-    const API_ROOT = 'https://en.wikipedia.org/api/rest_v1/page/summary/';
     const ITUNES_API_ROOT = 'https://itunes.apple.com/search';
+    const WIKIPEDIA_LANGUAGES = new Set(['en', 'zh', 'ja']);
 
     function findPreviewLink(target) {
       return target instanceof Element ? target.closest('[data-wiki-preview], [data-itunes-preview]') : null;
+    }
+
+    function getWikipediaLanguage(link) {
+      const language = link.dataset.wikiLanguage || 'en';
+      return WIKIPEDIA_LANGUAGES.has(language) ? language : 'en';
+    }
+
+    function getWikipediaApiRoot(language) {
+      return `https://${language}.wikipedia.org/api/rest_v1/page/summary/`;
+    }
+
+    function getWikipediaArticleUrl(language, page) {
+      return `https://${language}.wikipedia.org/wiki/${encodeURIComponent(page).replace(/%20/g, '_')}`;
+    }
+
+    async function getWikipediaSummary(language, page) {
+      const cacheKey = `${language}:${page}`;
+
+      if (!summaryCache.has(cacheKey)) {
+        summaryCache.set(cacheKey, fetch(`${getWikipediaApiRoot(language)}${encodeURIComponent(page)}`).then((response) => {
+          if (!response.ok) throw new Error(`Wikipedia returned ${response.status}`);
+          return response.json();
+        }));
+      }
+
+      return summaryCache.get(cacheKey);
     }
 
     function setExtract(link, text) {
@@ -419,29 +502,39 @@ function getItunesSearchUrl(term: string, country = 'JP') {
         return;
       }
 
-      const page = link.dataset.wikiPage;
+      let page = link.dataset.wikiPage;
       if (!page || link.dataset.previewLoaded === 'true') return;
 
       link.dataset.previewLoaded = 'true';
-      setExtract(link, 'Loading Wikipedia preview...');
+      setExtract(link, link.dataset.wikiLoading || 'Loading Wikipedia preview...');
 
       try {
-        if (!summaryCache.has(page)) {
-          const response = await fetch(`${API_ROOT}${encodeURIComponent(page)}`);
-          if (!response.ok) throw new Error(`Wikipedia returned ${response.status}`);
-          summaryCache.set(page, response.json());
+        let language = getWikipediaLanguage(link);
+        let data;
+
+        try {
+          data = await getWikipediaSummary(language, page);
+        } catch (error) {
+          const fallbackPage = link.dataset.wikiFallbackPage;
+          if (language === 'en' || !fallbackPage) throw error;
+
+          language = 'en';
+          page = fallbackPage;
+          data = await getWikipediaSummary(language, page);
+          link.dataset.wikiLanguage = language;
+          link.dataset.wikiPage = page;
+          link.href = getWikipediaArticleUrl(language, page);
         }
 
-        const data = await summaryCache.get(page);
         const thumbnail = data?.originalimage?.source || data?.thumbnail?.source;
-        const description = data?.description || data?.extract || 'Open Wikipedia for more details.';
+        const description = data?.description || data?.extract || link.dataset.wikiDetails || 'Open Wikipedia for more details.';
 
         if (data?.title) setTitle(link, data.title);
         setExtract(link, description);
         setImage(link, thumbnail);
       } catch {
         link.dataset.previewLoaded = 'false';
-        setExtract(link, 'Preview unavailable. Open Wikipedia for details.');
+        setExtract(link, link.dataset.wikiUnavailable || 'Preview unavailable. Open Wikipedia for details.');
       }
     }
 
