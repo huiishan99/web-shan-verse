@@ -28,7 +28,15 @@ function getProjectStatus(project: ProjectItem, category: ProjectCategory): Proj
   return 'archive';
 }
 
-const categoryRoutes = projectCategories.map((category) => ({
+const categoryOrder = new Map([
+  ['publications', 0],
+  ['research', 1],
+]);
+const orderedProjectCategories = [...projectCategories].sort((first, second) =>
+  (categoryOrder.get(first.id) ?? 2) - (categoryOrder.get(second.id) ?? 2)
+);
+
+const categoryRoutes = orderedProjectCategories.map((category) => ({
   id: category.id,
   icon: category.icon,
   title: localizeString(category.title, lang),
@@ -73,7 +81,7 @@ function getAuthorParts(authors: string) {
       </div>
     </nav>
     
-    {projectCategories.map((category) => (
+    {orderedProjectCategories.map((category) => (
       <section class="project-section" id={category.id}>
         <h2>
           <span class="section-logo" aria-hidden="true">
