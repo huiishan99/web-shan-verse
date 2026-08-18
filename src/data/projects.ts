@@ -36,6 +36,7 @@ export type ProjectStatus =
     | "prototype"
     | "coursework"
     | "practice"
+    | "in-preparation"
     | "under-review"
     | "accepted"
     | "publication"
@@ -494,6 +495,25 @@ export const projectCategories: ProjectCategory[] = [
                 },
                 status: "under-review",
                 tags: ["Multimodal Learning", "Model Evaluation", "Reliable AI"]
+            },
+            {
+                title: {
+                    en: "Human-Centered XR Interaction Research",
+                    zh: "人本 XR 交互研究",
+                    ja: "人間中心の XR インタラクション研究"
+                },
+                conference: {
+                    en: "International HCI submission in preparation · Venue undecided",
+                    zh: "国际 HCI 会议投稿准备中 · 目标会场尚未确定",
+                    ja: "国際 HCI 会議への投稿準備中 · 投稿先未定"
+                },
+                description: {
+                    en: "Ongoing research on human-centered interaction in immersive environments. The project identity, system concept, implementation, study design, collaborators, and target venue will remain private while the work is being developed.",
+                    zh: "围绕沉浸式环境中的人本交互开展研究。项目身份、系统构想、实现细节、研究设计、合作信息和目标会议将在研究开发期间保持非公开。",
+                    ja: "没入型環境における人間中心のインタラクションを研究しています。研究の準備中は、プロジェクト名、システム構想、実装、研究設計、共同研究者、投稿先を非公開とします。"
+                },
+                status: "in-preparation",
+                tags: ["Human-Computer Interaction", "Extended Reality", "Immersive Systems"]
             },
             {
                 title: "Cost-Aware Confidence-Gated Two-Stage Network Intrusion Detection under a Cross-File Cross-Class Stress Test",
