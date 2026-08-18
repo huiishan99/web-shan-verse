@@ -36,6 +36,8 @@ export type ProjectStatus =
     | "prototype"
     | "coursework"
     | "practice"
+    | "under-review"
+    | "accepted"
     | "publication"
     | "private"
     | "archive";
@@ -447,6 +449,71 @@ export const projectCategories: ProjectCategory[] = [
                 },
                 github: "https://github.com/huiishan99/go-11-projects",
                 tags: ["Go", "API", "MySQL", "Slack Bot"]
+            }
+        ]
+    },
+    {
+        id: "research",
+        title: { en: "Research in Progress", zh: "进行中的研究", ja: "進行中の研究" },
+        icon: "publication",
+        items: [
+            {
+                title: {
+                    en: "Efficient AI for Network Security",
+                    zh: "面向网络安全的高效 AI 研究",
+                    ja: "ネットワークセキュリティのための効率的 AI 研究"
+                },
+                conference: {
+                    en: "Double-blind submission · Details withheld during review",
+                    zh: "双盲匿名投稿 · 审稿期间暂不公开细节",
+                    ja: "ダブルブラインド投稿 · 査読中は詳細非公開"
+                },
+                description: {
+                    en: "Ongoing research on efficient machine-learning approaches for network security. The manuscript title, venue, methods, datasets, and results will remain private until the double-blind review process has concluded.",
+                    zh: "围绕网络安全中的高效机器学习方法开展研究。为遵守双盲评审要求，论文标题、投稿会议、具体方法、数据集和实验结果将在评审结束前保持非公开。",
+                    ja: "ネットワークセキュリティに向けた効率的な機械学習手法を研究しています。ダブルブラインド査読を守るため、論文名、投稿先、具体的な手法、データセット、結果は査読終了まで非公開とします。"
+                },
+                status: "under-review",
+                tags: ["Network Security", "Machine Learning", "Efficient AI"]
+            },
+            {
+                title: {
+                    en: "Robust Evaluation for Multimodal Machine Learning",
+                    zh: "多模态机器学习的稳健评估研究",
+                    ja: "マルチモーダル機械学習の堅牢な評価研究"
+                },
+                conference: {
+                    en: "Double-blind submission · Details withheld during review",
+                    zh: "双盲匿名投稿 · 审稿期间暂不公开细节",
+                    ja: "ダブルブラインド投稿 · 査読中は詳細非公開"
+                },
+                description: {
+                    en: "Ongoing research on reliable evaluation for multimodal machine-learning systems. The manuscript title, venue, methods, datasets, and results will remain private until the double-blind review process has concluded.",
+                    zh: "围绕多模态机器学习系统的可靠评估开展研究。为遵守双盲评审要求，论文标题、投稿会议、具体方法、数据集和实验结果将在评审结束前保持非公开。",
+                    ja: "マルチモーダル機械学習システムの信頼できる評価を研究しています。ダブルブラインド査読を守るため、論文名、投稿先、具体的な手法、データセット、結果は査読終了まで非公開とします。"
+                },
+                status: "under-review",
+                tags: ["Multimodal Learning", "Model Evaluation", "Reliable AI"]
+            },
+            {
+                title: "Cost-Aware Confidence-Gated Two-Stage Network Intrusion Detection under a Cross-File Cross-Class Stress Test",
+                authors: {
+                    en: "Jiaming Zhang, Huishan Lai, Runtong He, Jingxue Chen, Chunhua Su",
+                    zh: "Jiaming Zhang, Huishan Lai, Runtong He, Jingxue Chen, Chunhua Su",
+                    ja: "Jiaming Zhang, Huishan Lai, Runtong He, Jingxue Chen, Chunhua Su"
+                },
+                conference: {
+                    en: "ICICS 2026 · Short paper · Publication pending",
+                    zh: "ICICS 2026 · Short Paper · 待正式发表",
+                    ja: "ICICS 2026 · ショートペーパー · 正式公開待ち"
+                },
+                description: {
+                    en: "A cost-aware two-stage NIDS pipeline for cross-file, cross-class distribution shift. An LSTM fast path escalates ambiguous flows to a lightweight verifier, while LLMs are limited to generating structured audit rationales rather than primary decisions.",
+                    zh: "面向跨文件、跨类别分布偏移的成本感知两阶段网络入侵检测流程：LSTM 快速路径将模糊流量交给轻量级验证器处理，LLM 仅用于生成结构化审计解释，而不承担主要决策。",
+                    ja: "ファイル間・クラス間の分布シフトに対応する、コストを考慮した二段階 NIDS パイプラインです。LSTM の高速経路が曖昧なフローだけを軽量検証器へ送り、LLM は主要な判定ではなく構造化された監査根拠の生成に限定します。"
+                },
+                status: "accepted",
+                tags: ["Network Intrusion Detection", "Distribution Shift", "Confidence Gating", "LLM Audit", "ICICS 2026"]
             }
         ]
     },
