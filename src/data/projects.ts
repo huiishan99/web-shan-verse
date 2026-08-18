@@ -39,6 +39,9 @@ export type ProjectStatus =
     | "in-preparation"
     | "under-review"
     | "accepted"
+    | "early-stage"
+    | "on-hold"
+    | "awaiting-coordination"
     | "publication"
     | "private"
     | "archive";
@@ -514,6 +517,48 @@ export const projectCategories: ProjectCategory[] = [
                 },
                 status: "in-preparation",
                 tags: ["Human-Computer Interaction", "Extended Reality", "Immersive Systems"]
+            },
+            {
+                title: {
+                    en: "Interactive World Models Research",
+                    zh: "交互式世界模型研究",
+                    ja: "インタラクティブ世界モデル研究"
+                },
+                description: {
+                    en: "Early-stage research on interactive world models that connect visual world generation, simulation, and decision support for agents. The current phase focuses on refining the research question and evidence plan before choosing the next experimental direction.",
+                    zh: "围绕交互式世界模型开展早期研究，探索如何连接视觉世界生成、仿真与智能体决策支持。当前阶段主要梳理研究问题与证据计划，再确定下一步实验方向。",
+                    ja: "視覚的な世界生成、シミュレーション、エージェントの意思決定支援をつなぐインタラクティブ世界モデルの初期研究です。現在は、次の実験方向を選ぶ前に研究課題と検証計画を整理しています。"
+                },
+                status: "early-stage",
+                tags: ["World Models", "Embodied AI", "Interactive Systems"]
+            },
+            {
+                title: {
+                    en: "Resilient Wireless Systems Research",
+                    zh: "韧性无线系统研究",
+                    ja: "レジリエント無線システム研究"
+                },
+                description: {
+                    en: "Revisiting an earlier line of work on resilient wireless and delay-tolerant communication. The previous prototype is being reorganized before the research question and evaluation scope are developed further.",
+                    zh: "重新整理一项关于韧性无线通信与延迟容忍网络的早期研究。现有原型将先完成梳理，再继续明确研究问题并扩展评估范围。",
+                    ja: "レジリエント無線通信と遅延耐性ネットワークに関する以前の研究を再整理しています。既存のプロトタイプを見直した上で、研究課題と評価範囲を発展させる予定です。"
+                },
+                status: "on-hold",
+                tags: ["Wireless Networks", "Delay-Tolerant Networking", "Edge Systems"]
+            },
+            {
+                title: {
+                    en: "Privacy-Preserving Analytics Research",
+                    zh: "隐私保护分析研究",
+                    ja: "プライバシー保護分析研究"
+                },
+                description: {
+                    en: "Collaborative research on cryptographic and policy-aware approaches to privacy-preserving data analysis. The next scope and timeline remain open pending coordination and progress confirmation with collaborators.",
+                    zh: "围绕密码学与策略感知的隐私保护数据分析开展合作研究。下一阶段的范围与时间线仍需在合作进度确认后确定。",
+                    ja: "暗号技術とポリシーを考慮したプライバシー保護データ分析に関する共同研究です。次段階の範囲と日程は、共同研究の進捗確認後に決定します。"
+                },
+                status: "awaiting-coordination",
+                tags: ["Applied Cryptography", "Privacy-Preserving Analytics", "Research Collaboration"]
             },
             {
                 title: "Cost-Aware Confidence-Gated Two-Stage Network Intrusion Detection under a Cross-File Cross-Class Stress Test",
