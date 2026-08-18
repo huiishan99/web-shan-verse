@@ -462,6 +462,26 @@ export const projectCategories: ProjectCategory[] = [
         icon: "publication",
         items: [
             {
+                title: "Cost-Aware Confidence-Gated Two-Stage Network Intrusion Detection under a Cross-File Cross-Class Stress Test",
+                authors: {
+                    en: "Jiaming Zhang, Huishan Lai, Runtong He, Jingxue Chen, Chunhua Su",
+                    zh: "Jiaming Zhang, Huishan Lai, Runtong He, Jingxue Chen, Chunhua Su",
+                    ja: "Jiaming Zhang, Huishan Lai, Runtong He, Jingxue Chen, Chunhua Su"
+                },
+                conference: {
+                    en: "ICICS 2026 · Short paper · Publication pending",
+                    zh: "ICICS 2026 · Short Paper · 待正式发表",
+                    ja: "ICICS 2026 · ショートペーパー · 正式公開待ち"
+                },
+                description: {
+                    en: "A cost-aware two-stage NIDS pipeline for cross-file, cross-class distribution shift. An LSTM fast path escalates ambiguous flows to a lightweight verifier, while LLMs are limited to generating structured audit rationales rather than primary decisions.",
+                    zh: "面向跨文件、跨类别分布偏移的成本感知两阶段网络入侵检测流程：LSTM 快速路径将模糊流量交给轻量级验证器处理，LLM 仅用于生成结构化审计解释，而不承担主要决策。",
+                    ja: "ファイル間・クラス間の分布シフトに対応する、コストを考慮した二段階 NIDS パイプラインです。LSTM の高速経路が曖昧なフローだけを軽量検証器へ送り、LLM は主要な判定ではなく構造化された監査根拠の生成に限定します。"
+                },
+                status: "accepted",
+                tags: ["Network Intrusion Detection", "Distribution Shift", "Confidence Gating", "LLM Audit", "ICICS 2026"]
+            },
+            {
                 title: {
                     en: "Efficient AI for Network Security",
                     zh: "面向网络安全的高效 AI 研究",
@@ -534,20 +554,6 @@ export const projectCategories: ProjectCategory[] = [
             },
             {
                 title: {
-                    en: "Resilient Wireless Systems Research",
-                    zh: "韧性无线系统研究",
-                    ja: "レジリエント無線システム研究"
-                },
-                description: {
-                    en: "Revisiting an earlier line of work on resilient wireless and delay-tolerant communication. The previous prototype is being reorganized before the research question and evaluation scope are developed further.",
-                    zh: "重新整理一项关于韧性无线通信与延迟容忍网络的早期研究。现有原型将先完成梳理，再继续明确研究问题并扩展评估范围。",
-                    ja: "レジリエント無線通信と遅延耐性ネットワークに関する以前の研究を再整理しています。既存のプロトタイプを見直した上で、研究課題と評価範囲を発展させる予定です。"
-                },
-                status: "on-hold",
-                tags: ["Wireless Networks", "Delay-Tolerant Networking", "Edge Systems"]
-            },
-            {
-                title: {
                     en: "Privacy-Preserving Analytics Research",
                     zh: "隐私保护分析研究",
                     ja: "プライバシー保護分析研究"
@@ -561,24 +567,18 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["Applied Cryptography", "Privacy-Preserving Analytics", "Research Collaboration"]
             },
             {
-                title: "Cost-Aware Confidence-Gated Two-Stage Network Intrusion Detection under a Cross-File Cross-Class Stress Test",
-                authors: {
-                    en: "Jiaming Zhang, Huishan Lai, Runtong He, Jingxue Chen, Chunhua Su",
-                    zh: "Jiaming Zhang, Huishan Lai, Runtong He, Jingxue Chen, Chunhua Su",
-                    ja: "Jiaming Zhang, Huishan Lai, Runtong He, Jingxue Chen, Chunhua Su"
-                },
-                conference: {
-                    en: "ICICS 2026 · Short paper · Publication pending",
-                    zh: "ICICS 2026 · Short Paper · 待正式发表",
-                    ja: "ICICS 2026 · ショートペーパー · 正式公開待ち"
+                title: {
+                    en: "Resilient Wireless Systems Research",
+                    zh: "韧性无线系统研究",
+                    ja: "レジリエント無線システム研究"
                 },
                 description: {
-                    en: "A cost-aware two-stage NIDS pipeline for cross-file, cross-class distribution shift. An LSTM fast path escalates ambiguous flows to a lightweight verifier, while LLMs are limited to generating structured audit rationales rather than primary decisions.",
-                    zh: "面向跨文件、跨类别分布偏移的成本感知两阶段网络入侵检测流程：LSTM 快速路径将模糊流量交给轻量级验证器处理，LLM 仅用于生成结构化审计解释，而不承担主要决策。",
-                    ja: "ファイル間・クラス間の分布シフトに対応する、コストを考慮した二段階 NIDS パイプラインです。LSTM の高速経路が曖昧なフローだけを軽量検証器へ送り、LLM は主要な判定ではなく構造化された監査根拠の生成に限定します。"
+                    en: "Revisiting an earlier line of work on resilient wireless and delay-tolerant communication. The previous prototype is being reorganized before the research question and evaluation scope are developed further.",
+                    zh: "重新整理一项关于韧性无线通信与延迟容忍网络的早期研究。现有原型将先完成梳理，再继续明确研究问题并扩展评估范围。",
+                    ja: "レジリエント無線通信と遅延耐性ネットワークに関する以前の研究を再整理しています。既存のプロトタイプを見直した上で、研究課題と評価範囲を発展させる予定です。"
                 },
-                status: "accepted",
-                tags: ["Network Intrusion Detection", "Distribution Shift", "Confidence Gating", "LLM Audit", "ICICS 2026"]
+                status: "on-hold",
+                tags: ["Wireless Networks", "Delay-Tolerant Networking", "Edge Systems"]
             }
         ]
     },
