@@ -10,10 +10,11 @@
     "check": "astro check",
     "lint": "eslint . --max-warnings=0",
     "test": "node --experimental-strip-types --test tests/*.test.mjs",
+    "test:e2e": "playwright test",
     "check:links": "node --experimental-strip-types scripts/check-project-links.mjs",
     "check:html": "node scripts/check-generated-html.mjs",
     "audit:prod": "npm audit --omit=dev",
-    "verify": "npm run check && npm run lint && npm run test && npm run build && npm run check:html",
+    "verify": "npm run check && npm run lint && npm run test && npm run build && npm run check:html && npm run test:e2e",
     "verify:external": "npm run check:links && npm run audit:prod"
   },
   "repository": {
@@ -44,6 +45,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.62.1",
     "@types/three": "^0.185.1",
     "eslint": "^10.8.0",
     "eslint-plugin-astro": "^1.7.0",

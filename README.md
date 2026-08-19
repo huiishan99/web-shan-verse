@@ -30,6 +30,13 @@ It checks only deterministic repository outputs:
 - unit tests for content rules, shared domain logic, Markdown extraction, and the site-stats Worker
 - the production build
 - generated HTML landmarks, headings, image alt text, IDs, and internal links
+- Playwright smoke tests for the main browser journeys
+
+Install Chromium once before running the complete gate on a new machine:
+
+```sh
+npx playwright install chromium
+```
 
 Checks that require third-party network access run in the scheduled External
 Health workflow and can also be invoked manually:
