@@ -9,8 +9,8 @@
     "preview": "astro preview",
     "check": "astro check",
     "lint": "eslint . --max-warnings=0",
-    "test": "tsx --test tests/project-links.test.mjs tests/site-stats.test.mjs",
-    "check:links": "tsx scripts/check-project-links.mjs",
+    "test": "node --experimental-strip-types --test tests/*.test.mjs",
+    "check:links": "node --experimental-strip-types scripts/check-project-links.mjs",
     "check:html": "node scripts/check-generated-html.mjs",
     "audit:prod": "npm audit --omit=dev",
     "verify": "npm run check && npm run lint && npm run test && npm run check:links && npm run build && npm run check:html && npm run audit:prod"
@@ -44,7 +44,6 @@
     "eslint": "^10.8.0",
     "eslint-plugin-astro": "^1.7.0",
     "globals": "^17.7.0",
-    "tsx": "^4.23.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.65.0"
   },
