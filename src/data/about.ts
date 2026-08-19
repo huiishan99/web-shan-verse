@@ -140,7 +140,7 @@ export const experience: ExperienceItem[] = [
   {
     company: "ALPS ALPINE",
     role: { en: "Engineer (New Graduate)", zh: "工程师（新卒）", ja: "エンジニア（新卒）" },
-    period: { en: "Current", zh: "现在", ja: "現在" },
+    period: { en: "Apr 2026 – Present", zh: "2026年4月 – 至今", ja: "2026年4月 – 現在" },
     logo: "/images/logo-alps.png",
     description: {
       en: "Currently working as a new graduate engineer in the Development & Design Division, 4th Software Engineering Department (開発設計部第４ソフト技術部). The team focuses on embedded software development with PoC-style prototyping. I am learning the department's development workflow and strengthening my embedded software engineering fundamentals through daily project work.",
@@ -151,7 +151,7 @@ export const experience: ExperienceItem[] = [
   {
     company: "ALPS ALPINE",
     role: { en: "Engineer Internship", zh: "工程师实习", ja: "エンジニアインターン" },
-    period: { en: "2 weeks", zh: "2 周", ja: "2週間" },
+    period: { en: "Sep 2024", zh: "2024年9月", ja: "2024年9月" },
     logo: "/images/logo-alps.png",
     description: {
       en: "Developed a VR-based futuristic car HMI prototype using Unity. Built an autonomous driving scenario set on a U.S. highway with experimental next-generation HMI concepts. The prototype was designed for exhibition at CES 2025.",
@@ -162,7 +162,7 @@ export const experience: ExperienceItem[] = [
   {
     company: "University of Aizu",
     role: { en: "Part Time - Teaching Assistant", zh: "兼职 - 助教", ja: "アルバイト - ティーチングアシスタント" },
-    period: { en: "1 year", zh: "1 年", ja: "1年" },
+    period: { en: "Oct 2024 – Sep 2025", zh: "2024年10月 – 2025年9月", ja: "2024年10月 – 2025年9月" },
     logo: "/images/logo-uoa.png",
     description: {
       en: "Assisted professors in supervising undergraduate students. Supported academic reports using MATLAB and Wolfram (2024), and guided VR application development using Unity (2025). Independently prepared and delivered one lecture session on VR development.",
@@ -173,7 +173,7 @@ export const experience: ExperienceItem[] = [
   {
     company: "Alibaba GDT Network",
     role: { en: "Student Internship", zh: "学生实习", ja: "学生インターン" },
-    period: { en: "3 months", zh: "3 个月", ja: "3か月" },
+    period: { en: "Nov 2021 – Jan 2022", zh: "2021年11月 – 2022年1月", ja: "2021年11月 – 2022年1月" },
     logo: "/images/logo-gdt.png",
     description: {
       en: "Worked on technical marketing operations. Conducted target user analysis and e-commerce marketing planning using Joyoung blender products as a case study, focusing on data-driven advertising strategies.",
@@ -184,7 +184,7 @@ export const experience: ExperienceItem[] = [
   {
     company: "Hamazushi",
     role: { en: "Part Time - Kitchen Staff", zh: "兼职 - 厨房员工", ja: "アルバイト - キッチンスタッフ" },
-    period: { en: "1 year", zh: "1 年", ja: "1年" },
+    period: { en: "Mar 2023 – Feb 2024", zh: "2023年3月 – 2024年2月", ja: "2023年3月 – 2024年2月" },
     logo: "/images/logo-uoa.png",
     description: {
       en: "Worked in the kitchen preparing sushi, including nigiri, rolls, and gunkan. Assisted with dessert preparation, cleaning, and general kitchen operations. Averaged 16 working hours per week.",
@@ -195,7 +195,7 @@ export const experience: ExperienceItem[] = [
   {
     company: "Coco Ichibanya Curry House",
     role: { en: "Part Time - Food Server", zh: "兼职 - 餐厅服务", ja: "アルバイト - ホールスタッフ" },
-    period: { en: "1 year 2 months", zh: "1 年 2 个月", ja: "1年2か月" },
+    period: { en: "Dec 2022 – Jan 2024", zh: "2022年12月 – 2024年1月", ja: "2022年12月 – 2024年1月" },
     logo: "/images/logo-uoa.png",
     description: {
       en: "Handled food preparation support, cleaning, cashier duties, order taking, and meal serving. Responsible for opening and closing tasks, including cash handling. Averaged 10 working hours per week.",
