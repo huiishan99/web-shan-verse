@@ -2,11 +2,9 @@ const COUNTER_KEYS = {
   views: 'counter:views',
   visitors: 'counter:visitors',
 };
-
-const ONLINE_CACHE_KEY = 'cache:online';
-const ACTIVE_TTL_SECONDS = 300;
-const ACTIVE_REFRESH_INTERVAL_MS = 240000;
-const ONLINE_CACHE_TTL_SECONDS = 60;
+const INITIALIZED_KEY = 'meta:initialized';
+const ACTIVE_PREFIX = 'active:';
+const ACTIVE_WINDOW_MS = 300_000;
 const DEFAULT_ALLOWED_ORIGINS = [
   'https://shan-verse.com',
   'https://www.shan-verse.com',
@@ -68,13 +66,11 @@ function getClientIp(request) {
 }
 
 async function hashVisitor(ip, env) {
-  const encoder = new TextEncoder();
   if (!env.VISITOR_HASH_SALT) {
     throw new Error('VISITOR_HASH_SALT is missing');
   }
 
-  const salt = env.VISITOR_HASH_SALT;
-  const input = encoder.encode(`${salt}:${ip || 'unknown'}`);
+  const input = new TextEncoder().encode(`${env.VISITOR_HASH_SALT}:${ip || 'unknown'}`);
   const digest = await crypto.subtle.digest('SHA-256', input);
 
   return [...new Uint8Array(digest)]
@@ -82,81 +78,103 @@ async function hashVisitor(ip, env) {
     .join('');
 }
 
-async function getCounter(kv, key) {
-  const value = Number(await kv.get(key));
-  return Number.isFinite(value) && value > 0 ? value : 0;
+function toCounter(value) {
+  const numberValue = Number(value);
+  return Number.isFinite(numberValue) && numberValue >= 0 ? numberValue : 0;
 }
 
-async function incrementCounter(kv, key, currentValue) {
-  const baseValue = Number.isFinite(currentValue) && currentValue >= 0
-    ? currentValue
-    : await getCounter(kv, key);
-  const nextValue = baseValue + 1;
-  await kv.put(key, String(nextValue));
-  return nextValue;
+async function getLegacyCounters(env) {
+  if (!env.SITE_STATS) return { views: 0, visitors: 0 };
+
+  const [views, visitors] = await Promise.all([
+    env.SITE_STATS.get(COUNTER_KEYS.views),
+    env.SITE_STATS.get(COUNTER_KEYS.visitors),
+  ]);
+  return { views: toCounter(views), visitors: toCounter(visitors) };
 }
 
-async function refreshActiveVisitor(kv, key) {
-  const now = Date.now();
-  const lastActiveAt = Number(await kv.get(key));
-  if (Number.isFinite(lastActiveAt) && now - lastActiveAt < ACTIVE_REFRESH_INTERVAL_MS) {
-    return false;
+async function requestCounter(env, payload) {
+  if (!env.SITE_STATS_COUNTER) {
+    throw new Error('SITE_STATS_COUNTER Durable Object binding is missing');
   }
 
-  await kv.put(key, String(now), {
-    expirationTtl: ACTIVE_TTL_SECONDS,
-  });
-  await kv.delete(ONLINE_CACHE_KEY);
-  return true;
+  const legacy = await getLegacyCounters(env);
+  const id = env.SITE_STATS_COUNTER.idFromName('global');
+  const stub = env.SITE_STATS_COUNTER.get(id);
+  return stub.fetch(new Request('https://site-stats.internal/update', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...payload, legacy }),
+  }));
 }
 
-async function listAllKeys(kv, prefix) {
-  let cursor;
-  const keys = [];
+export class SiteStatsCounter {
+  constructor(state) {
+    this.state = state;
+  }
 
-  do {
-    const result = await kv.list({ prefix, cursor });
-    keys.push(...result.keys);
-    cursor = result.list_complete ? undefined : result.cursor;
-  } while (cursor);
-
-  return keys;
-}
-
-async function getOnlineCount(kv, minimum = 0) {
-  const cachedValue = await kv.get(ONLINE_CACHE_KEY);
-  if (cachedValue !== null) {
-    const cachedOnline = Number(cachedValue);
-    if (Number.isFinite(cachedOnline) && cachedOnline >= 0) {
-      return Math.max(cachedOnline, minimum);
+  async fetch(request) {
+    const payload = await readJson(request);
+    if (!payload || !['read', 'pageview', 'heartbeat'].includes(payload.action)) {
+      return jsonResponse({ ok: false, error: 'Invalid counter action' }, { status: 400 });
     }
+
+    return this.state.storage.transaction(async (storage) => {
+      let views = toCounter(await storage.get(COUNTER_KEYS.views));
+      let visitors = toCounter(await storage.get(COUNTER_KEYS.visitors));
+
+      if (!(await storage.get(INITIALIZED_KEY))) {
+        views = Math.max(views, toCounter(payload.legacy?.views));
+        visitors = Math.max(visitors, toCounter(payload.legacy?.visitors));
+        await storage.put(COUNTER_KEYS.views, views);
+        await storage.put(COUNTER_KEYS.visitors, visitors);
+        await storage.put(INITIALIZED_KEY, true);
+      }
+
+      const now = Date.now();
+      if (payload.action !== 'read') {
+        if (!payload.visitorHash) {
+          return jsonResponse({ ok: false, error: 'Visitor hash is required' }, { status: 400 });
+        }
+
+        if (payload.action === 'pageview') {
+          views += 1;
+          await storage.put(COUNTER_KEYS.views, views);
+        }
+
+        const visitorKey = `visitor:${payload.visitorHash}`;
+        if (!(await storage.get(visitorKey))) {
+          visitors += 1;
+          await storage.put(visitorKey, now);
+          await storage.put(COUNTER_KEYS.visitors, visitors);
+        }
+        await storage.put(`${ACTIVE_PREFIX}${payload.visitorHash}`, now);
+      }
+
+      const activeVisitors = await storage.list({ prefix: ACTIVE_PREFIX });
+      let online = 0;
+      for (const [key, lastActiveAt] of activeVisitors) {
+        if (now - toCounter(lastActiveAt) <= ACTIVE_WINDOW_MS) {
+          online += 1;
+        } else {
+          await storage.delete(key);
+        }
+      }
+
+      return jsonResponse({
+        ok: true,
+        views,
+        visitors,
+        online,
+        updatedAt: new Date(now).toISOString(),
+      });
+    });
   }
-
-  const activeKeys = await listAllKeys(kv, 'active:');
-  const onlineCount = Math.max(activeKeys.length, minimum);
-  await kv.put(ONLINE_CACHE_KEY, String(onlineCount), {
-    expirationTtl: ONLINE_CACHE_TTL_SECONDS,
-  });
-
-  return onlineCount;
 }
 
 async function handleStats(request, env) {
-  if (!env.SITE_STATS) {
-    return jsonResponse({ ok: false, error: 'SITE_STATS KV binding is missing' }, { status: 500 });
-  }
-
-  let views = await getCounter(env.SITE_STATS, COUNTER_KEYS.views);
-  let visitors = await getCounter(env.SITE_STATS, COUNTER_KEYS.visitors);
-
   if (request.method === 'GET') {
-    return jsonResponse({
-      ok: true,
-      views,
-      visitors,
-      online: await getOnlineCount(env.SITE_STATS),
-      updatedAt: new Date().toISOString(),
-    });
+    return requestCounter(env, { action: 'read' });
   }
 
   const payload = await readJson(request);
@@ -165,30 +183,7 @@ async function handleStats(request, env) {
   }
 
   const visitorHash = await hashVisitor(getClientIp(request), env);
-  const visitorKey = `visitor:${visitorHash}`;
-  const activeKey = `active:${visitorHash}`;
-
-  if (payload.event === 'pageview') {
-    views = await incrementCounter(env.SITE_STATS, COUNTER_KEYS.views, views);
-  }
-
-  const visitorSeen = await env.SITE_STATS.get(visitorKey);
-  if (!visitorSeen) {
-    await env.SITE_STATS.put(visitorKey, JSON.stringify({
-      firstSeenAt: new Date().toISOString(),
-    }));
-    visitors = await incrementCounter(env.SITE_STATS, COUNTER_KEYS.visitors, visitors);
-  }
-
-  await refreshActiveVisitor(env.SITE_STATS, activeKey);
-
-  return jsonResponse({
-    ok: true,
-    views,
-    visitors,
-    online: await getOnlineCount(env.SITE_STATS, 1),
-    updatedAt: new Date().toISOString(),
-  });
+  return requestCounter(env, { action: payload.event, visitorHash });
 }
 
 export default {

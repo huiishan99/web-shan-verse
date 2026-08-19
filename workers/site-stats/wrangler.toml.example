@@ -11,5 +11,13 @@ kv_namespaces = [
   { binding = "SITE_STATS", id = "replace-with-cloudflare-kv-namespace-id" }
 ]
 
+[[durable_objects.bindings]]
+name = "SITE_STATS_COUNTER"
+class_name = "SiteStatsCounter"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["SiteStatsCounter"]
+
 [vars]
 ALLOWED_ORIGINS = "https://shan-verse.com,https://www.shan-verse.com,http://127.0.0.1:4321,http://localhost:4321"
