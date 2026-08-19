@@ -13,7 +13,8 @@
     "check:links": "node --experimental-strip-types scripts/check-project-links.mjs",
     "check:html": "node scripts/check-generated-html.mjs",
     "audit:prod": "npm audit --omit=dev",
-    "verify": "npm run check && npm run lint && npm run test && npm run check:links && npm run build && npm run check:html && npm run audit:prod"
+    "verify": "npm run check && npm run lint && npm run test && npm run build && npm run check:html",
+    "verify:external": "npm run check:links && npm run audit:prod"
   },
   "repository": {
     "type": "git",
