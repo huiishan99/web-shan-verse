@@ -32,6 +32,14 @@ export default [
     },
   },
   {
+    files: ['src/scripts/client/**/*.js'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+      },
+    },
+  },
+  {
     files: ['src/**/*.astro/*.js', 'src/**/*.astro/*.ts'],
     rules: {
       'no-undef': 'off',
