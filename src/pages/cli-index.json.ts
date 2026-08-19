@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { projectCategories, type ProjectCategory, type ProjectItem, type ProjectStatus } from '../data/projects';
+import { projectCategories } from '../data/projects';
 import { timelineData, type TimelineEvent } from '../data/timeline';
 import { locales, localizeMonth, localizePath, localizeString, type Locale } from '../i18n/config';
 import {
@@ -13,6 +13,7 @@ import {
   getPlainTextExcerpt,
   sortBlogPosts,
 } from '../utils/blog';
+import { getProjectStatus } from '../utils/projects';
 
 export const prerender = true;
 
@@ -41,18 +42,6 @@ function toDateKey(date: Date | string | undefined): string | undefined {
 
 function compactStrings(values: Array<string | undefined>): string[] {
   return values.filter((value): value is string => Boolean(value));
-}
-
-function getProjectStatus(project: ProjectItem, category: ProjectCategory): ProjectStatus {
-  if (project.status) return project.status;
-  if (category.id === 'publications') return 'publication';
-  if (!project.github && !project.paper && !project.caseStudy && !project.website) return 'private';
-  if (category.id === 'school') return 'coursework';
-  if (category.id === 'vr') return 'prototype';
-  if (category.id === 'unity') return project.website ? 'live' : 'practice';
-  if (category.id === 'other') return 'practice';
-  if (project.website) return 'live';
-  return 'archive';
 }
 
 function getProjectEntries(locale: Locale): CliIndexEntry[] {

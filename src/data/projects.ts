@@ -1,11 +1,6 @@
 // Projects & Publications Data
 // 以后添加新项目只需编辑这个文件
-
-type LocalizedString = string | {
-    en: string;
-    zh?: string;
-    ja?: string;
-};
+import type { LocalizedString } from '../i18n/config';
 
 export interface ProjectItem {
     title: LocalizedString;

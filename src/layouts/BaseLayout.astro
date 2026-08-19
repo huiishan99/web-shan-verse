@@ -12,12 +12,14 @@ export interface Props {
   title?: string;
   description?: string;
   lang?: Locale;
+  alternateLocales?: readonly Locale[];
 }
 
 const { 
   title = 'SHAN-VERSE', 
   description,
   lang = defaultLocale,
+  alternateLocales = locales,
 } = Astro.props;
 
 const t = useTranslations(lang);
@@ -27,12 +29,16 @@ const pageTitle = title === 'SHAN-VERSE' ? title : `${title} | SHAN-VERSE`;
 const canonicalUrl = new URL(Astro.url.pathname, siteUrl).toString();
 const previewImage = new URL('/images/header_galaxy.jpg', siteUrl).toString();
 const currentPath = Astro.url.pathname;
-const alternateUrls = locales.map((locale) => ({
+const availableAlternateLocales = alternateLocales.length > 0 ? alternateLocales : [lang];
+const alternateUrls = availableAlternateLocales.map((locale) => ({
   locale,
   href: new URL(localizePath(currentPath, locale), siteUrl).toString(),
 }));
+const defaultAlternateLocale = availableAlternateLocales.includes(defaultLocale)
+  ? defaultLocale
+  : availableAlternateLocales[0];
 const defaultAlternateUrl = new URL(
-  localizePath(currentPath, defaultLocale),
+  localizePath(currentPath, defaultAlternateLocale),
   siteUrl
 ).toString();
 ---
