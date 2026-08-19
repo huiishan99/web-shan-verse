@@ -1,5 +1,14 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { defaultLocale, localeNames, translatedLocales, type Locale } from '../i18n/config';
+import {
+  getBlogPostAlternateLocales,
+  resolveBlogPostSlug,
+  slugifyBlogTaxonomy,
+  validateBlogContent,
+} from './blog-content';
+import { extractMarkdownPlainText } from './markdown';
+
+export { getBlogPostAlternateLocales } from './blog-content';
 
 export type BlogPost = CollectionEntry<'blog'>;
 type BlogTaxonomyKind = 'category' | 'tag';
@@ -45,7 +54,7 @@ export function isPostVisibleInLocale(post: BlogPost, locale: Locale): boolean {
 }
 
 export function getPostSlug(post: BlogPost): string {
-  return post.data.postSlug || post.id;
+  return resolveBlogPostSlug(post);
 }
 
 export function getBlogPostKind(post: BlogPost): BlogPostKind {
@@ -55,29 +64,6 @@ export function getBlogPostKind(post: BlogPost): BlogPostKind {
 
 export function getBlogIndexKindFromSlug(slug: string): BlogPostKind | undefined {
   return blogIndexKinds.find((kind) => blogKindSlugs[kind] === slug);
-}
-
-function getPlainText(body: string, preserveLineBreaks = false): string {
-  const lineBreak = preserveLineBreaks ? '\n' : ' ';
-
-  return body
-    .replace(/^---[\s\S]*?---/m, '')
-    .replace(/import\s+.+?;\s*/g, ' ')
-    .replace(/<SyncNote[\s\S]*?\/>/g, ' ')
-    .replace(/<br\s*\/?>/gi, lineBreak)
-    .replace(/<\/p>/gi, lineBreak)
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/!\[.*?\]\(.*?\)/g, ' ')
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/[#*`>]/g, '')
-    .replace(preserveLineBreaks ? /[^\S\n]+/g : /\s+/g, ' ')
-    .replace(/\n\s+/g, '\n')
-    .replace(/\n{2,}/g, '\n')
-    .trim();
 }
 
 function truncatePlainText(text: string, maxLength: number): string {
@@ -95,7 +81,7 @@ function isGeneratedNoteTitle(title: string): boolean {
 }
 
 function getPlainTextTitle(body: string, maxLength: number): string | undefined {
-  const firstBlock = getPlainText(body, true)
+  const firstBlock = extractMarkdownPlainText(body, true)
     .split('\n')
     .map((line) => line.trim())
     .find(Boolean);
@@ -117,7 +103,7 @@ export function getBlogPostDisplayTitle(post: BlogPost, locale: Locale): string 
 }
 
 export function getPlainTextExcerpt(body: string, maxLength = 150): string {
-  const cleanText = getPlainText(body);
+  const cleanText = extractMarkdownPlainText(body);
 
   if (cleanText.length <= maxLength) return cleanText;
 
@@ -193,9 +179,12 @@ export function getBlogPagePosts(
 }
 
 export async function getBlogPosts(): Promise<BlogPost[]> {
-  return getCollection('blog', ({ data }) => {
+  const posts = await getCollection('blog', ({ data }) => {
     return import.meta.env.PROD ? data.draft !== true : true;
   });
+
+  validateBlogContent(posts, { requireCompleteTranslations: import.meta.env.PROD });
+  return posts;
 }
 
 export function getBlogPostsForLocale(posts: BlogPost[], locale: Locale): BlogPost[] {
@@ -203,11 +192,12 @@ export function getBlogPostsForLocale(posts: BlogPost[], locale: Locale): BlogPo
 }
 
 export async function getBlogPostStaticPaths(locale: Locale) {
-  const posts = getBlogPostsForLocale(await getBlogPosts(), locale);
+  const allPosts = await getBlogPosts();
+  const posts = getBlogPostsForLocale(allPosts, locale);
 
   return posts.map((post) => ({
     params: { slug: getPostSlug(post) },
-    props: { post },
+    props: { post, alternateLocales: getBlogPostAlternateLocales(post, allPosts) },
   }));
 }
 
@@ -217,7 +207,7 @@ export async function getLocalizedBlogPostStaticPaths() {
   return translatedLocales.flatMap((lang) =>
     getBlogPostsForLocale(posts, lang).map((post) => ({
       params: { lang, slug: getPostSlug(post) },
-      props: { post, lang },
+      props: { post, lang, alternateLocales: getBlogPostAlternateLocales(post, posts) },
     }))
   );
 }
@@ -320,7 +310,7 @@ export async function getLocalizedBlogKindPaginationStaticPaths() {
 }
 
 export function getTaxonomySlug(value: string): string {
-  return value.toLowerCase().replace(/\s+/g, '-');
+  return slugifyBlogTaxonomy(value);
 }
 
 export function getBlogCategoryPath(category: string, locale: Locale): string {

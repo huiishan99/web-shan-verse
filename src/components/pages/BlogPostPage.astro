@@ -16,9 +16,10 @@ import {
 type Props = {
   post: CollectionEntry<'blog'>;
   lang?: Locale;
+  alternateLocales?: readonly Locale[];
 };
 
-const { post, lang = defaultLocale } = Astro.props;
+const { post, lang = defaultLocale, alternateLocales } = Astro.props;
 const { Content } = await render(post);
 const t = useTranslations(lang);
 const postKind = getBlogPostKind(post);
@@ -40,7 +41,12 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
 });
 ---
 
-<BaseLayout title={displayTitle} description={metaDescription} lang={lang}>
+<BaseLayout
+  title={displayTitle}
+  description={metaDescription}
+  lang={lang}
+  alternateLocales={alternateLocales}
+>
   <article class:list={['blog-post', `blog-post--${postKind}`]}>
     <header class="post-header">
       <h1 class:list={{ 'visually-hidden': !showPostTitle }}>{displayTitle}</h1>

@@ -11,9 +11,10 @@ export async function getStaticPaths() {
 type Props = {
   post: CollectionEntry<'blog'>;
   lang: Locale;
+  alternateLocales: Locale[];
 };
 
-const { post, lang } = Astro.props;
+const { post, lang, alternateLocales } = Astro.props;
 ---
 
-<BlogPostPage post={post} lang={lang} />
+<BlogPostPage post={post} lang={lang} alternateLocales={alternateLocales} />

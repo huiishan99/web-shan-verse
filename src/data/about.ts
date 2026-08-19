@@ -1,11 +1,6 @@
 // About Page Data
 // 编辑这个文件来更新 About 页面的所有内容
-
-type LocalizedString = string | {
-  en: string;
-  zh?: string;
-  ja?: string;
-};
+import type { LocalizedString } from '../i18n/config';
 
 // ============================================
 // 页面标题和简介

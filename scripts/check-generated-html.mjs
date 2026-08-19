@@ -4,7 +4,7 @@ import path from 'node:path';
 const DIST_DIR = path.resolve('dist');
 const SITE_ORIGIN = 'https://shan-verse.com';
 const SUPPORTED_LANGUAGES = new Set(['en', 'zh', 'ja']);
-const EXPECTED_ALTERNATE_LANGUAGES = ['en', 'zh', 'ja', 'x-default'];
+const ALLOWED_ALTERNATE_LANGUAGES = new Set(['en', 'zh', 'ja', 'x-default']);
 
 function walkHtmlFiles(directory, files = []) {
   for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
@@ -126,11 +126,20 @@ if (!fs.existsSync(DIST_DIR)) {
         failures.push(`${route}: malformed canonical URL ${canonicalHref ?? ''}`);
       }
     }
-    if (
-      alternateLanguages.length !== EXPECTED_ALTERNATE_LANGUAGES.length
-      || EXPECTED_ALTERNATE_LANGUAGES.some((languageCode) => !alternateLanguages.includes(languageCode))
-    ) {
-      failures.push(`${route}: expected alternate links for ${EXPECTED_ALTERNATE_LANGUAGES.join(', ')}`);
+    const duplicateAlternateLanguages = alternateLanguages.filter(
+      (languageCode, index) => alternateLanguages.indexOf(languageCode) !== index
+    );
+    const invalidAlternateLanguages = alternateLanguages.filter(
+      (languageCode) => !ALLOWED_ALTERNATE_LANGUAGES.has(languageCode)
+    );
+    if (!alternateLanguages.includes(expectedLanguage) || !alternateLanguages.includes('x-default')) {
+      failures.push(`${route}: expected alternate links for ${expectedLanguage} and x-default`);
+    }
+    if (duplicateAlternateLanguages.length > 0) {
+      failures.push(`${route}: duplicate alternate language(s): ${[...new Set(duplicateAlternateLanguages)].join(', ')}`);
+    }
+    if (invalidAlternateLanguages.length > 0) {
+      failures.push(`${route}: unsupported alternate language(s): ${invalidAlternateLanguages.join(', ')}`);
     }
 
     const referenceMarkup = html.replace(

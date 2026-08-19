@@ -1,11 +1,6 @@
 // Timeline Data - 以后添加新事件只需编辑这个文件
 // 按年份倒序排列，每年的事件按月份倒序排列
-
-type LocalizedString = string | {
-  en: string;
-  zh?: string;
-  ja?: string;
-};
+import type { LocalizedString } from '../i18n/config';
 
 export type TimelineEventWeight = 'major' | 'standard' | 'note';
 export type TimelineEventCategory = 'research' | 'career' | 'education' | 'life' | 'travel' | 'project' | 'award';
