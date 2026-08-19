@@ -549,6 +549,20 @@ export const projectCategories: ProjectCategory[] = [
             },
             {
                 title: {
+                    en: "Brain–Computer Interface Research",
+                    zh: "脑机接口研究",
+                    ja: "ブレイン・コンピュータ・インターフェース研究"
+                },
+                description: {
+                    en: "Early-stage collaborative research on brain–computer interfaces. The current phase focuses on aligning the research question, refining the idea, and discussing feasible experimental directions with collaborators.",
+                    zh: "围绕脑机接口开展的早期合作研究。当前正在与合作者明确研究问题、细化构想，并讨论可行的实验方向。",
+                    ja: "ブレイン・コンピュータ・インターフェースに関する初期段階の共同研究です。現在は共同研究者と研究課題を整理し、アイデアを具体化しながら、実現可能な実験方向を検討しています。"
+                },
+                status: "early-stage",
+                tags: ["Brain–Computer Interface", "Human-Computer Interaction", "Collaborative Research"]
+            },
+            {
+                title: {
                     en: "Privacy-Preserving Analytics Research",
                     zh: "隐私保护分析研究",
                     ja: "プライバシー保護分析研究"
