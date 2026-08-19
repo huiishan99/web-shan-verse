@@ -47,6 +47,10 @@ jobs:
         run: npm ci
         working-directory: ${{ env.BUILD_PATH }}
 
+      - name: Install browser
+        run: npx playwright install --with-deps chromium
+        working-directory: ${{ env.BUILD_PATH }}
+
       - name: Verify and build
         run: npm run verify
         working-directory: ${{ env.BUILD_PATH }}
