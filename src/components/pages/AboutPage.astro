@@ -12,7 +12,6 @@ import {
   skills,
   languages,
   interests,
-  localizedWikipediaPages,
   type InterestItem,
 } from '../../data/about';
 import { defaultLocale, localizeString, type Locale } from '../../i18n/config';
@@ -73,12 +72,9 @@ function getInterestTitle(item: InterestItem) {
 }
 
 function getWikipediaTarget(page: string) {
-  const localizedPage = lang === 'en' ? undefined : localizedWikipediaPages[page]?.[lang];
-
   return {
-    language: localizedPage ? lang : 'en',
-    page: localizedPage ?? page,
-    fallbackPage: page,
+    language: 'en' as const,
+    page,
   };
 }
 
@@ -274,7 +270,6 @@ function getItunesSearchUrl(term: string, country = 'JP') {
                         data-itunes-country={itunesCountry}
                         data-wiki-page={wikipediaTarget?.page}
                         data-wiki-language={wikipediaTarget?.language}
-                        data-wiki-fallback-page={wikipediaTarget?.fallbackPage}
                         aria-label={`Play ${title}`}
                         aria-pressed="false"
                       >
@@ -303,7 +298,6 @@ function getItunesSearchUrl(term: string, country = 'JP') {
                         data-wiki-preview
                         data-wiki-page={wikipediaTarget.page}
                         data-wiki-language={wikipediaTarget.language}
-                        data-wiki-fallback-page={wikipediaTarget.fallbackPage}
                         data-wiki-loading={wikipediaPreviewCopy.loading}
                         data-wiki-details={wikipediaPreviewCopy.details}
                         data-wiki-unavailable={wikipediaPreviewCopy.unavailable}

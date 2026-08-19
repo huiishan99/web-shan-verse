@@ -320,49 +320,6 @@ export type InterestItem = LocalizedString | {
   itunesTerm?: LocalizedString;
 }
 
-export const localizedWikipediaPages: Record<string, { zh?: string; ja?: string }> = {
-  "The Legend of Zelda: Breath of the Wild": {
-    zh: "塞尔达传说 旷野之息",
-    ja: "ゼルダの伝説 ブレス オブ ザ ワイルド"
-  },
-  "Baldur's Gate 3": { zh: "博德之门3", ja: "バルダーズ・ゲート3" },
-  "Stardew Valley": { zh: "星露谷物语", ja: "スターデューバレー" },
-  "Persona 5": { zh: "女神異聞錄5", ja: "ペルソナ5" },
-  "Crusader Kings III": { zh: "十字军之王III" },
-  "Cyberpunk 2077": { zh: "赛博朋克2077", ja: "サイバーパンク2077" },
-  "Disco Elysium": { zh: "極樂迪斯科", ja: "ディスコ エリジウム" },
-  "Uncharted Waters: New Horizons": { zh: "大航海时代II", ja: "大航海時代II" },
-  "Resident Evil 4": { zh: "生化危機4", ja: "バイオハザード4" },
-  "The Legend of Sword and Fairy 4": { zh: "仙劍奇俠傳四" },
-  "Coco (2017 film)": { zh: "寻梦环游记", ja: "リメンバー・ミー (2017年の映画)" },
-  "Flipped (2010 film)": { zh: "怦然心动 (电影)" },
-  "Howl's Moving Castle (film)": { zh: "哈尔的移动城堡", ja: "ハウルの動く城" },
-  "The Truman Show": { zh: "楚門的世界", ja: "トゥルーマン・ショー" },
-  "Interstellar (film)": { zh: "星际穿越", ja: "インターステラー (映画)" },
-  "The Lord of the Rings (film series)": {
-    zh: "魔戒電影三部曲",
-    ja: "ロード・オブ・ザ・リング (映画シリーズ)"
-  },
-  "The Reluctant Fundamentalist (film)": { ja: "ミッシング・ポイント" },
-  "Maharaja (2024 film)": { zh: "誰偷了垃圾桶？" },
-  "Love, Death & Robots": { zh: "愛x死x機器人", ja: "ラブ、デス&ロボット" },
-  "Cyberpunk: Edgerunners": { zh: "赛博浪客", ja: "サイバーパンク エッジランナーズ" },
-  "The Queen's Gambit (miniseries)": {
-    zh: "后翼棄兵 (迷你劇)",
-    ja: "クイーンズ・ギャンビット (ドラマ)"
-  },
-  "Gin Tama": { zh: "银魂", ja: "銀魂" },
-  "Doraemon": { zh: "哆啦A夢", ja: "ドラえもん" },
-  "Les Misérables": { zh: "悲惨世界", ja: "レ・ミゼラブル" },
-  "A Thousand Splendid Suns": { zh: "灿烂千阳", ja: "千の輝く太陽" },
-  "To Live (novel)": { zh: "活着" },
-  "Tristan and Iseult": { zh: "崔斯坦和伊索德", ja: "トリスタンとイゾルデ" },
-  "Grimms' Fairy Tales": { zh: "格林童話", ja: "グリム童話" },
-  "Bohemian Rhapsody": { zh: "波希米亚狂想曲", ja: "ボヘミアン・ラプソディ" },
-  "We Are the Champions": { zh: "我们是冠军", ja: "伝説のチャンピオン" },
-  "Lemon (Kenshi Yonezu song)": { zh: "Lemon (米津玄師歌曲)", ja: "Lemon (米津玄師の曲)" }
-};
-
 export const interests: InterestCategory[] = [
   {
     name: { en: "Games", zh: "游戏", ja: "ゲーム" },
