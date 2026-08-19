@@ -23,15 +23,23 @@ Run the same gate used by CI and the GitHub Pages deployment:
 npm run verify
 ```
 
-It checks:
+It checks only deterministic repository outputs:
 
 - Astro and TypeScript diagnostics
 - ESLint
-- unit tests for project-link extraction and the site-stats Worker
-- live project links
+- unit tests for content rules, shared domain logic, Markdown extraction, and the site-stats Worker
 - the production build
 - generated HTML landmarks, headings, image alt text, IDs, and internal links
-- production dependency vulnerabilities
+
+Checks that require third-party network access run in the scheduled External
+Health workflow and can also be invoked manually:
+
+```sh
+npm run verify:external
+```
+
+This checks live project links and production dependency vulnerabilities without
+making a temporary external outage block a site deployment.
 
 ## Content
 
