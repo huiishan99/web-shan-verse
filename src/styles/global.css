@@ -11,6 +11,14 @@
   unicode-range: U+4E8E, U+5173, U+535A, U+5BA2, U+65F6, U+76EE, U+7EBF, U+95F4, U+9879;
 }
 
+@font-face {
+  font-family: 'Zhuque Fangsong Home';
+  src: url('/fonts/ZhuqueFangsong-HomeHero.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
 /* --- 基础变量 --- */
 :root {
   /* 深空背景色 */
@@ -57,6 +65,7 @@
   --font-editorial: 'Cormorant Garamond', var(--font-cjk), Georgia, serif;
   --font-body: 'Crimson Pro', var(--font-cjk), 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
   --font-navigation: var(--font-body);
+  --font-home-copy: var(--font-body);
   --font-mono: 'JetBrains Mono', 'Fira Code', var(--font-cjk), monospace;
   
   /* 间距 */
@@ -70,6 +79,7 @@
 html[lang='zh'] {
   --font-cjk: 'Noto Serif SC', 'Songti SC', SimSun;
   --font-navigation: 'Crimson Pro', 'Zhuque Fangsong Navigation', 'Noto Serif SC', 'Songti SC', SimSun;
+  --font-home-copy: 'Crimson Pro', 'Zhuque Fangsong Home', 'Noto Serif SC', 'Songti SC', SimSun;
 }
 
 html[lang='ja'] {
