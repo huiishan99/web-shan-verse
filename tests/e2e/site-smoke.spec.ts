@@ -199,9 +199,20 @@ test('project cards open both text-only and image detail dialogs', async ({ page
 
   const galleryBox = await mandalaDialog.locator('[data-project-gallery]').boundingBox();
   const detailBodyBox = await mandalaDialog.locator('.project-detail-body').boundingBox();
+  const detailPanelScrollbar = await mandalaDialog.locator('.project-detail-panel').evaluate((panel) => {
+    const style = getComputedStyle(panel);
+    return {
+      thumbColor: style.getPropertyValue('--project-detail-scrollbar-thumb').trim(),
+      thumbRadius: style.getPropertyValue('--project-detail-scrollbar-radius').trim(),
+      width: style.getPropertyValue('--project-detail-scrollbar-size').trim(),
+    };
+  });
   expect(galleryBox).not.toBeNull();
   expect(detailBodyBox).not.toBeNull();
   expect(galleryBox!.y + galleryBox!.height).toBeLessThanOrEqual(detailBodyBox!.y + 1);
+  expect(detailPanelScrollbar.width).toBe('8px');
+  expect(detailPanelScrollbar.thumbColor).toBe('#c9a2276b');
+  expect(detailPanelScrollbar.thumbRadius).toBe('999px');
 
   await page.keyboard.press('ArrowLeft');
   await expect(mandalaDialog.locator('[data-project-gallery-counter]')).toHaveText('1 / 4');

@@ -869,10 +869,31 @@ function getAuthorParts(authors: string) {
   }
 
   .project-detail-panel {
+    --project-detail-scrollbar-size: 8px;
+    --project-detail-scrollbar-thumb: rgba(201, 162, 39, 0.42);
+    --project-detail-scrollbar-track: rgba(255, 255, 255, 0.04);
+    --project-detail-scrollbar-radius: 999px;
     position: relative;
     display: grid;
     max-height: min(82vh, 720px);
     overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-color: rgba(201, 162, 39, 0.46) rgba(255, 255, 255, 0.05);
+    scrollbar-width: thin;
+  }
+
+  .project-detail-panel::-webkit-scrollbar {
+    width: var(--project-detail-scrollbar-size);
+    height: var(--project-detail-scrollbar-size);
+  }
+
+  .project-detail-panel::-webkit-scrollbar-track {
+    background: var(--project-detail-scrollbar-track);
+  }
+
+  .project-detail-panel::-webkit-scrollbar-thumb {
+    background: var(--project-detail-scrollbar-thumb);
+    border-radius: var(--project-detail-scrollbar-radius);
   }
 
   .project-detail-dialog--with-image .project-detail-panel {
