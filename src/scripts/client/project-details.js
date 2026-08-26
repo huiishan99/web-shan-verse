@@ -1,3 +1,5 @@
+const projectDialogOpeners = new WeakMap();
+
 function setupProjectGallery(dialog) {
   const gallery = dialog.querySelector('[data-project-gallery]');
 
@@ -8,7 +10,7 @@ function setupProjectGallery(dialog) {
   const slides = Array.from(gallery.querySelectorAll('[data-project-gallery-slide]'))
     .filter((slide) => slide instanceof HTMLElement);
 
-  if (slides.length < 2) {
+  if (slides.length === 0) {
     return;
   }
 
@@ -34,6 +36,29 @@ function setupProjectGallery(dialog) {
       counter.textContent = `${currentIndex + 1} / ${slides.length}`;
     }
   };
+
+  dialog.addEventListener('project-gallery:show', (event) => {
+    const requestedIndex = Number(event.detail?.index);
+    if (Number.isInteger(requestedIndex)) {
+      showSlide(requestedIndex);
+    }
+  });
+
+  dialog.querySelectorAll('[data-project-gallery-show]').forEach((button) => {
+    if (!(button instanceof HTMLButtonElement)) {
+      return;
+    }
+
+    button.addEventListener('click', () => {
+      const requestedIndex = Number(button.dataset.projectGalleryShow);
+      if (!Number.isInteger(requestedIndex)) {
+        return;
+      }
+
+      showSlide(requestedIndex);
+      gallery.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    });
+  });
 
   if (previousButton instanceof HTMLButtonElement) {
     previousButton.addEventListener('click', () => showSlide(currentIndex - 1));
@@ -85,24 +110,30 @@ function setupProjectDetails() {
     trigger.dataset.projectDialogBound = 'true';
 
     trigger.addEventListener('click', () => {
+      const requestedIndex = Number(trigger.dataset.projectGalleryStart ?? 0);
+      dialog.dispatchEvent(new CustomEvent('project-gallery:show', {
+        detail: { index: Number.isInteger(requestedIndex) ? requestedIndex : 0 },
+      }));
+      projectDialogOpeners.set(dialog, trigger);
+
       if (!dialog.open) {
         dialog.showModal();
       }
     });
 
-    const closeButton = dialog.querySelector('[data-project-dialog-close]');
-    if (closeButton instanceof HTMLButtonElement) {
-      closeButton.addEventListener('click', () => dialog.close());
-    }
-
     if (dialog.dataset.projectDialogBound !== 'true') {
       dialog.dataset.projectDialogBound = 'true';
+      const closeButton = dialog.querySelector('[data-project-dialog-close]');
+      if (closeButton instanceof HTMLButtonElement) {
+        closeButton.addEventListener('click', () => dialog.close());
+      }
+
       dialog.addEventListener('click', (event) => {
         if (event.target === dialog) {
           dialog.close();
         }
       });
-      dialog.addEventListener('close', () => trigger.focus());
+      dialog.addEventListener('close', () => projectDialogOpeners.get(dialog)?.focus());
     }
   });
 }

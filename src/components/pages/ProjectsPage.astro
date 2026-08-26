@@ -86,7 +86,7 @@ function getAuthorParts(authors: string) {
             const detailDialogId = `project-detail-${category.id}-${projectIndex}`;
             const detailTitleId = `${detailDialogId}-title`;
             const legacyDetailImage = project.detailImage || project.image;
-            const detailImages = project.detailImages?.length
+            const projectDetailImages = project.detailImages?.length
               ? project.detailImages.map((image) => ({
                   src: image.src,
                   alt: localizeString(image.alt, lang),
@@ -101,6 +101,15 @@ function getAuthorParts(authors: string) {
                     fit: project.detailImageFit || 'cover',
                   }]
                 : [];
+            const awardImageIndex = project.award ? projectDetailImages.length : -1;
+            const detailImages = project.award
+              ? [...projectDetailImages, {
+                  src: project.award.image,
+                  alt: localizeString(project.award.alt, lang),
+                  caption: project.award.caption ? localizeString(project.award.caption, lang) : localizeString(project.award.title, lang),
+                  fit: 'contain' as const,
+                }]
+              : projectDetailImages;
             const hasDetailImages = detailImages.length > 0;
             const detailImageFit = detailImages.some((image) => image.fit === 'contain') ? 'contain' : 'cover';
             const detailDescription = localizeString(project.details || project.description, lang);
@@ -154,7 +163,7 @@ function getAuthorParts(authors: string) {
                     )}
 
                     <div class="project-meta-row">
-                      {(project.github || project.paper || project.caseStudy || project.website) && (
+                      {(project.github || project.paper || project.caseStudy || project.award || project.website) && (
                         <div class="project-links">
                         {project.github && (
                           <a href={project.github} target="_blank" rel="noopener noreferrer" class="icon-link" title={t.projects.sourceTitle} aria-label={t.projects.sourceTitle}>
@@ -170,6 +179,18 @@ function getAuthorParts(authors: string) {
                           <a href={project.caseStudy} target="_blank" rel="noopener noreferrer" class="icon-link" title={t.projects.caseStudyTitle} aria-label={t.projects.caseStudyTitle}>
                             <Icon name="globe" size={13} class="icon-link-symbol" />
                           </a>
+                        )}
+                        {project.award && (
+                          <button
+                            type="button"
+                            class="icon-link icon-link--award"
+                            title={t.projects.awardTitle}
+                            aria-label={t.projects.awardTitle}
+                            data-project-dialog-open={detailDialogId}
+                            data-project-gallery-start={awardImageIndex}
+                          >
+                            <Icon name="award" size={13} class="icon-link-symbol" />
+                          </button>
                         )}
                         {project.website && (
                           <a href={project.website} target="_blank" rel="noopener noreferrer" class="icon-link" title={t.projects.siteTitle} aria-label={t.projects.siteTitle}>
@@ -308,7 +329,7 @@ function getAuthorParts(authors: string) {
                       </div>
                     )}
 
-                    {(project.github || project.paper || project.caseStudy || project.website) && (
+                    {(project.github || project.paper || project.caseStudy || project.award || project.website) && (
                       <div class="project-detail-links" aria-label={t.projects.detailsLinks}>
                         {project.github && (
                           <a href={project.github} target="_blank" rel="noopener noreferrer" class="project-detail-link">
@@ -327,6 +348,16 @@ function getAuthorParts(authors: string) {
                             <Icon name="globe" size={15} />
                             <span>{t.projects.caseStudyTitle}</span>
                           </a>
+                        )}
+                        {project.award && (
+                          <button
+                            type="button"
+                            class="project-detail-link project-detail-link--button"
+                            data-project-gallery-show={awardImageIndex}
+                          >
+                            <Icon name="award" size={15} />
+                            <span>{t.projects.awardTitle}</span>
+                          </button>
                         )}
                         {project.website && (
                           <a href={project.website} target="_blank" rel="noopener noreferrer" class="project-detail-link">
@@ -747,6 +778,25 @@ function getAuthorParts(authors: string) {
       color 0.22s ease,
       transform 0.22s ease,
       box-shadow 0.22s ease;
+  }
+
+  button.icon-link {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .icon-link--award {
+    color: rgba(226, 194, 116, 0.88);
+  }
+
+  .icon-link--award:hover,
+  .icon-link--award:focus-visible {
+    background: rgba(201, 162, 39, 0.1);
+    color: var(--color-brass-light);
+    box-shadow: 0 0 0 1px rgba(201, 162, 39, 0.18);
   }
   
   .icon-link:visited {
@@ -1188,6 +1238,11 @@ function getAuthorParts(authors: string) {
     letter-spacing: 0.035em;
     text-decoration: none;
     transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .project-detail-link--button {
+    appearance: none;
+    cursor: pointer;
   }
 
   .project-detail-link:hover,

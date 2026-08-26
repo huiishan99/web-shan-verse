@@ -131,6 +131,7 @@ test('project cards open both text-only and image detail dialogs', async ({ page
 
   const mathBridgeCard = page.locator('.project-card').filter({ hasText: 'VR Math Bridge' });
   const mathBridgeDialog = page.locator('#project-detail-publications-0');
+  const mathBridgeAwardButton = mathBridgeCard.getByRole('button', { name: 'View Award' });
 
   await expect(mathBridgeCard.getByRole('link', { name: 'View Project Page' })).toHaveAttribute(
     'href',
@@ -142,7 +143,7 @@ test('project cards open both text-only and image detail dialogs', async ({ page
     'href',
     'https://web-publications.vercel.app/publications/vr-math-bridge/'
   );
-  await expect(mathBridgeDialog.locator('[data-project-gallery-slide]')).toHaveCount(5);
+  await expect(mathBridgeDialog.locator('[data-project-gallery-slide]')).toHaveCount(6);
   await expect(mathBridgeDialog.locator('[data-project-gallery-slide]:visible')).toHaveCount(1);
   await expect(mathBridgeDialog.locator('[data-project-gallery-slide]:not([hidden]) img')).toHaveAttribute(
     'src',
@@ -154,6 +155,16 @@ test('project cards open both text-only and image detail dialogs', async ({ page
 
   await mathBridgeDialog.getByRole('button', { name: 'Close project details' }).click();
   await expect(mathBridgeDialog).not.toBeVisible();
+
+  await mathBridgeAwardButton.click();
+  await expect(mathBridgeDialog).toBeVisible();
+  await expect(mathBridgeDialog.locator('[data-project-gallery-counter]')).toHaveText('6 / 6');
+  await expect(mathBridgeDialog.locator('[data-project-gallery-slide]:not([hidden]) img')).toHaveAttribute(
+    'src',
+    '/images/projects/ieee-gem-2025-presentation-award.jpg'
+  );
+  await mathBridgeDialog.getByRole('button', { name: 'Close project details' }).click();
+  await expect(mathBridgeAwardButton).toBeFocused();
 
   const vibeCodingCard = page.locator('.project-card').filter({ hasText: 'Assessing the Security of Vibe Coding' });
   const vibeCodingDialog = page.locator('#project-detail-publications-1');
