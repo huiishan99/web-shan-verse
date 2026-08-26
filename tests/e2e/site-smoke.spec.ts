@@ -129,6 +129,24 @@ test('project cards open both text-only and image detail dialogs', async ({ page
   await siteDialog.getByRole('button', { name: 'Close project details' }).click();
   await expect(siteDialog).not.toBeVisible();
 
+  const mathBridgeCard = page.locator('.project-card').filter({ hasText: 'VR Math Bridge' });
+  const mathBridgeDialog = page.locator('#project-detail-publications-0');
+
+  await mathBridgeCard.getByRole('button', { name: 'View Details' }).click();
+  await expect(mathBridgeDialog).toBeVisible();
+  await expect(mathBridgeDialog.locator('[data-project-gallery-slide]')).toHaveCount(5);
+  await expect(mathBridgeDialog.locator('[data-project-gallery-slide]:visible')).toHaveCount(1);
+  await expect(mathBridgeDialog.locator('[data-project-gallery-slide]:not([hidden]) img')).toHaveAttribute(
+    'src',
+    '/images/projects/vr-math-bridge-overview.webp'
+  );
+  const mathBridgeImageSources = await mathBridgeDialog.locator('[data-project-gallery-slide] img')
+    .evaluateAll((images) => images.map((image) => image.getAttribute('src')));
+  expect(mathBridgeImageSources.some((source) => source?.endsWith('/background.png'))).toBe(false);
+
+  await mathBridgeDialog.getByRole('button', { name: 'Close project details' }).click();
+  await expect(mathBridgeDialog).not.toBeVisible();
+
   const mandalaCard = page.locator('.project-card').filter({ hasText: 'Enhancing VR Mandala Drawing' });
   const mandalaDialog = page.locator('#project-detail-publications-2');
 
