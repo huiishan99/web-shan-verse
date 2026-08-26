@@ -14,6 +14,10 @@ test('explicit project status wins over inferred metadata', () => {
     getProjectStatus(project({ status: 'on-hold', website: 'https://example.com' }), category('unity')),
     'on-hold'
   );
+  assert.equal(
+    getProjectStatus(project({ status: 'thesis' }), category('publications')),
+    'thesis'
+  );
 });
 
 test('project status inference is shared by pages and the CLI index', () => {

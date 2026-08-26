@@ -50,6 +50,7 @@ export type ProjectStatus =
     | "on-hold"
     | "awaiting-coordination"
     | "publication"
+    | "thesis"
     | "private"
     | "archive";
 
@@ -924,6 +925,41 @@ export const projectCategories: ProjectCategory[] = [
                 paper: "https://dl.acm.org/doi/10.1145/3795011.3795053",
                 caseStudy: "https://web-publications.vercel.app/publications/bioadaptive-vr-attention-restoration/",
                 tags: ["Virtual Reality","Multimodal Interaction","AI-Driven","AHs 2026"]
+            },
+            {
+                title: "The Role of Embodied Avatars and Generative AI in Self Learning VR Classroom",
+                authors: {
+                    en: "HuiShan Lai",
+                    zh: "HuiShan Lai",
+                    ja: "HuiShan Lai"
+                },
+                conference: {
+                    en: "Master's Thesis · University of Aizu · September 2025",
+                    zh: "硕士论文 · 会津大学 · 2025年9月",
+                    ja: "修士論文 · 会津大学 · 2025年9月"
+                },
+                description: {
+                    en: "This master's thesis examines how VR, generative AI, and an embodied teaching avatar shape immersion, enjoyment, comprehension, and cognitive load in self-directed calculus learning.",
+                    zh: "本硕士论文研究虚拟现实、生成式 AI 与具身教学虚拟人如何影响自主微积分学习中的沉浸感、愉悦度、理解度与认知负荷。",
+                    ja: "本修士論文では、VR、生成 AI、具現化された教育アバターが、自律的な微積分学習における没入感、楽しさ、理解度、認知負荷に与える影響を検討しました。"
+                },
+                details: {
+                    en: "The work combines short calculus videos, quizzes, speech interaction, a generative AI assistant, and an optional animated avatar in a Meta Quest 3 classroom. A two-participant pilot informed the final design, followed by a counterbalanced within-subject study with 18 participants across desktop video, VR with a text-based AI assistant, and VR with an embodied AI assistant. Both VR conditions produced significantly higher immersion and enjoyment than desktop learning. The study found no statistically significant differences in comprehension, cognitive load, effort, or frustration, and no reliable rating-scale advantage of the avatar over the text-based VR assistant.",
+                    zh: "该研究在 Meta Quest 3 虚拟教室中整合了微积分短视频、测验、语音交互、生成式 AI 助手与可选的动画虚拟人。两名参与者的预实验用于改进最终设计，随后对 18 名参与者开展了平衡顺序的被试内研究，比较桌面视频学习、配有文本 AI 助手的 VR，以及配有具身 AI 助手的 VR。两种 VR 条件的沉浸感与愉悦度均显著高于桌面学习；但在理解度、认知负荷、投入程度和挫败感方面未发现显著差异，具身虚拟人相较文本 VR 助手也没有表现出可靠的量表评分优势。",
+                    ja: "本研究は、Meta Quest 3 の仮想教室に短い微積分動画、クイズ、音声対話、生成 AI アシスタント、任意表示のアニメーションアバターを統合しました。2名のパイロット調査をもとに最終設計を改善し、その後18名を対象に、デスクトップ動画、テキスト型 AI アシスタント付き VR、具現化 AI アシスタント付き VRを比較する順序調整済みの被験者内実験を行いました。両 VR 条件はデスクトップ学習より没入感と楽しさが有意に高かった一方、理解度、認知負荷、努力、フラストレーションには有意差がなく、アバターもテキスト型 VR アシスタントに対して評価尺度上の明確な優位性を示しませんでした。"
+                },
+                status: "thesis",
+                detailImage: "/images/projects/embodied-ai-vr-thesis-cover.jpg",
+                detailImageAlt: {
+                    en: "Side-by-side views of the text-panel and embodied-avatar modes in the self-learning VR classroom",
+                    zh: "自主学习 VR 教室中文本面板模式与具身虚拟人模式的并列画面",
+                    ja: "自己学習 VR 教室におけるテキストパネル方式と具現化アバター方式の比較画面"
+                },
+                detailImageFit: "contain",
+                github: "https://github.com/huiishan99/uoa-research-unity-master-thesis",
+                paper: "https://web-publications.vercel.app/paper/embodied-avatars-generative-ai-vr-thesis.pdf",
+                caseStudy: "https://web-publications.vercel.app/publications/embodied-avatars-generative-ai-vr-thesis/",
+                tags: ["Virtual Reality", "Generative AI", "Embodied Avatar"]
             },
         ]
     },

@@ -232,4 +232,35 @@ test('project cards open both text-only and image detail dialogs', async ({ page
 
   await page.keyboard.press('ArrowLeft');
   await expect(mandalaDialog.locator('[data-project-gallery-counter]')).toHaveText('1 / 4');
+
+  await mandalaDialog.getByRole('button', { name: 'Close project details' }).click();
+  await expect(mandalaDialog).not.toBeVisible();
+
+  const thesisCard = page.locator('#publications .project-card').filter({
+    hasText: 'The Role of Embodied Avatars and Generative AI in Self Learning VR Classroom',
+  });
+  const thesisDialog = page.locator('#project-detail-publications-3');
+
+  await expect(thesisCard.locator('.project-status')).toHaveText("Master's Thesis");
+  await expect(thesisCard.getByRole('link', { name: 'View Project Page' })).toHaveAttribute(
+    'href',
+    'https://web-publications.vercel.app/publications/embodied-avatars-generative-ai-vr-thesis/'
+  );
+  await thesisCard.getByRole('button', { name: 'View Details' }).click();
+  await expect(thesisDialog).toBeVisible();
+  await expect(thesisDialog).toHaveClass(/project-detail-dialog--image-contain/);
+  await expect(thesisDialog.locator('[data-project-gallery-slide]')).toHaveCount(1);
+  await expect(thesisDialog.locator('[data-project-gallery-slide] img')).toHaveAttribute(
+    'src',
+    '/images/projects/embodied-ai-vr-thesis-cover.jpg'
+  );
+  await expect(thesisDialog.locator('.project-detail-kicker .project-status')).toHaveText("Master's Thesis");
+  await expect(thesisDialog.getByRole('link', { name: 'View Paper' })).toHaveAttribute(
+    'href',
+    'https://web-publications.vercel.app/paper/embodied-avatars-generative-ai-vr-thesis.pdf'
+  );
+  await expect(thesisDialog.getByRole('link', { name: 'View Project Page' })).toHaveAttribute(
+    'href',
+    'https://web-publications.vercel.app/publications/embodied-avatars-generative-ai-vr-thesis/'
+  );
 });
