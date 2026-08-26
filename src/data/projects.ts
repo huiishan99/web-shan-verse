@@ -721,6 +721,7 @@ export const projectCategories: ProjectCategory[] = [
                 },
                 github: "https://github.com/huiishan99/uoa-master-research-unity",
                 paper: "https://doi.org/10.1109/GEM66882.2025.11155841",
+                caseStudy: "https://web-publications.vercel.app/publications/vr-math-bridge/",
                 tags: ["AI-driven Education", "Virtual Reality", "Embodied Avatar","IEEE GEM 2025"]
             },
             {

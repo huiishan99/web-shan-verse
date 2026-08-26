@@ -132,8 +132,16 @@ test('project cards open both text-only and image detail dialogs', async ({ page
   const mathBridgeCard = page.locator('.project-card').filter({ hasText: 'VR Math Bridge' });
   const mathBridgeDialog = page.locator('#project-detail-publications-0');
 
+  await expect(mathBridgeCard.getByRole('link', { name: 'View Project Page' })).toHaveAttribute(
+    'href',
+    'https://web-publications.vercel.app/publications/vr-math-bridge/'
+  );
   await mathBridgeCard.getByRole('button', { name: 'View Details' }).click();
   await expect(mathBridgeDialog).toBeVisible();
+  await expect(mathBridgeDialog.getByRole('link', { name: 'View Project Page' })).toHaveAttribute(
+    'href',
+    'https://web-publications.vercel.app/publications/vr-math-bridge/'
+  );
   await expect(mathBridgeDialog.locator('[data-project-gallery-slide]')).toHaveCount(5);
   await expect(mathBridgeDialog.locator('[data-project-gallery-slide]:visible')).toHaveCount(1);
   await expect(mathBridgeDialog.locator('[data-project-gallery-slide]:not([hidden]) img')).toHaveAttribute(
