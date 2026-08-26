@@ -85,9 +85,24 @@ function getAuthorParts(authors: string) {
             const meta = statusMeta[status];
             const detailDialogId = `project-detail-${category.id}-${projectIndex}`;
             const detailTitleId = `${detailDialogId}-title`;
-            const detailImage = project.detailImage || project.image;
-            const detailImageAlt = localizeString(project.detailImageAlt || project.title, lang);
-            const detailImageFit = project.detailImageFit || 'cover';
+            const legacyDetailImage = project.detailImage || project.image;
+            const detailImages = project.detailImages?.length
+              ? project.detailImages.map((image) => ({
+                  src: image.src,
+                  alt: localizeString(image.alt, lang),
+                  caption: image.caption ? localizeString(image.caption, lang) : '',
+                  fit: image.fit || 'cover',
+                }))
+              : legacyDetailImage
+                ? [{
+                    src: legacyDetailImage,
+                    alt: localizeString(project.detailImageAlt || project.title, lang),
+                    caption: '',
+                    fit: project.detailImageFit || 'cover',
+                  }]
+                : [];
+            const hasDetailImages = detailImages.length > 0;
+            const detailImageFit = detailImages.some((image) => image.fit === 'contain') ? 'contain' : 'cover';
             const detailDescription = localizeString(project.details || project.description, lang);
 
             return (
@@ -183,7 +198,7 @@ function getAuthorParts(authors: string) {
 
                 <dialog
                   id={detailDialogId}
-                  class={`project-detail-dialog project-detail-dialog--${detailImage ? 'with-image' : 'text-only'} ${detailImage ? `project-detail-dialog--image-${detailImageFit}` : ''} project-card--${status}`}
+                  class={`project-detail-dialog project-detail-dialog--${hasDetailImages ? 'with-image' : 'text-only'} ${hasDetailImages ? `project-detail-dialog--image-${detailImageFit}` : ''} project-card--${status}`}
                   aria-labelledby={detailTitleId}
                 >
                   <div class="project-detail-panel">
@@ -196,15 +211,66 @@ function getAuthorParts(authors: string) {
                       <Icon name="x" size={18} />
                     </button>
 
-                    {detailImage && (
-                      <figure class="project-detail-media">
-                        <img
-                          src={detailImage}
-                          alt={detailImageAlt}
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      </figure>
+                    {hasDetailImages && (
+                      <div
+                        class={`project-detail-gallery project-detail-gallery--${detailImageFit}`}
+                        aria-label={t.projects.galleryLabel}
+                        data-project-gallery
+                      >
+                        {detailImages.map((image, imageIndex) => (
+                          <figure
+                            class={`project-detail-media project-detail-media--${image.fit}`}
+                            data-project-gallery-slide
+                            hidden={imageIndex !== 0}
+                          >
+                            <div class="project-detail-image-stage">
+                              <img
+                                src={image.src}
+                                alt={image.alt}
+                                loading="lazy"
+                                decoding="async"
+                              />
+                            </div>
+                            {image.caption && <figcaption>{image.caption}</figcaption>}
+                          </figure>
+                        ))}
+
+                        {detailImages.length > 1 && (
+                          <>
+                            <button
+                              type="button"
+                              class="project-detail-gallery-nav project-detail-gallery-nav--previous"
+                              aria-label={t.projects.previousImage}
+                              data-project-gallery-prev
+                            >
+                              <Icon name="chevronLeft" size={17} />
+                            </button>
+                            <button
+                              type="button"
+                              class="project-detail-gallery-nav project-detail-gallery-nav--next"
+                              aria-label={t.projects.nextImage}
+                              data-project-gallery-next
+                            >
+                              <Icon name="chevronRight" size={17} />
+                            </button>
+                            <div class="project-detail-gallery-footer">
+                              <span class="project-detail-gallery-counter" data-project-gallery-counter aria-live="polite">
+                                1 / {detailImages.length}
+                              </span>
+                              <div class="project-detail-gallery-dots">
+                                {detailImages.map((_, imageIndex) => (
+                                  <button
+                                    type="button"
+                                    aria-label={`${t.projects.viewImage} ${imageIndex + 1}`}
+                                    aria-current={imageIndex === 0 ? 'true' : 'false'}
+                                    data-project-gallery-dot={imageIndex}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
                     )}
 
                     <div class="project-detail-body">
@@ -822,38 +888,42 @@ function getAuthorParts(authors: string) {
     grid-template-columns: minmax(360px, 1.08fr) minmax(0, 1fr);
   }
 
-  .project-detail-dialog--image-contain .project-detail-media {
-    display: grid;
-    place-items: center;
-    padding: 1rem;
-    background:
-      radial-gradient(circle at 50% 50%, rgba(201, 162, 39, 0.07), transparent 58%),
-      #101014;
-  }
-
-  .project-detail-dialog--image-contain .project-detail-media::after {
-    display: none;
-  }
-
-  .project-detail-dialog--image-contain .project-detail-media img {
-    height: auto;
-    min-height: 0;
-    max-height: 620px;
-    border: 1px solid rgba(201, 162, 39, 0.16);
-    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.34);
-    object-fit: contain;
-  }
-
-  .project-detail-media {
-    position: relative;
+  .project-detail-gallery {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    height: min(82vh, 720px);
     min-height: 420px;
-    margin: 0;
     overflow: hidden;
     border-right: 1px solid rgba(201, 162, 39, 0.14);
     background: var(--color-bg-card);
   }
 
-  .project-detail-media::after {
+  .project-detail-gallery--contain {
+    background:
+      radial-gradient(circle at 50% 42%, rgba(201, 162, 39, 0.08), transparent 58%),
+      #101014;
+  }
+
+  .project-detail-media {
+    height: 100%;
+    min-height: 420px;
+    margin: 0;
+  }
+
+  .project-detail-media[hidden] {
+    display: none;
+  }
+
+  .project-detail-image-stage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 420px;
+    overflow: hidden;
+  }
+
+  .project-detail-media--cover .project-detail-image-stage::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -863,11 +933,123 @@ function getAuthorParts(authors: string) {
       radial-gradient(circle at 60% 28%, transparent 0 34%, rgba(10, 10, 15, 0.28) 100%);
   }
 
-  .project-detail-media img {
+  .project-detail-image-stage img {
     width: 100%;
     height: 100%;
     min-height: 420px;
     object-fit: cover;
+  }
+
+  .project-detail-media--contain {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+
+  .project-detail-media--contain .project-detail-image-stage {
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+  }
+
+  .project-detail-media--contain .project-detail-image-stage img {
+    height: auto;
+    min-height: 0;
+    max-height: 570px;
+    border: 1px solid rgba(201, 162, 39, 0.16);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.34);
+    object-fit: contain;
+  }
+
+  .project-detail-media figcaption {
+    min-height: 3.7rem;
+    padding: 0.7rem 5.8rem 1.8rem 1rem;
+    border-top: 1px solid rgba(201, 162, 39, 0.12);
+    background: rgba(8, 8, 12, 0.92);
+    color: rgba(224, 218, 203, 0.72);
+    font-family: var(--font-mono);
+    font-size: 0.61rem;
+    line-height: 1.45;
+    letter-spacing: 0.025em;
+  }
+
+  .project-detail-gallery-nav {
+    position: absolute;
+    top: 50%;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.15rem;
+    height: 2.15rem;
+    padding: 0;
+    border: 1px solid rgba(201, 162, 39, 0.36);
+    border-radius: 50%;
+    background: rgba(8, 8, 12, 0.82);
+    color: var(--color-brass-light);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.34);
+    cursor: pointer;
+    transform: translateY(-50%);
+    transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+  }
+
+  .project-detail-gallery-nav:hover,
+  .project-detail-gallery-nav:focus-visible {
+    border-color: rgba(222, 185, 77, 0.78);
+    background: rgba(35, 30, 18, 0.94);
+    transform: translateY(-50%) scale(1.05);
+  }
+
+  .project-detail-gallery-nav:focus-visible,
+  .project-detail-gallery-dots button:focus-visible {
+    outline: 1px solid rgba(232, 196, 98, 0.8);
+    outline-offset: 2px;
+  }
+
+  .project-detail-gallery-nav--previous {
+    left: 0.75rem;
+  }
+
+  .project-detail-gallery-nav--next {
+    right: 0.75rem;
+  }
+
+  .project-detail-gallery-footer {
+    position: absolute;
+    right: 0.9rem;
+    bottom: 0.72rem;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+  }
+
+  .project-detail-gallery-counter {
+    color: rgba(229, 219, 188, 0.78);
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.08em;
+  }
+
+  .project-detail-gallery-dots {
+    display: flex;
+    align-items: center;
+    gap: 0.32rem;
+  }
+
+  .project-detail-gallery-dots button {
+    width: 0.38rem;
+    height: 0.38rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.24);
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  .project-detail-gallery-dots button[aria-current="true"] {
+    background: var(--color-brass-light);
+    transform: scale(1.35);
   }
 
   .project-detail-body {
@@ -883,7 +1065,7 @@ function getAuthorParts(authors: string) {
     position: absolute;
     top: 0.85rem;
     right: 0.85rem;
-    z-index: 2;
+    z-index: 5;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1255,27 +1437,63 @@ function getAuthorParts(authors: string) {
       max-height: calc(100dvh - 1rem);
     }
 
-    .project-detail-media {
+    .project-detail-gallery {
+      position: relative;
+      top: auto;
       min-height: 0;
-      height: 180px;
+      height: 230px;
       border-right: 0;
       border-bottom: 1px solid rgba(201, 162, 39, 0.14);
     }
 
-    .project-detail-media img {
+    .project-detail-media,
+    .project-detail-image-stage {
+      min-height: 0;
+      height: 100%;
+    }
+
+    .project-detail-image-stage img {
       height: 100%;
       min-height: 0;
     }
 
-    .project-detail-dialog--image-contain .project-detail-media {
-      height: auto;
-      min-height: 180px;
+    .project-detail-media--contain {
+      grid-template-rows: minmax(0, 1fr) auto;
+    }
+
+    .project-detail-media--contain .project-detail-image-stage {
       padding: 0.6rem;
     }
 
-    .project-detail-dialog--image-contain .project-detail-media img {
-      height: auto;
-      max-height: 220px;
+    .project-detail-media--contain .project-detail-image-stage img {
+      width: auto;
+      max-width: 100%;
+      height: 100%;
+      max-height: 174px;
+    }
+
+    .project-detail-media figcaption {
+      min-height: 3.25rem;
+      padding: 0.52rem 5.15rem 1.45rem 0.7rem;
+      font-size: 0.55rem;
+    }
+
+    .project-detail-gallery-nav {
+      width: 1.9rem;
+      height: 1.9rem;
+    }
+
+    .project-detail-gallery-nav--previous {
+      left: 0.45rem;
+    }
+
+    .project-detail-gallery-nav--next {
+      right: 0.45rem;
+    }
+
+    .project-detail-gallery-footer {
+      right: 0.65rem;
+      bottom: 0.5rem;
     }
 
     .project-detail-body,
