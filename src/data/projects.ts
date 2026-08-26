@@ -740,6 +740,106 @@ export const projectCategories: ProjectCategory[] = [
                     zh: "大语言模型（LLMs）正越来越多地被用于所谓的 “vibe coding” 软件开发流程中：开发者用自然语言描述任务，并依赖模型生成可执行代码。虽然这种方式降低了开发门槛并加速原型构建，但也带来了安全风险。已有研究显示，AI 生成代码中有相当一部分包含可被利用的漏洞，功能正确并不等同于安全。本文研究面向安全的提示词是否能提升 LLM 生成代码的安全性。我们设计了十个受 OWASP Top 10 与 CWE 类别启发的代表性 Python 任务，并使用静态分析（Bandit）和轻量级运行时探针对一个开源 20B 参数模型的输出进行评估。",
                     ja: "大規模言語モデル（LLM）は、開発者が自然言語でタスクを指定し、モデルに実行可能なコード生成を任せる “vibe coding” を通じて、ソフトウェア開発でますます利用されています。この手法は参入障壁を下げ、プロトタイピングを高速化する一方で、セキュリティ上の懸念も生みます。先行研究では、AI 生成コードの相当数に悪用可能な脆弱性が含まれ、機能的な正しさが安全性を保証しないことが示されています。本研究では、セキュリティ指向のプロンプトが LLM 生成コードの安全性を改善するかを調査します。OWASP Top 10 と CWE カテゴリに着想を得た10個の代表的な Python タスクを設計し、オープンソースの 20B パラメータモデルの出力を静的解析（Bandit）と軽量な実行時プローブで評価します。"
                 },
+                detailImages: [
+                    {
+                        src: "/images/projects/ispec-2025-experiment-pipeline.jpg",
+                        alt: {
+                            en: "Experiment pipeline comparing baseline and security-oriented prompts through code generation, static analysis, runtime checks, and metric aggregation",
+                            zh: "比较基础提示与安全导向提示的实验流程，涵盖代码生成、静态分析、运行时检查和指标汇总",
+                            ja: "ベースラインとセキュリティ指向プロンプトを、コード生成、静的解析、実行時検査、指標集計まで比較する実験パイプライン"
+                        },
+                        caption: {
+                            en: "Experiment pipeline · Prompting, code generation, evaluation, and metrics",
+                            zh: "实验流程 · 提示设计、代码生成、安全评估与指标汇总",
+                            ja: "実験パイプライン · プロンプト、コード生成、安全性評価、指標集計"
+                        },
+                        fit: "contain"
+                    },
+                    {
+                        src: "/images/projects/ispec-2025-gptoss-vulnerability-presence.png",
+                        alt: {
+                            en: "Bar chart comparing vulnerability presence for baseline and security-oriented prompts across ten GPT-OSS 20B coding tasks",
+                            zh: "比较 GPT-OSS 20B 十项编程任务中基础提示与安全导向提示漏洞出现率的柱状图",
+                            ja: "GPT-OSS 20B の10種類のコーディングタスクで、ベースラインとセキュリティ指向プロンプトの脆弱性発生率を比較する棒グラフ"
+                        },
+                        caption: {
+                            en: "GPT-OSS 20B · Vulnerability presence by task",
+                            zh: "GPT-OSS 20B · 各任务的漏洞出现率",
+                            ja: "GPT-OSS 20B · タスク別の脆弱性発生率"
+                        },
+                        fit: "contain"
+                    },
+                    {
+                        src: "/images/projects/ispec-2025-gptoss-issue-count.png",
+                        alt: {
+                            en: "Bar chart comparing mean issue counts for baseline and security-oriented prompts across ten GPT-OSS 20B coding tasks",
+                            zh: "比较 GPT-OSS 20B 十项编程任务中基础提示与安全导向提示平均问题数量的柱状图",
+                            ja: "GPT-OSS 20B の10種類のコーディングタスクで、ベースラインとセキュリティ指向プロンプトの平均問題数を比較する棒グラフ"
+                        },
+                        caption: {
+                            en: "GPT-OSS 20B · Mean issue count by task",
+                            zh: "GPT-OSS 20B · 各任务的平均问题数量",
+                            ja: "GPT-OSS 20B · タスク別の平均問題数"
+                        },
+                        fit: "contain"
+                    },
+                    {
+                        src: "/images/projects/ispec-2025-gptoss-severity-weighted-count.png",
+                        alt: {
+                            en: "Bar chart comparing severity-weighted issue counts for baseline and security-oriented prompts across ten GPT-OSS 20B coding tasks",
+                            zh: "比较 GPT-OSS 20B 十项编程任务中基础提示与安全导向提示严重度加权问题数量的柱状图",
+                            ja: "GPT-OSS 20B の10種類のコーディングタスクで、ベースラインとセキュリティ指向プロンプトの深刻度加重問題数を比較する棒グラフ"
+                        },
+                        caption: {
+                            en: "GPT-OSS 20B · Severity-weighted issue count by task",
+                            zh: "GPT-OSS 20B · 各任务的严重度加权问题数量",
+                            ja: "GPT-OSS 20B · タスク別の深刻度加重問題数"
+                        },
+                        fit: "contain"
+                    },
+                    {
+                        src: "/images/projects/ispec-2025-cross-model-vulnerability-presence.png",
+                        alt: {
+                            en: "Bar chart comparing vulnerability presence across Gemma-3 27B and GPT-OSS 20B under security-oriented prompts",
+                            zh: "比较安全导向提示下 Gemma-3 27B 与 GPT-OSS 20B 漏洞出现率的柱状图",
+                            ja: "セキュリティ指向プロンプトにおける Gemma-3 27B と GPT-OSS 20B の脆弱性発生率を比較する棒グラフ"
+                        },
+                        caption: {
+                            en: "Cross-model comparison · Vulnerability presence",
+                            zh: "跨模型比较 · 漏洞出现率",
+                            ja: "モデル間比較 · 脆弱性発生率"
+                        },
+                        fit: "contain"
+                    },
+                    {
+                        src: "/images/projects/ispec-2025-cross-model-issue-count.png",
+                        alt: {
+                            en: "Bar chart comparing mean issue counts across Gemma-3 27B and GPT-OSS 20B under security-oriented prompts",
+                            zh: "比较安全导向提示下 Gemma-3 27B 与 GPT-OSS 20B 平均问题数量的柱状图",
+                            ja: "セキュリティ指向プロンプトにおける Gemma-3 27B と GPT-OSS 20B の平均問題数を比較する棒グラフ"
+                        },
+                        caption: {
+                            en: "Cross-model comparison · Mean issue count",
+                            zh: "跨模型比较 · 平均问题数量",
+                            ja: "モデル間比較 · 平均問題数"
+                        },
+                        fit: "contain"
+                    },
+                    {
+                        src: "/images/projects/ispec-2025-cross-model-severity-weighted-count.png",
+                        alt: {
+                            en: "Bar chart comparing severity-weighted issue counts across Gemma-3 27B and GPT-OSS 20B under security-oriented prompts",
+                            zh: "比较安全导向提示下 Gemma-3 27B 与 GPT-OSS 20B 严重度加权问题数量的柱状图",
+                            ja: "セキュリティ指向プロンプトにおける Gemma-3 27B と GPT-OSS 20B の深刻度加重問題数を比較する棒グラフ"
+                        },
+                        caption: {
+                            en: "Cross-model comparison · Severity-weighted issue count",
+                            zh: "跨模型比较 · 严重度加权问题数量",
+                            ja: "モデル間比較 · 深刻度加重問題数"
+                        },
+                        fit: "contain"
+                    }
+                ],
                 github: "https://github.com/huiishan99/vibe-sec-experiment",
                 paper: "https://link.springer.com/chapter/10.1007/978-981-95-9284-5_27",
                 tags: ["Large Language Models","Software Security","Vibe Coding","ISPEC 2025"]
