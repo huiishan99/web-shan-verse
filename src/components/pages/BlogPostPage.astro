@@ -268,6 +268,7 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
   }
 
   .post-content {
+    font-family: var(--font-blog-copy);
     line-height: 1.8;
   }
 
@@ -281,7 +282,7 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
   .post-content :global(h4) {
     margin-top: 2rem;
     margin-bottom: 1rem;
-    font-family: var(--font-display);
+    font-family: var(--font-blog-heading);
   }
 
   .blog-post--note .post-content :global(h2),
@@ -289,7 +290,7 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
   .blog-post--note .post-content :global(h4) {
     border-bottom: 0;
     color: var(--color-text-primary);
-    font-family: var(--font-body);
+    font-family: var(--font-blog-copy);
     font-weight: 500;
     letter-spacing: 0;
   }
@@ -454,7 +455,7 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
     background:
       linear-gradient(180deg, rgba(201, 162, 39, 0.16), rgba(106, 171, 255, 0.08)),
       rgba(22, 22, 30, 0.96);
-    font-family: var(--font-display);
+    font-family: var(--font-blog-heading);
     font-size: 0.88rem;
     font-weight: 600;
     letter-spacing: 0.02em;
