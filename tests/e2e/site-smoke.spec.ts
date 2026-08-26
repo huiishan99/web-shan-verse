@@ -147,6 +147,26 @@ test('project cards open both text-only and image detail dialogs', async ({ page
   await mathBridgeDialog.getByRole('button', { name: 'Close project details' }).click();
   await expect(mathBridgeDialog).not.toBeVisible();
 
+  const vibeCodingCard = page.locator('.project-card').filter({ hasText: 'Assessing the Security of Vibe Coding' });
+  const vibeCodingDialog = page.locator('#project-detail-publications-1');
+
+  await vibeCodingCard.getByRole('button', { name: 'View Details' }).click();
+  await expect(vibeCodingDialog).toBeVisible();
+  await expect(vibeCodingDialog.locator('[data-project-gallery-slide]')).toHaveCount(7);
+  await expect(vibeCodingDialog.locator('[data-project-gallery-slide]:visible')).toHaveCount(1);
+  await expect(vibeCodingDialog.locator('[data-project-gallery-slide]:not([hidden]) img')).toHaveAttribute(
+    'src',
+    '/images/projects/ispec-2025-experiment-pipeline.jpg'
+  );
+  await expect(vibeCodingDialog.locator('[data-project-gallery-counter]')).toHaveText('1 / 7');
+
+  await vibeCodingDialog.getByRole('button', { name: 'Next image' }).click();
+  await expect(vibeCodingDialog.locator('[data-project-gallery-counter]')).toHaveText('2 / 7');
+  await expect(vibeCodingDialog.locator('[data-project-gallery-slide]:visible')).toHaveCount(1);
+
+  await vibeCodingDialog.getByRole('button', { name: 'Close project details' }).click();
+  await expect(vibeCodingDialog).not.toBeVisible();
+
   const mandalaCard = page.locator('.project-card').filter({ hasText: 'Enhancing VR Mandala Drawing' });
   const mandalaDialog = page.locator('#project-detail-publications-2');
 
