@@ -641,6 +641,78 @@ export const projectCategories: ProjectCategory[] = [
                     zh: "我们提出 VR Math Bridge，一个基于虚拟现实（VR）的微积分学习应用，通过沉浸式虚拟环境与 AI 驱动的教学辅助提升在线教育互动性。系统构建了一个虚拟教室，学生可以观看 Khan Academy 视频，并与 3D AI 助手互动，获得实时、个性化的问题反馈。原型使用浮动面板进行章节选择、虚拟黑板播放视频，并结合 Cognitive 3D 分析用户参与情况。为展示系统能力，我们在 Quest 3 上开发了以导数为初始主题的原型，并进行了初步主观评价（n=2），为未来用户研究收集早期洞察。",
                     ja: "VR Math Bridge は、没入型仮想環境と AI 駆動の教育支援を組み合わせ、微積分教育を強化する VR アプリケーションです。仮想教室内で学生は Khan Academy の動画を視聴し、3D AI アシスタントと対話して、質問に対するリアルタイムで個別化されたフィードバックを受け取れます。章選択用のフローティングパネル、動画再生用の仮想黒板、ユーザーエンゲージメント分析のための Cognitive 3D を活用しています。システムの能力を示すため、導関数を初期テーマとして Quest 3 上にプロトタイプを開発し、今後のユーザー研究に向けた初期知見を得るために予備的な主観評価（n=2）を実施しました。"
                 },
+                detailImages: [
+                    {
+                        src: "/images/projects/vr-math-bridge-overview.webp",
+                        alt: {
+                            en: "Quest 3 user beside a first-person view of the VR Math Bridge classroom and AI assistant",
+                            zh: "Quest 3 使用者与 VR Math Bridge 虚拟教室及 AI 助手的第一人称画面",
+                            ja: "Quest 3 利用者と VR Math Bridge の仮想教室・AI アシスタントの一人称画面"
+                        },
+                        caption: {
+                            en: "Prototype overview · Quest 3 and the in-headset experience",
+                            zh: "原型概览 · Quest 3 与头显内体验",
+                            ja: "プロトタイプ概要 · Quest 3 とヘッドセット内体験"
+                        },
+                        fit: "contain"
+                    },
+                    {
+                        src: "/images/projects/vr-math-bridge-classroom.webp",
+                        alt: {
+                            en: "VR classroom interface with a calculus blackboard, chapter selector, controllers, and playback control",
+                            zh: "包含微积分黑板、章节选择器、控制器和播放控制的 VR 教室界面",
+                            ja: "微積分の黒板、章選択、コントローラー、再生操作を備えた VR 教室画面"
+                        },
+                        caption: {
+                            en: "Virtual classroom · Blackboard, chapter panel, and playback controls",
+                            zh: "虚拟教室 · 黑板、章节面板与播放控制",
+                            ja: "仮想教室 · 黒板、章パネル、再生操作"
+                        },
+                        fit: "contain"
+                    },
+                    {
+                        src: "/images/projects/vr-math-bridge-ai-assistant.webp",
+                        alt: {
+                            en: "AI teaching avatar with chat, lip-sync, speech-to-text, and Quest 3 controller annotations",
+                            zh: "标注聊天、唇形同步、语音转文字和 Quest 3 控制器的 AI 教学虚拟人",
+                            ja: "チャット、リップシンク、音声認識、Quest 3 コントローラーを示した AI 教育アバター"
+                        },
+                        caption: {
+                            en: "AI teaching assistant · Avatar, lip-sync, and spoken interaction",
+                            zh: "AI 教学助手 · 虚拟人、唇形同步与语音交互",
+                            ja: "AI 教育アシスタント · アバター、リップシンク、音声対話"
+                        },
+                        fit: "contain"
+                    },
+                    {
+                        src: "/images/projects/vr-math-bridge-system-architecture.webp",
+                        alt: {
+                            en: "VR Math Bridge architecture connecting the Unity classroom, learning content, AI services, and Cognitive 3D analytics",
+                            zh: "连接 Unity 虚拟教室、学习内容、AI 服务与 Cognitive 3D 分析的 VR Math Bridge 系统架构",
+                            ja: "Unity 仮想教室、学習コンテンツ、AI サービス、Cognitive 3D 分析を結ぶ VR Math Bridge のシステム構成"
+                        },
+                        caption: {
+                            en: "System architecture · Learning content, AI services, and analytics",
+                            zh: "系统架构 · 学习内容、AI 服务与行为分析",
+                            ja: "システム構成 · 学習コンテンツ、AI サービス、行動分析"
+                        },
+                        fit: "contain"
+                    },
+                    {
+                        src: "/images/projects/vr-math-bridge-learning-analytics.webp",
+                        alt: {
+                            en: "Cognitive 3D session replay and analytics dashboard for the VR classroom",
+                            zh: "用于 VR 教室的 Cognitive 3D 会话回放与分析仪表盘",
+                            ja: "VR 教室向け Cognitive 3D セッション再生と分析ダッシュボード"
+                        },
+                        caption: {
+                            en: "Learning analytics · Cognitive 3D replay and dashboard",
+                            zh: "学习分析 · Cognitive 3D 回放与仪表盘",
+                            ja: "学習分析 · Cognitive 3D の再生とダッシュボード"
+                        },
+                        fit: "contain"
+                    }
+                ],
                 featured: true,
                 featuredLabel: {
                     en: "Presentation Award",
