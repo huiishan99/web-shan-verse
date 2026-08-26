@@ -100,3 +100,32 @@ test('translated article exposes complete alternate links and keeps its slug', a
   await expect(page.locator('html')).toHaveAttribute('lang', 'ja');
   await expect(page.locator('h1')).toContainText('Codex のアップデート後');
 });
+
+test('project cards open both text-only and image detail dialogs', async ({ page }) => {
+  await page.goto('/projects');
+
+  const vrCard = page.locator('.project-card').filter({ hasText: 'VR Car Scene Prototype' });
+  const vrTrigger = vrCard.getByRole('button', { name: 'View Details' });
+  const vrDialog = page.locator('#project-detail-vr-0');
+
+  await vrTrigger.click();
+  await expect(vrDialog).toBeVisible();
+  await expect(vrDialog).toHaveClass(/project-detail-dialog--text-only/);
+  await expect(vrDialog.locator('.project-detail-media')).toHaveCount(0);
+  await expect(vrDialog.locator('.project-detail-description')).toContainText('Meta Quest hardware');
+
+  await page.keyboard.press('Escape');
+  await expect(vrDialog).not.toBeVisible();
+  await expect(vrTrigger).toBeFocused();
+
+  const siteCard = page.locator('.project-card').filter({ hasText: 'SHAN-VERSE' });
+  const siteDialog = page.locator('#project-detail-web-0');
+
+  await siteCard.getByRole('button', { name: 'View Details' }).click();
+  await expect(siteDialog).toBeVisible();
+  await expect(siteDialog).toHaveClass(/project-detail-dialog--with-image/);
+  await expect(siteDialog.locator('.project-detail-media img')).toHaveAttribute('src', '/images/header_galaxy.jpg');
+
+  await siteDialog.getByRole('button', { name: 'Close project details' }).click();
+  await expect(siteDialog).not.toBeVisible();
+});

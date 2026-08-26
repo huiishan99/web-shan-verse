@@ -159,6 +159,9 @@ export const ui = {
       paperTitle: 'View Paper',
       caseStudyTitle: 'Read Case Study',
       siteTitle: 'Visit Site',
+      detailsButton: 'View Details',
+      closeDetails: 'Close project details',
+      detailsLinks: 'Explore project',
       routes: {
         label: 'Category Routes',
         hint: 'Jump to section',
@@ -343,6 +346,9 @@ export const ui = {
       paperTitle: '查看论文',
       caseStudyTitle: '阅读介绍页',
       siteTitle: '访问网站',
+      detailsButton: '查看详情',
+      closeDetails: '关闭项目详情',
+      detailsLinks: '项目链接',
       routes: {
         label: '分类导航',
         hint: '快速跳转',
@@ -527,6 +533,9 @@ export const ui = {
       paperTitle: '論文を見る',
       caseStudyTitle: '紹介ページを読む',
       siteTitle: 'サイトを見る',
+      detailsButton: '詳細を見る',
+      closeDetails: 'プロジェクト詳細を閉じる',
+      detailsLinks: 'プロジェクトリンク',
       routes: {
         label: 'カテゴリールート',
         hint: 'セクションへ移動',
