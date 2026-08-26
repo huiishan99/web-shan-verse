@@ -9,6 +9,13 @@ export interface ProjectDetailImage {
     fit?: 'cover' | 'contain';
 }
 
+export interface ProjectAward {
+    title: LocalizedString;
+    image: string;
+    alt: LocalizedString;
+    caption?: LocalizedString;
+}
+
 export interface ProjectItem {
     title: LocalizedString;
     description: LocalizedString;
@@ -18,6 +25,7 @@ export interface ProjectItem {
     tags?: LocalizedString[];
     status?: ProjectStatus;
     featuredLabel?: LocalizedString;
+    award?: ProjectAward;   // 获奖证书；详情图集中展示，并可由奖项按钮直接打开
     // 可选字段
     github?: string;        // GitHub 链接
     paper?: string;         // ACM / IEEE / DOI 等官方论文页
@@ -723,6 +731,24 @@ export const projectCategories: ProjectCategory[] = [
                 github: "https://github.com/huiishan99/uoa-master-research-unity",
                 paper: "https://doi.org/10.1109/GEM66882.2025.11155841",
                 caseStudy: "https://web-publications.vercel.app/publications/vr-math-bridge/",
+                award: {
+                    title: {
+                        en: "IEEE GEM 2025 Presentation Award",
+                        zh: "IEEE GEM 2025 Presentation Award 获奖证书",
+                        ja: "IEEE GEM 2025 Presentation Award 受賞証明書"
+                    },
+                    image: "/images/projects/ieee-gem-2025-presentation-award.jpg",
+                    alt: {
+                        en: "IEEE GEM 2025 Presentation Award certificate presented to Lai Hui Shan",
+                        zh: "颁发给 Lai Hui Shan 的 IEEE GEM 2025 Presentation Award 证书",
+                        ja: "Lai Hui Shan に授与された IEEE GEM 2025 Presentation Award の証明書"
+                    },
+                    caption: {
+                        en: "IEEE GEM 2025 · Presentation Award for the Immersive Experiences & VR session",
+                        zh: "IEEE GEM 2025 · Immersive Experiences & VR 专场 Presentation Award",
+                        ja: "IEEE GEM 2025 · Immersive Experiences & VR セッション Presentation Award"
+                    }
+                },
                 tags: ["AI-driven Education", "Virtual Reality", "Embodied Avatar","IEEE GEM 2025"]
             },
             {
