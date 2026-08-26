@@ -158,8 +158,16 @@ test('project cards open both text-only and image detail dialogs', async ({ page
   const vibeCodingCard = page.locator('.project-card').filter({ hasText: 'Assessing the Security of Vibe Coding' });
   const vibeCodingDialog = page.locator('#project-detail-publications-1');
 
+  await expect(vibeCodingCard.getByRole('link', { name: 'View Project Page' })).toHaveAttribute(
+    'href',
+    'https://web-publications.vercel.app/publications/assessing-security-vibe-coding/'
+  );
   await vibeCodingCard.getByRole('button', { name: 'View Details' }).click();
   await expect(vibeCodingDialog).toBeVisible();
+  await expect(vibeCodingDialog.getByRole('link', { name: 'View Project Page' })).toHaveAttribute(
+    'href',
+    'https://web-publications.vercel.app/publications/assessing-security-vibe-coding/'
+  );
   await expect(vibeCodingDialog.locator('[data-project-gallery-slide]')).toHaveCount(7);
   await expect(vibeCodingDialog.locator('[data-project-gallery-slide]:visible')).toHaveCount(1);
   await expect(vibeCodingDialog.locator('[data-project-gallery-slide]:not([hidden]) img')).toHaveAttribute(
@@ -178,8 +186,16 @@ test('project cards open both text-only and image detail dialogs', async ({ page
   const mandalaCard = page.locator('.project-card').filter({ hasText: 'Enhancing VR Mandala Drawing' });
   const mandalaDialog = page.locator('#project-detail-publications-2');
 
+  await expect(mandalaCard.getByRole('link', { name: 'View Project Page' })).toHaveAttribute(
+    'href',
+    'https://web-publications.vercel.app/publications/bioadaptive-vr-attention-restoration/'
+  );
   await mandalaCard.getByRole('button', { name: 'View Details' }).click();
   await expect(mandalaDialog).toBeVisible();
+  await expect(mandalaDialog.getByRole('link', { name: 'View Project Page' })).toHaveAttribute(
+    'href',
+    'https://web-publications.vercel.app/publications/bioadaptive-vr-attention-restoration/'
+  );
   await expect(mandalaDialog).toHaveClass(/project-detail-dialog--image-contain/);
   await expect(mandalaDialog.locator('[data-project-gallery-slide]')).toHaveCount(4);
   await expect(mandalaDialog.locator('[data-project-gallery-slide]:visible')).toHaveCount(1);
