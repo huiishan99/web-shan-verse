@@ -136,6 +136,7 @@ test('project cards open both text-only and image detail dialogs', async ({ page
   await expect(mandalaDialog).toBeVisible();
   await expect(mandalaDialog).toHaveClass(/project-detail-dialog--image-contain/);
   await expect(mandalaDialog.locator('[data-project-gallery-slide]')).toHaveCount(4);
+  await expect(mandalaDialog.locator('[data-project-gallery-slide]:visible')).toHaveCount(1);
   await expect(mandalaDialog.locator('[data-project-gallery-slide]:not([hidden]) img')).toHaveAttribute(
     'src',
     '/images/projects/ahs-2026-figure-1-system-architecture.jpg'
@@ -148,6 +149,13 @@ test('project cards open both text-only and image detail dialogs', async ({ page
     '/images/projects/ahs-2026-figure-3-vr-mandala-experience.jpg'
   );
   await expect(mandalaDialog.locator('[data-project-gallery-counter]')).toHaveText('2 / 4');
+  await expect(mandalaDialog.locator('[data-project-gallery-slide]:visible')).toHaveCount(1);
+
+  const galleryBox = await mandalaDialog.locator('[data-project-gallery]').boundingBox();
+  const detailBodyBox = await mandalaDialog.locator('.project-detail-body').boundingBox();
+  expect(galleryBox).not.toBeNull();
+  expect(detailBodyBox).not.toBeNull();
+  expect(galleryBox!.y + galleryBox!.height).toBeLessThanOrEqual(detailBodyBox!.y + 1);
 
   await page.keyboard.press('ArrowLeft');
   await expect(mandalaDialog.locator('[data-project-gallery-counter]')).toHaveText('1 / 4');
