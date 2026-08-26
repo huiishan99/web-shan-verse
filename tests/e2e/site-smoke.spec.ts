@@ -135,8 +135,20 @@ test('project cards open both text-only and image detail dialogs', async ({ page
   await mandalaCard.getByRole('button', { name: 'View Details' }).click();
   await expect(mandalaDialog).toBeVisible();
   await expect(mandalaDialog).toHaveClass(/project-detail-dialog--image-contain/);
-  await expect(mandalaDialog.locator('.project-detail-media img')).toHaveAttribute(
+  await expect(mandalaDialog.locator('[data-project-gallery-slide]')).toHaveCount(4);
+  await expect(mandalaDialog.locator('[data-project-gallery-slide]:not([hidden]) img')).toHaveAttribute(
     'src',
-    '/images/projects/ahs-2026-bioadaptive-vr-system.png'
+    '/images/projects/ahs-2026-figure-1-system-architecture.jpg'
   );
+  await expect(mandalaDialog.locator('[data-project-gallery-counter]')).toHaveText('1 / 4');
+
+  await mandalaDialog.getByRole('button', { name: 'Next image' }).click();
+  await expect(mandalaDialog.locator('[data-project-gallery-slide]:not([hidden]) img')).toHaveAttribute(
+    'src',
+    '/images/projects/ahs-2026-figure-3-vr-mandala-experience.jpg'
+  );
+  await expect(mandalaDialog.locator('[data-project-gallery-counter]')).toHaveText('2 / 4');
+
+  await page.keyboard.press('ArrowLeft');
+  await expect(mandalaDialog.locator('[data-project-gallery-counter]')).toHaveText('1 / 4');
 });

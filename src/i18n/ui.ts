@@ -162,6 +162,10 @@ export const ui = {
       detailsButton: 'View Details',
       closeDetails: 'Close project details',
       detailsLinks: 'Explore project',
+      galleryLabel: 'Project image gallery',
+      previousImage: 'Previous image',
+      nextImage: 'Next image',
+      viewImage: 'View image',
       routes: {
         label: 'Category Routes',
         hint: 'Jump to section',
@@ -349,6 +353,10 @@ export const ui = {
       detailsButton: '查看详情',
       closeDetails: '关闭项目详情',
       detailsLinks: '项目链接',
+      galleryLabel: '项目图片图集',
+      previousImage: '上一张图片',
+      nextImage: '下一张图片',
+      viewImage: '查看图片',
       routes: {
         label: '分类导航',
         hint: '快速跳转',
@@ -536,6 +544,10 @@ export const ui = {
       detailsButton: '詳細を見る',
       closeDetails: 'プロジェクト詳細を閉じる',
       detailsLinks: 'プロジェクトリンク',
+      galleryLabel: 'プロジェクト画像ギャラリー',
+      previousImage: '前の画像',
+      nextImage: '次の画像',
+      viewImage: '画像を表示',
       routes: {
         label: 'カテゴリールート',
         hint: 'セクションへ移動',
