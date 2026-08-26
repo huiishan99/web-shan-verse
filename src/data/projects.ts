@@ -843,6 +843,7 @@ export const projectCategories: ProjectCategory[] = [
                 ],
                 github: "https://github.com/huiishan99/vibe-sec-experiment",
                 paper: "https://link.springer.com/chapter/10.1007/978-981-95-9284-5_27",
+                caseStudy: "https://web-publications.vercel.app/publications/assessing-security-vibe-coding/",
                 tags: ["Large Language Models","Software Security","Vibe Coding","ISPEC 2025"]
             },
             {
@@ -921,6 +922,7 @@ export const projectCategories: ProjectCategory[] = [
                     }
                 ],
                 paper: "https://dl.acm.org/doi/10.1145/3795011.3795053",
+                caseStudy: "https://web-publications.vercel.app/publications/bioadaptive-vr-attention-restoration/",
                 tags: ["Virtual Reality","Multimodal Interaction","AI-Driven","AHs 2026"]
             },
         ]
