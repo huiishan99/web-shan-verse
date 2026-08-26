@@ -19,6 +19,14 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Zhuque Fangsong Blog';
+  src: url('/fonts/ZhuqueFangsong-Blog.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
 /* --- 基础变量 --- */
 :root {
   /* 深空背景色 */
@@ -66,6 +74,8 @@
   --font-body: 'Crimson Pro', var(--font-cjk), 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
   --font-navigation: var(--font-body);
   --font-home-copy: var(--font-body);
+  --font-blog-copy: var(--font-body);
+  --font-blog-heading: var(--font-display);
   --font-mono: 'JetBrains Mono', 'Fira Code', var(--font-cjk), monospace;
   
   /* 间距 */
@@ -80,6 +90,8 @@ html[lang='zh'] {
   --font-cjk: 'Noto Serif SC', 'Songti SC', SimSun;
   --font-navigation: 'Crimson Pro', 'Zhuque Fangsong Navigation', 'Noto Serif SC', 'Songti SC', SimSun;
   --font-home-copy: 'Crimson Pro', 'Zhuque Fangsong Home', 'Noto Serif SC', 'Songti SC', SimSun;
+  --font-blog-copy: 'Crimson Pro', 'Zhuque Fangsong Blog', 'Noto Serif SC', 'Songti SC', SimSun;
+  --font-blog-heading: var(--font-blog-copy);
 }
 
 html[lang='ja'] {
