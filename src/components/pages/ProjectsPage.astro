@@ -87,6 +87,7 @@ function getAuthorParts(authors: string) {
             const detailTitleId = `${detailDialogId}-title`;
             const detailImage = project.detailImage || project.image;
             const detailImageAlt = localizeString(project.detailImageAlt || project.title, lang);
+            const detailImageFit = project.detailImageFit || 'cover';
             const detailDescription = localizeString(project.details || project.description, lang);
 
             return (
@@ -182,7 +183,7 @@ function getAuthorParts(authors: string) {
 
                 <dialog
                   id={detailDialogId}
-                  class={`project-detail-dialog project-detail-dialog--${detailImage ? 'with-image' : 'text-only'} project-card--${status}`}
+                  class={`project-detail-dialog project-detail-dialog--${detailImage ? 'with-image' : 'text-only'} ${detailImage ? `project-detail-dialog--image-${detailImageFit}` : ''} project-card--${status}`}
                   aria-labelledby={detailTitleId}
                 >
                   <div class="project-detail-panel">
@@ -812,6 +813,37 @@ function getAuthorParts(authors: string) {
     grid-template-columns: minmax(230px, 0.82fr) minmax(0, 1.35fr);
   }
 
+  .project-detail-dialog--image-contain {
+    width: min(920px, calc(100vw - 2rem));
+    max-width: 920px;
+  }
+
+  .project-detail-dialog--image-contain .project-detail-panel {
+    grid-template-columns: minmax(360px, 1.08fr) minmax(0, 1fr);
+  }
+
+  .project-detail-dialog--image-contain .project-detail-media {
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+    background:
+      radial-gradient(circle at 50% 50%, rgba(201, 162, 39, 0.07), transparent 58%),
+      #101014;
+  }
+
+  .project-detail-dialog--image-contain .project-detail-media::after {
+    display: none;
+  }
+
+  .project-detail-dialog--image-contain .project-detail-media img {
+    height: auto;
+    min-height: 0;
+    max-height: 620px;
+    border: 1px solid rgba(201, 162, 39, 0.16);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.34);
+    object-fit: contain;
+  }
+
   .project-detail-media {
     position: relative;
     min-height: 420px;
@@ -1233,6 +1265,17 @@ function getAuthorParts(authors: string) {
     .project-detail-media img {
       height: 100%;
       min-height: 0;
+    }
+
+    .project-detail-dialog--image-contain .project-detail-media {
+      height: auto;
+      min-height: 180px;
+      padding: 0.6rem;
+    }
+
+    .project-detail-dialog--image-contain .project-detail-media img {
+      height: auto;
+      max-height: 220px;
     }
 
     .project-detail-body,

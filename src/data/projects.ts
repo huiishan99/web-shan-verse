@@ -19,6 +19,7 @@ export interface ProjectItem {
     image?: string;         // 预览图路径 (放在 public/images/projects/)
     detailImage?: string;   // 详情弹窗图片；不设置时可回退到预览图
     detailImageAlt?: LocalizedString;
+    detailImageFit?: 'cover' | 'contain';
     featured?: boolean;     // 是否为精选项目
 }
 
@@ -680,6 +681,13 @@ export const projectCategories: ProjectCategory[] = [
                     zh: "数字注意疲劳是一个普遍挑战，但多数用于恢复注意力的虚拟现实（VR）干预仍依赖被动自然暴露，缺乏对用户内部状态的响应。结合注意恢复理论（ART）与生理计算，我们提出一个生物自适应 VR 系统：用户在 360° 自然场景中主动绘制曼陀罗，系统使用实时心率变异性（HRV）调节视觉雾效、环境音乐和触觉反馈。在一项被试内预实验（N=11）中，我们比较了 AI 驱动的生物自适应多模态条件（AI）与无生物自适应反馈的相同 VR 条件（NF），评估指标包括行为（Oddball 任务）、神经（EEG）、自主神经（HRV）和主观量表。",
                     ja: "デジタル注意疲労は広く見られる課題ですが、注意回復を目的とした多くの VR 介入は受動的な自然曝露に依存しており、ユーザーの内的状態への応答性が不足しています。注意回復理論（ART）と生理コンピューティングを統合し、360° 自然シーン内での能動的な曼荼羅描画と、リアルタイム心拍変動（HRV）による視覚的な霧、環境音楽、触覚フィードバックの調整を組み合わせたバイオアダプティブ VR システムを提案します。被験者内パイロット研究（N=11）では、AI 駆動のバイオアダプティブ・マルチモーダル条件（AI）と、同一 VR 環境でバイオアダプティブなフィードバックを持たない条件（NF）を、行動（Oddball 課題）、神経（EEG）、自律神経（HRV）、主観指標で比較しました。"
                 },
+                detailImage: "/images/projects/ahs-2026-bioadaptive-vr-system.png",
+                detailImageAlt: {
+                    en: "System architecture connecting the VR nature and mandala drawing experience with multimodal rendering and AI-driven bioadaptive control",
+                    zh: "连接 VR 自然与曼陀罗绘画体验、多模态渲染及 AI 驱动生物自适应控制的系统架构图",
+                    ja: "VR 自然・曼荼羅描画体験、マルチモーダルレンダリング、AI 駆動バイオアダプティブ制御を接続するシステム構成図"
+                },
+                detailImageFit: "contain",
                 paper: "https://dl.acm.org/doi/10.1145/3795011.3795053",
                 tags: ["Virtual Reality","Multimodal Interaction","AI-Driven","AHs 2026"]
             },

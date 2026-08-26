@@ -128,4 +128,15 @@ test('project cards open both text-only and image detail dialogs', async ({ page
 
   await siteDialog.getByRole('button', { name: 'Close project details' }).click();
   await expect(siteDialog).not.toBeVisible();
+
+  const mandalaCard = page.locator('.project-card').filter({ hasText: 'Enhancing VR Mandala Drawing' });
+  const mandalaDialog = page.locator('#project-detail-publications-2');
+
+  await mandalaCard.getByRole('button', { name: 'View Details' }).click();
+  await expect(mandalaDialog).toBeVisible();
+  await expect(mandalaDialog).toHaveClass(/project-detail-dialog--image-contain/);
+  await expect(mandalaDialog.locator('.project-detail-media img')).toHaveAttribute(
+    'src',
+    '/images/projects/ahs-2026-bioadaptive-vr-system.png'
+  );
 });
