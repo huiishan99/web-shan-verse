@@ -80,12 +80,18 @@ function getAuthorParts(authors: string) {
         </h2>
         
         <div class="projects-grid">
-          {category.items.map((project) => {
+          {category.items.map((project, projectIndex) => {
             const status = getProjectStatus(project, category);
             const meta = statusMeta[status];
+            const detailDialogId = `project-detail-${category.id}-${projectIndex}`;
+            const detailTitleId = `${detailDialogId}-title`;
+            const detailImage = project.detailImage || project.image;
+            const detailImageAlt = localizeString(project.detailImageAlt || project.title, lang);
+            const detailDescription = localizeString(project.details || project.description, lang);
 
             return (
-              <article class={`project-card project-card--${status} ${project.featured ? 'featured' : ''}`}>
+              <>
+                <article class={`project-card project-card--${status} ${project.featured ? 'featured' : ''}`}>
                 {project.featured && (
                   <div class="featured-banner">
                     {project.featuredLabel ? localizeString(project.featuredLabel, lang) : t.projects.featured}
@@ -159,10 +165,114 @@ function getAuthorParts(authors: string) {
                       <span class={`project-status project-status--${status}`} title={meta.title}>
                         {meta.label}
                       </span>
+                      <button
+                        type="button"
+                        class="project-detail-trigger"
+                        aria-haspopup="dialog"
+                        aria-controls={detailDialogId}
+                        data-project-dialog-open={detailDialogId}
+                      >
+                        <Icon name="plus" size={12} />
+                        <span>{t.projects.detailsButton}</span>
+                      </button>
                     </div>
                   </div>
                 </div>
-              </article>
+                </article>
+
+                <dialog
+                  id={detailDialogId}
+                  class={`project-detail-dialog project-detail-dialog--${detailImage ? 'with-image' : 'text-only'} project-card--${status}`}
+                  aria-labelledby={detailTitleId}
+                >
+                  <div class="project-detail-panel">
+                    <button
+                      type="button"
+                      class="project-detail-close"
+                      aria-label={t.projects.closeDetails}
+                      data-project-dialog-close
+                    >
+                      <Icon name="x" size={18} />
+                    </button>
+
+                    {detailImage && (
+                      <figure class="project-detail-media">
+                        <img
+                          src={detailImage}
+                          alt={detailImageAlt}
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      </figure>
+                    )}
+
+                    <div class="project-detail-body">
+                      <div class="project-detail-kicker">
+                        <span>{localizeString(category.title, lang)}</span>
+                        <span class={`project-status project-status--${status}`} title={meta.title}>
+                          {meta.label}
+                        </span>
+                      </div>
+
+                      <h2 id={detailTitleId}>{localizeString(project.title, lang)}</h2>
+
+                    {(project.authors || project.conference) && (
+                      <div class="project-detail-publication-meta">
+                        {project.authors && (
+                          <p class="project-authors">
+                            {getAuthorParts(localizeString(project.authors, lang)).map((part) => (
+                              part.highlighted ? <strong>{part.text}</strong> : <span>{part.text}</span>
+                            ))}
+                          </p>
+                        )}
+                        {project.conference && (
+                          <p class="project-conference">{localizeString(project.conference, lang)}</p>
+                        )}
+                      </div>
+                    )}
+
+                    <p class="project-detail-description">{detailDescription}</p>
+
+                    {project.tags && project.tags.length > 0 && (
+                      <div class="project-tags project-detail-tags">
+                        {project.tags.map((tag) => (
+                          <span class="tag">{localizeString(tag, lang)}</span>
+                        ))}
+                      </div>
+                    )}
+
+                    {(project.github || project.paper || project.caseStudy || project.website) && (
+                      <div class="project-detail-links" aria-label={t.projects.detailsLinks}>
+                        {project.github && (
+                          <a href={project.github} target="_blank" rel="noopener noreferrer" class="project-detail-link">
+                            <Icon name="github" size={15} />
+                            <span>{t.projects.sourceTitle}</span>
+                          </a>
+                        )}
+                        {project.paper && (
+                          <a href={project.paper} target="_blank" rel="noopener noreferrer" class="project-detail-link">
+                            <Icon name="publication" size={15} />
+                            <span>{t.projects.paperTitle}</span>
+                          </a>
+                        )}
+                        {project.caseStudy && (
+                          <a href={project.caseStudy} target="_blank" rel="noopener noreferrer" class="project-detail-link">
+                            <Icon name="book" size={15} />
+                            <span>{t.projects.caseStudyTitle}</span>
+                          </a>
+                        )}
+                        {project.website && (
+                          <a href={project.website} target="_blank" rel="noopener noreferrer" class="project-detail-link">
+                            <Icon name="externalLink" size={15} />
+                            <span>{t.projects.siteTitle}</span>
+                          </a>
+                        )}
+                      </div>
+                    )}
+                    </div>
+                  </div>
+                </dialog>
+              </>
             );
           })}
         </div>
@@ -471,6 +581,42 @@ function getAuthorParts(authors: string) {
     padding-top: 0.1rem;
   }
 
+  .project-detail-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.38rem;
+    min-height: 1.72rem;
+    margin-left: auto;
+    padding: 0.3rem 0.55rem;
+    border: 1px solid rgba(201, 162, 39, 0.22);
+    border-radius: 4px;
+    background: rgba(201, 162, 39, 0.045);
+    color: rgba(226, 206, 151, 0.78);
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 0.63rem;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .project-detail-trigger:hover,
+  .project-detail-trigger:focus-visible {
+    border-color: rgba(201, 162, 39, 0.5);
+    background: rgba(201, 162, 39, 0.11);
+    color: var(--color-brass-light);
+    transform: translateY(-1px);
+  }
+
+  .project-detail-trigger:focus-visible {
+    outline: 1px solid rgba(212, 168, 75, 0.65);
+    outline-offset: 2px;
+  }
+
   .project-status {
     display: inline-flex;
     align-items: center;
@@ -620,6 +766,211 @@ function getAuthorParts(authors: string) {
     color: var(--color-text-muted);
     font-size: 0.72rem;
     line-height: 1.25;
+  }
+
+  .project-detail-dialog {
+    width: min(790px, calc(100vw - 2rem));
+    max-width: 790px;
+    max-height: min(82vh, 720px);
+    margin: auto;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid rgba(201, 162, 39, 0.32);
+    border-radius: 10px;
+    background:
+      linear-gradient(145deg, rgba(27, 25, 30, 0.98), rgba(10, 10, 15, 0.99)),
+      var(--color-bg-primary);
+    box-shadow:
+      0 30px 90px rgba(0, 0, 0, 0.62),
+      0 0 0 1px rgba(255, 255, 255, 0.035),
+      0 0 42px var(--status-glow);
+    color: var(--color-text-primary);
+  }
+
+  .project-detail-dialog--text-only {
+    width: min(630px, calc(100vw - 2rem));
+  }
+
+  .project-detail-dialog[open] {
+    animation: project-detail-enter 0.22s ease-out;
+  }
+
+  .project-detail-dialog::backdrop {
+    background: rgba(2, 2, 7, 0.78);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+  }
+
+  .project-detail-panel {
+    position: relative;
+    display: grid;
+    max-height: min(82vh, 720px);
+    overflow: auto;
+  }
+
+  .project-detail-dialog--with-image .project-detail-panel {
+    grid-template-columns: minmax(230px, 0.82fr) minmax(0, 1.35fr);
+  }
+
+  .project-detail-media {
+    position: relative;
+    min-height: 420px;
+    margin: 0;
+    overflow: hidden;
+    border-right: 1px solid rgba(201, 162, 39, 0.14);
+    background: var(--color-bg-card);
+  }
+
+  .project-detail-media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(180deg, rgba(10, 10, 15, 0.04), rgba(10, 10, 15, 0.42)),
+      radial-gradient(circle at 60% 28%, transparent 0 34%, rgba(10, 10, 15, 0.28) 100%);
+  }
+
+  .project-detail-media img {
+    width: 100%;
+    height: 100%;
+    min-height: 420px;
+    object-fit: cover;
+  }
+
+  .project-detail-body {
+    min-width: 0;
+    padding: 2.15rem 2.1rem 1.9rem;
+  }
+
+  .project-detail-dialog--text-only .project-detail-body {
+    padding: 2.35rem 2.4rem 2.1rem;
+  }
+
+  .project-detail-close {
+    position: absolute;
+    top: 0.85rem;
+    right: 0.85rem;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    background: rgba(10, 10, 15, 0.74);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+  }
+
+  .project-detail-close:hover,
+  .project-detail-close:focus-visible {
+    border-color: rgba(201, 162, 39, 0.5);
+    background: rgba(201, 162, 39, 0.13);
+    color: var(--color-brass-light);
+  }
+
+  .project-detail-close:focus-visible {
+    outline: 1px solid rgba(212, 168, 75, 0.7);
+    outline-offset: 2px;
+  }
+
+  .project-detail-kicker {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.55rem 0.8rem;
+    padding-right: 2.1rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .project-detail-kicker .project-status {
+    color: var(--status-color);
+  }
+
+  .project-detail-body h2 {
+    margin: 0.75rem 0 1rem;
+    color: var(--color-text-primary);
+    font-family: var(--font-editorial);
+    font-size: clamp(1.55rem, 3vw, 2.25rem);
+    line-height: 1.13;
+    overflow-wrap: anywhere;
+  }
+
+  .project-detail-publication-meta {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0 0 1.05rem;
+    color: rgba(218, 218, 218, 0.72);
+    font-size: 0.82rem;
+    line-height: 1.45;
+  }
+
+  .project-detail-description {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: 1rem;
+    line-height: 1.78;
+    white-space: pre-line;
+  }
+
+  .project-detail-tags {
+    margin-top: 1.35rem;
+  }
+
+  .project-detail-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 1.4rem;
+    padding-top: 1.15rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .project-detail-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.48rem 0.68rem;
+    border: 1px solid rgba(201, 162, 39, 0.2);
+    border-radius: 5px;
+    background: rgba(201, 162, 39, 0.045);
+    color: rgba(230, 216, 177, 0.84);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.035em;
+    text-decoration: none;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .project-detail-link:hover,
+  .project-detail-link:focus-visible {
+    border-color: rgba(201, 162, 39, 0.5);
+    background: rgba(201, 162, 39, 0.11);
+    color: var(--color-brass-light);
+  }
+
+  .project-detail-link:focus-visible {
+    outline: 1px solid rgba(212, 168, 75, 0.65);
+    outline-offset: 2px;
+  }
+
+  @keyframes project-detail-enter {
+    from {
+      opacity: 0;
+      transform: translateY(10px) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
   }
 
   .project-section:is(#research, #publications) .projects-grid {
@@ -858,5 +1209,70 @@ function getAuthorParts(authors: string) {
       margin-top: 0.55rem;
       padding-top: 0.1rem;
     }
+
+    .project-detail-dialog,
+    .project-detail-dialog--text-only {
+      width: calc(100vw - 1rem);
+      max-height: calc(100dvh - 1rem);
+      border-radius: 8px;
+    }
+
+    .project-detail-panel,
+    .project-detail-dialog--with-image .project-detail-panel {
+      display: block;
+      max-height: calc(100dvh - 1rem);
+    }
+
+    .project-detail-media {
+      min-height: 0;
+      height: 180px;
+      border-right: 0;
+      border-bottom: 1px solid rgba(201, 162, 39, 0.14);
+    }
+
+    .project-detail-media img {
+      height: 100%;
+      min-height: 0;
+    }
+
+    .project-detail-body,
+    .project-detail-dialog--text-only .project-detail-body {
+      padding: 1.45rem 1.15rem 1.25rem;
+    }
+
+    .project-detail-kicker {
+      padding-right: 2rem;
+      font-size: 0.58rem;
+    }
+
+    .project-detail-body h2 {
+      margin-top: 0.65rem;
+      font-size: 1.4rem;
+    }
+
+    .project-detail-description {
+      font-size: 0.92rem;
+      line-height: 1.7;
+    }
+
+    .project-detail-close {
+      top: 0.6rem;
+      right: 0.6rem;
+    }
+
+    .project-detail-trigger {
+      padding: 0.28rem 0.48rem;
+      font-size: 0.59rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .project-detail-dialog[open] {
+      animation: none;
+    }
   }
 </style>
+
+<script>
+  import '../../scripts/client/project-details.js';
+</script>

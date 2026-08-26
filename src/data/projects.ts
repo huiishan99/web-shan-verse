@@ -5,6 +5,7 @@ import type { LocalizedString } from '../i18n/config';
 export interface ProjectItem {
     title: LocalizedString;
     description: LocalizedString;
+    details?: LocalizedString;
     authors?: LocalizedString;
     conference?: LocalizedString;
     tags?: LocalizedString[];
@@ -16,6 +17,8 @@ export interface ProjectItem {
     caseStudy?: string;     // 自己网站上的项目或论文介绍页
     website?: string;       // 网站/演示链接
     image?: string;         // 预览图路径 (放在 public/images/projects/)
+    detailImage?: string;   // 详情弹窗图片；不设置时可回退到预览图
+    detailImageAlt?: LocalizedString;
     featured?: boolean;     // 是否为精选项目
 }
 
@@ -53,6 +56,11 @@ export const projectCategories: ProjectCategory[] = [
                     en: "Unity VR car-scene prototype built during my ALPS ALPINE internship for Meta Quest testing.",
                     zh: "在 ALPS ALPINE 实习期间制作的 Unity VR 汽车场景原型，用于 Meta Quest 测试。",
                     ja: "ALPS ALPINE のインターン中に制作した Unity VR 車載シーンのプロトタイプ。Meta Quest でのテスト向けに開発しました。"
+                },
+                details: {
+                    en: "This internship prototype explored how a Unity-built automotive VR scene could be prepared and checked on Meta Quest hardware. The public record focuses on the development context and device-validation workflow; internal assets, product requirements, and company implementation details are intentionally omitted.",
+                    zh: "这个实习原型探索了如何将 Unity 构建的汽车 VR 场景部署到 Meta Quest 硬件上并进行检查。公开介绍仅保留开发背景与设备验证流程；内部资源、产品需求和公司实现细节均有意省略。",
+                    ja: "このインターンシップ用プロトタイプでは、Unity で構築した車載 VR シーンを Meta Quest 実機へ展開し、確認する流れを検討しました。公開情報は開発背景とデバイス検証の範囲に限定し、社内アセット、製品要件、実装詳細は意図的に省略しています。"
                 },
                 featured: true,
                 tags: ["Unity", "VR", "Meta Quest"]
@@ -148,6 +156,17 @@ export const projectCategories: ProjectCategory[] = [
                     en: "My personal portfolio and blog built with Astro, MDX, custom styling, sitemap, and project data tooling.",
                     zh: "我的个人作品集与博客网站，使用 Astro、MDX、自定义样式、站点地图和项目数据工具构建。",
                     ja: "Astro、MDX、カスタムスタイル、サイトマップ、プロジェクトデータ用ツールで構築した個人ポートフォリオ兼ブログサイト。"
+                },
+                details: {
+                    en: "SHAN-VERSE is the living system behind this portfolio: an Astro and MDX static site with multilingual routes, structured project and timeline data, custom visual components, and build-time validation. It is also where I gradually publish research status, personal records, and technical writing while keeping private work appropriately abstract.",
+                    zh: "SHAN-VERSE 是这份个人作品集背后的持续演进系统：它以 Astro 与 MDX 构建，包含多语言路由、结构化项目与时间线数据、自定义视觉组件和构建期验证。这里也用于逐步公开研究状态、个人记录与技术写作，同时对尚未公开的工作保持适当抽象。",
+                    ja: "SHAN-VERSE は、このポートフォリオを支える継続的に発展するシステムです。Astro と MDX を基盤に、多言語ルート、構造化されたプロジェクト／タイムラインデータ、独自のビジュアルコンポーネント、ビルド時検証を備えています。未公開の研究を適切に抽象化しながら、研究状況、個人記録、技術記事を段階的に公開する場所でもあります。"
+                },
+                detailImage: "/images/header_galaxy.jpg",
+                detailImageAlt: {
+                    en: "Galaxy artwork used by the SHAN-VERSE interface",
+                    zh: "SHAN-VERSE 界面使用的银河视觉",
+                    ja: "SHAN-VERSE のインターフェースで使用している銀河のビジュアル"
                 },
                 github: "https://github.com/huiishan99/web-blog",
                 website: "https://shan-verse.com",
