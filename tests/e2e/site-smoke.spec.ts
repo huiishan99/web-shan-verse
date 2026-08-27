@@ -104,6 +104,29 @@ test('translated article exposes complete alternate links and keeps its slug', a
   await expect(page.locator('h1')).toContainText('Codex のアップデート後');
 });
 
+test('project category navigation wraps into two readable desktop rows', async ({ page }) => {
+  await page.goto('/projects');
+
+  const routeItems = page.locator('.category-route-item');
+  await expect(routeItems).toHaveCount(8);
+
+  const routeLayout = await routeItems.evaluateAll((items) => items.map((item) => {
+    const bounds = item.getBoundingClientRect();
+    const title = item.querySelector('.category-route-title');
+    return {
+      top: Math.round(bounds.top),
+      titleFits: title instanceof HTMLElement && title.scrollWidth <= title.clientWidth,
+    };
+  }));
+  const rowCounts = routeLayout.reduce<Record<number, number>>((counts, item) => {
+    counts[item.top] = (counts[item.top] ?? 0) + 1;
+    return counts;
+  }, {});
+
+  expect(Object.values(rowCounts)).toEqual([5, 3]);
+  expect(routeLayout.every((item) => item.titleFits)).toBe(true);
+});
+
 test('project cards open both text-only and image detail dialogs', async ({ page }) => {
   await page.goto('/projects');
 
