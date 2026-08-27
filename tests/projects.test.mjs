@@ -19,18 +19,26 @@ test('explicit project status wins over inferred metadata', () => {
     getProjectStatus(project({ status: 'thesis' }), category('theses')),
     'thesis'
   );
+  assert.equal(
+    getProjectStatus(project({ status: 'bachelor-thesis' }), category('theses')),
+    'bachelor-thesis'
+  );
 });
 
-test('theses are kept in their own category after publications', () => {
+test('master and bachelor theses are kept in their own category after publications', () => {
   const publicationsIndex = projectCategories.findIndex(({ id }) => id === 'publications');
   const thesesIndex = projectCategories.findIndex(({ id }) => id === 'theses');
   const publications = projectCategories[publicationsIndex];
   const theses = projectCategories[thesesIndex];
   const masterThesisTitle = 'The Role of Embodied Avatars and Generative AI in Self Learning VR Classroom';
+  const bachelorThesisTitle = 'Design and Implementation of a Digital Twin System for Quadrotor UAV Formation Flight';
+  const schoolProjects = projectCategories.find(({ id }) => id === 'school');
 
   assert.equal(thesesIndex, publicationsIndex + 1);
   assert.equal(publications.items.some(({ title }) => title === masterThesisTitle), false);
   assert.equal(theses.items.some(({ title }) => title === masterThesisTitle), true);
+  assert.equal(theses.items.some(({ title }) => title.en === bachelorThesisTitle), true);
+  assert.equal(schoolProjects.items.some(({ title }) => title === 'NWPU Undergraduate Thesis'), false);
 });
 
 test('project status inference is shared by pages and the CLI index', () => {
