@@ -288,7 +288,12 @@ const sponsorContactUrl = 'https://linkedin.com/in/laihuishan/';
             <span><i class="activity-dot activity-dot--2 activity-dot--mixed"></i> {t.home.signalTypeMixed}</span>
           </div>
 
-          <div class="github-activity is-fallback" aria-label={t.home.githubContributions} data-github-activity>
+          <div
+            class="github-activity is-loading"
+            aria-label={t.home.githubContributions}
+            aria-busy="true"
+            data-github-activity
+          >
             <div class="github-activity-header">
               <span><Icon name="github" size={14} /> {t.home.githubContributions}</span>
               <a href={githubProfileUrl} target="_blank" rel="noopener noreferrer">@{githubUsername}</a>
@@ -876,10 +881,16 @@ const sponsorContactUrl = 'https://linkedin.com/in/laihuishan/';
     color: var(--color-text-muted);
     font-family: var(--font-mono);
     font-size: 0.62rem;
+    transition: opacity 0.2s ease;
   }
 
+  .github-activity.is-loading .github-calendar--full,
   .github-activity.is-enhanced .github-calendar--full {
     display: block;
+  }
+
+  .github-activity.is-loading .github-calendar {
+    opacity: 0.52;
   }
 
   .github-activity-frame .github-activity-fallback {
@@ -1240,10 +1251,12 @@ const sponsorContactUrl = 'https://linkedin.com/in/laihuishan/';
       font-size: 0.5rem;
     }
 
+    .github-activity.is-loading .github-calendar--full,
     .github-activity.is-enhanced .github-calendar--full {
       display: none;
     }
 
+    .github-activity.is-loading .github-calendar--compact,
     .github-activity.is-enhanced .github-calendar--compact {
       display: block;
     }

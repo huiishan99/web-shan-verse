@@ -46,6 +46,33 @@ test('home page loads its core landmarks without uncaught errors', async ({ page
   expect(pageErrors).toEqual([]);
 });
 
+test('GitHub activity keeps the designed calendar while contribution data loads', async ({ page }) => {
+  let releaseGithubResponse: () => void = () => {};
+  const githubResponseGate = new Promise<void>((resolve) => {
+    releaseGithubResponse = resolve;
+  });
+
+  await page.route('https://github-contributions-api.jogruber.de/v4/**', async (route) => {
+    await githubResponseGate;
+    await route.fulfill({
+      contentType: 'application/json',
+      body: JSON.stringify({ contributions: [] }),
+    });
+  });
+
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const githubActivity = page.locator('[data-github-activity]');
+
+  await expect(githubActivity).toHaveClass(/is-loading/);
+  await expect(githubActivity.locator('.github-calendar--full')).toBeVisible();
+  await expect(githubActivity.locator('.github-activity-fallback')).toBeHidden();
+  expect(await githubActivity.locator('.github-calendar--full .github-calendar-day').count()).toBeGreaterThan(300);
+
+  releaseGithubResponse();
+  await expect(githubActivity).toHaveClass(/is-enhanced/);
+  await expect(githubActivity).toHaveAttribute('aria-busy', 'false');
+});
+
 test('language switcher opens and navigates to the Chinese home page', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
