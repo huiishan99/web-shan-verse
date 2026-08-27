@@ -227,6 +227,21 @@ export const awards: AwardsItem[] = [
   },
   {
     title: {
+      en: "First Place, ALPS ALPINE Workshop",
+      zh: "ALPS ALPINE 工作坊团队第一名",
+      ja: "ALPS ALPINE ワークショップ チーム1位"
+    },
+    issuer: { en: "ALPS ALPINE", zh: "阿尔卑斯阿尔派", ja: "アルプスアルパイン" },
+    description: {
+      en: "Our workshop team received first-place recognition. As a result, I was selected as one of four participants, from a group of more than 20, to receive an internship opportunity at ALPS ALPINE.",
+      zh: "工作坊团队获得第一名表彰；我也因此从20多名参与者中脱颖而出，成为4名获得 ALPS ALPINE 实习机会的人之一。",
+      ja: "ワークショップでチームが1位として表彰され、その成果を受けて20名超の参加者のうち4名に選ばれ、ALPS ALPINE のインターンシップ機会を得ました。"
+    },
+    period: { en: "Jun 2024", zh: "2024年6月", ja: "2024年6月" },
+    logo: ""
+  },
+  {
+    title: {
       en: "Second Prize (School Trials) in China College Students' ·Internet+· Innovation and Entrepreneurship Competition",
       zh: "中国国际大学生“互联网+”创新创业大赛校级二等奖",
       ja: "中国国際大学生「インターネット＋」イノベーション・起業コンテスト 学内予選二等賞"
@@ -245,21 +260,6 @@ export const awards: AwardsItem[] = [
     issuer: { en: "Ministry of Education, China", zh: "中国教育部", ja: "中国教育部" },
     description: "",
     period: { en: "Oct 2020", zh: "2020年10月", ja: "2020年10月" },
-    logo: ""
-  },
-  {
-    title: {
-      en: "Consolation Prize in Dekad Bahasa 2.0 (2020) Dubbing Competition",
-      zh: "Dekad Bahasa 2.0（2020）配音比赛安慰奖",
-      ja: "Dekad Bahasa 2.0（2020）吹き替えコンテスト努力賞"
-    },
-    issuer: {
-      en: "Association of Malaysian Students in Shaanxi (AMSISX) and Association of Malaysian Students in Hubei (AMSIH)",
-      zh: "陕西省马来西亚留学生协会（AMSISX）与湖北省马来西亚留学生协会（AMSIH）",
-      ja: "陝西省マレーシア留学生協会（AMSISX）・湖北省マレーシア留学生協会（AMSIH）"
-    },
-    description: "",
-    period: { en: "Jan 2020", zh: "2020年1月", ja: "2020年1月" },
     logo: ""
   },
   {
