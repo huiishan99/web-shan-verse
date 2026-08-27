@@ -76,7 +76,7 @@ export interface EducationItem {
 
 export const education: EducationItem[] = [
   {
-    school: "University of Aizu",
+    school: { en: "University of Aizu", zh: "会津大学", ja: "会津大学" },
     location: { en: "Aizu-Wakamatsu, Japan", zh: "日本会津若松", ja: "日本・会津若松" },
     description: {
       en: "Graduated early with Grade A after completing all program and research requirements. Research focused on virtual reality (VR) and embodied AI avatars for self-learning in educational contexts. First-author paper published at IEEE GEM 2025, and a co-authored paper related to large language model–based software security published at ISPEC 2025.",
@@ -88,7 +88,7 @@ export const education: EducationItem[] = [
       zh: "理学硕士 - 计算机科学与工程",
       ja: "修士（理学）- コンピュータ理工学"
     },
-    period: "Apr 2024 - Sep 2025",
+    period: { en: "Apr 2024 - Sep 2025", zh: "2024年4月 - 2025年9月", ja: "2024年4月 - 2025年9月" },
     logo: "/images/logo-uoa.png"
   },
   {
@@ -104,23 +104,23 @@ export const education: EducationItem[] = [
       zh: "结业证书 - 日语课程",
       ja: "修了証 - 日本語課程"
     },
-    period: "Oct 2022 - Mar 2024",
+    period: { en: "Oct 2022 - Mar 2024", zh: "2022年10月 - 2024年3月", ja: "2022年10月 - 2024年3月" },
     logo: ""
   },
   {
-    school: "Northwestern Polytechnical University",
+    school: { en: "Northwestern Polytechnical University", zh: "西北工业大学", ja: "西北工業大学" },
     location: { en: "Xi'an, China", zh: "中国西安", ja: "中国・西安" },
     description:{
       en: "Completed a Bachelor’s degree under the School of Computer Science with a thesis grade of 88/100. Undergraduate thesis focused on the simulation and control of formation flight UAV systems. Actively involved in student activities as a member of the Student Organizations Council and the university’s Chinese Debate Team.",
       zh: "在计算机学院完成学士学位，毕业论文成绩为 88/100。本科论文重点研究编队飞行 UAV 系统的仿真与控制。作为学生社团联合会成员和大学中文辩论队成员，积极参与学生活动。",
-      ja: "コンピュータサイエンス学院で学士号を取得し、卒業論文の成績は 88/100 でした。学部論文は、編隊飛行 UAV システムのシミュレーションと制御に焦点を当てました。Student Organizations Council と大学の中国語ディベートチームのメンバーとして、学生活動に積極的に参加しました。"
+      ja: "コンピュータサイエンス学院で学士号を取得し、卒業論文の成績は 88/100 でした。学部論文は、編隊飛行 UAV システムのシミュレーションと制御に焦点を当てました。学生団体連合会と大学の中国語ディベートチームのメンバーとして、学生活動に積極的に参加しました。"
     },
     degree: {
       en: "Bachelor of Engineering - Electronic Commerce",
       zh: "工学学士 - 电子商务",
       ja: "工学学士 - 電子商取引"
     },
-    period: "Sep 2018 - Jun 2022",
+    period: { en: "Sep 2018 - Jun 2022", zh: "2018年9月 - 2022年6月", ja: "2018年9月 - 2022年6月" },
     logo: "/images/logo-nwpu.png"
   }
 ];
@@ -138,19 +138,19 @@ export interface ExperienceItem {
 
 export const experience: ExperienceItem[] = [
   {
-    company: "ALPS ALPINE",
-    role: { en: "Engineer (New Graduate)", zh: "工程师（新卒）", ja: "エンジニア（新卒）" },
+    company: { en: "ALPS ALPINE", zh: "阿尔卑斯阿尔派", ja: "アルプスアルパイン" },
+    role: { en: "Engineer (New Graduate)", zh: "工程师（应届毕业生）", ja: "エンジニア（新卒）" },
     period: { en: "Apr 2026 – Present", zh: "2026年4月 – 至今", ja: "2026年4月 – 現在" },
     logo: "/images/logo-alps.png",
     description: {
       en: "Currently working as a new graduate engineer in the Development & Design Division, 4th Software Engineering Department (開発設計部第４ソフト技術部). The team focuses on embedded software development with PoC-style prototyping. I am learning the department's development workflow and strengthening my embedded software engineering fundamentals through daily project work.",
-      zh: "目前在开发设计部第四软件技术部（開発設計部第４ソフト技術部）作为新毕业工程师工作。团队专注于嵌入式软件开发和 PoC 风格的原型制作。我正在通过日常项目工作学习部门的开发流程，并加强自己的嵌入式软件工程基础。",
+      zh: "目前在开发设计部第四软件技术部担任应届毕业生工程师。团队专注于嵌入式软件开发和 PoC 风格的原型制作。我正在通过日常项目工作学习部门的开发流程，并加强自己的嵌入式软件工程基础。",
       ja: "現在、開発設計部第4ソフト技術部で新卒エンジニアとして働いています。チームは、PoC スタイルのプロトタイピングを伴う組込みソフトウェア開発に焦点を当てています。日々のプロジェクト業務を通じて、部署の開発ワークフローを学び、組込みソフトウェアエンジニアリングの基礎を強化しています。"
     }
   },
   {
-    company: "ALPS ALPINE",
-    role: { en: "Engineer Internship", zh: "工程师实习", ja: "エンジニアインターン" },
+    company: { en: "ALPS ALPINE", zh: "阿尔卑斯阿尔派", ja: "アルプスアルパイン" },
+    role: { en: "Engineer Internship", zh: "工程师实习生", ja: "エンジニアインターン" },
     period: { en: "Sep 2024", zh: "2024年9月", ja: "2024年9月" },
     logo: "/images/logo-alps.png",
     description: {
@@ -160,7 +160,7 @@ export const experience: ExperienceItem[] = [
     }
   },
   {
-    company: "University of Aizu",
+    company: { en: "University of Aizu", zh: "会津大学", ja: "会津大学" },
     role: { en: "Part Time - Teaching Assistant", zh: "兼职 - 助教", ja: "アルバイト - ティーチングアシスタント" },
     period: { en: "Oct 2024 – Sep 2025", zh: "2024年10月 – 2025年9月", ja: "2024年10月 – 2025年9月" },
     logo: "/images/logo-uoa.png",
@@ -171,7 +171,7 @@ export const experience: ExperienceItem[] = [
     }
   },
   {
-    company: "Alibaba GDT Network",
+    company: { en: "Alibaba GDT Network", zh: "阿里巴巴 GDT 网络", ja: "アリババ GDT ネットワーク" },
     role: { en: "Student Internship", zh: "学生实习", ja: "学生インターン" },
     period: { en: "Nov 2021 – Jan 2022", zh: "2021年11月 – 2022年1月", ja: "2021年11月 – 2022年1月" },
     logo: "/images/logo-gdt.png",
@@ -182,7 +182,7 @@ export const experience: ExperienceItem[] = [
     }
   },
   {
-    company: "Hamazushi",
+    company: { en: "Hamazushi", zh: "滨寿司", ja: "はま寿司" },
     role: { en: "Part Time - Kitchen Staff", zh: "兼职 - 厨房员工", ja: "アルバイト - キッチンスタッフ" },
     period: { en: "Mar 2023 – Feb 2024", zh: "2023年3月 – 2024年2月", ja: "2023年3月 – 2024年2月" },
     logo: "/images/logo-uoa.png",
@@ -193,7 +193,7 @@ export const experience: ExperienceItem[] = [
     }
   },
   {
-    company: "Coco Ichibanya Curry House",
+    company: { en: "CoCo Ichibanya Curry House", zh: "CoCo壹番屋", ja: "カレーハウスCoCo壱番屋" },
     role: { en: "Part Time - Food Server", zh: "兼职 - 餐厅服务", ja: "アルバイト - ホールスタッフ" },
     period: { en: "Dec 2022 – Jan 2024", zh: "2022年12月 – 2024年1月", ja: "2022年12月 – 2024年1月" },
     logo: "/images/logo-uoa.png",
@@ -219,38 +219,58 @@ export interface AwardsItem {
 
 export const awards: AwardsItem[] = [
   {
-    title: "Presentation Award",
-    issuer: "IEEE GEM 2025",
+    title: { en: "Presentation Award", zh: "报告奖", ja: "プレゼンテーション賞" },
+    issuer: { en: "IEEE GEM 2025", zh: "IEEE GEM 2025", ja: "IEEE GEM 2025" },
     description: "",
-    period: "Jul 2025",
+    period: { en: "Jul 2025", zh: "2025年7月", ja: "2025年7月" },
     logo: ""
   },
   {
-    title: "Second Prize (School trails) in China College Students' ·Internet+· Innovation and Entrepreneurship Competition",
-    issuer: "Ministry of Education, China",
+    title: {
+      en: "Second Prize (School Trials) in China College Students' ·Internet+· Innovation and Entrepreneurship Competition",
+      zh: "中国国际大学生“互联网+”创新创业大赛校级二等奖",
+      ja: "中国国際大学生「インターネット＋」イノベーション・起業コンテスト 学内予選二等賞"
+    },
+    issuer: { en: "Ministry of Education, China", zh: "中国教育部", ja: "中国教育部" },
     description: "",
-    period: "Jan 2021",
+    period: { en: "Jan 2021", zh: "2021年1月", ja: "2021年1月" },
     logo: ""
   },
   {
-    title: "Second prize (Provincial trials) in China National Undergraduate ·Innovation, Creativity and Entrepreneurship· Challenge",
-    issuer: "Ministry of Education, China",
+    title: {
+      en: "Second Prize (Provincial Trials) in China National Undergraduate ·Innovation, Creativity and Entrepreneurship· Challenge",
+      zh: "中国大学生创新、创意及创业挑战赛省级二等奖",
+      ja: "中国大学生イノベーション・創意・起業チャレンジ 省予選二等賞"
+    },
+    issuer: { en: "Ministry of Education, China", zh: "中国教育部", ja: "中国教育部" },
     description: "",
-    period: "Oct 2020",
+    period: { en: "Oct 2020", zh: "2020年10月", ja: "2020年10月" },
     logo: ""
   },
   {
-    title: "Consolation Prize in Dekad Bahasa 2.0 (2020) Dubbing Competition",
-    issuer: "Association of Malaysian Students in Shaanxi (AMSISX) and Association of Malaysian Students in Hubei (AMSIH)",
+    title: {
+      en: "Consolation Prize in Dekad Bahasa 2.0 (2020) Dubbing Competition",
+      zh: "Dekad Bahasa 2.0（2020）配音比赛安慰奖",
+      ja: "Dekad Bahasa 2.0（2020）吹き替えコンテスト努力賞"
+    },
+    issuer: {
+      en: "Association of Malaysian Students in Shaanxi (AMSISX) and Association of Malaysian Students in Hubei (AMSIH)",
+      zh: "陕西省马来西亚留学生协会（AMSISX）与湖北省马来西亚留学生协会（AMSIH）",
+      ja: "陝西省マレーシア留学生協会（AMSISX）・湖北省マレーシア留学生協会（AMSIH）"
+    },
     description: "",
-    period: "Jan 2020",
+    period: { en: "Jan 2020", zh: "2020年1月", ja: "2020年1月" },
     logo: ""
   },
   {
-    title: "NPU President Scholarship",
-    issuer: "Northwestern Polytechnical University",
-    description: "First-Level Scholarship Winner (2018) - Exempted from tuition and accommodation fees; provided living allowance of 1,500 RMB/month for 12 months.",
-    period: "Sep 2018",
+    title: { en: "NPU President Scholarship", zh: "西北工业大学校长奖学金", ja: "西北工業大学学長奨学金" },
+    issuer: { en: "Northwestern Polytechnical University", zh: "西北工业大学", ja: "西北工業大学" },
+    description: {
+      en: "First-Level Scholarship Winner (2018) - Exempted from tuition and accommodation fees; provided living allowance of 1,500 RMB/month for 12 months.",
+      zh: "2018年一等奖：免除学费和住宿费，并连续12个月每月提供1,500元人民币生活补助。",
+      ja: "2018年度一等奨学金：授業料・寮費免除に加え、12か月間、月額1,500人民元の生活費を支給。"
+    },
+    period: { en: "Sep 2018", zh: "2018年9月", ja: "2018年9月" },
     logo: ""
   },
 ];
