@@ -95,6 +95,7 @@
   --font-about-copy: var(--font-body);
   --font-page-subtitle: var(--font-body);
   --font-mono: 'JetBrains Mono', 'Fira Code', var(--font-cjk), monospace;
+  --font-about-date: var(--font-mono);
   
   /* 间距 */
   --space-xs: 0.25rem;
@@ -112,12 +113,14 @@ html[lang='zh'] {
   --font-blog-heading: var(--font-blog-copy);
   --font-about-copy: 'Crimson Pro', 'Zhuque Fangsong About', 'Noto Serif SC', 'Songti SC', SimSun;
   --font-page-subtitle: 'Crimson Pro', 'Zhuque Fangsong Page Subtitle', 'Noto Serif SC', 'Songti SC', SimSun;
+  --font-about-date: 'JetBrains Mono', 'Fira Code', 'Zhuque Fangsong About', 'Noto Serif SC', 'Songti SC', SimSun, monospace;
 }
 
 html[lang='ja'] {
   --font-cjk: 'Shippori Mincho', 'Yu Mincho', 'Hiragino Mincho ProN';
   --font-about-copy: 'Crimson Pro', 'Zhuque Fangsong About', 'Shippori Mincho', 'Yu Mincho', 'Hiragino Mincho ProN';
   --font-page-subtitle: 'Crimson Pro', 'Zhuque Fangsong Page Subtitle', 'Shippori Mincho', 'Yu Mincho', 'Hiragino Mincho ProN';
+  --font-about-date: 'JetBrains Mono', 'Fira Code', 'Zhuque Fangsong About', 'Shippori Mincho', 'Yu Mincho', 'Hiragino Mincho ProN', monospace;
 }
 
 /* --- 全局样式 --- */
