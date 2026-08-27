@@ -40,6 +40,9 @@ test('home page loads its core landmarks without uncaught errors', async ({ page
   await expect(page.locator('main')).toHaveCount(1);
   await expect(page.locator('h1')).toHaveCount(1);
   await expect(page.locator('h1')).toBeVisible();
+  const publicationsFeature = page.locator('.featured-grid .featured-card').first();
+  await expect(publicationsFeature).toHaveAttribute('href', '/projects#publications');
+  await expect(publicationsFeature.locator('h3')).toHaveText('Publications');
   expect(pageErrors).toEqual([]);
 });
 
