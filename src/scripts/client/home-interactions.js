@@ -169,17 +169,25 @@
     const activity = root.closest('[data-github-activity]');
     if (!username || !start || !end || !activity) return;
 
+    const loadingWeeks = buildWeeks(start, end, []);
+    renderCalendar(root, loadingWeeks);
+    activity.classList.add('is-loading');
+    activity.classList.remove('is-enhanced', 'is-fallback');
+    activity.setAttribute('aria-busy', 'true');
+
     try {
       const contributions = await loadContributionData(username);
       const weeks = buildWeeks(start, end, contributions);
       renderCalendar(root, weeks);
       activity.classList.add('is-enhanced');
-      activity.classList.remove('is-fallback');
+      activity.classList.remove('is-loading', 'is-fallback');
+      activity.setAttribute('aria-busy', 'false');
     } catch (error) {
       console.warn('GitHub contribution calendar fallback:', error);
       root.dataset.ready = 'false';
-      activity.classList.remove('is-enhanced');
+      activity.classList.remove('is-loading', 'is-enhanced');
       activity.classList.add('is-fallback');
+      activity.setAttribute('aria-busy', 'false');
     }
   }
 
