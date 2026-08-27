@@ -247,10 +247,10 @@ test('project cards open both text-only and image detail dialogs', async ({ page
   await mandalaDialog.getByRole('button', { name: 'Close project details' }).click();
   await expect(mandalaDialog).not.toBeVisible();
 
-  const thesisCard = page.locator('#publications .project-card').filter({
+  const thesisCard = page.locator('#theses .project-card').filter({
     hasText: 'The Role of Embodied Avatars and Generative AI in Self Learning VR Classroom',
   });
-  const thesisDialog = page.locator('#project-detail-publications-3');
+  const thesisDialog = page.locator('#project-detail-theses-0');
 
   await expect(thesisCard.locator('.project-status')).toHaveText("Master's Thesis");
   await expect(thesisCard.getByRole('link', { name: 'View Project Page' })).toHaveAttribute(

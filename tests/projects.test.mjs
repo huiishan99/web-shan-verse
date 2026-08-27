@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { projectCategories } from '../src/data/projects.ts';
 import { getProjectStatus } from '../src/utils/projects.ts';
 
 const project = (overrides = {}) => ({
@@ -15,9 +16,21 @@ test('explicit project status wins over inferred metadata', () => {
     'on-hold'
   );
   assert.equal(
-    getProjectStatus(project({ status: 'thesis' }), category('publications')),
+    getProjectStatus(project({ status: 'thesis' }), category('theses')),
     'thesis'
   );
+});
+
+test('theses are kept in their own category after publications', () => {
+  const publicationsIndex = projectCategories.findIndex(({ id }) => id === 'publications');
+  const thesesIndex = projectCategories.findIndex(({ id }) => id === 'theses');
+  const publications = projectCategories[publicationsIndex];
+  const theses = projectCategories[thesesIndex];
+  const masterThesisTitle = 'The Role of Embodied Avatars and Generative AI in Self Learning VR Classroom';
+
+  assert.equal(thesesIndex, publicationsIndex + 1);
+  assert.equal(publications.items.some(({ title }) => title === masterThesisTitle), false);
+  assert.equal(theses.items.some(({ title }) => title === masterThesisTitle), true);
 });
 
 test('project status inference is shared by pages and the CLI index', () => {
