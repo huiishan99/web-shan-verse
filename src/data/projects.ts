@@ -59,6 +59,7 @@ export type ProjectStatus =
     | "awaiting-coordination"
     | "publication"
     | "thesis"
+    | "bachelor-thesis"
     | "private"
     | "archive";
 
@@ -378,17 +379,6 @@ export const projectCategories: ProjectCategory[] = [
                 github: "https://github.com/huiishan99/uoa-software-engineering",
                 tags: ["Software Engineering", "Coursework"]
             },
-            {
-                title: "NWPU Undergraduate Thesis",
-                description: {
-                    en: "Undergraduate thesis records for a quadrotor UAV formation digital-twin system using AirSim/PX4 references.",
-                    zh: "本科毕业论文记录，主题为参考 AirSim/PX4 的四旋翼无人机编队数字孪生系统。",
-                    ja: "AirSim/PX4 を参考にしたクアッドローター UAV 編隊デジタルツインシステムに関する卒業論文記録。"
-                },
-                github: "https://github.com/huiishan99/nwpu-undergraduate-thesis",
-                tags: ["Digital Twin", "UAV", "AirSim", "PX4"]
-            }
-
         ]
     },
     {
@@ -993,6 +983,110 @@ export const projectCategories: ProjectCategory[] = [
                 paper: "https://web-publications.vercel.app/paper/embodied-avatars-generative-ai-vr-thesis.pdf",
                 caseStudy: "https://web-publications.vercel.app/publications/embodied-avatars-generative-ai-vr-thesis/",
                 tags: ["Virtual Reality", "Generative AI", "Embodied Avatar"]
+            },
+            {
+                title: {
+                    en: "Design and Implementation of a Digital Twin System for Quadrotor UAV Formation Flight",
+                    zh: "四旋翼无人机编队飞行数字孪生系统的设计与实现",
+                    ja: "クアッドローター UAV 編隊飛行デジタルツインシステムの設計と実装"
+                },
+                authors: {
+                    en: "HuiShan Lai",
+                    zh: "HuiShan Lai",
+                    ja: "HuiShan Lai"
+                },
+                conference: {
+                    en: "Bachelor's Thesis · Northwestern Polytechnical University · July 2022",
+                    zh: "本科毕业论文 · 西北工业大学 · 2022年7月",
+                    ja: "学士論文 · 西北工業大学 · 2022年7月"
+                },
+                description: {
+                    en: "An undergraduate thesis developing an Unreal Engine and AirSim digital twin for quadrotor formation control, remote interaction, and flight-data collection.",
+                    zh: "本论文开发了基于 Unreal Engine 与 AirSim 的四旋翼无人机编队数字孪生系统，支持编队控制、远程交互与飞行数据采集。",
+                    ja: "Unreal Engine と AirSim を用いて、クアッドローター UAV の編隊制御、遠隔操作、飛行データ収集に対応するデジタルツインを開発した学士論文です。"
+                },
+                details: {
+                    en: "This undergraduate thesis develops a digital-twin environment for quadrotor UAV formation flight using Unreal Engine 4 and Microsoft AirSim. It combines multi-UAV generation, controller and Python API input, remote PX4/QGroundControl communication, sensor recording, and a shared flight-data store. Functional testing covered formation generation, multiple viewpoints, environmental controls, database export, and Windows–Linux interaction. The prototype also documented its limits: rendering performance fell with large formations, occasional API disconnects disrupted follower aircraft, and the controller remained a simplified follow-and-avoidance design.",
+                    zh: "本论文使用 Unreal Engine 4 与 Microsoft AirSim 构建面向四旋翼无人机编队飞行的数字孪生环境，整合多机生成、手柄与 Python API 输入、PX4/QGroundControl 远程通信、传感器记录及共享飞行数据存储。功能测试覆盖编队生成、多视角观察、环境控制、数据库导出与 Windows–Linux 交互，同时也记录了原型限制：大规模编队会降低渲染性能，偶发 API 断连会影响跟随机，编队控制器仍是简化的跟随与避障实现。",
+                    ja: "本学士論文では、Unreal Engine 4 と Microsoft AirSim を用い、クアッドローター UAV の編隊飛行を対象とするデジタルツイン環境を構築しました。複数 UAV の生成、コントローラーと Python API の入力、PX4/QGroundControl の遠隔通信、センサーデータ記録、共有飛行データ保存を統合しています。機能試験では編隊生成、複数視点、環境制御、データベース出力、Windows–Linux 間の連携を確認しました。一方、大規模編隊での描画負荷、API 切断による追従機への影響、簡易的な追従・回避制御という限界も記録しています。"
+                },
+                status: "bachelor-thesis",
+                detailImages: [
+                    {
+                        src: "/images/projects/nwpu-uav-digital-twin-cover.jpg",
+                        alt: {
+                            en: "Twenty-five quadrotor UAVs generated in the AirSim digital-twin environment with three onboard sensor views",
+                            zh: "AirSim 数字孪生环境中生成的 25 架四旋翼无人机及三个机载传感器视角",
+                            ja: "AirSim デジタルツイン環境に生成された25機のクアッドローター UAV と3つの機載センサー視点"
+                        },
+                        caption: {
+                            en: "25-UAV scale test in the Unreal Engine and AirSim environment",
+                            zh: "Unreal Engine 与 AirSim 环境中的 25 架无人机规模测试",
+                            ja: "Unreal Engine・AirSim 環境における25機規模のテスト"
+                        },
+                        fit: "contain"
+                    },
+                    {
+                        src: "/images/projects/nwpu-uav-digital-twin-architecture.jpg",
+                        alt: {
+                            en: "System architecture connecting the UAV, controller, simulator, physics, sensors, rendering, environment, and data collection",
+                            zh: "连接无人机、控制器、仿真器、物理、传感器、渲染、环境与数据采集模块的系统架构",
+                            ja: "UAV、制御器、シミュレーター、物理、センサー、描画、環境、データ収集を接続するシステム構成"
+                        },
+                        caption: {
+                            en: "Digital-twin system architecture",
+                            zh: "数字孪生系统架构",
+                            ja: "デジタルツインのシステム構成"
+                        },
+                        fit: "contain"
+                    },
+                    {
+                        src: "/images/projects/nwpu-uav-digital-twin-formation.jpg",
+                        alt: {
+                            en: "Three simulated quadrotor UAVs aligned in formation on a sports field",
+                            zh: "运动场上编队排列的三架仿真四旋翼无人机",
+                            ja: "グラウンド上で編隊を組む3機のシミュレーション UAV"
+                        },
+                        caption: {
+                            en: "Three-UAV formation generated in AirSim",
+                            zh: "AirSim 中生成的三机编队",
+                            ja: "AirSim で生成した3機編隊"
+                        },
+                        fit: "contain"
+                    },
+                    {
+                        src: "/images/projects/nwpu-uav-digital-twin-data.png",
+                        alt: {
+                            en: "Recorded AirSim data table with vehicle names, positions, quaternions, and image references",
+                            zh: "包含飞行器名称、位置、四元数与图像引用的 AirSim 数据记录表",
+                            ja: "機体名、位置、クォータニオン、画像参照を含む AirSim の記録データ表"
+                        },
+                        caption: {
+                            en: "Shared flight-data table and captured-image references",
+                            zh: "共享飞行数据表与采集图像引用",
+                            ja: "共有飛行データ表と撮影画像の参照"
+                        },
+                        fit: "contain"
+                    },
+                    {
+                        src: "/images/projects/nwpu-uav-digital-twin-remote.png",
+                        alt: {
+                            en: "Remote communication test with AirSim on Windows and PX4 plus QGroundControl on Ubuntu",
+                            zh: "Windows 上运行 AirSim、Ubuntu 上运行 PX4 与 QGroundControl 的远程通信测试",
+                            ja: "Windows 上の AirSim と Ubuntu 上の PX4・QGroundControl を接続した遠隔通信テスト"
+                        },
+                        caption: {
+                            en: "Windows host and Ubuntu client remote-control test",
+                            zh: "Windows 主机与 Ubuntu 客户端远程控制测试",
+                            ja: "Windows ホストと Ubuntu クライアントによる遠隔制御テスト"
+                        },
+                        fit: "contain"
+                    }
+                ],
+                github: "https://github.com/huiishan99/nwpu-undergraduate-thesis",
+                paper: "https://web-publications.vercel.app/paper/quadrotor-uav-formation-digital-twin-thesis.pdf",
+                caseStudy: "https://web-publications.vercel.app/publications/quadrotor-uav-formation-digital-twin-thesis/",
+                tags: ["Digital Twin", "UAV", "Unreal Engine", "AirSim", "PX4"]
             }
         ]
     },

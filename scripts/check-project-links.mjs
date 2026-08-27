@@ -7,6 +7,12 @@ const RETRY_DELAY_MS = 500;
 const MAX_CONCURRENT_REQUESTS = 6;
 const WARNING_STATUSES = new Set([401, 403]);
 
+function getEnglishLabel(value) {
+  if (typeof value === 'string') return value;
+  if (value && typeof value.en === 'string') return value.en;
+  return String(value);
+}
+
 export function collectLinks(categories) {
   const links = [];
 
@@ -17,9 +23,9 @@ export function collectLinks(categories) {
         if (typeof url !== 'string' || url.trim() === '') continue;
 
         links.push({
-          category: category.title,
+          category: getEnglishLabel(category.title),
           field,
-          title: item.title,
+          title: getEnglishLabel(item.title),
           url: url.trim(),
         });
       }

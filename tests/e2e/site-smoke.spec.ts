@@ -331,4 +331,35 @@ test('project cards open both text-only and image detail dialogs', async ({ page
     'href',
     'https://web-publications.vercel.app/publications/embodied-avatars-generative-ai-vr-thesis/'
   );
+
+  await thesisDialog.getByRole('button', { name: 'Close project details' }).click();
+  await expect(thesisDialog).not.toBeVisible();
+
+  const bachelorThesisCard = page.locator('#theses .project-card').filter({
+    hasText: 'Design and Implementation of a Digital Twin System for Quadrotor UAV Formation Flight',
+  });
+  const bachelorThesisDialog = page.locator('#project-detail-theses-1');
+
+  await expect(bachelorThesisCard.locator('.project-status')).toHaveText("Bachelor's Thesis");
+  await expect(bachelorThesisCard.getByRole('link', { name: 'View Project Page' })).toHaveAttribute(
+    'href',
+    'https://web-publications.vercel.app/publications/quadrotor-uav-formation-digital-twin-thesis/'
+  );
+  await bachelorThesisCard.getByRole('button', { name: 'View Details' }).click();
+  await expect(bachelorThesisDialog).toBeVisible();
+  await expect(bachelorThesisDialog).toHaveClass(/project-detail-dialog--image-contain/);
+  await expect(bachelorThesisDialog.locator('[data-project-gallery-slide]')).toHaveCount(5);
+  await expect(bachelorThesisDialog.locator('[data-project-gallery-slide] img').first()).toHaveAttribute(
+    'src',
+    '/images/projects/nwpu-uav-digital-twin-cover.jpg'
+  );
+  await expect(bachelorThesisDialog.locator('.project-detail-kicker .project-status')).toHaveText("Bachelor's Thesis");
+  await expect(bachelorThesisDialog.getByRole('link', { name: 'View Paper' })).toHaveAttribute(
+    'href',
+    'https://web-publications.vercel.app/paper/quadrotor-uav-formation-digital-twin-thesis.pdf'
+  );
+  await expect(bachelorThesisDialog.getByRole('link', { name: 'View Project Page' })).toHaveAttribute(
+    'href',
+    'https://web-publications.vercel.app/publications/quadrotor-uav-formation-digital-twin-thesis/'
+  );
 });

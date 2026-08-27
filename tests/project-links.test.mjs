@@ -5,10 +5,10 @@ import { collectLinks, formatResult } from '../scripts/check-project-links.mjs';
 test('collectLinks returns only supported non-empty project URLs', () => {
   const categories = [
     {
-      title: 'Research',
+      title: { en: 'Research', zh: '研究', ja: '研究' },
       items: [
         {
-          title: 'Project A',
+          title: { en: 'Project A', zh: '项目 A', ja: 'プロジェクト A' },
           github: ' https://github.com/example/project-a ',
           paper: '',
           website: 'https://example.com/project-a',
