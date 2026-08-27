@@ -40,7 +40,7 @@ test('awards include the ALPS ALPINE workshop result and omit Dekad Bahasa', () 
   const workshopAward = awards.find((item) => item.title.en === 'First Place, ALPS ALPINE Workshop');
 
   assert.ok(workshopAward);
-  assert.equal(workshopAward.period.en, 'Jun 2024');
+  assert.equal(workshopAward.period.en, 'Aug 2024');
   assert.match(workshopAward.description.en, /one of four participants/);
   assert.equal(awards.some((item) => item.title.en.includes('Dekad Bahasa')), false);
 });
