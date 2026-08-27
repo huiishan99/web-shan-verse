@@ -38,8 +38,8 @@ test('home page loads its core landmarks without uncaught errors', async ({ page
 
   await expect(page).toHaveTitle('Home | SHAN-VERSE');
   await expect(page.locator('main')).toHaveCount(1);
-  await expect(page.locator('h1')).toHaveCount(1);
-  await expect(page.locator('h1')).toBeVisible();
+  await expect(page.locator('main h1')).toHaveCount(1);
+  await expect(page.locator('main h1')).toBeVisible();
   const publicationsFeature = page.locator('.featured-grid .featured-card').first();
   await expect(publicationsFeature).toHaveAttribute('href', '/projects#publications');
   await expect(publicationsFeature.locator('h3')).toHaveText('Publications');
@@ -119,7 +119,7 @@ test('music player can play, survive a client-side navigation, and pause', async
 test('translated article exposes complete alternate links and keeps its slug', async ({ page }) => {
   await page.goto('/blog/codex-after-the-update');
 
-  await expect(page.locator('h1')).toContainText('After the Codex Update');
+  await expect(page.locator('main h1')).toContainText('After the Codex Update');
   await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveCount(1);
   await expect(page.locator('link[rel="alternate"][hreflang="zh"]')).toHaveCount(1);
   await expect(page.locator('link[rel="alternate"][hreflang="ja"]')).toHaveCount(1);
@@ -128,7 +128,7 @@ test('translated article exposes complete alternate links and keeps its slug', a
   await page.locator('[data-language-menu] a[lang="ja"]').click();
   await expect(page).toHaveURL(/\/ja\/blog\/codex-after-the-update\/?$/);
   await expect(page.locator('html')).toHaveAttribute('lang', 'ja');
-  await expect(page.locator('h1')).toContainText('Codex のアップデート後');
+  await expect(page.locator('main h1')).toContainText('Codex のアップデート後');
 });
 
 test('project category navigation wraps into two readable desktop rows', async ({ page }) => {

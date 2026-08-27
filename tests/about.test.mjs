@@ -36,10 +36,11 @@ test('resume institution names are localized while ABK College stays in English'
   });
 });
 
-test('awards include the ALPS ALPINE workshop result and omit Dekad Bahasa', () => {
-  const workshopAward = awards.find((item) => item.title.en === 'First Place, ALPS ALPINE Workshop');
+test('awards include the Sensory Design Thinking Workshop result and omit Dekad Bahasa', () => {
+  const workshopAward = awards.find((item) => item.title.en === 'First Grade, Sensory Design Thinking Workshop');
 
   assert.ok(workshopAward);
+  assert.equal(workshopAward.issuer.en, 'ALPS ALPINE and University of Aizu');
   assert.equal(workshopAward.period.en, 'Aug 2024');
   assert.match(workshopAward.description.en, /one of four participants/);
   assert.equal(awards.some((item) => item.title.en.includes('Dekad Bahasa')), false);
