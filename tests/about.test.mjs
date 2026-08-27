@@ -30,5 +30,17 @@ test('resume institution names are localized while ABK College stays in English'
     assertFullyLocalized(item.title, 'awards.title');
     assertFullyLocalized(item.issuer, 'awards.issuer');
     assertFullyLocalized(item.period, 'awards.period');
+    if (item.description) {
+      assertFullyLocalized(item.description, 'awards.description');
+    }
   });
+});
+
+test('awards include the ALPS ALPINE workshop result and omit Dekad Bahasa', () => {
+  const workshopAward = awards.find((item) => item.title.en === 'First Place, ALPS ALPINE Workshop');
+
+  assert.ok(workshopAward);
+  assert.equal(workshopAward.period.en, 'Jun 2024');
+  assert.match(workshopAward.description.en, /one of four participants/);
+  assert.equal(awards.some((item) => item.title.en.includes('Dekad Bahasa')), false);
 });
