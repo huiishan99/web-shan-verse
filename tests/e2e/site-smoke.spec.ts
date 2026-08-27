@@ -156,6 +156,10 @@ test('project cards open both text-only and image detail dialogs', async ({ page
     .evaluateAll((images) => images.map((image) => image.getAttribute('src')));
   expect(mathBridgeImageSources.some((source) => source?.endsWith('/background.png'))).toBe(false);
 
+  await mathBridgeDialog.locator('[data-project-gallery-next]').click({ clickCount: 4, delay: 25 });
+  expect(await page.evaluate(() => window.getSelection()?.toString() ?? '')).toBe('');
+  await expect(mathBridgeDialog.locator('[data-project-gallery-slide]:visible')).toHaveCount(1);
+
   await mathBridgeDialog.getByRole('button', { name: 'Close project details' }).click();
   await expect(mathBridgeDialog).not.toBeVisible();
 
