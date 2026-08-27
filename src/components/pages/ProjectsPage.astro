@@ -411,22 +411,20 @@ function getAuthorParts(authors: string) {
 
   .category-route-grid {
     display: flex;
-    flex-wrap: nowrap;
-    gap: 0.45rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.55rem;
     min-width: 0;
-    overflow-x: auto;
-    overscroll-behavior-inline: contain;
-    padding-bottom: 0.15rem;
-    scrollbar-width: thin;
   }
 
   .category-route-item {
     display: grid;
-    flex: 1 0 0;
+    flex: 1 1 180px;
     grid-template-columns: auto minmax(0, 1fr) auto;
     gap: 0.46rem;
     align-items: center;
-    min-width: 0;
+    min-width: 170px;
+    max-width: 200px;
     min-height: 50px;
     padding: 0.52rem 0.58rem;
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -466,12 +464,13 @@ function getAuthorParts(authors: string) {
 
   .category-route-title {
     min-width: 0;
-    overflow: hidden;
+    overflow: visible;
+    overflow-wrap: anywhere;
     font-size: 0.82rem;
     font-weight: 600;
     line-height: 1.15;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    text-overflow: clip;
+    white-space: normal;
   }
 
   .category-route-count {
@@ -1342,6 +1341,8 @@ function getAuthorParts(authors: string) {
     }
 
     .category-route-item {
+      min-width: 0;
+      max-width: none;
       min-height: 46px;
       gap: 0.45rem;
       padding: 0.45rem 0.52rem;
