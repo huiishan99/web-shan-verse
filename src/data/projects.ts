@@ -951,7 +951,14 @@ export const projectCategories: ProjectCategory[] = [
                 paper: "https://dl.acm.org/doi/10.1145/3795011.3795053",
                 caseStudy: "https://web-publications.vercel.app/publications/bioadaptive-vr-attention-restoration/",
                 tags: ["Virtual Reality","Multimodal Interaction","AI-Driven","AHs 2026"]
-            },
+            }
+        ]
+    },
+    {
+        id: "theses",
+        title: { en: "Theses", zh: "学位论文", ja: "学位論文" },
+        icon: "graduation",
+        items: [
             {
                 title: "The Role of Embodied Avatars and Generative AI in Self Learning VR Classroom",
                 authors: {
@@ -986,7 +993,7 @@ export const projectCategories: ProjectCategory[] = [
                 paper: "https://web-publications.vercel.app/paper/embodied-avatars-generative-ai-vr-thesis.pdf",
                 caseStudy: "https://web-publications.vercel.app/publications/embodied-avatars-generative-ai-vr-thesis/",
                 tags: ["Virtual Reality", "Generative AI", "Embodied Avatar"]
-            },
+            }
         ]
     },
     // 添加新类别示例：
