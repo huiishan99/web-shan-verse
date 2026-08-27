@@ -35,6 +35,14 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Zhuque Fangsong Page Subtitle';
+  src: url('/fonts/ZhuqueFangsong-PageSubtitle.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
 /* --- 基础变量 --- */
 :root {
   /* 深空背景色 */
@@ -85,6 +93,7 @@
   --font-blog-copy: var(--font-body);
   --font-blog-heading: var(--font-display);
   --font-about-copy: var(--font-body);
+  --font-page-subtitle: var(--font-body);
   --font-mono: 'JetBrains Mono', 'Fira Code', var(--font-cjk), monospace;
   
   /* 间距 */
@@ -102,11 +111,13 @@ html[lang='zh'] {
   --font-blog-copy: 'Crimson Pro', 'Zhuque Fangsong Blog', 'Noto Serif SC', 'Songti SC', SimSun;
   --font-blog-heading: var(--font-blog-copy);
   --font-about-copy: 'Crimson Pro', 'Zhuque Fangsong About', 'Noto Serif SC', 'Songti SC', SimSun;
+  --font-page-subtitle: 'Crimson Pro', 'Zhuque Fangsong Page Subtitle', 'Noto Serif SC', 'Songti SC', SimSun;
 }
 
 html[lang='ja'] {
   --font-cjk: 'Shippori Mincho', 'Yu Mincho', 'Hiragino Mincho ProN';
   --font-about-copy: 'Crimson Pro', 'Zhuque Fangsong About', 'Shippori Mincho', 'Yu Mincho', 'Hiragino Mincho ProN';
+  --font-page-subtitle: 'Crimson Pro', 'Zhuque Fangsong Page Subtitle', 'Shippori Mincho', 'Yu Mincho', 'Hiragino Mincho ProN';
 }
 
 /* --- 全局样式 --- */
@@ -129,6 +140,10 @@ body {
   overflow-x: hidden;
   font-size: 1.1rem;
   letter-spacing: 0.01em;
+}
+
+.page-header .subtitle {
+  font-family: var(--font-page-subtitle);
 }
 
 @media (max-width: 768px) {
