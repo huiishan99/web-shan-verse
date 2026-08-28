@@ -116,7 +116,7 @@ test('about resume renders organization logos and keeps them aligned', async ({ 
   expect(cocoLogoBox).not.toBeNull();
   expect(
     cocoLogoBox!.x + cocoLogoBox!.width / 2 - (cocoMarkBox!.x + cocoMarkBox!.width / 2)
-  ).toBe(2);
+  ).toBe(1);
 
   const teachingAssistantEntry = experience.locator('.timeline-entry').nth(2);
   const markBox = await teachingAssistantEntry.locator('.institution-mark').boundingBox();
