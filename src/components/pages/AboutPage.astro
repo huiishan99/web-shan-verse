@@ -1098,14 +1098,12 @@ function getInstitutionMonogram(name: LocalizedString) {
       align-items: flex-start;
       justify-content: flex-start;
       gap: 0.15rem;
-    }
-
-    [data-resume-section='education'] .institution-mark {
-      align-self: start;
+      margin-bottom: 0;
     }
 
     [data-resume-section='education'] .timeline-role {
       grid-column: 1 / -1;
+      margin-top: var(--space-xs);
     }
 
     .institution-mark--fallback::before {
