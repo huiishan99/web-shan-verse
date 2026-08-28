@@ -87,21 +87,21 @@ test('language switcher opens and navigates to the Chinese home page', async ({ 
   await expect(page.locator('[data-language-toggle]')).toHaveText('中');
 });
 
-test('about resume renders institution logos and fallback marks', async ({ page }) => {
+test('about resume renders organization logos and keeps them aligned', async ({ page }) => {
   await page.goto('/zh/about');
 
   const education = page.locator('[data-resume-section="education"]');
   const experience = page.locator('[data-resume-section="experience"]');
 
   await expect(education.locator('.institution-mark')).toHaveCount(3);
-  await expect(education.locator('.institution-mark img')).toHaveCount(2);
-  await expect(education.locator('.institution-mark--fallback')).toHaveText('ABK');
+  await expect(education.locator('.institution-mark img')).toHaveCount(3);
   await expect(education.locator('.institution-mark img').first()).toHaveAttribute('src', '/images/logo-uoa.png');
+  await expect(education.locator('.institution-mark img').nth(1)).toHaveAttribute('src', '/images/logo-abk.png');
 
   await expect(experience.locator('.institution-mark')).toHaveCount(6);
-  await expect(experience.locator('.institution-mark--fallback')).toHaveCount(2);
-  await expect(experience.locator('.institution-mark--fallback').nth(0)).toContainText('HAMA');
-  await expect(experience.locator('.institution-mark--fallback').nth(1)).toContainText('CoCo');
+  await expect(experience.locator('.institution-mark img')).toHaveCount(6);
+  await expect(experience.locator('.institution-mark img').nth(4)).toHaveAttribute('src', '/images/logo-hamazushi.png');
+  await expect(experience.locator('.institution-mark img').nth(5)).toHaveAttribute('src', '/images/logo-coco-ichibanya.png');
 
   const teachingAssistantEntry = experience.locator('.timeline-entry').nth(2);
   const markBox = await teachingAssistantEntry.locator('.institution-mark').boundingBox();
