@@ -145,7 +145,12 @@ test('about resume renders organization logos and keeps them aligned', async ({ 
   expect(mobileEducationTitleBox).not.toBeNull();
   expect(mobileEducationLocationBox).not.toBeNull();
   expect(mobileEducationRoleBox).not.toBeNull();
-  expect(Math.abs(mobileEducationMarkBox!.y - mobileEducationHeaderBox!.y)).toBeLessThanOrEqual(1);
+  expect(
+    Math.abs(
+      mobileEducationMarkBox!.y + mobileEducationMarkBox!.height / 2 -
+        (mobileEducationHeaderBox!.y + mobileEducationHeaderBox!.height / 2)
+    )
+  ).toBeLessThanOrEqual(1);
   expect(mobileEducationLocationBox!.x).toBe(mobileEducationTitleBox!.x);
   expect(mobileEducationLocationBox!.y).toBeGreaterThan(mobileEducationTitleBox!.y);
   expect(mobileEducationRoleBox!.x).toBeLessThan(mobileEducationHeaderBox!.x);
