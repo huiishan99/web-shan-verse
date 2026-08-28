@@ -105,11 +105,16 @@ test('about resume renders institution logos and fallback marks', async ({ page 
 
   const teachingAssistantEntry = experience.locator('.timeline-entry').nth(2);
   const markBox = await teachingAssistantEntry.locator('.institution-mark').boundingBox();
+  const headingBox = await teachingAssistantEntry.locator('.timeline-entry-body').boundingBox();
   const descriptionBox = await teachingAssistantEntry.locator('.timeline-desc').boundingBox();
 
   expect(markBox).not.toBeNull();
+  expect(headingBox).not.toBeNull();
   expect(descriptionBox).not.toBeNull();
   expect(descriptionBox!.x).toBe(markBox!.x);
+  expect(
+    Math.abs(markBox!.y + markBox!.height / 2 - (headingBox!.y + headingBox!.height / 2))
+  ).toBeLessThanOrEqual(1);
 });
 
 test('CLI keyboard shortcut can search the generated site index', async ({ page }) => {
