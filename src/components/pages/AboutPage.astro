@@ -14,7 +14,7 @@ import {
   interests,
   type InterestItem,
 } from '../../data/about';
-import { defaultLocale, localizeString, type Locale } from '../../i18n/config';
+import { defaultLocale, localizeString, type Locale, type LocalizedString } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
 import { asTrustedInlineHtml } from '../../utils/html';
 
@@ -99,6 +99,26 @@ function getItunesSearchUrl(term: string, country = 'JP') {
 
   return `https://itunes.apple.com/search?${params.toString()}`;
 }
+
+const institutionMonograms: Record<string, string> = {
+  'ABK College': 'ABK',
+  Hamazushi: 'HAMA',
+  'CoCo Ichibanya Curry House': 'CoCo',
+};
+
+function getInstitutionMonogram(name: LocalizedString) {
+  const englishName = localizeString(name, 'en');
+  const mappedMonogram = institutionMonograms[englishName];
+  if (mappedMonogram) return mappedMonogram;
+
+  return englishName
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 3)
+    .map((word) => word[0])
+    .join('')
+    .toUpperCase();
+}
 ---
 
 <BaseLayout title={t.about.title} lang={lang}>
@@ -126,21 +146,39 @@ function getItunesSearchUrl(term: string, country = 'JP') {
             {t.about.education}
           </h2>
           
-          <div class="timeline-list">
-            {education.map((item) => (
-              <div class="timeline-item">
-                <div class="timeline-marker"></div>
-                <div class="timeline-content card">
-                  <div class="timeline-header">
-                    <h3>{localizeString(item.school, lang)}</h3>
-                    <span class="timeline-location">{localizeString(item.location, lang)}</span>
+          <div class="timeline-list" data-resume-section="education">
+            {education.map((item) => {
+              const schoolName = localizeString(item.school, lang);
+
+              return (
+                <div class="timeline-item">
+                  <div class="timeline-marker"></div>
+                  <div class="timeline-content card">
+                    <div class="timeline-entry">
+                      <span
+                        class:list={['institution-mark', { 'institution-mark--fallback': !item.logo }]}
+                        aria-hidden="true"
+                      >
+                        {item.logo ? (
+                          <img src={item.logo} alt="" loading="lazy" decoding="async" />
+                        ) : (
+                          <span>{getInstitutionMonogram(item.school)}</span>
+                        )}
+                      </span>
+                      <div class="timeline-entry-body">
+                        <div class="timeline-header">
+                          <h3>{schoolName}</h3>
+                          <span class="timeline-location">{localizeString(item.location, lang)}</span>
+                        </div>
+                        <p class="timeline-role">{localizeString(item.degree, lang)}</p>
+                        {item.description && <p class="timeline-desc">{localizeString(item.description, lang)}</p>}
+                        <p class="timeline-date">{localizeString(item.period, lang)}</p>
+                      </div>
+                    </div>
                   </div>
-                  <p class="timeline-role">{localizeString(item.degree, lang)}</p>
-                  {item.description && <p class="timeline-desc">{localizeString(item.description, lang)}</p>}
-                  <p class="timeline-date">{localizeString(item.period, lang)}</p>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
         
@@ -151,20 +189,38 @@ function getItunesSearchUrl(term: string, country = 'JP') {
             {t.about.experience}
           </h2>
           
-          <div class="timeline-list">
-            {experience.map((item) => (
-              <div class="timeline-item">
-                <div class="timeline-marker"></div>
-                <div class="timeline-content card">
-                  <div class="timeline-header">
-                    <h3>{localizeString(item.company, lang)}</h3>
+          <div class="timeline-list" data-resume-section="experience">
+            {experience.map((item) => {
+              const companyName = localizeString(item.company, lang);
+
+              return (
+                <div class="timeline-item">
+                  <div class="timeline-marker"></div>
+                  <div class="timeline-content card">
+                    <div class="timeline-entry">
+                      <span
+                        class:list={['institution-mark', { 'institution-mark--fallback': !item.logo }]}
+                        aria-hidden="true"
+                      >
+                        {item.logo ? (
+                          <img src={item.logo} alt="" loading="lazy" decoding="async" />
+                        ) : (
+                          <span>{getInstitutionMonogram(item.company)}</span>
+                        )}
+                      </span>
+                      <div class="timeline-entry-body">
+                        <div class="timeline-header">
+                          <h3>{companyName}</h3>
+                        </div>
+                        <p class="timeline-role">{localizeString(item.role, lang)}</p>
+                        {item.description && <p class="timeline-desc">{localizeString(item.description, lang)}</p>}
+                        <p class="timeline-date">{localizeString(item.period, lang)}</p>
+                      </div>
+                    </div>
                   </div>
-                  <p class="timeline-role">{localizeString(item.role, lang)}</p>
-                  {item.description && <p class="timeline-desc">{localizeString(item.description, lang)}</p>}
-                  <p class="timeline-date">{localizeString(item.period, lang)}</p>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
@@ -466,6 +522,94 @@ function getItunesSearchUrl(term: string, country = 'JP') {
   
   .timeline-content {
     padding: var(--space-md);
+  }
+
+  .timeline-entry {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    align-items: start;
+    gap: 0.9rem;
+  }
+
+  .timeline-entry-body {
+    min-width: 0;
+  }
+
+  .institution-mark {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    padding: 3px;
+    overflow: hidden;
+    border: 1px solid rgba(201, 162, 39, 0.26);
+    border-radius: 9px;
+    background: rgba(247, 245, 239, 0.94);
+    box-shadow:
+      inset 0 0 0 1px rgba(10, 10, 15, 0.08),
+      0 7px 18px rgba(0, 0, 0, 0.2);
+    transition:
+      border-color 0.25s ease,
+      box-shadow 0.25s ease,
+      transform 0.25s ease;
+  }
+
+  .institution-mark img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .institution-mark--fallback {
+    padding: 0;
+    color: var(--color-brass-light);
+    background:
+      radial-gradient(circle at 50% 35%, rgba(201, 162, 39, 0.16), transparent 58%),
+      rgba(15, 15, 23, 0.96);
+  }
+
+  .institution-mark--fallback::before,
+  .institution-mark--fallback::after {
+    content: '';
+    position: absolute;
+    pointer-events: none;
+  }
+
+  .institution-mark--fallback::before {
+    inset: 5px;
+    border: 1px solid rgba(201, 162, 39, 0.18);
+    border-radius: 5px;
+  }
+
+  .institution-mark--fallback::after {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--color-brass);
+    box-shadow: 0 0 8px rgba(201, 162, 39, 0.7);
+    transform: translateY(14px);
+  }
+
+  .institution-mark--fallback span {
+    position: relative;
+    z-index: 1;
+    max-width: 100%;
+    font-family: var(--font-about-date);
+    font-size: 0.66rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.04em;
+  }
+
+  .timeline-content:hover .institution-mark {
+    border-color: rgba(212, 168, 75, 0.5);
+    box-shadow:
+      inset 0 0 0 1px rgba(10, 10, 15, 0.08),
+      0 9px 22px rgba(0, 0, 0, 0.24),
+      0 0 14px rgba(201, 162, 39, 0.09);
+    transform: translateY(-1px);
   }
   
   .timeline-header {
@@ -912,6 +1056,30 @@ function getItunesSearchUrl(term: string, country = 'JP') {
       line-height: 1.56;
       letter-spacing: 0;
       margin-bottom: 0.62rem;
+    }
+
+    .timeline-entry {
+      grid-template-columns: 38px minmax(0, 1fr);
+      gap: 0.68rem;
+    }
+
+    .institution-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 7px;
+    }
+
+    .institution-mark--fallback::before {
+      inset: 4px;
+      border-radius: 4px;
+    }
+
+    .institution-mark--fallback::after {
+      transform: translateY(11px);
+    }
+
+    .institution-mark--fallback span {
+      font-size: 0.56rem;
     }
 
     .interest-preview {

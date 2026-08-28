@@ -185,7 +185,7 @@ export const experience: ExperienceItem[] = [
     company: { en: "Hamazushi", zh: "滨寿司", ja: "はま寿司" },
     role: { en: "Part Time - Kitchen Staff", zh: "兼职 - 厨房员工", ja: "アルバイト - キッチンスタッフ" },
     period: { en: "Mar 2023 – Feb 2024", zh: "2023年3月 – 2024年2月", ja: "2023年3月 – 2024年2月" },
-    logo: "/images/logo-uoa.png",
+    logo: "",
     description: {
       en: "Worked in the kitchen preparing sushi, including nigiri, rolls, and gunkan. Assisted with dessert preparation, cleaning, and general kitchen operations. Averaged 16 working hours per week.",
       zh: "在厨房工作，准备寿司，包括握寿司、卷寿司和军舰寿司。协助甜点准备、清洁和一般厨房运营。平均每周工作 16 小时。",
@@ -196,7 +196,7 @@ export const experience: ExperienceItem[] = [
     company: { en: "CoCo Ichibanya Curry House", zh: "CoCo壹番屋", ja: "カレーハウスCoCo壱番屋" },
     role: { en: "Part Time - Food Server", zh: "兼职 - 餐厅服务", ja: "アルバイト - ホールスタッフ" },
     period: { en: "Dec 2022 – Jan 2024", zh: "2022年12月 – 2024年1月", ja: "2022年12月 – 2024年1月" },
-    logo: "/images/logo-uoa.png",
+    logo: "",
     description: {
       en: "Handled food preparation support, cleaning, cashier duties, order taking, and meal serving. Responsible for opening and closing tasks, including cash handling. Averaged 10 working hours per week.",
       zh: "处理备餐支持、清洁、收银职责、点单和上餐。负责开店和闭店任务，包括现金处理。平均每周工作 10 小时。",

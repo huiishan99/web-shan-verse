@@ -87,6 +87,23 @@ test('language switcher opens and navigates to the Chinese home page', async ({ 
   await expect(page.locator('[data-language-toggle]')).toHaveText('中');
 });
 
+test('about resume renders institution logos and fallback marks', async ({ page }) => {
+  await page.goto('/zh/about');
+
+  const education = page.locator('[data-resume-section="education"]');
+  const experience = page.locator('[data-resume-section="experience"]');
+
+  await expect(education.locator('.institution-mark')).toHaveCount(3);
+  await expect(education.locator('.institution-mark img')).toHaveCount(2);
+  await expect(education.locator('.institution-mark--fallback')).toHaveText('ABK');
+  await expect(education.locator('.institution-mark img').first()).toHaveAttribute('src', '/images/logo-uoa.png');
+
+  await expect(experience.locator('.institution-mark')).toHaveCount(6);
+  await expect(experience.locator('.institution-mark--fallback')).toHaveCount(2);
+  await expect(experience.locator('.institution-mark--fallback').nth(0)).toContainText('HAMA');
+  await expect(experience.locator('.institution-mark--fallback').nth(1)).toContainText('CoCo');
+});
+
 test('CLI keyboard shortcut can search the generated site index', async ({ page }) => {
   await page.goto('/');
 
