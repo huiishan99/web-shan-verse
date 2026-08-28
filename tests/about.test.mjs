@@ -38,7 +38,9 @@ test('resume institution names are localized while ABK College stays in English'
 
 test('awards include the Sensory Design Thinking Workshop result and omit Dekad Bahasa', () => {
   const presentationAward = awards.find((item) => item.title.en === 'Presentation Award');
-  const workshopAward = awards.find((item) => item.title.en === 'First Grade');
+  const workshopAward = awards.find(
+    (item) => item.title.en === 'Sensory Design Thinking Workshop — Team First Prize'
+  );
 
   assert.ok(presentationAward);
   assert.equal(presentationAward.title.zh, presentationAward.title.en);
@@ -48,6 +50,10 @@ test('awards include the Sensory Design Thinking Workshop result and omit Dekad 
   assert.equal(workshopAward.title.ja, workshopAward.title.en);
   assert.equal(workshopAward.issuer.en, 'ALPS ALPINE and University of Aizu');
   assert.equal(workshopAward.period.en, 'Aug 2024');
+  assert.match(workshopAward.description.zh, /Sensory Design Thinking Workshop/);
+  assert.match(workshopAward.description.ja, /Sensory Design Thinking Workshop/);
+  assert.doesNotMatch(workshopAward.description.zh, /感性设计思维工作坊/);
+  assert.doesNotMatch(workshopAward.description.ja, /感性デザイン思考ワークショップ/);
   assert.match(workshopAward.description.en, /one of four participants/);
   assert.equal(awards.some((item) => item.title.en.includes('Dekad Bahasa')), false);
 });
