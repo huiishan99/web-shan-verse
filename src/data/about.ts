@@ -219,7 +219,7 @@ export interface AwardsItem {
 
 export const awards: AwardsItem[] = [
   {
-    title: { en: "Presentation Award", zh: "报告奖", ja: "プレゼンテーション賞" },
+    title: { en: "Presentation Award", zh: "Presentation Award", ja: "Presentation Award" },
     issuer: { en: "IEEE GEM 2025", zh: "IEEE GEM 2025", ja: "IEEE GEM 2025" },
     description: "",
     period: { en: "Jul 2025", zh: "2025年7月", ja: "2025年7月" },
@@ -228,8 +228,8 @@ export const awards: AwardsItem[] = [
   {
     title: {
       en: "First Grade, Sensory Design Thinking Workshop",
-      zh: "感性设计思维工作坊一等奖",
-      ja: "感性デザイン思考ワークショップ 一等賞"
+      zh: "First Grade, Sensory Design Thinking Workshop",
+      ja: "First Grade, Sensory Design Thinking Workshop"
     },
     issuer: {
       en: "ALPS ALPINE and University of Aizu",
