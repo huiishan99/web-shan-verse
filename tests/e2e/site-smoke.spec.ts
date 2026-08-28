@@ -98,10 +98,25 @@ test('about resume renders organization logos and keeps them aligned', async ({ 
   await expect(education.locator('.institution-mark img').first()).toHaveAttribute('src', '/images/logo-uoa.png');
   await expect(education.locator('.institution-mark img').nth(1)).toHaveAttribute('src', '/images/logo-abk.png');
 
+  const abkMarkBox = await education.locator('.institution-mark').nth(1).boundingBox();
+  const abkLogoBox = await education.locator('.institution-mark img').nth(1).boundingBox();
+  expect(abkMarkBox).not.toBeNull();
+  expect(abkLogoBox).not.toBeNull();
+  expect(abkLogoBox!.x + abkLogoBox!.width / 2).toBe(abkMarkBox!.x + abkMarkBox!.width / 2);
+  expect(abkLogoBox!.y + abkLogoBox!.height / 2).toBe(abkMarkBox!.y + abkMarkBox!.height / 2);
+
   await expect(experience.locator('.institution-mark')).toHaveCount(6);
   await expect(experience.locator('.institution-mark img')).toHaveCount(6);
   await expect(experience.locator('.institution-mark img').nth(4)).toHaveAttribute('src', '/images/logo-hamazushi.png');
   await expect(experience.locator('.institution-mark img').nth(5)).toHaveAttribute('src', '/images/logo-coco-ichibanya.png');
+
+  const cocoMarkBox = await experience.locator('.institution-mark').nth(5).boundingBox();
+  const cocoLogoBox = await experience.locator('.institution-mark img').nth(5).boundingBox();
+  expect(cocoMarkBox).not.toBeNull();
+  expect(cocoLogoBox).not.toBeNull();
+  expect(
+    cocoLogoBox!.x + cocoLogoBox!.width / 2 - (cocoMarkBox!.x + cocoMarkBox!.width / 2)
+  ).toBe(2);
 
   const teachingAssistantEntry = experience.locator('.timeline-entry').nth(2);
   const markBox = await teachingAssistantEntry.locator('.institution-mark').boundingBox();
