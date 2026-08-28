@@ -154,9 +154,9 @@ export const experience: ExperienceItem[] = [
     period: { en: "Sep 2024", zh: "2024年9月", ja: "2024年9月" },
     logo: "/images/logo-alps.png",
     description: {
-      en: "Developed a VR-based futuristic car HMI prototype using Unity. Built an autonomous driving scenario set on a U.S. highway with experimental next-generation HMI concepts. The prototype was designed for exhibition at CES 2025.",
-      zh: "使用 Unity 开发了一个基于 VR 的未来汽车 HMI 原型。构建了一个设置在美国高速公路上的自动驾驶场景，并包含实验性的下一代 HMI 概念。该原型是为 CES 2025 展示而设计的。",
-      ja: "Unity を使用して、VR ベースの未来的な車の HMI プロトタイプを開発しました。実験的な次世代 HMI コンセプトを備えた、米国の高速道路を舞台にした自動運転シナリオを構築しました。このプロトタイプは CES 2025 での展示用に設計されました。"
+      en: "Developed a futuristic car HMI prototype using Unity. Built an autonomous driving scenario set on a U.S. highway with experimental next-generation HMI concepts. The prototype was designed for exhibition at CES 2025.",
+      zh: "使用 Unity 开发了一个未来汽车 HMI 原型。构建了一个设置在美国高速公路上的自动驾驶场景，并包含实验性的下一代 HMI 概念。该原型是为 CES 2025 展示而设计的。",
+      ja: "Unity を使用して、未来的な車の HMI プロトタイプを開発しました。実験的な次世代 HMI コンセプトを備えた、米国の高速道路を舞台にした自動運転シナリオを構築しました。このプロトタイプは CES 2025 での展示用に設計されました。"
     }
   },
   {
