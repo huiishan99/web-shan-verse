@@ -171,9 +171,11 @@ function getInstitutionMonogram(name: LocalizedString) {
                           <span class="timeline-location">{localizeString(item.location, lang)}</span>
                         </div>
                         <p class="timeline-role">{localizeString(item.degree, lang)}</p>
-                        {item.description && <p class="timeline-desc">{localizeString(item.description, lang)}</p>}
-                        <p class="timeline-date">{localizeString(item.period, lang)}</p>
                       </div>
+                      {item.description && (
+                        <p class="timeline-desc timeline-entry-wide">{localizeString(item.description, lang)}</p>
+                      )}
+                      <p class="timeline-date timeline-entry-wide">{localizeString(item.period, lang)}</p>
                     </div>
                   </div>
                 </div>
@@ -213,9 +215,11 @@ function getInstitutionMonogram(name: LocalizedString) {
                           <h3>{companyName}</h3>
                         </div>
                         <p class="timeline-role">{localizeString(item.role, lang)}</p>
-                        {item.description && <p class="timeline-desc">{localizeString(item.description, lang)}</p>}
-                        <p class="timeline-date">{localizeString(item.period, lang)}</p>
                       </div>
+                      {item.description && (
+                        <p class="timeline-desc timeline-entry-wide">{localizeString(item.description, lang)}</p>
+                      )}
+                      <p class="timeline-date timeline-entry-wide">{localizeString(item.period, lang)}</p>
                     </div>
                   </div>
                 </div>
@@ -528,11 +532,15 @@ function getInstitutionMonogram(name: LocalizedString) {
     display: grid;
     grid-template-columns: 48px minmax(0, 1fr);
     align-items: start;
-    gap: 0.9rem;
+    column-gap: 0.9rem;
   }
 
   .timeline-entry-body {
     min-width: 0;
+  }
+
+  .timeline-entry-wide {
+    grid-column: 1 / -1;
   }
 
   .institution-mark {
@@ -1060,7 +1068,7 @@ function getInstitutionMonogram(name: LocalizedString) {
 
     .timeline-entry {
       grid-template-columns: 38px minmax(0, 1fr);
-      gap: 0.68rem;
+      column-gap: 0.68rem;
     }
 
     .institution-mark {

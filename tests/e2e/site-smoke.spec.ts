@@ -102,6 +102,14 @@ test('about resume renders institution logos and fallback marks', async ({ page 
   await expect(experience.locator('.institution-mark--fallback')).toHaveCount(2);
   await expect(experience.locator('.institution-mark--fallback').nth(0)).toContainText('HAMA');
   await expect(experience.locator('.institution-mark--fallback').nth(1)).toContainText('CoCo');
+
+  const teachingAssistantEntry = experience.locator('.timeline-entry').nth(2);
+  const markBox = await teachingAssistantEntry.locator('.institution-mark').boundingBox();
+  const descriptionBox = await teachingAssistantEntry.locator('.timeline-desc').boundingBox();
+
+  expect(markBox).not.toBeNull();
+  expect(descriptionBox).not.toBeNull();
+  expect(descriptionBox!.x).toBe(markBox!.x);
 });
 
 test('CLI keyboard shortcut can search the generated site index', async ({ page }) => {
