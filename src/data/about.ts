@@ -227,9 +227,9 @@ export const awards: AwardsItem[] = [
   },
   {
     title: {
-      en: "First Grade, Sensory Design Thinking Workshop",
-      zh: "First Grade, Sensory Design Thinking Workshop",
-      ja: "First Grade, Sensory Design Thinking Workshop"
+      en: "First Grade",
+      zh: "First Grade",
+      ja: "First Grade"
     },
     issuer: {
       en: "ALPS ALPINE and University of Aizu",

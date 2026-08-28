@@ -38,7 +38,7 @@ test('resume institution names are localized while ABK College stays in English'
 
 test('awards include the Sensory Design Thinking Workshop result and omit Dekad Bahasa', () => {
   const presentationAward = awards.find((item) => item.title.en === 'Presentation Award');
-  const workshopAward = awards.find((item) => item.title.en === 'First Grade, Sensory Design Thinking Workshop');
+  const workshopAward = awards.find((item) => item.title.en === 'First Grade');
 
   assert.ok(presentationAward);
   assert.equal(presentationAward.title.zh, presentationAward.title.en);
