@@ -37,9 +37,15 @@ test('resume institution names are localized while ABK College stays in English'
 });
 
 test('awards include the Sensory Design Thinking Workshop result and omit Dekad Bahasa', () => {
+  const presentationAward = awards.find((item) => item.title.en === 'Presentation Award');
   const workshopAward = awards.find((item) => item.title.en === 'First Grade, Sensory Design Thinking Workshop');
 
+  assert.ok(presentationAward);
+  assert.equal(presentationAward.title.zh, presentationAward.title.en);
+  assert.equal(presentationAward.title.ja, presentationAward.title.en);
   assert.ok(workshopAward);
+  assert.equal(workshopAward.title.zh, workshopAward.title.en);
+  assert.equal(workshopAward.title.ja, workshopAward.title.en);
   assert.equal(workshopAward.issuer.en, 'ALPS ALPINE and University of Aizu');
   assert.equal(workshopAward.period.en, 'Aug 2024');
   assert.match(workshopAward.description.en, /one of four participants/);
