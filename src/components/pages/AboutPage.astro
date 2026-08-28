@@ -1088,6 +1088,22 @@ function getInstitutionMonogram(name: LocalizedString) {
       border-radius: 7px;
     }
 
+    [data-resume-section='education'] .timeline-entry-body {
+      display: contents;
+    }
+
+    [data-resume-section='education'] .timeline-header {
+      grid-column: 2;
+    }
+
+    [data-resume-section='education'] .institution-mark {
+      align-self: start;
+    }
+
+    [data-resume-section='education'] .timeline-role {
+      grid-column: 1 / -1;
+    }
+
     .institution-mark--fallback::before {
       inset: 4px;
       border-radius: 4px;

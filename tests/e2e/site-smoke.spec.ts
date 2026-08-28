@@ -131,6 +131,25 @@ test('about resume renders organization logos and keeps them aligned', async ({ 
   expect(
     Math.abs(markBox!.y + markBox!.height / 2 - (headingBox!.y + headingBox!.height / 2))
   ).toBeLessThanOrEqual(1);
+
+  await page.setViewportSize({ width: 411, height: 863 });
+
+  const mobileEducationEntry = education.locator('.timeline-entry').nth(1);
+  const mobileEducationMarkBox = await mobileEducationEntry.locator('.institution-mark').boundingBox();
+  const mobileEducationHeaderBox = await mobileEducationEntry.locator('.timeline-header').boundingBox();
+  const mobileEducationRoleBox = await mobileEducationEntry.locator('.timeline-role').boundingBox();
+  expect(mobileEducationMarkBox).not.toBeNull();
+  expect(mobileEducationHeaderBox).not.toBeNull();
+  expect(mobileEducationRoleBox).not.toBeNull();
+  expect(mobileEducationMarkBox!.y).toBe(mobileEducationHeaderBox!.y);
+  expect(mobileEducationRoleBox!.x).toBeLessThan(mobileEducationHeaderBox!.x);
+
+  const mobileExperienceEntry = experience.locator('.timeline-entry').nth(5);
+  const mobileExperienceHeaderBox = await mobileExperienceEntry.locator('.timeline-header').boundingBox();
+  const mobileExperienceRoleBox = await mobileExperienceEntry.locator('.timeline-role').boundingBox();
+  expect(mobileExperienceHeaderBox).not.toBeNull();
+  expect(mobileExperienceRoleBox).not.toBeNull();
+  expect(mobileExperienceRoleBox!.x).toBe(mobileExperienceHeaderBox!.x);
 });
 
 test('CLI keyboard shortcut can search the generated site index', async ({ page }) => {
