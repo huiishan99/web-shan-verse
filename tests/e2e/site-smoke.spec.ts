@@ -137,11 +137,17 @@ test('about resume renders organization logos and keeps them aligned', async ({ 
   const mobileEducationEntry = education.locator('.timeline-entry').nth(1);
   const mobileEducationMarkBox = await mobileEducationEntry.locator('.institution-mark').boundingBox();
   const mobileEducationHeaderBox = await mobileEducationEntry.locator('.timeline-header').boundingBox();
+  const mobileEducationTitleBox = await mobileEducationEntry.locator('.timeline-header h3').boundingBox();
+  const mobileEducationLocationBox = await mobileEducationEntry.locator('.timeline-location').boundingBox();
   const mobileEducationRoleBox = await mobileEducationEntry.locator('.timeline-role').boundingBox();
   expect(mobileEducationMarkBox).not.toBeNull();
   expect(mobileEducationHeaderBox).not.toBeNull();
+  expect(mobileEducationTitleBox).not.toBeNull();
+  expect(mobileEducationLocationBox).not.toBeNull();
   expect(mobileEducationRoleBox).not.toBeNull();
-  expect(mobileEducationMarkBox!.y).toBe(mobileEducationHeaderBox!.y);
+  expect(Math.abs(mobileEducationMarkBox!.y - mobileEducationHeaderBox!.y)).toBeLessThanOrEqual(1);
+  expect(mobileEducationLocationBox!.x).toBe(mobileEducationTitleBox!.x);
+  expect(mobileEducationLocationBox!.y).toBeGreaterThan(mobileEducationTitleBox!.y);
   expect(mobileEducationRoleBox!.x).toBeLessThan(mobileEducationHeaderBox!.x);
 
   const mobileExperienceEntry = experience.locator('.timeline-entry').nth(5);
