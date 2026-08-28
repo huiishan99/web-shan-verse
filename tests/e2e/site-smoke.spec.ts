@@ -102,6 +102,7 @@ test('about resume renders organization logos and keeps them aligned', async ({ 
   const abkLogoBox = await education.locator('.institution-mark img').nth(1).boundingBox();
   expect(abkMarkBox).not.toBeNull();
   expect(abkLogoBox).not.toBeNull();
+  expect(abkLogoBox!.height).toBeGreaterThan(40);
   expect(abkLogoBox!.x + abkLogoBox!.width / 2).toBe(abkMarkBox!.x + abkMarkBox!.width / 2);
   expect(abkLogoBox!.y + abkLogoBox!.height / 2).toBe(abkMarkBox!.y + abkMarkBox!.height / 2);
 
