@@ -45,3 +45,13 @@ test('awards include the Sensory Design Thinking Workshop result and omit Dekad 
   assert.match(workshopAward.description.en, /one of four participants/);
   assert.equal(awards.some((item) => item.title.en.includes('Dekad Bahasa')), false);
 });
+
+test('ALPS internship describes the HMI prototype without VR framing', () => {
+  const internship = experience.find((item) => item.role.en === 'Engineer Internship');
+
+  assert.ok(internship);
+  assert.match(internship.description.en, /^Developed a futuristic car HMI prototype using Unity\./);
+  assert.doesNotMatch(internship.description.en, /VR-based/i);
+  assert.doesNotMatch(internship.description.zh, /基于 VR/);
+  assert.doesNotMatch(internship.description.ja, /VR ベース/);
+});
