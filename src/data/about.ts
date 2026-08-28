@@ -227,9 +227,9 @@ export const awards: AwardsItem[] = [
   },
   {
     title: {
-      en: "Sensory Design Thinking Workshop — Team First Prize",
-      zh: "Sensory Design Thinking Workshop — Team First Prize",
-      ja: "Sensory Design Thinking Workshop — Team First Prize"
+      en: "Sensory Design Thinking Workshop — Team First Grade",
+      zh: "Sensory Design Thinking Workshop — Team First Grade",
+      ja: "Sensory Design Thinking Workshop — Team First Grade"
     },
     issuer: {
       en: "ALPS ALPINE and University of Aizu",
@@ -237,9 +237,9 @@ export const awards: AwardsItem[] = [
       ja: "アルプスアルパイン・会津大学"
     },
     description: {
-      en: "Our team won first prize at the Sensory Design Thinking Workshop. As a result, I was selected as one of four participants, from a group of more than 20, to receive an internship opportunity at ALPS ALPINE.",
-      zh: "团队在 Sensory Design Thinking Workshop 中获得团队一等奖；我也因此从20多名参与者中脱颖而出，成为4名获得 ALPS ALPINE 实习机会的人之一。",
-      ja: "チームは Sensory Design Thinking Workshop でチーム一等賞を受賞し、その成果を受けて20名超の参加者のうち4名に選ばれ、ALPS ALPINE のインターンシップ機会を得ました。"
+      en: "Our team received First Grade recognition at the Sensory Design Thinking Workshop. As a result, I was selected as one of four participants, from a group of more than 20, to receive an internship opportunity at ALPS ALPINE.",
+      zh: "团队在 Sensory Design Thinking Workshop 中获得 First Grade 表彰；我也因此从20多名参与者中脱颖而出，成为4名获得 ALPS ALPINE 实习机会的人之一。",
+      ja: "チームは Sensory Design Thinking Workshop で First Grade の評価を受け、その成果を受けて20名超の参加者のうち4名に選ばれ、ALPS ALPINE のインターンシップ機会を得ました。"
     },
     period: { en: "Aug 2024", zh: "2024年8月", ja: "2024年8月" },
     logo: ""
