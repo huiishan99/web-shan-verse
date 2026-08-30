@@ -67,6 +67,7 @@ export const profile = {
 // ============================================
 export interface EducationItem {
   school: LocalizedString;
+  website: string;
   location: LocalizedString;
   description?: LocalizedString;  // 可选：简短描述
   degree: LocalizedString;
@@ -77,6 +78,7 @@ export interface EducationItem {
 export const education: EducationItem[] = [
   {
     school: { en: "University of Aizu", zh: "会津大学", ja: "会津大学" },
+    website: "https://u-aizu.ac.jp/en/",
     location: { en: "Aizu-Wakamatsu, Japan", zh: "日本会津若松", ja: "日本・会津若松" },
     description: {
       en: "Graduated early with Grade A after completing all program and research requirements. Research focused on virtual reality (VR) and embodied AI avatars for self-learning in educational contexts. First-author paper published at IEEE GEM 2025, and a co-authored paper related to large language model–based software security published at ISPEC 2025.",
@@ -93,6 +95,7 @@ export const education: EducationItem[] = [
   },
   {
     school: "ABK College",
+    website: "https://www.abk.ac.jp/",
     location: { en: "Tokyo, Japan", zh: "日本东京", ja: "日本・東京" },
     description: {
       en: "Japanese language program completed as preparation for graduate studies in Japan. Built friendships with students from Thailand, Vietnam, Myanmar, Mongolia, India, Ukraine, and France, broadening my international perspective, while working two part-time jobs in Japan.",
@@ -109,6 +112,7 @@ export const education: EducationItem[] = [
   },
   {
     school: { en: "Northwestern Polytechnical University", zh: "西北工业大学", ja: "西北工業大学" },
+    website: "https://en.nwpu.edu.cn/",
     location: { en: "Xi'an, China", zh: "中国西安", ja: "中国・西安" },
     description:{
       en: "Completed a Bachelor’s degree under the School of Computer Science with a thesis grade of 88/100. Undergraduate thesis focused on the simulation and control of formation flight UAV systems. Actively involved in student activities as a member of the Student Organizations Council and the university’s Chinese Debate Team.",
@@ -130,6 +134,7 @@ export const education: EducationItem[] = [
 // ============================================
 export interface ExperienceItem {
   company: LocalizedString;
+  website: string;
   role: LocalizedString;
   description?: LocalizedString;     // 可选：简短描述
   period: LocalizedString;
@@ -139,6 +144,7 @@ export interface ExperienceItem {
 export const experience: ExperienceItem[] = [
   {
     company: { en: "ALPS ALPINE", zh: "阿尔卑斯阿尔派", ja: "アルプスアルパイン" },
+    website: "https://www.alpsalpine.com/e/",
     role: { en: "Engineer (New Graduate)", zh: "工程师（应届毕业生）", ja: "エンジニア（新卒）" },
     period: { en: "Apr 2026 – Present", zh: "2026年4月 – 至今", ja: "2026年4月 – 現在" },
     logo: "/images/logo-alps.png",
@@ -150,6 +156,7 @@ export const experience: ExperienceItem[] = [
   },
   {
     company: { en: "ALPS ALPINE", zh: "阿尔卑斯阿尔派", ja: "アルプスアルパイン" },
+    website: "https://www.alpsalpine.com/e/",
     role: { en: "Engineer Internship", zh: "工程师实习生", ja: "エンジニアインターン" },
     period: { en: "Sep 2024", zh: "2024年9月", ja: "2024年9月" },
     logo: "/images/logo-alps.png",
@@ -161,6 +168,7 @@ export const experience: ExperienceItem[] = [
   },
   {
     company: { en: "University of Aizu", zh: "会津大学", ja: "会津大学" },
+    website: "https://u-aizu.ac.jp/en/",
     role: { en: "Part Time - Teaching Assistant", zh: "兼职 - 助教", ja: "アルバイト - ティーチングアシスタント" },
     period: { en: "Oct 2024 – Sep 2025", zh: "2024年10月 – 2025年9月", ja: "2024年10月 – 2025年9月" },
     logo: "/images/logo-uoa.png",
@@ -172,6 +180,7 @@ export const experience: ExperienceItem[] = [
   },
   {
     company: { en: "Alibaba GDT Network", zh: "阿里巴巴 GDT 网络", ja: "アリババ GDT ネットワーク" },
+    website: "https://ali-home.alibaba.com/en-us/",
     role: { en: "Student Internship", zh: "学生实习", ja: "学生インターン" },
     period: { en: "Nov 2021 – Jan 2022", zh: "2021年11月 – 2022年1月", ja: "2021年11月 – 2022年1月" },
     logo: "/images/logo-gdt.png",
@@ -183,6 +192,7 @@ export const experience: ExperienceItem[] = [
   },
   {
     company: { en: "Hamazushi", zh: "滨寿司", ja: "はま寿司" },
+    website: "https://www.hamazushi.com/",
     role: { en: "Part Time - Kitchen Staff", zh: "兼职 - 厨房员工", ja: "アルバイト - キッチンスタッフ" },
     period: { en: "Mar 2023 – Feb 2024", zh: "2023年3月 – 2024年2月", ja: "2023年3月 – 2024年2月" },
     logo: "/images/logo-hamazushi.png",
@@ -194,6 +204,7 @@ export const experience: ExperienceItem[] = [
   },
   {
     company: { en: "CoCo Ichibanya Curry House", zh: "CoCo壹番屋", ja: "カレーハウスCoCo壱番屋" },
+    website: "https://www.ichibanya.co.jp/?lang=en",
     role: { en: "Part Time - Food Server", zh: "兼职 - 餐厅服务", ja: "アルバイト - ホールスタッフ" },
     period: { en: "Dec 2022 – Jan 2024", zh: "2022年12月 – 2024年1月", ja: "2022年12月 – 2024年1月" },
     logo: "/images/logo-coco-ichibanya.png",
