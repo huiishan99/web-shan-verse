@@ -95,8 +95,16 @@ test('about resume renders organization logos and keeps them aligned', async ({ 
 
   await expect(education.locator('.institution-mark')).toHaveCount(3);
   await expect(education.locator('.institution-mark img')).toHaveCount(3);
+  await expect(education.locator('.timeline-organization-link')).toHaveCount(3);
   await expect(education.locator('.institution-mark img').first()).toHaveAttribute('src', '/images/logo-uoa.png');
   await expect(education.locator('.institution-mark img').nth(1)).toHaveAttribute('src', '/images/logo-abk.png');
+
+  const universityLink = education.getByRole('link', { name: '会津大学' });
+  await expect(universityLink).toHaveAttribute('href', 'https://u-aizu.ac.jp/en/');
+  await expect(universityLink).toHaveAttribute('target', '_blank');
+  await expect(universityLink).toHaveCSS('color', 'rgb(245, 245, 245)');
+  await universityLink.hover();
+  await expect(universityLink).toHaveCSS('color', 'rgb(212, 168, 75)');
 
   const abkMarkBox = await education.locator('.institution-mark').nth(1).boundingBox();
   const abkLogoBox = await education.locator('.institution-mark img').nth(1).boundingBox();
@@ -108,6 +116,7 @@ test('about resume renders organization logos and keeps them aligned', async ({ 
 
   await expect(experience.locator('.institution-mark')).toHaveCount(6);
   await expect(experience.locator('.institution-mark img')).toHaveCount(6);
+  await expect(experience.locator('.timeline-organization-link')).toHaveCount(6);
   await expect(experience.locator('.institution-mark img').nth(4)).toHaveAttribute('src', '/images/logo-hamazushi.png');
   await expect(experience.locator('.institution-mark img').nth(5)).toHaveAttribute('src', '/images/logo-coco-ichibanya.png');
 

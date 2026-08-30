@@ -19,11 +19,13 @@ test('resume institution names are localized while ABK College stays in English'
     } else {
       assertFullyLocalized(item.school, 'education.school');
     }
+    assert.match(item.website, /^https:\/\//, 'education.website should use HTTPS');
     assertFullyLocalized(item.period, 'education.period');
   });
 
   experience.forEach((item) => {
     assertFullyLocalized(item.company, 'experience.company');
+    assert.match(item.website, /^https:\/\//, 'experience.website should use HTTPS');
   });
 
   awards.forEach((item) => {
