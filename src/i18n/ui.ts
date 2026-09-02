@@ -153,9 +153,8 @@ export const ui = {
     },
     comments: {
       title: 'Comments',
-      intro: 'Leave a thought below. New comments appear immediately.',
-      nameLabel: 'Display name',
-      namePlaceholder: 'How should I call you?',
+      nameLabel: 'Nickname',
+      namePlaceholder: 'Your nickname',
       bodyLabel: 'Comment',
       bodyPlaceholder: 'Write something thoughtful…',
       submit: 'Send comment',
@@ -167,7 +166,6 @@ export const ui = {
       verificationRequired: 'Please complete the anti-bot verification.',
       rateLimited: 'You have sent several comments recently. Please wait a little.',
       success: 'Your comment is now visible.',
-      privacy: 'Your display name and comment will be public. Email is not collected.',
     },
     projects: {
       title: 'Projects',
@@ -365,9 +363,8 @@ export const ui = {
     },
     comments: {
       title: '评论',
-      intro: '欢迎留下你的想法。新评论会立即公开显示。',
-      nameLabel: '显示名称',
-      namePlaceholder: '我该怎么称呼你？',
+      nameLabel: '昵称',
+      namePlaceholder: '你的昵称',
       bodyLabel: '评论内容',
       bodyPlaceholder: '写下一些想法吧…',
       submit: '发表评论',
@@ -379,7 +376,6 @@ export const ui = {
       verificationRequired: '请先完成人机验证。',
       rateLimited: '你最近发送了多条评论，请稍后再试。',
       success: '评论已公开显示。',
-      privacy: '你的显示名称和评论会公开展示；本站不会收集邮箱。',
     },
     projects: {
       title: '项目',
@@ -577,9 +573,8 @@ export const ui = {
     },
     comments: {
       title: 'コメント',
-      intro: 'ご感想をお寄せください。新しいコメントはすぐに公開されます。',
-      nameLabel: '表示名',
-      namePlaceholder: 'お名前を教えてください',
+      nameLabel: 'ニックネーム',
+      namePlaceholder: 'ニックネームを入力',
       bodyLabel: 'コメント',
       bodyPlaceholder: '感じたことを書いてください…',
       submit: 'コメントを送信',
@@ -591,7 +586,6 @@ export const ui = {
       verificationRequired: 'ボット対策の確認を完了してください。',
       rateLimited: '短時間に複数のコメントが送信されました。少しお待ちください。',
       success: 'コメントが公開されました。',
-      privacy: '表示名とコメントは公開されます。メールアドレスは収集しません。',
     },
     projects: {
       title: 'プロジェクト',
