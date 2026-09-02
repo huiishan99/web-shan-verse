@@ -255,7 +255,7 @@ test('opt-in blog comments load and publish without affecting other posts', asyn
   await expect(comments.locator('[data-comments-list] li')).toHaveCount(1);
   await expect(comments).toContainText('First Reader');
 
-  await comments.getByLabel('Display name').fill('New Reader');
+  await comments.getByLabel('Nickname').fill('New Reader');
   await comments.getByRole('textbox', { name: 'Comment', exact: true })
     .fill('This comment should appear immediately.');
   await comments.locator('[data-turnstile-token]').evaluate((element) => {
