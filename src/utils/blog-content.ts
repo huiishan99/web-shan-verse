@@ -4,6 +4,7 @@ export type BlogContentPost = {
   id: string;
   data: {
     categories?: string[];
+    comments?: boolean;
     draft?: boolean;
     lang?: Locale;
     postSlug?: string;
@@ -110,12 +111,16 @@ export function validateBlogContent(
     const slugs = new Set(group.map(resolveBlogPostSlug));
     const groupLocales = group.map((post) => post.data.lang).filter(Boolean) as Locale[];
     const uniqueLocales = new Set(groupLocales);
+    const commentsValues = new Set(group.map((post) => post.data.comments === true));
 
     if (slugs.size > 1) {
       errors.push(`translationKey ${translationKey}: translations must share one postSlug`);
     }
     if (uniqueLocales.size !== groupLocales.length) {
       errors.push(`translationKey ${translationKey}: each locale may appear only once`);
+    }
+    if (commentsValues.size > 1) {
+      errors.push(`translationKey ${translationKey}: translations must share the comments setting`);
     }
     if (requireCompleteTranslations) {
       const missingLocales = locales.filter((locale) => !uniqueLocales.has(locale));

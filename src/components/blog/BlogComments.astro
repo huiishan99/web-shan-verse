@@ -1,0 +1,501 @@
+---
+import type { Locale } from '../../i18n/config';
+import { useTranslations } from '../../i18n/ui';
+import { TURNSTILE_SITE_KEY } from '../../config/comments';
+
+type Props = {
+  lang: Locale;
+  threadKey: string;
+};
+
+const { lang, threadKey } = Astro.props;
+const copy = useTranslations(lang).comments;
+---
+
+<section
+  class="blog-comments"
+  data-blog-comments
+  data-thread-key={threadKey}
+  data-locale={lang}
+  data-turnstile-site-key={TURNSTILE_SITE_KEY}
+  data-copy={JSON.stringify(copy)}
+>
+  <header class="blog-comments__header">
+    <p class="blog-comments__eyebrow">Discussion Signal</p>
+    <h2 data-comments-title data-title={copy.title}>{copy.title}</h2>
+    <p>{copy.intro}</p>
+  </header>
+
+  <p class="blog-comments__status" data-comments-status role="status" aria-live="polite">
+    {copy.loading}
+  </p>
+  <ol class="blog-comments__list" data-comments-list aria-label={copy.title}></ol>
+
+  <form class="blog-comments__form" data-comments-form>
+    <div class="blog-comments__field">
+      <label for={`comment-name-${threadKey}`}>{copy.nameLabel}</label>
+      <input
+        id={`comment-name-${threadKey}`}
+        name="displayName"
+        type="text"
+        maxlength="40"
+        autocomplete="name"
+        placeholder={copy.namePlaceholder}
+        required
+      />
+    </div>
+
+    <div class="blog-comments__field">
+      <label for={`comment-body-${threadKey}`}>{copy.bodyLabel}</label>
+      <textarea
+        id={`comment-body-${threadKey}`}
+        name="body"
+        rows="5"
+        maxlength="2000"
+        placeholder={copy.bodyPlaceholder}
+        required
+      ></textarea>
+    </div>
+
+    <div class="blog-comments__honeypot" aria-hidden="true">
+      <label for={`comment-website-${threadKey}`}>Website</label>
+      <input
+        id={`comment-website-${threadKey}`}
+        name="website"
+        type="text"
+        tabindex="-1"
+        autocomplete="off"
+      />
+    </div>
+
+    <div class="blog-comments__verification" data-turnstile-container></div>
+    <input type="hidden" data-turnstile-token value="" />
+
+    <div class="blog-comments__submit-row">
+      <p>{copy.privacy}</p>
+      <button type="submit" data-comments-submit>{copy.submit}</button>
+    </div>
+  </form>
+</section>
+
+<script
+  is:inline
+  src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+  async
+  defer
+></script>
+
+<script>
+  type CommentRecord = {
+    id: string;
+    displayName: string;
+    body: string;
+    locale: 'en' | 'zh' | 'ja';
+    createdAt: string;
+  };
+
+  type CommentsCopy = {
+    title: string;
+    intro: string;
+    nameLabel: string;
+    namePlaceholder: string;
+    bodyLabel: string;
+    bodyPlaceholder: string;
+    submit: string;
+    submitting: string;
+    loading: string;
+    empty: string;
+    loadError: string;
+    submitError: string;
+    verificationRequired: string;
+    rateLimited: string;
+    success: string;
+    privacy: string;
+  };
+
+  type TurnstileApi = {
+    render: (container: HTMLElement, options: Record<string, unknown>) => string;
+    reset: (widgetId: string) => void;
+  };
+
+  function getTurnstile(): TurnstileApi | undefined {
+    return (window as typeof window & { turnstile?: TurnstileApi }).turnstile;
+  }
+
+  async function waitForTurnstile(): Promise<TurnstileApi | undefined> {
+    for (let attempt = 0; attempt < 40; attempt += 1) {
+      const api = getTurnstile();
+      if (api) return api;
+      await new Promise((resolve) => window.setTimeout(resolve, 100));
+    }
+    return undefined;
+  }
+
+  function setupBlogComments() {
+    document.querySelectorAll<HTMLElement>('[data-blog-comments]').forEach((root) => {
+      if (root.dataset.commentsReady === 'true') return;
+      root.dataset.commentsReady = 'true';
+
+      const threadKey = root.dataset.threadKey || '';
+      const locale = (root.dataset.locale || 'en') as 'en' | 'zh' | 'ja';
+      const turnstileSiteKey = root.dataset.turnstileSiteKey || '';
+      const commentsEndpoint = ['localhost', '127.0.0.1'].includes(window.location.hostname)
+        ? 'https://shan-verse.com/api/comments'
+        : '/api/comments';
+      const copy = JSON.parse(root.dataset.copy || '{}') as CommentsCopy;
+      const list = root.querySelector<HTMLOListElement>('[data-comments-list]');
+      const status = root.querySelector<HTMLElement>('[data-comments-status]');
+      const title = root.querySelector<HTMLElement>('[data-comments-title]');
+      const form = root.querySelector<HTMLFormElement>('[data-comments-form]');
+      const submit = root.querySelector<HTMLButtonElement>('[data-comments-submit]');
+      const turnstileContainer = root.querySelector<HTMLElement>('[data-turnstile-container]');
+      const turnstileToken = root.querySelector<HTMLInputElement>('[data-turnstile-token]');
+      if (!list || !status || !title || !form || !submit || !turnstileContainer || !turnstileToken) {
+        return;
+      }
+
+      let turnstileWidgetId = '';
+      const dateFormatter = new Intl.DateTimeFormat(
+        locale === 'zh' ? 'zh-CN' : locale === 'ja' ? 'ja-JP' : 'en-US',
+        { dateStyle: 'medium', timeStyle: 'short' }
+      );
+
+      const setStatus = (message: string, state = '') => {
+        status.textContent = message;
+        status.dataset.state = state;
+        status.hidden = !message;
+      };
+
+      const renderComments = (comments: CommentRecord[]) => {
+        list.replaceChildren();
+        title.textContent = comments.length > 0
+          ? `${title.dataset.title} · ${comments.length}`
+          : title.dataset.title || copy.title;
+
+        comments.forEach((comment) => {
+          const item = document.createElement('li');
+          const article = document.createElement('article');
+          const header = document.createElement('header');
+          const name = document.createElement('strong');
+          const time = document.createElement('time');
+          const body = document.createElement('p');
+
+          item.className = 'blog-comments__item';
+          article.dataset.commentId = comment.id;
+          name.textContent = comment.displayName;
+          time.dateTime = comment.createdAt;
+          time.textContent = dateFormatter.format(new Date(comment.createdAt));
+          body.textContent = comment.body;
+          body.lang = comment.locale;
+
+          header.append(name, time);
+          article.append(header, body);
+          item.append(article);
+          list.append(item);
+        });
+
+        setStatus(comments.length === 0 ? copy.empty : '');
+      };
+
+      const loadComments = async () => {
+        setStatus(copy.loading);
+        try {
+          const response = await fetch(`${commentsEndpoint}?threadKey=${encodeURIComponent(threadKey)}`, {
+            headers: { Accept: 'application/json' },
+          });
+          const result = await response.json();
+          if (!response.ok || !Array.isArray(result.comments)) throw new Error('comments unavailable');
+          renderComments(result.comments as CommentRecord[]);
+        } catch {
+          setStatus(copy.loadError, 'error');
+        }
+      };
+
+      waitForTurnstile().then((api) => {
+        if (!api || turnstileWidgetId) return;
+        turnstileWidgetId = api.render(turnstileContainer, {
+          sitekey: turnstileSiteKey,
+          theme: 'dark',
+          size: 'flexible',
+          language: locale === 'zh' ? 'zh-cn' : locale,
+          callback: (token: string) => {
+            turnstileToken.value = token;
+            if (status.dataset.state === 'verification') setStatus('');
+          },
+          'expired-callback': () => {
+            turnstileToken.value = '';
+          },
+          'error-callback': () => {
+            turnstileToken.value = '';
+            setStatus(copy.verificationRequired, 'verification');
+          },
+        });
+      });
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (!turnstileToken.value) {
+          setStatus(copy.verificationRequired, 'verification');
+          return;
+        }
+
+        const data = new FormData(form);
+        submit.disabled = true;
+        submit.textContent = copy.submitting;
+        setStatus(copy.submitting);
+
+        try {
+          const response = await fetch(commentsEndpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({
+              threadKey,
+              displayName: data.get('displayName'),
+              body: data.get('body'),
+              website: data.get('website'),
+              locale,
+              turnstileToken: turnstileToken.value,
+            }),
+          });
+          const result = await response.json();
+          if (!response.ok) {
+            if (result.error === 'rate_limited') throw new Error('rate_limited');
+            if (String(result.error).startsWith('turnstile')) throw new Error('turnstile');
+            throw new Error('submit_failed');
+          }
+
+          form.reset();
+          turnstileToken.value = '';
+          if (turnstileWidgetId) getTurnstile()?.reset(turnstileWidgetId);
+          await loadComments();
+          setStatus(copy.success, 'success');
+        } catch (error) {
+          const message = error instanceof Error && error.message === 'rate_limited'
+            ? copy.rateLimited
+            : error instanceof Error && error.message === 'turnstile'
+              ? copy.verificationRequired
+              : copy.submitError;
+          setStatus(message, 'error');
+          turnstileToken.value = '';
+          if (turnstileWidgetId) getTurnstile()?.reset(turnstileWidgetId);
+        } finally {
+          submit.disabled = false;
+          submit.textContent = copy.submit;
+        }
+      });
+
+      loadComments();
+    });
+  }
+
+  document.addEventListener('astro:page-load', setupBlogComments);
+  setupBlogComments();
+</script>
+
+<style>
+  .blog-comments {
+    margin-top: 3.25rem;
+    padding-top: 2.25rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .blog-comments__header {
+    margin-bottom: 1.5rem;
+  }
+
+  .blog-comments__eyebrow {
+    margin: 0 0 0.45rem;
+    color: var(--color-accent-gold);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .blog-comments__header h2 {
+    margin: 0;
+    font-family: var(--font-blog-heading);
+    font-size: 1.65rem;
+  }
+
+  .blog-comments__header > p:last-child {
+    margin: 0.5rem 0 0;
+    color: var(--color-text-muted);
+    line-height: 1.65;
+  }
+
+  .blog-comments__status {
+    margin: 1rem 0;
+    color: var(--color-text-muted);
+    font-size: 0.92rem;
+  }
+
+  .blog-comments__status[data-state='error'],
+  .blog-comments__status[data-state='verification'] {
+    color: #e6a27f;
+  }
+
+  .blog-comments__status[data-state='success'] {
+    color: #9bc7b4;
+  }
+
+  .blog-comments__list {
+    display: grid;
+    gap: 0.85rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .blog-comments__item article {
+    padding: 1rem 1.1rem;
+    border: 1px solid rgba(201, 162, 39, 0.16);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.025);
+  }
+
+  .blog-comments__item header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.55rem;
+  }
+
+  .blog-comments__item strong {
+    color: var(--color-accent-gold);
+    font-family: var(--font-blog-heading);
+    font-size: 1rem;
+  }
+
+  .blog-comments__item time {
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+  }
+
+  .blog-comments__item p {
+    margin: 0;
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .blog-comments__form {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.4rem;
+    padding: 1.2rem;
+    border: 1px solid rgba(201, 162, 39, 0.2);
+    border-radius: 7px;
+    background:
+      linear-gradient(145deg, rgba(201, 162, 39, 0.04), transparent 45%),
+      rgba(10, 10, 16, 0.72);
+  }
+
+  .blog-comments__field {
+    display: grid;
+    gap: 0.45rem;
+  }
+
+  .blog-comments__field label {
+    color: var(--color-text-secondary);
+    font-size: 0.88rem;
+  }
+
+  .blog-comments__field input,
+  .blog-comments__field textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.75rem 0.85rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 4px;
+    outline: none;
+    background: rgba(255, 255, 255, 0.035);
+    color: var(--color-text-primary);
+    font: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .blog-comments__field textarea {
+    min-height: 8rem;
+    resize: vertical;
+    line-height: 1.65;
+  }
+
+  .blog-comments__field input:focus,
+  .blog-comments__field textarea:focus {
+    border-color: rgba(201, 162, 39, 0.7);
+    box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.08);
+  }
+
+  .blog-comments__honeypot {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .blog-comments__verification {
+    min-height: 65px;
+  }
+
+  .blog-comments__submit-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .blog-comments__submit-row p {
+    max-width: 30rem;
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.78rem;
+    line-height: 1.5;
+  }
+
+  .blog-comments__submit-row button {
+    flex: 0 0 auto;
+    min-width: 8.5rem;
+    padding: 0.65rem 1rem;
+    border: 1px solid rgba(201, 162, 39, 0.45);
+    border-radius: 4px;
+    background: rgba(201, 162, 39, 0.08);
+    color: var(--color-accent-gold);
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+  }
+
+  .blog-comments__submit-row button:hover:not(:disabled) {
+    border-color: var(--color-accent-gold);
+    background: rgba(201, 162, 39, 0.16);
+  }
+
+  .blog-comments__submit-row button:disabled {
+    cursor: wait;
+    opacity: 0.55;
+  }
+
+  @media (max-width: 560px) {
+    .blog-comments__form {
+      margin-right: -0.35rem;
+      margin-left: -0.35rem;
+      padding: 1rem;
+    }
+
+    .blog-comments__item header,
+    .blog-comments__submit-row {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .blog-comments__submit-row button {
+      width: 100%;
+    }
+  }
+</style>

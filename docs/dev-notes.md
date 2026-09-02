@@ -32,3 +32,22 @@ Workflow reminder:
 
 - If `npm run build` is run while the dev server is open, restart the dev server before handing the site back for browser testing.
 - Treat this error as a dev-server cache issue first unless `npm run build` also fails.
+
+## Cloudflare D1 blog comments
+
+The comments pilot is opt-in per article with `comments: true`. The English,
+Chinese, and Japanese versions of the same post share one stable translation
+thread, so replies are not split by locale.
+
+Architecture:
+
+- The static Astro page renders the comment interface and Cloudflare Turnstile.
+- `shan-verse-blog-comments` handles `/api/comments` on Cloudflare Workers.
+- Published comments are inserted directly into the D1 database; there is no
+  pending queue.
+- The Worker validates origin, thread keys, Turnstile tokens, content limits,
+  honeypot data, and per-IP rate limits before insertion.
+- Private values live only in encrypted Worker secrets and must not be committed.
+
+Operations and deletion queries are documented in
+`workers/blog-comments/README.md`.
