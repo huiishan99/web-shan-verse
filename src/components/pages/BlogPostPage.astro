@@ -1,6 +1,7 @@
 ---
 import { render, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import BlogComments from '../blog/BlogComments.astro';
 import { defaultLocale, localizePath, type Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
 import {
@@ -28,6 +29,7 @@ const showPostTitle = postKind === 'article';
 const metaDescription = getBlogPostMetaDescription(post);
 const postCategories = getInformativeBlogCategories(post);
 const postTags = getInformativeBlogTags(post);
+const commentThreadKey = post.data.translationKey?.trim() || post.data.postSlug?.trim() || post.id;
 const dateLocale: Record<Locale, string> = {
   en: 'en-US',
   zh: 'zh-CN',
@@ -92,6 +94,8 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
     <div class="post-content">
       <Content />
     </div>
+
+    {post.data.comments && <BlogComments lang={lang} threadKey={commentThreadKey} />}
 
     <footer class="post-footer">
       <a href={localizePath('/blog', lang)} class="back-link">← {t.blog.backToBlog}</a>

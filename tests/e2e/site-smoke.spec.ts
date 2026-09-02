@@ -1,6 +1,14 @@
 import { expect, test, type Page } from '@playwright/test';
 
 async function mockRuntimeServices(page: Page) {
+  const comments = [{
+    id: 'existing-comment',
+    displayName: 'First Reader',
+    body: 'A small signal from the test reader.',
+    locale: 'en',
+    createdAt: '2026-06-13T08:30:00.000Z',
+  }];
+
   await page.route('https://**/*', async (route) => {
     const url = new URL(route.request().url());
 
@@ -22,6 +30,29 @@ async function mockRuntimeServices(page: Page) {
     await route.fulfill({
       contentType: 'application/json',
       body: JSON.stringify({ views: 128, visitors: 64, online: 3 }),
+    });
+  });
+  await page.route('**/api/comments**', async (route) => {
+    if (route.request().method() === 'POST') {
+      const payload = route.request().postDataJSON();
+      comments.push({
+        id: `comment-${comments.length + 1}`,
+        displayName: String(payload.displayName),
+        body: String(payload.body),
+        locale: payload.locale,
+        createdAt: '2026-06-13T09:00:00.000Z',
+      });
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({ ok: true, comment: comments.at(-1) }),
+      });
+      return;
+    }
+
+    await route.fulfill({
+      contentType: 'application/json',
+      body: JSON.stringify({ ok: true, comments }),
     });
   });
 }
@@ -214,6 +245,30 @@ test('translated article exposes complete alternate links and keeps its slug', a
   await expect(page).toHaveURL(/\/ja\/blog\/codex-after-the-update\/?$/);
   await expect(page.locator('html')).toHaveAttribute('lang', 'ja');
   await expect(page.locator('main h1')).toContainText('Codex のアップデート後');
+});
+
+test('opt-in blog comments load and publish without affecting other posts', async ({ page }) => {
+  await page.goto('/blog/happiness-is-not-the-end');
+
+  const comments = page.locator('[data-blog-comments]');
+  await expect(comments).toBeVisible();
+  await expect(comments.locator('[data-comments-list] li')).toHaveCount(1);
+  await expect(comments).toContainText('First Reader');
+
+  await comments.getByLabel('Display name').fill('New Reader');
+  await comments.getByRole('textbox', { name: 'Comment', exact: true })
+    .fill('This comment should appear immediately.');
+  await comments.locator('[data-turnstile-token]').evaluate((element) => {
+    (element as HTMLInputElement).value = 'test-token';
+  });
+  await comments.getByRole('button', { name: 'Send comment' }).click();
+
+  await expect(comments.locator('[data-comments-list] li')).toHaveCount(2);
+  await expect(comments).toContainText('New Reader');
+  await expect(comments.locator('[data-comments-status]')).toHaveText('Your comment is now visible.');
+
+  await page.goto('/blog/writing-for-myself');
+  await expect(page.locator('[data-blog-comments]')).toHaveCount(0);
 });
 
 test('project category navigation wraps into two readable desktop rows', async ({ page }) => {

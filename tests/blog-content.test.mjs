@@ -61,3 +61,14 @@ test('content validation rejects taxonomy values that collapse to one slug', () 
     /resolve to the same slug/
   );
 });
+
+test('translated posts must share the comments setting', () => {
+  assert.throws(
+    () => validateBlogContent([
+      translatedPost('en', { comments: true }),
+      translatedPost('zh', { comments: false }),
+      translatedPost('ja', { comments: true }),
+    ]),
+    /translations must share the comments setting/
+  );
+});

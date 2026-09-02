@@ -1,0 +1,19 @@
+name = "shan-verse-blog-comments"
+main = "./worker.js"
+compatibility_date = "2026-09-01"
+workers_dev = true
+
+routes = [
+  { pattern = "shan-verse.com/api/comments*", zone_name = "shan-verse.com" }
+]
+
+[[d1_databases]]
+binding = "COMMENTS_DB"
+database_name = "shan-verse-blog-comments"
+database_id = "6156fbec-6153-49f9-b100-f5ef806fd684"
+migrations_dir = "./migrations"
+
+[vars]
+ALLOWED_ORIGINS = "https://shan-verse.com,https://www.shan-verse.com,http://127.0.0.1:4321,http://localhost:4321"
+ALLOWED_COMMENT_THREADS = "happiness-is-not-the-end"
+TURNSTILE_EXPECTED_HOSTNAMES = "shan-verse.com,www.shan-verse.com,127.0.0.1,localhost"
