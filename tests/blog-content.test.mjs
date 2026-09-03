@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  getBlogCommentThreadKey,
   getBlogPostAlternateLocales,
+  isBlogCommentsEnabled,
   slugifyBlogTaxonomy,
   validateBlogContent,
 } from '../src/utils/blog-content.ts';
@@ -39,6 +41,18 @@ test('content validation accepts a complete translation group', () => {
     translatedPost('zh'),
     translatedPost('ja'),
   ], { requireCompleteTranslations: true }));
+});
+
+test('comments default to enabled and translated posts share one thread', () => {
+  const post = translatedPost('en');
+
+  assert.equal(isBlogCommentsEnabled(post), true);
+  assert.equal(getBlogCommentThreadKey(post), 'shared-essay');
+  assert.doesNotThrow(() => validateBlogContent([
+    translatedPost('en'),
+    translatedPost('zh', { comments: true }),
+    translatedPost('ja'),
+  ]));
 });
 
 test('content validation rejects incomplete translations and route collisions', () => {

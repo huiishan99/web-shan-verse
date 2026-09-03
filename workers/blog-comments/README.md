@@ -1,6 +1,6 @@
 # SHAN-VERSE Blog Comments Worker
 
-This Cloudflare Worker provides the opt-in comments API at `/api/comments`.
+This Cloudflare Worker provides the comments API at `/api/comments`.
 Comments are stored in D1 and published immediately after Turnstile and rate-limit
 checks. There is no public delete endpoint; deletion remains an owner action in
 the Cloudflare D1 dashboard.
@@ -26,11 +26,16 @@ npx wrangler secret put COMMENT_HASH_SALT --config workers/blog-comments/wrangle
 npx wrangler deploy --config workers/blog-comments/wrangler.toml
 ```
 
-## Enabling a post
+## Comment availability
 
-Set `comments: true` in every locale variant of an article. Translation variants
-share one discussion because `BlogPostPage.astro` uses `translationKey` as the
-thread key. Add that key to `ALLOWED_COMMENT_THREADS` before deploying the Worker.
+Comments are enabled for every published post by default. Set `comments: false`
+in every locale variant to opt a post out. Translation variants share one
+discussion because `BlogPostPage.astro` uses `translationKey` as the thread key.
+
+The static site generates `/comment-threads.json` during every build. The Worker
+uses that manifest to recognize current and future published posts, so adding a
+post no longer requires changing or redeploying the Worker. `ALLOWED_COMMENT_THREADS`
+remains available as an explicit fixed-list override for testing or emergencies.
 
 ## Deleting a comment
 

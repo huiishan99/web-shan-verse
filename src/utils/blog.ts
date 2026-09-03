@@ -8,7 +8,11 @@ import {
 } from './blog-content';
 import { extractMarkdownPlainText } from './markdown';
 
-export { getBlogPostAlternateLocales } from './blog-content';
+export {
+  getBlogCommentThreadKey,
+  getBlogPostAlternateLocales,
+  isBlogCommentsEnabled,
+} from './blog-content';
 
 export type BlogPost = CollectionEntry<'blog'>;
 type BlogTaxonomyKind = 'category' | 'tag';
