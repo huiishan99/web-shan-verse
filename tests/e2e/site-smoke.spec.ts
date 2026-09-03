@@ -20,6 +20,26 @@ async function mockRuntimeServices(page: Page) {
       return;
     }
 
+    if (url.hostname === 'challenges.cloudflare.com') {
+      await route.fulfill({
+        contentType: 'application/javascript',
+        body: `
+          window.turnstile = {
+            options: null,
+            render(_container, options) {
+              this.options = options;
+              return 'mock-turnstile-widget';
+            },
+            execute() {
+              queueMicrotask(() => this.options.callback('test-token'));
+            },
+            reset() {}
+          };
+        `,
+      });
+      return;
+    }
+
     await route.fulfill({
       status: 200,
       contentType: route.request().resourceType() === 'stylesheet' ? 'text/css' : 'text/plain',
@@ -258,9 +278,6 @@ test('opt-in blog comments load and publish without affecting other posts', asyn
   await comments.getByLabel('Nickname').fill('New Reader');
   await comments.getByRole('textbox', { name: 'Comment', exact: true })
     .fill('This comment should appear immediately.');
-  await comments.locator('[data-turnstile-token]').evaluate((element) => {
-    (element as HTMLInputElement).value = 'test-token';
-  });
   await comments.getByRole('button', { name: 'Send comment' }).click();
 
   await expect(comments.locator('[data-comments-list] li')).toHaveCount(2);

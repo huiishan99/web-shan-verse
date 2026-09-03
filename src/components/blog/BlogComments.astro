@@ -109,6 +109,7 @@ const copy = useTranslations(lang).comments;
   };
 
   type TurnstileApi = {
+    execute: (widgetId: string) => void;
     render: (container: HTMLElement, options: Record<string, unknown>) => string;
     reset: (widgetId: string) => void;
   };
@@ -150,6 +151,7 @@ const copy = useTranslations(lang).comments;
       }
 
       let turnstileWidgetId = '';
+      let verificationPending = false;
       const dateFormatter = new Intl.DateTimeFormat(
         locale === 'zh' ? 'zh-CN' : locale === 'ja' ? 'ja-JP' : 'en-US',
         { dateStyle: 'medium', timeStyle: 'short' }
@@ -206,34 +208,7 @@ const copy = useTranslations(lang).comments;
         }
       };
 
-      waitForTurnstile().then((api) => {
-        if (!api || turnstileWidgetId) return;
-        turnstileWidgetId = api.render(turnstileContainer, {
-          sitekey: turnstileSiteKey,
-          theme: 'dark',
-          size: 'flexible',
-          language: locale === 'zh' ? 'zh-cn' : locale,
-          callback: (token: string) => {
-            turnstileToken.value = token;
-            if (status.dataset.state === 'verification') setStatus('');
-          },
-          'expired-callback': () => {
-            turnstileToken.value = '';
-          },
-          'error-callback': () => {
-            turnstileToken.value = '';
-            setStatus(copy.verificationRequired, 'verification');
-          },
-        });
-      });
-
-      form.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        if (!turnstileToken.value) {
-          setStatus(copy.verificationRequired, 'verification');
-          return;
-        }
-
+      const publishComment = async () => {
         const data = new FormData(form);
         submit.disabled = true;
         submit.textContent = copy.submitting;
@@ -277,6 +252,53 @@ const copy = useTranslations(lang).comments;
           submit.disabled = false;
           submit.textContent = copy.submit;
         }
+      };
+
+      waitForTurnstile().then((api) => {
+        if (!api || turnstileWidgetId) return;
+        turnstileWidgetId = api.render(turnstileContainer, {
+          sitekey: turnstileSiteKey,
+          theme: 'dark',
+          size: 'flexible',
+          appearance: 'interaction-only',
+          execution: 'execute',
+          language: locale === 'zh' ? 'zh-cn' : locale,
+          callback: (token: string) => {
+            turnstileToken.value = token;
+            if (status.dataset.state === 'verification') setStatus('');
+            if (verificationPending) {
+              verificationPending = false;
+              void publishComment();
+            }
+          },
+          'expired-callback': () => {
+            verificationPending = false;
+            turnstileToken.value = '';
+          },
+          'error-callback': () => {
+            verificationPending = false;
+            turnstileToken.value = '';
+            setStatus(copy.verificationRequired, 'verification');
+          },
+        });
+      });
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        if (!turnstileToken.value) {
+          const api = getTurnstile();
+          if (!api || !turnstileWidgetId) {
+            setStatus(copy.verificationRequired, 'verification');
+            return;
+          }
+          if (verificationPending) return;
+          verificationPending = true;
+          setStatus(copy.submitting);
+          api.execute(turnstileWidgetId);
+          return;
+        }
+
+        void publishComment();
       });
 
       loadComments();
@@ -423,17 +445,6 @@ const copy = useTranslations(lang).comments;
     width: 1px;
     height: 1px;
     overflow: hidden;
-  }
-
-  .blog-comments__verification {
-    width: 112px;
-    height: 25px;
-    overflow: hidden;
-  }
-
-  .blog-comments__verification > :global(*) {
-    transform: scale(0.375);
-    transform-origin: top left;
   }
 
   .blog-comments__actions {
