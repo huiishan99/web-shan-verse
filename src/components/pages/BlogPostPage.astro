@@ -5,6 +5,7 @@ import BlogComments from '../blog/BlogComments.astro';
 import { defaultLocale, localizePath, type Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
 import {
+  getBlogCommentThreadKey,
   getBlogCategoryPath,
   getBlogPostDisplayTitle,
   getBlogPostMetaDescription,
@@ -29,7 +30,7 @@ const showPostTitle = postKind === 'article';
 const metaDescription = getBlogPostMetaDescription(post);
 const postCategories = getInformativeBlogCategories(post);
 const postTags = getInformativeBlogTags(post);
-const commentThreadKey = post.data.translationKey?.trim() || post.data.postSlug?.trim() || post.id;
+const commentThreadKey = getBlogCommentThreadKey(post);
 const dateLocale: Record<Locale, string> = {
   en: 'en-US',
   zh: 'zh-CN',

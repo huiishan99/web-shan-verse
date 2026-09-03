@@ -74,7 +74,7 @@ class MemoryD1 {
   }
 }
 
-function createEnv(database = new MemoryD1()) {
+function createEnv(database = new MemoryD1(), overrides = {}) {
   return {
     COMMENTS_DB: database,
     ALLOWED_ORIGINS: 'https://shan-verse.com',
@@ -82,6 +82,7 @@ function createEnv(database = new MemoryD1()) {
     TURNSTILE_EXPECTED_HOSTNAMES: 'shan-verse.com',
     TURNSTILE_SECRET_KEY: 'test-secret',
     COMMENT_HASH_SALT: 'test-only-comment-salt',
+    ...overrides,
   };
 }
 
@@ -115,15 +116,28 @@ function validComment(overrides = {}) {
   };
 }
 
-function createWorker({ turnstileSuccess = true } = {}) {
+function createWorker({
+  manifestStatus = 200,
+  manifestThreads = ['happiness-is-not-the-end'],
+  turnstileSuccess = true,
+} = {}) {
   return createBlogCommentsWorker({
-    fetchImpl: async () => new Response(JSON.stringify({
-      success: turnstileSuccess,
-      hostname: 'shan-verse.com',
-    }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    }),
+    fetchImpl: async (url) => {
+      if (String(url).endsWith('/comment-threads.json')) {
+        return new Response(JSON.stringify({ threads: manifestThreads }), {
+          status: manifestStatus,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+
+      return new Response(JSON.stringify({
+        success: turnstileSuccess,
+        hostname: 'shan-verse.com',
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    },
   });
 }
 
@@ -161,6 +175,42 @@ test('writes reject unknown threads and disallowed origins', async () => {
   assert.equal(unknownThread.status, 400);
   assert.equal(disallowedOrigin.status, 403);
   assert.equal(env.COMMENTS_DB.rows.length, 0);
+});
+
+test('the generated thread manifest automatically allows future published posts', async () => {
+  const env = createEnv(new MemoryD1(), {
+    ALLOWED_COMMENT_THREADS: '',
+    COMMENT_THREADS_URL: 'https://shan-verse.com/comment-threads.json',
+  });
+  const worker = createWorker({
+    manifestThreads: ['happiness-is-not-the-end', 'future-post'],
+  });
+  const futurePost = await worker.fetch(
+    createRequest('POST', validComment({ threadKey: 'future-post' })),
+    env
+  );
+  const hiddenPost = await worker.fetch(
+    createRequest('GET', undefined, { threadKey: 'hidden-thread' }),
+    env
+  );
+
+  assert.equal(futurePost.status, 201);
+  assert.equal(hiddenPost.status, 400);
+  assert.equal(env.COMMENTS_DB.rows[0].thread_key, 'future-post');
+});
+
+test('thread discovery fails closed when the published manifest is unavailable', async () => {
+  const env = createEnv(new MemoryD1(), {
+    ALLOWED_COMMENT_THREADS: '',
+    COMMENT_THREADS_URL: 'https://shan-verse.com/comment-threads.json',
+  });
+  const response = await createWorker({ manifestStatus: 503 }).fetch(
+    createRequest('GET'),
+    env
+  );
+
+  assert.equal(response.status, 500);
+  assert.equal((await response.json()).error, 'service_unavailable');
 });
 
 test('failed Turnstile checks and oversized comments fail closed', async () => {

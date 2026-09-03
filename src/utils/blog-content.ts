@@ -17,6 +17,14 @@ export function resolveBlogPostSlug(post: BlogContentPost): string {
   return post.data.postSlug?.trim() || post.id;
 }
 
+export function getBlogCommentThreadKey(post: BlogContentPost): string {
+  return post.data.translationKey?.trim() || resolveBlogPostSlug(post);
+}
+
+export function isBlogCommentsEnabled(post: BlogContentPost): boolean {
+  return post.data.comments !== false;
+}
+
 export function slugifyBlogTaxonomy(value: string): string {
   return value
     .trim()
@@ -111,7 +119,7 @@ export function validateBlogContent(
     const slugs = new Set(group.map(resolveBlogPostSlug));
     const groupLocales = group.map((post) => post.data.lang).filter(Boolean) as Locale[];
     const uniqueLocales = new Set(groupLocales);
-    const commentsValues = new Set(group.map((post) => post.data.comments === true));
+    const commentsValues = new Set(group.map(isBlogCommentsEnabled));
 
     if (slugs.size > 1) {
       errors.push(`translationKey ${translationKey}: translations must share one postSlug`);

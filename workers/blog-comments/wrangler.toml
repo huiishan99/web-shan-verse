@@ -15,5 +15,5 @@ migrations_dir = "./migrations"
 
 [vars]
 ALLOWED_ORIGINS = "https://shan-verse.com,https://www.shan-verse.com,http://127.0.0.1:4321,http://localhost:4321"
-ALLOWED_COMMENT_THREADS = "happiness-is-not-the-end"
+COMMENT_THREADS_URL = "https://shan-verse.com/comment-threads.json"
 TURNSTILE_EXPECTED_HOSTNAMES = "shan-verse.com,www.shan-verse.com,127.0.0.1,localhost"

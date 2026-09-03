@@ -1,13 +1,16 @@
 import { expect, test, type Page } from '@playwright/test';
 
 async function mockRuntimeServices(page: Page) {
-  const comments = [{
-    id: 'existing-comment',
-    displayName: 'First Reader',
-    body: 'A small signal from the test reader.',
-    locale: 'en',
-    createdAt: '2026-06-13T08:30:00.000Z',
-  }];
+  const commentsByThread = new Map([[
+    'happiness-is-not-the-end',
+    [{
+      id: 'existing-comment',
+      displayName: 'First Reader',
+      body: 'A small signal from the test reader.',
+      locale: 'en',
+      createdAt: '2026-06-13T08:30:00.000Z',
+    }],
+  ]]);
 
   await page.route('https://**/*', async (route) => {
     const url = new URL(route.request().url());
@@ -55,24 +58,28 @@ async function mockRuntimeServices(page: Page) {
   await page.route('**/api/comments**', async (route) => {
     if (route.request().method() === 'POST') {
       const payload = route.request().postDataJSON();
-      comments.push({
-        id: `comment-${comments.length + 1}`,
+      const threadComments = commentsByThread.get(String(payload.threadKey)) ?? [];
+      const comment = {
+        id: `comment-${threadComments.length + 1}`,
         displayName: String(payload.displayName),
         body: String(payload.body),
         locale: payload.locale,
         createdAt: '2026-06-13T09:00:00.000Z',
-      });
+      };
+      threadComments.push(comment);
+      commentsByThread.set(String(payload.threadKey), threadComments);
       await route.fulfill({
         status: 201,
         contentType: 'application/json',
-        body: JSON.stringify({ ok: true, comment: comments.at(-1) }),
+        body: JSON.stringify({ ok: true, comment }),
       });
       return;
     }
 
+    const threadKey = new URL(route.request().url()).searchParams.get('threadKey') ?? '';
     await route.fulfill({
       contentType: 'application/json',
-      body: JSON.stringify({ ok: true, comments }),
+      body: JSON.stringify({ ok: true, comments: commentsByThread.get(threadKey) ?? [] }),
     });
   });
 }
@@ -267,7 +274,13 @@ test('translated article exposes complete alternate links and keeps its slug', a
   await expect(page.locator('main h1')).toContainText('Codex のアップデート後');
 });
 
-test('opt-in blog comments load and publish without affecting other posts', async ({ page }) => {
+test('blog comments load and publish across current and future posts by default', async ({ page }) => {
+  const manifestResponse = await page.request.get('/comment-threads.json');
+  const manifest = await manifestResponse.json();
+  expect(manifest.threads).toContain('happiness-is-not-the-end');
+  expect(manifest.threads).toContain('writing-for-myself');
+  expect(manifest.threads).not.toContain('2024-06-16-dev-quest3-inworld-unity');
+
   await page.goto('/blog/happiness-is-not-the-end');
 
   const comments = page.locator('[data-blog-comments]');
@@ -285,7 +298,10 @@ test('opt-in blog comments load and publish without affecting other posts', asyn
   await expect(comments.locator('[data-comments-status]')).toHaveText('Your comment is now visible.');
 
   await page.goto('/blog/writing-for-myself');
-  await expect(page.locator('[data-blog-comments]')).toHaveCount(0);
+  const secondPostComments = page.locator('[data-blog-comments]');
+  await expect(secondPostComments).toBeVisible();
+  await expect(secondPostComments).toHaveAttribute('data-thread-key', 'writing-for-myself');
+  await expect(secondPostComments.locator('[data-comments-list] li')).toHaveCount(0);
 });
 
 test('project category navigation wraps into two readable desktop rows', async ({ page }) => {

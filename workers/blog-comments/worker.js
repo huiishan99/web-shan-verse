@@ -4,7 +4,7 @@ const DEFAULT_ALLOWED_ORIGINS = [
   'http://127.0.0.1:4321',
   'http://localhost:4321',
 ];
-const DEFAULT_ALLOWED_THREADS = ['happiness-is-not-the-end'];
+const DEFAULT_COMMENT_THREADS_URL = 'https://shan-verse.com/comment-threads.json';
 const DEFAULT_EXPECTED_HOSTNAMES = [
   'shan-verse.com',
   'www.shan-verse.com',
@@ -40,8 +40,31 @@ function getAllowedOrigins(env) {
   return parseList(env.ALLOWED_ORIGINS, DEFAULT_ALLOWED_ORIGINS);
 }
 
-function getAllowedThreads(env) {
-  return parseList(env.ALLOWED_COMMENT_THREADS, DEFAULT_ALLOWED_THREADS);
+async function getAllowedThreads(env, fetchImpl) {
+  if (typeof env.ALLOWED_COMMENT_THREADS === 'string' && env.ALLOWED_COMMENT_THREADS.trim()) {
+    return parseList(env.ALLOWED_COMMENT_THREADS, []);
+  }
+
+  const manifestUrl = env.COMMENT_THREADS_URL || DEFAULT_COMMENT_THREADS_URL;
+  const response = await fetchImpl(manifestUrl, {
+    headers: { Accept: 'application/json' },
+  });
+  if (!response.ok) {
+    throw new Error(`Comment thread manifest returned ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (!result || !Array.isArray(result.threads)) {
+    throw new Error('Comment thread manifest is invalid');
+  }
+
+  return result.threads.filter((threadKey) => (
+    typeof threadKey === 'string' && isValidThreadKey(threadKey)
+  ));
+}
+
+async function isAllowedThread(threadKey, env, fetchImpl) {
+  return (await getAllowedThreads(env, fetchImpl)).includes(threadKey);
 }
 
 function getExpectedHostnames(env) {
@@ -152,7 +175,7 @@ async function listComments(threadKey, env) {
   return (result.results || []).map(publicComment);
 }
 
-function validateComment(payload, env) {
+function validateComment(payload) {
   if (!payload || typeof payload !== 'object') {
     return { error: 'invalid_request' };
   }
@@ -165,7 +188,7 @@ function validateComment(payload, env) {
   const website = normalizeText(payload.website);
 
   if (website) return { honeypot: true };
-  if (!isValidThreadKey(threadKey) || !getAllowedThreads(env).includes(threadKey)) {
+  if (!isValidThreadKey(threadKey)) {
     return { error: 'thread_not_allowed' };
   }
   if (!displayName || codePointLength(displayName) > MAX_NAME_LENGTH) {
@@ -189,12 +212,15 @@ function validateComment(payload, env) {
 
 async function createComment(request, env, fetchImpl) {
   const payload = await readJson(request);
-  const validated = validateComment(payload, env);
+  const validated = validateComment(payload);
   if (validated.honeypot) {
     return jsonResponse({ ok: true, comment: null }, { status: 201 });
   }
   if (validated.error) {
     return jsonResponse({ ok: false, error: validated.error }, { status: 400 });
+  }
+  if (!(await isAllowedThread(validated.threadKey, env, fetchImpl))) {
+    return jsonResponse({ ok: false, error: 'thread_not_allowed' }, { status: 400 });
   }
 
   const turnstileValid = await verifyTurnstile(
@@ -269,7 +295,7 @@ export function createBlogCommentsWorker({ fetchImpl = fetch } = {}) {
       try {
         if (request.method === 'GET') {
           const threadKey = normalizeText(url.searchParams.get('threadKey'));
-          if (!isValidThreadKey(threadKey) || !getAllowedThreads(env).includes(threadKey)) {
+          if (!isValidThreadKey(threadKey) || !(await isAllowedThread(threadKey, env, fetchImpl))) {
             response = jsonResponse({ ok: false, error: 'thread_not_allowed' }, { status: 400 });
           } else {
             response = jsonResponse({ ok: true, comments: await listComments(threadKey, env) });

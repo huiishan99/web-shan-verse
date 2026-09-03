@@ -16,7 +16,7 @@ const blogCollection = defineCollection({
     lang: z.enum(locales).optional(), // 可选：指定文章语言；未指定时在所有语言页面显示
     postSlug: z.string().optional(), // 可选：给多语言版本共享同一个公开 URL slug
     translationKey: z.string().optional(), // 可选：标记同一篇文章的多语言版本
-    comments: z.boolean().optional().default(false), // 可选：为这篇文章开启数据库评论区
+    comments: z.boolean().optional().default(true), // 默认开启数据库评论区；设为 false 可单篇关闭
     draft: z.boolean().optional().default(false),
     deprecated: z.boolean().optional().default(false), // 标记过时的技术文章
     deprecatedReason: z.string().optional(), // 可选：说明为什么过时
