@@ -43,15 +43,15 @@
     "unified": "^11.0.5"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.9",
+    "@astrojs/check": "^0.9.10",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.62.1",
-    "@types/three": "^0.185.1",
-    "eslint": "^10.8.0",
-    "eslint-plugin-astro": "^1.7.0",
-    "globals": "^17.7.0",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.65.0"
+    "@types/three": "^0.185.4",
+    "eslint": "^10.9.1",
+    "eslint-plugin-astro": "^3.1.0",
+    "globals": "^17.11.0",
+    "typescript": "^7.0.2",
+    "typescript-eslint": "^8.69.0"
   },
   "overrides": {
     "yaml-language-server": {
