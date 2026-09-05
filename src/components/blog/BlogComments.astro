@@ -322,7 +322,7 @@ const copy = useTranslations(lang).comments;
 
   .blog-comments__header h2 {
     margin: 0;
-    font-family: var(--font-blog-heading);
+    font-family: var(--font-display);
     font-size: 1.35rem;
   }
 
@@ -419,6 +419,11 @@ const copy = useTranslations(lang).comments;
     font: inherit;
     font-size: 0.88rem;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .blog-comments[data-locale='zh'] .blog-comments__field input,
+  .blog-comments[data-locale='zh'] .blog-comments__field textarea {
+    font-family: var(--font-blog-copy);
   }
 
   .blog-comments__field textarea {
