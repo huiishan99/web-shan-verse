@@ -305,11 +305,12 @@ test('blog comments load and publish across current and future posts by default'
 
   await page.goto('/zh/blog/happiness-is-not-the-end');
   const chineseComments = page.locator('[data-blog-comments]');
-  const chineseCommentFonts = await chineseComments.locator('h2, input[name="displayName"], textarea[name="body"]')
+  const chineseCommentFonts = await chineseComments.locator('h2, [data-comments-status], input[name="displayName"], textarea[name="body"]')
     .evaluateAll((elements) => elements.map((element) => getComputedStyle(element).fontFamily));
   expect(chineseCommentFonts[0]).not.toContain('Zhuque Fangsong');
   expect(chineseCommentFonts[1]).toContain('Zhuque Fangsong Blog');
   expect(chineseCommentFonts[2]).toContain('Zhuque Fangsong Blog');
+  expect(chineseCommentFonts[3]).toContain('Zhuque Fangsong Blog');
 });
 
 test('project category navigation wraps into two readable desktop rows', async ({ page }) => {
