@@ -197,7 +197,7 @@ const bottomPaginationLabel = `${t.blog.paginationLabel} (${t.blog.paginationBot
       )}
     </header>
     
-    <div class="blog-layout">
+    <div class="blog-layout" data-locale={lang}>
       <div class="posts-list">
         {pagePosts.map((post) => {
           const postKind = getBlogPostKind(post);
@@ -516,6 +516,10 @@ const bottomPaginationLabel = `${t.blog.paginationLabel} (${t.blog.paginationBot
     font-size: 1rem;
     line-height: 1.7;
     margin-bottom: var(--space-md);
+  }
+
+  .blog-layout[data-locale='zh'] .post-excerpt {
+    font-family: var(--font-blog-copy);
   }
 
   .post-card--note .post-excerpt {

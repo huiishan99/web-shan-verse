@@ -274,6 +274,16 @@ test('translated article exposes complete alternate links and keeps its slug', a
   await expect(page.locator('main h1')).toContainText('Codex のアップデート後');
 });
 
+test('Chinese blog previews use Zhuque while card titles keep their original font', async ({ page }) => {
+  await page.goto('/zh/blog');
+
+  const excerptFont = await page.locator('.post-excerpt').first().evaluate((element) => getComputedStyle(element).fontFamily);
+  const titleFont = await page.locator('.post-title').first().evaluate((element) => getComputedStyle(element).fontFamily);
+
+  expect(excerptFont).toContain('Zhuque Fangsong Blog');
+  expect(titleFont).not.toContain('Zhuque Fangsong');
+});
+
 test('blog comments load and publish across current and future posts by default', async ({ page }) => {
   const manifestResponse = await page.request.get('/comment-threads.json');
   const manifest = await manifestResponse.json();
