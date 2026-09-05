@@ -131,6 +131,43 @@ test('GitHub activity keeps the designed calendar while contribution data loads'
   await expect(githubActivity).toHaveAttribute('aria-busy', 'false');
 });
 
+test('desktop activity signals stay aligned with the chart and scroll inside their custom rail', async ({ page }) => {
+  await page.goto('/ja');
+
+  const chart = page.locator('.activity-chart');
+  const log = page.locator('.activity-log');
+  const signalList = log.locator('ol');
+  const initialSizes = await Promise.all([chart.boundingBox(), log.boundingBox()]);
+
+  expect(initialSizes[0]).not.toBeNull();
+  expect(initialSizes[1]).not.toBeNull();
+  expect(Math.abs(initialSizes[0]!.height - initialSizes[1]!.height)).toBeLessThanOrEqual(1);
+  await expect(signalList).toHaveCSS('overflow-y', 'auto');
+
+  await signalList.evaluate((list) => {
+    const items = Array.from(list.children);
+    for (let copy = 0; copy < 4; copy += 1) {
+      items.forEach((item) => list.append(item.cloneNode(true)));
+    }
+  });
+
+  const overflow = await signalList.evaluate((list) => ({
+    clientHeight: list.clientHeight,
+    scrollHeight: list.scrollHeight,
+  }));
+  expect(overflow.scrollHeight).toBeGreaterThan(overflow.clientHeight);
+
+  await signalList.evaluate((list) => {
+    list.scrollTop = list.scrollHeight;
+  });
+  expect(await signalList.evaluate((list) => list.scrollTop)).toBeGreaterThan(0);
+  expect(Math.abs((await chart.boundingBox())!.height - (await log.boundingBox())!.height)).toBeLessThanOrEqual(1);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(log).toHaveCSS('position', 'static');
+  await expect(signalList).toHaveCSS('overflow-y', 'visible');
+});
+
 test('language switcher opens and navigates to the Chinese home page', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
