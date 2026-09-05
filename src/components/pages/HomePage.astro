@@ -638,6 +638,7 @@ const sponsorContactUrl = 'https://linkedin.com/in/laihuishan/';
   }
 
   .activity-panel {
+    position: relative;
     display: grid;
     grid-template-columns: minmax(0, 1.45fr) minmax(240px, 300px);
     gap: var(--space-md);
@@ -654,6 +655,8 @@ const sponsorContactUrl = 'https://linkedin.com/in/laihuishan/';
   .activity-chart {
     --activity-cell: 9px;
     --activity-gap: 3px;
+    grid-column: 1;
+    grid-row: 1;
     min-width: 0;
     width: 100%;
     max-width: 100%;
@@ -1002,9 +1005,18 @@ const sponsorContactUrl = 'https://linkedin.com/in/laihuishan/';
   }
 
   .activity-log {
+    position: absolute;
+    inset: 0;
+    inset-block-end: var(--space-lg);
+    grid-column: 2;
+    grid-row: 1;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
     min-width: 0;
+    min-height: 0;
     padding-left: var(--space-lg);
     border-left: 1px solid var(--color-border);
+    overflow: hidden;
   }
 
   .activity-log-title {
@@ -1020,6 +1032,33 @@ const sponsorContactUrl = 'https://linkedin.com/in/laihuishan/';
     list-style: none;
     display: grid;
     gap: 0.65rem;
+    min-height: 0;
+    padding-right: 0.55rem;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scrollbar-color: rgba(212, 168, 75, 0.62) rgba(255, 255, 255, 0.045);
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+  }
+
+  .activity-log ol::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .activity-log ol::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.045);
+    border-radius: 999px;
+  }
+
+  .activity-log ol::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(232, 196, 94, 0.78), rgba(201, 162, 39, 0.48));
+    border: 1px solid rgba(245, 225, 162, 0.18);
+    border-radius: 999px;
+    box-shadow: 0 0 8px rgba(201, 162, 39, 0.18);
+  }
+
+  .activity-log ol::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, rgba(245, 225, 162, 0.88), rgba(212, 168, 75, 0.64));
   }
 
   .activity-log a {
@@ -1111,10 +1150,24 @@ const sponsorContactUrl = 'https://linkedin.com/in/laihuishan/';
     }
 
     .activity-log {
+      position: static;
+      inset: auto;
+      grid-column: 1;
+      grid-row: auto;
+      display: block;
+      min-height: auto;
       padding-left: 0;
       padding-top: var(--space-md);
       border-left: 0;
       border-top: 1px solid var(--color-border);
+      overflow: visible;
+    }
+
+    .activity-log ol {
+      padding-right: 0;
+      overflow-y: visible;
+      overscroll-behavior-y: auto;
+      scrollbar-gutter: auto;
     }
   }
 
