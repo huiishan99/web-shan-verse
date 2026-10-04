@@ -150,6 +150,37 @@ export const projectCategories: ProjectCategory[] = [
                 },
                 github: "https://github.com/huiishan99/unity-2d-shooter-game",
                 website: "https://huiishan99.itch.io/2d-shooter",
+                image: "/images/projects/2d-shooter-gameplay.webp",
+                detailImages: [
+                    {
+                        src: "/images/projects/2d-shooter-gameplay.webp",
+                        alt: {
+                            en: "Running 2D Shooter WebGL gameplay with the player ship and three enemies",
+                            zh: "正在运行的 2D Shooter WebGL 游戏画面，包含玩家飞船与三架敌机",
+                            ja: "プレイヤー機と3機の敵が表示された 2D Shooter WebGL の実行画面"
+                        },
+                        caption: {
+                            en: "Live WebGL build · Gameplay captured from the public itch.io release",
+                            zh: "WebGL 在线版本 · 截取自公开的 itch.io 游戏运行画面",
+                            ja: "WebGL 公開版 · itch.io 上で実行したゲームプレイ画面"
+                        },
+                        fit: "contain"
+                    },
+                    {
+                        src: "/images/projects/2d-shooter-menu.webp",
+                        alt: {
+                            en: "2D Shooter WebGL main menu with new game, level select, instructions, and exit buttons",
+                            zh: "2D Shooter WebGL 主菜单，包含新游戏、关卡选择、说明与退出按钮",
+                            ja: "ニューゲーム、レベル選択、操作説明、終了ボタンを備えた 2D Shooter WebGL のメインメニュー"
+                        },
+                        caption: {
+                            en: "Live WebGL build · Main menu",
+                            zh: "WebGL 在线版本 · 主菜单",
+                            ja: "WebGL 公開版 · メインメニュー"
+                        },
+                        fit: "contain"
+                    }
+                ],
                 tags: ["Unity", "C#", "2D", "Game UI"]
             },
             {
@@ -192,6 +223,53 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["Astro", "MDX", "TypeScript", "CSS"]
             },
             {
+                title: "Furigana for Spotify",
+                description: {
+                    en: "Local-first Spicetify extension that adds hiragana, katakana, or romaji readings to Japanese Spotify lyrics.",
+                    zh: "本地优先的 Spicetify 扩展，为 Spotify 日语歌词添加平假名、片假名或罗马字注音。",
+                    ja: "Spotify の日本語歌詞にひらがな・カタカナ・ローマ字の読みを付ける、ローカル優先の Spicetify 拡張。"
+                },
+                details: {
+                    en: "Furigana for Spotify augments Japanese lyrics inside Spotify Desktop and also provides a transparent two-line desktop overlay on Windows and macOS. Readings are generated locally by default, Spotify credentials are not required, and optional online lookup can be enabled for higher-confidence readings. The public repository includes installation, update, diagnostics, and packaging workflows. This independent project is not affiliated with or endorsed by Spotify AB.",
+                    zh: "Furigana for Spotify 会在 Spotify 桌面版内部为日语歌词添加注音，并在 Windows 与 macOS 上提供透明的双行桌面歌词悬浮窗。默认情况下读音在本地生成，无需 Spotify 凭据；也可以选择启用在线查询以获得更高置信度的读音。公开仓库包含安装、更新、诊断与打包流程。本项目为独立开发，与 Spotify AB 无隶属或背书关系。",
+                    ja: "Furigana for Spotify は Spotify Desktop 内の日本語歌詞に読みを付け、Windows と macOS では透明な2行のデスクトップオーバーレイも提供します。読みは既定でローカル生成され、Spotify の認証情報は不要です。必要に応じて、より確度の高い読みを得るオンライン検索も有効化できます。公開リポジトリにはインストール、更新、診断、パッケージングのワークフローを収録しています。本プロジェクトは独立開発であり、Spotify AB との提携・承認関係はありません。"
+                },
+                status: "live",
+                github: "https://github.com/huiishan99/extension-Furigana-for-Spotify",
+                image: "/images/projects/spotify-furigana-social-preview.webp",
+                detailImages: [
+                    {
+                        src: "/images/projects/spotify-furigana-social-preview.webp",
+                        alt: {
+                            en: "Furigana for Spotify project preview with annotated Japanese lyrics",
+                            zh: "展示日语歌词注音效果的 Furigana for Spotify 项目预览图",
+                            ja: "日本語歌詞への読み表示を示す Furigana for Spotify のプロジェクトプレビュー"
+                        },
+                        caption: {
+                            en: "Project preview · Japanese lyrics with configurable readings",
+                            zh: "项目预览 · 为日语歌词显示可配置的读音",
+                            ja: "プロジェクトプレビュー · 日本語歌詞に設定可能な読みを表示"
+                        },
+                        fit: "contain"
+                    },
+                    {
+                        src: "/images/projects/spotify-furigana-lyrics.webp",
+                        alt: {
+                            en: "Spotify Desktop lyrics view showing furigana above Japanese lyric lines",
+                            zh: "Spotify 桌面版歌词界面，在日语歌词上方显示注音",
+                            ja: "日本語歌詞の上にふりがなを表示した Spotify Desktop の歌詞画面"
+                        },
+                        caption: {
+                            en: "Extension in use · Spotify UI, music artwork, and lyrics remain the property of their respective rights holders",
+                            zh: "扩展运行画面 · Spotify 界面、音乐封面与歌词的权利归各自权利人所有",
+                            ja: "拡張機能の実行画面 · Spotify の UI、楽曲アートワーク、歌詞の権利は各権利者に帰属します"
+                        },
+                        fit: "contain"
+                    }
+                ],
+                tags: ["TypeScript", "Spicetify", "Spotify Desktop", "Windows", "macOS"]
+            },
+            {
                 title: "Notion Next Chinese Blog",
                 description: {
                     en: "Forked NotionNext deployment for a Notion-powered blog using Next.js and the Notion API.",
@@ -211,6 +289,23 @@ export const projectCategories: ProjectCategory[] = [
                 },
                 github: "https://github.com/huiishan99/web-math-note",
                 website: "https://math-notes-clone.vercel.app/",
+                image: "/images/projects/math-note-live.webp",
+                detailImages: [
+                    {
+                        src: "/images/projects/math-note-live.webp",
+                        alt: {
+                            en: "Running Math-Note drawing canvas with equation controls and a handwritten expression",
+                            zh: "正在运行的 Math-Note 手写画布，显示公式控制栏与手写表达式",
+                            ja: "数式ツールと手書き式を表示した、実行中の Math-Note キャンバス"
+                        },
+                        caption: {
+                            en: "Live deployment · Interactive math canvas",
+                            zh: "在线部署 · 交互式数学画布",
+                            ja: "公開デプロイ · インタラクティブ数式キャンバス"
+                        },
+                        fit: "contain"
+                    }
+                ],
                 tags: ["React", "Vite", "TypeScript", "FastAPI", "Gemini"]
             },
             {
@@ -233,6 +328,23 @@ export const projectCategories: ProjectCategory[] = [
                 },
                 github: "https://github.com/huiishan99/web-weather-app",
                 website: "https://js-weather-app-nine-wine.vercel.app",
+                image: "/images/projects/weather-app-live.webp",
+                detailImages: [
+                    {
+                        src: "/images/projects/weather-app-live.webp",
+                        alt: {
+                            en: "Running Weather App with a centered location search field on a blue interface",
+                            zh: "正在运行的 Weather App，蓝色界面中央显示地点搜索框",
+                            ja: "青い画面中央に地域検索欄を表示した、実行中の Weather App"
+                        },
+                        caption: {
+                            en: "Live deployment · Location search interface",
+                            zh: "在线部署 · 地点搜索界面",
+                            ja: "公開デプロイ · 地域検索インターフェース"
+                        },
+                        fit: "contain"
+                    }
+                ],
                 tags: ["HTML", "CSS", "JavaScript", "OpenWeather API"]
             },
             {
@@ -244,6 +356,23 @@ export const projectCategories: ProjectCategory[] = [
                 },
                 github: "https://github.com/huiishan99/web-falling-sand",
                 website: "https://huiishan99.github.io/web-falling-sand/",
+                image: "/images/projects/falling-sand-live.webp",
+                detailImages: [
+                    {
+                        src: "/images/projects/falling-sand-live.webp",
+                        alt: {
+                            en: "Running Falling Sand simulation with an hourglass, falling grains, controls, and statistics",
+                            zh: "正在运行的 Falling Sand 沙粒模拟，显示沙漏、下落颗粒、控制栏与统计信息",
+                            ja: "砂時計、落下する粒子、操作パネル、統計を表示した Falling Sand の実行画面"
+                        },
+                        caption: {
+                            en: "Live deployment · Interactive hourglass simulation",
+                            zh: "在线部署 · 交互式沙漏模拟",
+                            ja: "公開デプロイ · インタラクティブ砂時計シミュレーション"
+                        },
+                        fit: "contain"
+                    }
+                ],
                 tags: ["JavaScript", "p5.js", "Vite"]
             },
             {
@@ -255,6 +384,23 @@ export const projectCategories: ProjectCategory[] = [
                 },
                 github: "https://github.com/huiishan99/web-dark-light-toggle",
                 website: "https://huiishan99.github.io/web-dark-light-toggle/",
+                image: "/images/projects/dark-light-toggle-live.webp",
+                detailImages: [
+                    {
+                        src: "/images/projects/dark-light-toggle-live.webp",
+                        alt: {
+                            en: "Animated desert landscape used by the running dark and light mode toggle demo",
+                            zh: "正在运行的明暗模式切换演示所使用的动态沙漠景观",
+                            ja: "ダーク／ライト切替デモで表示される、実行中の砂漠アニメーション"
+                        },
+                        caption: {
+                            en: "Live deployment · Animated theme toggle",
+                            zh: "在线部署 · 动态主题切换",
+                            ja: "公開デプロイ · アニメーション付きテーマ切替"
+                        },
+                        fit: "contain"
+                    }
+                ],
                 tags: ["HTML", "CSS", "JavaScript"]
             },
             {
@@ -266,6 +412,23 @@ export const projectCategories: ProjectCategory[] = [
                 },
                 github: "https://github.com/huiishan99/web-dreamlight",
                 website: "https://web-dreamlight.vercel.app/",
+                image: "/images/projects/dreamlight-live.webp",
+                detailImages: [
+                    {
+                        src: "/images/projects/dreamlight-live.webp",
+                        alt: {
+                            en: "Running DreamLight promotional landing page for BitSummit 2024",
+                            zh: "正在运行的 DreamLight BitSummit 2024 宣传落地页",
+                            ja: "BitSummit 2024 向け DreamLight プロモーションページの実行画面"
+                        },
+                        caption: {
+                            en: "Live deployment · BitSummit 2024 promotional site",
+                            zh: "在线部署 · BitSummit 2024 宣传网站",
+                            ja: "公開デプロイ · BitSummit 2024 プロモーションサイト"
+                        },
+                        fit: "contain"
+                    }
+                ],
                 tags: ["HTML", "SCSS", "JavaScript"]
             },
             {
@@ -299,6 +462,23 @@ export const projectCategories: ProjectCategory[] = [
                 },
                 github: "https://github.com/huiishan99/web-ai-in-action-frontend",
                 website: "https://web-ai-in-action-frontend.vercel.app",
+                image: "/images/projects/silver-game-live.webp",
+                detailImages: [
+                    {
+                        src: "/images/projects/silver-game-live.webp",
+                        alt: {
+                            en: "Running Silver Game dashboard with chat rooms, contacts, and navigation controls",
+                            zh: "正在运行的 Silver Game 仪表盘，显示聊天室、联系人与导航控制",
+                            ja: "チャットルーム、連絡先、ナビゲーションを表示した Silver Game ダッシュボードの実行画面"
+                        },
+                        caption: {
+                            en: "Live deployment · Social platform dashboard",
+                            zh: "在线部署 · 社交平台仪表盘",
+                            ja: "公開デプロイ · ソーシャルプラットフォームのダッシュボード"
+                        },
+                        fit: "contain"
+                    }
+                ],
                 tags: ["Next.js", "React", "TypeScript", "FastAPI", "PyTorch"]
             },
             {

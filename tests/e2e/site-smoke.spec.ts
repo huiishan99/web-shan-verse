@@ -411,6 +411,25 @@ test('project cards open both text-only and image detail dialogs', async ({ page
   await siteDialog.getByRole('button', { name: 'Close project details' }).click();
   await expect(siteDialog).not.toBeVisible();
 
+  const spotifyCard = page.locator('.project-card').filter({ hasText: 'Furigana for Spotify' });
+  const spotifyDialog = page.locator('#project-detail-web-1');
+
+  await expect(spotifyCard.locator('.project-image img')).toHaveAttribute(
+    'src',
+    '/images/projects/spotify-furigana-social-preview.webp'
+  );
+  await spotifyCard.getByRole('button', { name: 'View Details' }).click();
+  await expect(spotifyDialog).toBeVisible();
+  await expect(spotifyDialog.locator('[data-project-gallery-slide]')).toHaveCount(2);
+  await expect(spotifyDialog.locator('[data-project-gallery-counter]')).toHaveText('1 / 2');
+  await spotifyDialog.locator('[data-project-gallery-next]').click();
+  await expect(spotifyDialog.locator('[data-project-gallery-counter]')).toHaveText('2 / 2');
+  await expect(spotifyDialog.locator('[data-project-gallery-slide]:not([hidden]) img')).toHaveAttribute(
+    'src',
+    '/images/projects/spotify-furigana-lyrics.webp'
+  );
+  await spotifyDialog.getByRole('button', { name: 'Close project details' }).click();
+
   const mathBridgeCard = page.locator('.project-card').filter({ hasText: 'VR Math Bridge' });
   const mathBridgeDialog = page.locator('#project-detail-publications-0');
   const mathBridgeAwardButton = mathBridgeCard.getByRole('button', { name: 'View Award' });
@@ -418,6 +437,10 @@ test('project cards open both text-only and image detail dialogs', async ({ page
   await expect(mathBridgeCard.getByRole('link', { name: 'View Project Page' })).toHaveAttribute(
     'href',
     'https://web-publications.vercel.app/publications/vr-math-bridge/'
+  );
+  await expect(mathBridgeCard.locator('.project-image img')).toHaveAttribute(
+    'src',
+    '/images/projects/vr-math-bridge-overview.webp'
   );
   await mathBridgeCard.getByRole('button', { name: 'View Details' }).click();
   await expect(mathBridgeDialog).toBeVisible();

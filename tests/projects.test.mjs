@@ -1,7 +1,12 @@
 import assert from 'node:assert/strict';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import test from 'node:test';
+import { fileURLToPath } from 'node:url';
 import { projectCategories } from '../src/data/projects.ts';
 import { getProjectStatus } from '../src/utils/projects.ts';
+
+const repositoryRoot = fileURLToPath(new URL('../', import.meta.url));
 
 const project = (overrides = {}) => ({
   title: 'Project',
@@ -46,4 +51,38 @@ test('project status inference is shared by pages and the CLI index', () => {
   assert.equal(getProjectStatus(project(), category('vr')), 'private');
   assert.equal(getProjectStatus(project({ github: 'https://github.com/example' }), category('vr')), 'prototype');
   assert.equal(getProjectStatus(project({ website: 'https://example.com' }), category('unity')), 'live');
+});
+
+test('Spotify Furigana is published as a localized live project with real media', () => {
+  const webProjects = projectCategories.find(({ id }) => id === 'web');
+  const spotifyProject = webProjects.items.find(({ title }) => title === 'Furigana for Spotify');
+
+  assert.ok(spotifyProject);
+  assert.equal(spotifyProject.status, 'live');
+  assert.equal(spotifyProject.github, 'https://github.com/huiishan99/extension-Furigana-for-Spotify');
+  assert.equal(typeof spotifyProject.description.zh, 'string');
+  assert.equal(typeof spotifyProject.description.ja, 'string');
+  assert.equal(spotifyProject.detailImages.length, 2);
+});
+
+test('every local project media reference resolves to a public asset', () => {
+  const mediaPaths = projectCategories.flatMap((projectCategory) =>
+    projectCategory.items.flatMap((item) => [
+      item.image,
+      item.detailImage,
+      ...(item.detailImages?.map(({ src }) => src) ?? []),
+      item.award?.image,
+    ])
+  ).filter(Boolean);
+
+  for (const mediaPath of mediaPaths) {
+    assert.ok(
+      mediaPath.startsWith('/'),
+      `Project media must use a root-relative public path: ${mediaPath}`
+    );
+    assert.ok(
+      existsSync(join(repositoryRoot, 'public', mediaPath.slice(1))),
+      `Missing project media asset: ${mediaPath}`
+    );
+  }
 });
