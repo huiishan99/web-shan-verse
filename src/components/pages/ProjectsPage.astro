@@ -126,11 +126,11 @@ function getAuthorParts(authors: string) {
             return (
               <>
                 <article class={`project-card project-card--${status} ${project.featured ? 'featured' : ''}`}>
-                {project.featured && (
-                  <div class="featured-banner">
-                    {project.featuredLabel ? localizeString(project.featuredLabel, lang) : t.projects.featured}
-                  </div>
-                )}
+                  {project.featured && (
+                    <div class="featured-banner">
+                      <span>{project.featuredLabel ? localizeString(project.featuredLabel, lang) : t.projects.featured}</span>
+                    </div>
+                  )}
 
                 {cardImage && (
                   <div class={`project-image project-image--${cardImageFit}`}>
@@ -566,6 +566,22 @@ function getAuthorParts(authors: string) {
 
   .featured-banner::after {
     background: linear-gradient(90deg, rgba(201, 162, 39, 0.42), transparent);
+  }
+
+  .featured-banner span {
+    flex: 0 0 auto;
+    padding: 0.18rem 0.62rem 0.22rem;
+    border: 1px solid rgba(201, 162, 39, 0.32);
+    border-radius: 999px;
+    background:
+      linear-gradient(180deg, rgba(201, 162, 39, 0.12), rgba(201, 162, 39, 0.035)),
+      rgba(8, 8, 12, 0.9);
+    box-shadow:
+      0 3px 12px rgba(0, 0, 0, 0.42),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.025);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.88);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
   }
   
   .project-card.featured {
@@ -1420,6 +1436,10 @@ function getAuthorParts(authors: string) {
       min-height: 1.35rem;
       padding-top: 0.16rem;
       font-size: 0.72rem;
+    }
+
+    .featured-banner span {
+      padding: 0.15rem 0.5rem 0.18rem;
     }
 
     .featured-banner::before,
