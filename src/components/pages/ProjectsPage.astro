@@ -151,7 +151,7 @@ function getAuthorParts(authors: string) {
                         {project.authors && (
                           <p class="project-authors">
                             {getAuthorParts(localizeString(project.authors, lang)).map((part) => (
-                              part.highlighted ? <strong>{part.text}</strong> : <span>{part.text}</span>
+                              <span class:list={{ 'project-author--highlighted': part.highlighted }}>{part.text}</span>
                             ))}
                           </p>
                         )}
@@ -320,7 +320,7 @@ function getAuthorParts(authors: string) {
                         {project.authors && (
                           <p class="project-authors">
                             {getAuthorParts(localizeString(project.authors, lang)).map((part) => (
-                              part.highlighted ? <strong>{part.text}</strong> : <span>{part.text}</span>
+                              <span class:list={{ 'project-author--highlighted': part.highlighted }}>{part.text}</span>
                             ))}
                           </p>
                         )}
@@ -868,10 +868,10 @@ function getAuthorParts(authors: string) {
     font-style: italic;
   }
 
-  .project-authors strong {
-    color: inherit;
+  .project-authors .project-author--highlighted {
+    color: var(--color-accent-gold);
     font-style: inherit;
-    font-weight: 700;
+    font-weight: inherit;
   }
 
   .project-conference {
