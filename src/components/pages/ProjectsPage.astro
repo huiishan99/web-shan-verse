@@ -22,6 +22,7 @@ const categoryOrder = new Map([
   ['theses', 1],
   ['research', 2],
 ]);
+const academicCategoryIds = new Set(['publications', 'theses', 'research']);
 const orderedProjectCategories = [...projectCategories].sort((first, second) =>
   (categoryOrder.get(first.id) ?? 3) - (categoryOrder.get(second.id) ?? 3)
 );
@@ -88,6 +89,7 @@ function getAuthorParts(authors: string) {
             const detailTitleId = `${detailDialogId}-title`;
             const firstDetailImage = project.detailImages?.[0];
             const cardImage = project.image || project.detailImage || firstDetailImage?.src;
+            const hasAcademicPreview = Boolean(cardImage) && academicCategoryIds.has(category.id);
             const cardImageAlt = firstDetailImage && firstDetailImage.src === cardImage
               ? localizeString(firstDetailImage.alt, lang)
               : localizeString(project.detailImageAlt || project.title, lang);
@@ -125,18 +127,18 @@ function getAuthorParts(authors: string) {
 
             return (
               <>
-                <article class={`project-card project-card--${status} ${project.featured ? 'featured' : ''}`}>
+                <article class={`project-card project-card--${status} ${project.featured ? 'featured' : ''} ${hasAcademicPreview ? 'project-card--academic-preview' : ''}`}>
+                  {cardImage && (
+                    <div class={`project-image project-image--${cardImageFit}`}>
+                      <img src={cardImage} alt={cardImageAlt} loading="lazy" decoding="async" />
+                    </div>
+                  )}
+
                   {project.featured && (
                     <div class="featured-banner">
                       {project.featuredLabel ? localizeString(project.featuredLabel, lang) : t.projects.featured}
                     </div>
                   )}
-
-                {cardImage && (
-                  <div class={`project-image project-image--${cardImageFit}`}>
-                    <img src={cardImage} alt={cardImageAlt} loading="lazy" decoding="async" />
-                  </div>
-                )}
                 
                 <div class="project-content">
                   <div class="project-main">
@@ -1289,13 +1291,37 @@ function getAuthorParts(authors: string) {
     gap: 1rem;
   }
 
-  .project-section:is(#research, #publications, #theses) .project-image img {
-    padding-inline: 1.25rem;
-    object-position: left center;
+  .project-card--academic-preview {
+    display: grid;
+    grid-template-columns: minmax(180px, 28%) minmax(0, 1fr);
+    grid-template-areas: "preview content";
   }
 
-  .project-section:is(#research, #publications, #theses) .project-card.featured .project-image {
-    padding-top: 1.6rem;
+  .project-card--academic-preview.featured {
+    grid-template-areas: "award award" "preview content";
+  }
+
+  .project-card--academic-preview .featured-banner {
+    position: static;
+    grid-area: award;
+  }
+
+  .project-card--academic-preview .project-image {
+    grid-area: preview;
+    display: flex;
+    align-items: center;
+    padding: 1.12rem 0 1.12rem 1.25rem;
+  }
+
+  .project-card--academic-preview .project-image img {
+    display: block;
+    height: 180px;
+    object-position: center;
+  }
+
+  .project-card--academic-preview .project-content {
+    grid-area: content;
+    min-width: 0;
   }
 
   .project-section:is(#research, #publications, #theses) .project-content {
@@ -1306,7 +1332,7 @@ function getAuthorParts(authors: string) {
     padding-top: calc(1.12rem + 1.2rem);
   }
 
-  .project-section:is(#research, #publications, #theses) .project-card.featured:has(> .project-image) .project-content {
+  .project-section:is(#research, #publications, #theses) .project-card--academic-preview.featured .project-content {
     padding-top: 1.12rem;
   }
 
@@ -1508,12 +1534,21 @@ function getAuthorParts(authors: string) {
       height: 112px;
     }
 
-    .project-section:is(#research, #publications, #theses) .project-image img {
-      padding-inline: 0.85rem;
+    .project-card--academic-preview {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: "preview" "content";
     }
 
-    .project-section:is(#research, #publications, #theses) .project-card.featured .project-image {
-      padding-top: 1.35rem;
+    .project-card--academic-preview.featured {
+      grid-template-areas: "preview" "award" "content";
+    }
+
+    .project-card--academic-preview .project-image {
+      padding: 0.85rem 0.85rem 0;
+    }
+
+    .project-card--academic-preview .project-image img {
+      height: 160px;
     }
 
     .project-section:is(#research, #publications, #theses) .project-content {
@@ -1524,7 +1559,7 @@ function getAuthorParts(authors: string) {
       padding-top: calc(0.85rem + 1rem);
     }
 
-    .project-section:is(#research, #publications, #theses) .project-card.featured:has(> .project-image) .project-content {
+    .project-section:is(#research, #publications, #theses) .project-card--academic-preview.featured .project-content {
       padding-top: 0.85rem;
     }
 
