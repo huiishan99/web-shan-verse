@@ -490,6 +490,7 @@ function getAuthorParts(authors: string) {
   }
   
   .project-section {
+    --project-editorial-gold: rgba(236, 211, 141, 0.82);
     margin-bottom: var(--space-xl);
   }
   
@@ -547,7 +548,7 @@ function getAuthorParts(authors: string) {
     padding: 0.22rem 1.1rem 0;
     border-top: 1px solid rgba(201, 162, 39, 0.42);
     background: linear-gradient(90deg, transparent 4%, rgba(201, 162, 39, 0.045) 50%, transparent 96%);
-    color: rgba(236, 211, 141, 0.82);
+    color: var(--project-editorial-gold);
     font-family: var(--font-body);
     font-size: 0.78rem;
     font-style: italic;
@@ -869,7 +870,7 @@ function getAuthorParts(authors: string) {
   }
 
   .project-authors .project-author--highlighted {
-    color: var(--color-accent-gold);
+    color: var(--project-editorial-gold);
     font-style: inherit;
     font-weight: inherit;
   }
