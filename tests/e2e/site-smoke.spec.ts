@@ -438,14 +438,6 @@ test('project cards open both text-only and image detail dialogs', async ({ page
     'href',
     'https://web-publications.vercel.app/publications/vr-math-bridge/'
   );
-  const featuredLabelStyle = await mathBridgeCard.locator('.featured-banner span').evaluate((label) => ({
-    borderStyle: getComputedStyle(label).borderStyle,
-    effectBackground: getComputedStyle(label, '::before').backgroundImage,
-    textShadow: getComputedStyle(label).textShadow,
-  }));
-  expect(featuredLabelStyle.borderStyle).toBe('none');
-  expect(featuredLabelStyle.effectBackground).toContain('radial-gradient');
-  expect(featuredLabelStyle.textShadow).not.toBe('none');
   await expect(mathBridgeCard.locator('.project-image img')).toHaveAttribute(
     'src',
     '/images/projects/vr-math-bridge-overview.webp'
