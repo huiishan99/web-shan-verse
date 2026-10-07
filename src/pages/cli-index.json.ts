@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { projectCategories } from '../data/projects';
-import { timelineData, type TimelineEvent } from '../data/timeline';
-import { locales, localizeMonth, localizePath, localizeString, type Locale } from '../i18n/config';
+import { timelineData } from '../data/timeline';
+import { locales, localizePath, localizeString, type Locale } from '../i18n/config';
 import {
   getBlogPostDisplayTitle,
   getBlogPostKind,
@@ -77,7 +77,6 @@ function getTimelineEntries(locale: Locale): CliIndexEntry[] {
         String(yearData.year),
         event.category,
         event.weight || 'standard',
-        localizeMonth(event.month, locale),
       ]);
 
       return {
@@ -86,16 +85,10 @@ function getTimelineEntries(locale: Locale): CliIndexEntry[] {
         title: localizeString(event.title, locale),
         description: localizeString(event.description, locale),
         url: `${localizePath('/timeline', locale)}#year-${yearData.year}`,
-        date: toDateKey(getTimelineSortDate(event, yearData.year)),
         tags,
         source: String(yearData.year),
       };
     }));
-}
-
-function getTimelineSortDate(event: TimelineEvent, year: number): string {
-  if (event.date) return event.date;
-  return `${year}-01-01`;
 }
 
 async function getPostEntries(locale: Locale): Promise<CliIndexEntry[]> {

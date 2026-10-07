@@ -1,0 +1,417 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import {
+  timelineData,
+  type TimelineEvent,
+  type TimelineEventWeight,
+} from '../../data/timeline';
+import { defaultLocale, localizeString, type Locale } from '../../i18n/config';
+import { useTranslations } from '../../i18n/ui';
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = defaultLocale } = Astro.props;
+const t = useTranslations(lang);
+
+type TimelineSignalType = 'activity' | 'milestone';
+
+function getEventWeight(event: TimelineEvent): TimelineEventWeight {
+  return event.weight ?? 'standard';
+}
+
+function getSignalType(event: TimelineEvent): TimelineSignalType {
+  return getEventWeight(event) === 'major' ? 'milestone' : 'activity';
+}
+
+function getSignalLabel(signalType: TimelineSignalType): string {
+  return signalType === 'milestone' ? t.home.signalTypeMilestone : t.home.signalTypeActivity;
+}
+
+---
+
+<BaseLayout title={t.timeline.title} lang={lang}>
+  <div class="container">
+    <header class="page-header">
+      <h1>{t.timeline.title}</h1>
+      <p class="subtitle">{t.timeline.subtitle}</p>
+    </header>
+
+    <div class="timeline">
+      {[...timelineData].sort((firstYear, secondYear) => secondYear.year - firstYear.year).map((yearData) => (
+        <section class="timeline-year" aria-labelledby={`year-${yearData.year}`}>
+          <div class="year-marker">
+            <span class="year-signal" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <g class="year-signal-orbit">
+                  <path d="M5.636 5.636a9 9 0 1 0 3.555 -2.188"></path>
+                  <path d="M17 5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                </g>
+                <g class="year-signal-core">
+                  <path d="M7.027 11.477a5 5 0 1 0 5.496 -4.45a4.951 4.951 0 0 0 -3.088 .681"></path>
+                  <path d="M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                  <path d="M8 16a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                </g>
+              </svg>
+            </span>
+            <h2 id={`year-${yearData.year}`} class="year-label">{yearData.year}</h2>
+          </div>
+
+          <div class="year-events">
+            {yearData.events.map((event) => {
+              const weight = getEventWeight(event);
+              const signalType = getSignalType(event);
+
+              return (
+                <section class={`timeline-event timeline-event--${weight} timeline-event--${signalType}`}>
+                  <div class="event-body">
+                    <div class="event-meta">
+                      <span class={`event-type event-type--${signalType}`}>{getSignalLabel(signalType)}</span>
+                    </div>
+                    <h3 class="event-title">{localizeString(event.title, lang)}</h3>
+                    <p class="event-desc">{localizeString(event.description, lang)}</p>
+                  </div>
+                </section>
+              );
+            })}
+          </div>
+        </section>
+      ))}
+    </div>
+
+    <div class="timeline-end">
+      <div class="end-dot"></div>
+      <span>{t.timeline.end}</span>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-header {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+  }
+
+  .subtitle {
+    color: var(--color-text-secondary);
+    font-style: italic;
+    margin-top: var(--space-sm);
+  }
+
+  .timeline {
+    max-width: 980px;
+    margin: 0 auto;
+  }
+
+  .timeline-year {
+    display: grid;
+    grid-template-columns: 8rem minmax(0, 1fr);
+    gap: var(--space-lg);
+    position: relative;
+    margin-bottom: var(--space-xl);
+  }
+
+  .year-marker {
+    position: sticky;
+    top: 6rem;
+    align-self: start;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.55rem;
+    padding-top: 0.15rem;
+  }
+
+  .year-signal {
+    --year-signal-shift-x: 0rem;
+    position: relative;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: 1.7rem;
+    height: 1.7rem;
+    color: var(--color-brass);
+    filter: drop-shadow(0 0 8px rgba(201, 162, 39, 0.34));
+    transform: translate(var(--year-signal-shift-x), -0.08rem);
+  }
+
+  .year-signal svg {
+    position: relative;
+    z-index: 1;
+    width: 1.42rem;
+    height: 1.42rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .year-signal-orbit,
+  .year-signal-core {
+    transform-box: view-box;
+    transform-origin: center;
+  }
+
+  .year-signal-orbit {
+    animation: year-signal-spin-left 16s linear infinite;
+  }
+
+  .year-signal-core {
+    animation: year-signal-spin-right 12s linear infinite;
+  }
+
+  @keyframes year-signal-spin-left {
+    to {
+      transform: rotate(-360deg);
+    }
+  }
+
+  @keyframes year-signal-spin-right {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .year-signal-orbit,
+    .year-signal-core {
+      animation: none;
+    }
+  }
+
+  .year-label {
+    margin: 0;
+    padding-bottom: 0;
+    border-bottom: 0;
+    color: var(--color-brass);
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 3vw, 2.45rem);
+    letter-spacing: 0.12em;
+    line-height: 1;
+  }
+
+  .year-events {
+    --spine-left: 1.12rem;
+    display: grid;
+    gap: 0.72rem;
+    min-width: 0;
+    position: relative;
+    padding-left: 2.5rem;
+  }
+
+  .year-events::before {
+    content: '';
+    position: absolute;
+    top: 1.05rem;
+    bottom: 1.05rem;
+    left: var(--spine-left);
+    width: 1px;
+    background: linear-gradient(
+      180deg,
+      rgba(201, 162, 39, 0.3),
+      rgba(142, 171, 226, 0.12) 52%,
+      rgba(255, 255, 255, 0.04)
+    );
+    pointer-events: none;
+  }
+
+  .timeline-event {
+    --event-accent: var(--color-brass);
+    display: block;
+    position: relative;
+    min-width: 0;
+    padding: 0.9rem 1.15rem 0.85rem;
+    border: 1px solid rgba(201, 162, 39, 0.14);
+    border-radius: 8px;
+    background:
+      linear-gradient(135deg, rgba(201, 162, 39, 0.026), transparent 42%),
+      rgba(13, 13, 18, 0.38);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition:
+      transform 0.3s ease,
+      background 0.3s ease,
+      border-color 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+
+
+  .timeline-event::before {
+    content: '';
+    position: absolute;
+    top: 1.35rem;
+    left: -1.67rem;
+    z-index: 1;
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: var(--event-accent);
+    box-shadow: 0 0 12px rgba(201, 162, 39, 0.24);
+  }
+
+  .timeline-event:hover {
+    background: var(--surface-glass-hover);
+    border-color: var(--surface-border-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--surface-shadow-hover);
+  }
+
+  .timeline-event--major {
+    --event-accent: var(--color-accent-gold);
+    border-color: rgba(201, 162, 39, 0.16);
+  }
+
+  .timeline-event--note {
+    --event-accent: var(--color-brass);
+    border-color: rgba(201, 162, 39, 0.12);
+    background:
+      linear-gradient(135deg, rgba(201, 162, 39, 0.018), transparent 42%),
+      rgba(13, 13, 18, 0.34);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .timeline-event {
+      border-color: transparent;
+      background: transparent;
+      box-shadow: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    .timeline-event:hover {
+      background: var(--surface-glass-hover);
+      border-color: var(--surface-border-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--surface-shadow-hover);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+  }
+
+  .event-body {
+    min-width: 0;
+  }
+
+  .event-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+    margin-bottom: 0.22rem;
+  }
+
+  .event-type {
+    padding-top: 0.1rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+  }
+
+
+  .event-type--activity {
+    color: rgb(148, 196, 179);
+  }
+
+  .event-type--milestone {
+    color: var(--color-signal-milestone, #d9bf68);
+  }
+
+  .event-title {
+    margin: 0 0 0.24rem;
+    color: var(--color-text-primary);
+    font-family: var(--font-editorial);
+    font-size: 1.22rem;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  .event-desc {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: 0.96rem;
+    line-height: 1.65;
+  }
+
+  .timeline-end {
+    text-align: center;
+    padding: var(--space-xl) 0;
+    color: var(--color-brass-dark);
+    font-style: italic;
+    position: relative;
+  }
+
+  .end-dot {
+    width: 12px;
+    height: 12px;
+    background: var(--color-brass-dark);
+    border: 2px solid var(--color-brass);
+    border-radius: 50%;
+    margin: 0 auto var(--space-md);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      box-shadow: 0 0 5px var(--color-brass-dark);
+    }
+    50% {
+      box-shadow: 0 0 15px var(--color-brass);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .page-header {
+      margin-bottom: var(--space-lg);
+    }
+
+    .timeline {
+      max-width: none;
+    }
+
+    .timeline-year {
+      grid-template-columns: 1fr;
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+    }
+
+    .year-marker {
+      position: relative;
+      top: auto;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: var(--space-sm);
+    }
+
+    .year-label {
+      font-size: 1.7rem;
+    }
+
+    .year-signal {
+      --year-signal-shift-x: -0.4rem;
+    }
+
+    .year-events {
+      --spine-left: 0.45rem;
+      padding-left: 1.35rem;
+      gap: 0.62rem;
+    }
+
+    .timeline-event::before {
+      left: -0.99rem;
+    }
+
+    .timeline-event {
+      padding: 0.82rem 0.95rem 0.78rem;
+    }
+
+    .event-desc {
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+  }
+</style>

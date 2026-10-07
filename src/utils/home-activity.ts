@@ -1,7 +1,6 @@
 import type { CollectionEntry } from 'astro:content';
 import type { TimelineYear } from '../data/timeline';
 import {
-  localizeMonth,
   localizePath,
   localizeString,
   type Locale,
@@ -21,7 +20,7 @@ export type ActivitySignal = {
   date: Date;
   datetime: string;
   displayDate: string;
-  dateSource: 'blog date' | 'timeline date' | 'timeline month';
+  dateSource: 'blog date' | 'timeline year';
   href: string;
   title: string;
   type: 'blog' | 'activity' | 'milestone';
@@ -34,21 +33,6 @@ const dateLocale: Record<Locale, string> = {
 };
 const activityLabelLocale = 'en-US';
 const activityTimeZone = 'Asia/Tokyo';
-const monthIndex: Record<string, number> = {
-  January: 0,
-  February: 1,
-  March: 2,
-  April: 3,
-  May: 4,
-  June: 5,
-  July: 6,
-  August: 7,
-  September: 8,
-  October: 9,
-  November: 10,
-  December: 11,
-};
-
 export const activityWeekdayLabels = ['', 'Mon', '', 'Wed', '', 'Fri', ''];
 
 export function toDateKey(date: Date): string {
@@ -199,21 +183,13 @@ export function buildHomepageActivityModel({
 
   const timelineSignals: ActivitySignal[] = timelineData.flatMap((yearData) =>
     yearData.events.map((event) => {
-      const englishMonth = localizeString(event.month, 'en');
-      const eventMonthIndex = monthIndex[englishMonth] ?? 0;
-      const eventMonth = localizeMonth(event.month, lang);
-      const preciseEventDate = event.date && event.datePrecision !== 'month'
-        ? new Date(`${event.date}T00:00:00Z`)
-        : undefined;
-      const eventDate = preciseEventDate ?? new Date(Date.UTC(yearData.year, eventMonthIndex, 15));
+      const yearAnchor = new Date(Date.UTC(yearData.year, 0, 1));
 
       return {
-        date: eventDate,
-        datetime: preciseEventDate
-          ? toDateKey(preciseEventDate)
-          : `${yearData.year}-${String(eventMonthIndex + 1).padStart(2, '0')}`,
-        displayDate: `${eventMonth} ${yearData.year}`,
-        dateSource: preciseEventDate ? 'timeline date' as const : 'timeline month' as const,
+        date: yearAnchor,
+        datetime: String(yearData.year),
+        displayDate: String(yearData.year),
+        dateSource: 'timeline year' as const,
         href: localizePath('/timeline', lang),
         title: localizeString(event.title, lang),
         type: event.weight === 'major' ? 'milestone' as const : 'activity' as const,
