@@ -1,0 +1,100 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectDetailContent from '../projects/ProjectDetailContent.astro';
+import '../../styles/projects-shared.css';
+import { defaultLocale, localizePath, localizeString, type Locale } from '../../i18n/config';
+import { useTranslations } from '../../i18n/ui';
+import type { ProjectRecord } from '../../utils/projects';
+
+interface Props {
+  record: ProjectRecord;
+  lang?: Locale;
+  alternateLocales?: Locale[];
+}
+
+const {
+  record,
+  lang = defaultLocale,
+  alternateLocales,
+} = Astro.props;
+
+const t = useTranslations(lang);
+const title = localizeString(record.project.title, lang);
+const description = localizeString(record.project.description, lang);
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  lang={lang}
+  alternateLocales={alternateLocales}
+>
+  <div class="project-detail-page-shell">
+    <a class="project-detail-page-back" href={localizePath('/projects', lang)}>
+      <span aria-hidden="true">←</span>
+      <span>{t.projects.title}</span>
+    </a>
+
+    <article class="project-detail-page-card">
+      <ProjectDetailContent record={record} lang={lang} />
+    </article>
+  </div>
+</BaseLayout>
+
+<script>
+  import '../../scripts/client/project-details.js';
+</script>
+
+<style>
+  .project-detail-page-shell {
+    width: min(920px, calc(100% - 2rem));
+    margin: 0 auto;
+  }
+
+  .project-detail-page-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .project-detail-page-back:hover,
+  .project-detail-page-back:focus-visible {
+    color: var(--color-brass-light);
+  }
+
+  .project-detail-page-card {
+    overflow: hidden;
+    border: 1px solid rgba(201, 162, 39, 0.28);
+    border-radius: 10px;
+    background:
+      linear-gradient(145deg, rgba(27, 25, 30, 0.98), rgba(10, 10, 15, 0.99)),
+      var(--color-bg-primary);
+    box-shadow:
+      0 26px 72px rgba(0, 0, 0, 0.42),
+      0 0 0 1px rgba(255, 255, 255, 0.025);
+  }
+
+  .project-detail-page-card :global(.project-detail-panel) {
+    max-height: none;
+  }
+
+  .project-detail-page-card :global(.project-detail-title) {
+    padding-right: 0;
+  }
+
+  @media (max-width: 640px) {
+    .project-detail-page-shell {
+      width: min(100% - 1rem, 920px);
+    }
+
+    .project-detail-page-card {
+      border-radius: 8px;
+    }
+  }
+</style>

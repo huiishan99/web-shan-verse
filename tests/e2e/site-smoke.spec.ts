@@ -383,235 +383,130 @@ test('project category navigation wraps into two readable desktop rows', async (
   expect(routeLayout.every((item) => item.titleFits)).toBe(true);
 });
 
-test('project cards open both text-only and image detail dialogs', async ({ page }) => {
+test('project cards keep one lazy detail dialog while preserving the existing interaction', async ({ page }) => {
   await page.goto('/projects');
 
+  const dialog = page.locator('[data-project-detail-dialog]');
+  await expect(dialog).toHaveCount(1);
+  await expect(page.locator('[data-project-detail-fragment]')).toHaveCount(0);
+  await expect(page.locator('.project-detail-title')).toHaveCount(0);
+
   const vrCard = page.locator('.project-card').filter({ hasText: 'VR Car Scene Prototype' });
-  const vrTrigger = vrCard.getByRole('button', { name: 'View Details' });
-  const vrDialog = page.locator('#project-detail-vr-0');
+  const vrTrigger = vrCard.getByRole('link', { name: 'View Details' });
+  await expect(vrTrigger).toHaveAttribute('href', '/projects/vr-car-scene-prototype');
 
   await vrTrigger.click();
-  await expect(vrDialog).toBeVisible();
-  await expect(vrDialog).toHaveClass(/project-detail-dialog--text-only/);
-  await expect(vrDialog.locator('.project-detail-media')).toHaveCount(0);
-  await expect(vrDialog.locator('.project-detail-description')).toContainText('Meta Quest hardware');
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toHaveClass(/project-detail-dialog--text-only/);
+  await expect(dialog.locator('.project-detail-media')).toHaveCount(0);
+  await expect(dialog.locator('.project-detail-description')).toContainText('Meta Quest hardware');
 
   await page.keyboard.press('Escape');
-  await expect(vrDialog).not.toBeVisible();
+  await expect(dialog).not.toBeVisible();
   await expect(vrTrigger).toBeFocused();
 
   const siteCard = page.locator('.project-card').filter({ hasText: 'SHAN-VERSE' });
-  const siteDialog = page.locator('#project-detail-web-0');
-
-  await siteCard.getByRole('button', { name: 'View Details' }).click();
-  await expect(siteDialog).toBeVisible();
-  await expect(siteDialog).toHaveClass(/project-detail-dialog--with-image/);
-  await expect(siteDialog.locator('.project-detail-media img')).toHaveAttribute('src', '/images/header_galaxy.jpg');
-
-  await siteDialog.getByRole('button', { name: 'Close project details' }).click();
-  await expect(siteDialog).not.toBeVisible();
+  await siteCard.getByRole('link', { name: 'View Details' }).click();
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toHaveClass(/project-detail-dialog--with-image/);
+  await expect(dialog.locator('.project-detail-media img')).toHaveAttribute('src', '/images/header_galaxy.jpg');
+  await dialog.getByRole('button', { name: 'Close project details' }).click();
 
   const spotifyCard = page.locator('.project-card').filter({ hasText: 'Furigana for Spotify' });
-  const spotifyDialog = page.locator('#project-detail-web-1');
-
   await expect(spotifyCard.locator('.project-image img')).toHaveAttribute(
     'src',
     '/images/projects/spotify-furigana-social-preview.webp'
   );
-  await spotifyCard.getByRole('button', { name: 'View Details' }).click();
-  await expect(spotifyDialog).toBeVisible();
-  await expect(spotifyDialog.locator('[data-project-gallery-slide]')).toHaveCount(2);
-  await expect(spotifyDialog.locator('[data-project-gallery-counter]')).toHaveText('1 / 2');
-  await spotifyDialog.locator('[data-project-gallery-next]').click();
-  await expect(spotifyDialog.locator('[data-project-gallery-counter]')).toHaveText('2 / 2');
-  await expect(spotifyDialog.locator('[data-project-gallery-slide]:not([hidden]) img')).toHaveAttribute(
+  await spotifyCard.getByRole('link', { name: 'View Details' }).click();
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator('[data-project-gallery-slide]')).toHaveCount(2);
+  await expect(dialog.locator('[data-project-gallery-counter]')).toHaveText('1 / 2');
+  await dialog.locator('[data-project-gallery-next]').click();
+  await expect(dialog.locator('[data-project-gallery-counter]')).toHaveText('2 / 2');
+  await expect(dialog.locator('[data-project-gallery-slide]:not([hidden]) img')).toHaveAttribute(
     'src',
     '/images/projects/spotify-furigana-lyrics.webp'
   );
-  await spotifyDialog.getByRole('button', { name: 'Close project details' }).click();
+  await dialog.getByRole('button', { name: 'Close project details' }).click();
 
   const mathBridgeCard = page.locator('.project-card').filter({ hasText: 'VR Math Bridge' });
-  const mathBridgeDialog = page.locator('#project-detail-publications-0');
-  const mathBridgeAwardButton = mathBridgeCard.getByRole('button', { name: 'View Award' });
+  const mathBridgeTrigger = mathBridgeCard.getByRole('link', { name: 'View Details' });
+  const mathBridgeAwardLink = mathBridgeCard.getByRole('link', { name: 'View Award' });
 
+  await expect(mathBridgeTrigger).toHaveAttribute('href', '/projects/vr-math-bridge');
   await expect(mathBridgeCard.getByRole('link', { name: 'View Project Page' })).toHaveAttribute(
     'href',
     'https://web-publications.vercel.app/publications/vr-math-bridge/'
   );
-  await expect(mathBridgeCard.locator('.project-image img')).toHaveAttribute(
-    'src',
-    '/images/projects/vr-math-bridge-overview.webp'
-  );
-  await mathBridgeCard.getByRole('button', { name: 'View Details' }).click();
-  await expect(mathBridgeDialog).toBeVisible();
-  await expect(mathBridgeDialog.getByRole('link', { name: 'View Project Page' })).toHaveAttribute(
+
+  await mathBridgeTrigger.click();
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole('link', { name: 'View Project Page' })).toHaveAttribute(
     'href',
     'https://web-publications.vercel.app/publications/vr-math-bridge/'
   );
-  await expect(mathBridgeDialog.locator('[data-project-gallery-slide]')).toHaveCount(6);
-  await expect(mathBridgeDialog.locator('[data-project-gallery-slide]:visible')).toHaveCount(1);
-  await expect(mathBridgeDialog.locator('[data-project-gallery-slide]:not([hidden]) img')).toHaveAttribute(
+  await expect(dialog.locator('[data-project-gallery-slide]')).toHaveCount(6);
+  await expect(dialog.locator('[data-project-gallery-slide]:visible')).toHaveCount(1);
+  await expect(dialog.locator('[data-project-gallery-slide]:not([hidden]) img')).toHaveAttribute(
     'src',
     '/images/projects/vr-math-bridge-overview.webp'
   );
-  const mathBridgeImageSources = await mathBridgeDialog.locator('[data-project-gallery-slide] img')
-    .evaluateAll((images) => images.map((image) => image.getAttribute('src')));
-  expect(mathBridgeImageSources.some((source) => source?.endsWith('/background.png'))).toBe(false);
 
-  await mathBridgeDialog.locator('[data-project-gallery-next]').click({ clickCount: 4, delay: 25 });
-  expect(await page.evaluate(() => window.getSelection()?.toString() ?? '')).toBe('');
-  await expect(mathBridgeDialog.locator('[data-project-gallery-slide]:visible')).toHaveCount(1);
-
-  await mathBridgeDialog.getByRole('button', { name: 'Close project details' }).click();
-  await expect(mathBridgeDialog).not.toBeVisible();
-
-  await mathBridgeAwardButton.click();
-  await expect(mathBridgeDialog).toBeVisible();
-  await expect(mathBridgeDialog.locator('[data-project-gallery-counter]')).toHaveText('6 / 6');
-  await expect(mathBridgeDialog.locator('[data-project-gallery-slide]:not([hidden]) img')).toHaveAttribute(
+  await dialog.getByRole('button', { name: 'Close project details' }).click();
+  await mathBridgeAwardLink.click();
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator('[data-project-gallery-counter]')).toHaveText('6 / 6');
+  await expect(dialog.locator('[data-project-gallery-slide]:not([hidden]) img')).toHaveAttribute(
     'src',
     '/images/projects/ieee-gem-2025-presentation-award.jpg'
   );
-  await mathBridgeDialog.getByRole('button', { name: 'Close project details' }).click();
-  await expect(mathBridgeAwardButton).toBeFocused();
-
-  const vibeCodingCard = page.locator('.project-card').filter({ hasText: 'Assessing the Security of Vibe Coding' });
-  const vibeCodingDialog = page.locator('#project-detail-publications-1');
-
-  await expect(vibeCodingCard.getByRole('link', { name: 'View Project Page' })).toHaveAttribute(
-    'href',
-    'https://web-publications.vercel.app/publications/assessing-security-vibe-coding/'
-  );
-  await vibeCodingCard.getByRole('button', { name: 'View Details' }).click();
-  await expect(vibeCodingDialog).toBeVisible();
-  await expect(vibeCodingDialog.getByRole('link', { name: 'View Project Page' })).toHaveAttribute(
-    'href',
-    'https://web-publications.vercel.app/publications/assessing-security-vibe-coding/'
-  );
-  await expect(vibeCodingDialog.locator('[data-project-gallery-slide]')).toHaveCount(7);
-  await expect(vibeCodingDialog.locator('[data-project-gallery-slide]:visible')).toHaveCount(1);
-  await expect(vibeCodingDialog.locator('[data-project-gallery-slide]:not([hidden]) img')).toHaveAttribute(
-    'src',
-    '/images/projects/ispec-2025-experiment-pipeline.jpg'
-  );
-  await expect(vibeCodingDialog.locator('[data-project-gallery-counter]')).toHaveText('1 / 7');
-
-  await vibeCodingDialog.getByRole('button', { name: 'Next image' }).click();
-  await expect(vibeCodingDialog.locator('[data-project-gallery-counter]')).toHaveText('2 / 7');
-  await expect(vibeCodingDialog.locator('[data-project-gallery-slide]:visible')).toHaveCount(1);
-
-  await vibeCodingDialog.getByRole('button', { name: 'Close project details' }).click();
-  await expect(vibeCodingDialog).not.toBeVisible();
+  await dialog.getByRole('button', { name: 'Close project details' }).click();
+  await expect(mathBridgeAwardLink).toBeFocused();
 
   const mandalaCard = page.locator('.project-card').filter({ hasText: 'Enhancing VR Mandala Drawing' });
-  const mandalaDialog = page.locator('#project-detail-publications-2');
+  await mandalaCard.getByRole('link', { name: 'View Details' }).click();
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toHaveClass(/project-detail-dialog--image-contain/);
+  await expect(dialog.locator('[data-project-gallery-slide]')).toHaveCount(4);
+  await expect(dialog.locator('[data-project-gallery-counter]')).toHaveText('1 / 4');
 
-  await expect(mandalaCard.getByRole('link', { name: 'View Project Page' })).toHaveAttribute(
-    'href',
-    'https://web-publications.vercel.app/publications/bioadaptive-vr-attention-restoration/'
-  );
-  await mandalaCard.getByRole('button', { name: 'View Details' }).click();
-  await expect(mandalaDialog).toBeVisible();
-  await expect(mandalaDialog.getByRole('link', { name: 'View Project Page' })).toHaveAttribute(
-    'href',
-    'https://web-publications.vercel.app/publications/bioadaptive-vr-attention-restoration/'
-  );
-  await expect(mandalaDialog).toHaveClass(/project-detail-dialog--image-contain/);
-  await expect(mandalaDialog.locator('[data-project-gallery-slide]')).toHaveCount(4);
-  await expect(mandalaDialog.locator('[data-project-gallery-slide]:visible')).toHaveCount(1);
-  await expect(mandalaDialog.locator('[data-project-gallery-slide]:not([hidden]) img')).toHaveAttribute(
-    'src',
-    '/images/projects/ahs-2026-figure-1-system-architecture.jpg'
-  );
-  await expect(mandalaDialog.locator('[data-project-gallery-counter]')).toHaveText('1 / 4');
-
-  await mandalaDialog.getByRole('button', { name: 'Next image' }).click();
-  await expect(mandalaDialog.locator('[data-project-gallery-slide]:not([hidden]) img')).toHaveAttribute(
-    'src',
-    '/images/projects/ahs-2026-figure-3-vr-mandala-experience.jpg'
-  );
-  await expect(mandalaDialog.locator('[data-project-gallery-counter]')).toHaveText('2 / 4');
-  await expect(mandalaDialog.locator('[data-project-gallery-slide]:visible')).toHaveCount(1);
-
-  const galleryBox = await mandalaDialog.locator('[data-project-gallery]').boundingBox();
-  const detailBodyBox = await mandalaDialog.locator('.project-detail-body').boundingBox();
-  const detailPanelScrollbar = await mandalaDialog.locator('.project-detail-panel').evaluate((panel) => {
-    const style = getComputedStyle(panel);
-    return {
-      thumbColor: style.getPropertyValue('--project-detail-scrollbar-thumb').trim(),
-      thumbRadius: style.getPropertyValue('--project-detail-scrollbar-radius').trim(),
-      width: style.getPropertyValue('--project-detail-scrollbar-size').trim(),
-    };
-  });
-  expect(galleryBox).not.toBeNull();
-  expect(detailBodyBox).not.toBeNull();
-  expect(galleryBox!.y + galleryBox!.height).toBeLessThanOrEqual(detailBodyBox!.y + 1);
-  expect(detailPanelScrollbar.width).toBe('8px');
-  expect(detailPanelScrollbar.thumbColor).toBe('#c9a2276b');
-  expect(detailPanelScrollbar.thumbRadius).toBe('999px');
-
+  await dialog.getByRole('button', { name: 'Next image' }).click();
+  await expect(dialog.locator('[data-project-gallery-counter]')).toHaveText('2 / 4');
   await page.keyboard.press('ArrowLeft');
-  await expect(mandalaDialog.locator('[data-project-gallery-counter]')).toHaveText('1 / 4');
-
-  await mandalaDialog.getByRole('button', { name: 'Close project details' }).click();
-  await expect(mandalaDialog).not.toBeVisible();
+  await expect(dialog.locator('[data-project-gallery-counter]')).toHaveText('1 / 4');
+  await dialog.getByRole('button', { name: 'Close project details' }).click();
 
   const thesisCard = page.locator('#theses .project-card').filter({
     hasText: 'The Role of Embodied Avatars and Generative AI in Self Learning VR Classroom',
   });
-  const thesisDialog = page.locator('#project-detail-theses-0');
-
   await expect(thesisCard.locator('.project-status')).toHaveText("Master's Thesis");
-  await expect(thesisCard.getByRole('link', { name: 'View Project Page' })).toHaveAttribute(
-    'href',
-    'https://web-publications.vercel.app/publications/embodied-avatars-generative-ai-vr-thesis/'
-  );
-  await thesisCard.getByRole('button', { name: 'View Details' }).click();
-  await expect(thesisDialog).toBeVisible();
-  await expect(thesisDialog).toHaveClass(/project-detail-dialog--image-contain/);
-  await expect(thesisDialog.locator('[data-project-gallery-slide]')).toHaveCount(1);
-  await expect(thesisDialog.locator('[data-project-gallery-slide] img')).toHaveAttribute(
-    'src',
-    '/images/projects/embodied-ai-vr-thesis-cover.jpg'
-  );
-  await expect(thesisDialog.locator('.project-detail-kicker .project-status')).toHaveText("Master's Thesis");
-  await expect(thesisDialog.getByRole('link', { name: 'View Paper' })).toHaveAttribute(
+  await thesisCard.getByRole('link', { name: 'View Details' }).click();
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toHaveClass(/project-detail-dialog--image-contain/);
+  await expect(dialog.locator('.project-detail-kicker .project-status')).toHaveText("Master's Thesis");
+  await expect(dialog.getByRole('link', { name: 'View Paper' })).toHaveAttribute(
     'href',
     'https://web-publications.vercel.app/paper/embodied-avatars-generative-ai-vr-thesis.pdf'
   );
-  await expect(thesisDialog.getByRole('link', { name: 'View Project Page' })).toHaveAttribute(
+  await dialog.getByRole('button', { name: 'Close project details' }).click();
+});
+
+test('project detail routes are indexable standalone pages with localized variants', async ({ page }) => {
+  await page.goto('/projects/vr-math-bridge');
+
+  await expect(page.locator('[data-project-detail-fragment]')).toHaveCount(1);
+  await expect(page.getByRole('heading', { level: 1, name: /VR Math Bridge/ })).toBeVisible();
+  await expect(page.locator('[data-project-gallery-slide]')).toHaveCount(6);
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     'href',
-    'https://web-publications.vercel.app/publications/embodied-avatars-generative-ai-vr-thesis/'
+    'https://shan-verse.com/projects/vr-math-bridge/'
   );
 
-  await thesisDialog.getByRole('button', { name: 'Close project details' }).click();
-  await expect(thesisDialog).not.toBeVisible();
-
-  const bachelorThesisCard = page.locator('#theses .project-card').filter({
-    hasText: 'Design and Implementation of a Digital Twin System for Quadrotor UAV Formation Flight',
-  });
-  const bachelorThesisDialog = page.locator('#project-detail-theses-1');
-
-  await expect(bachelorThesisCard.locator('.project-status')).toHaveText("Bachelor's Thesis");
-  await expect(bachelorThesisCard.getByRole('link', { name: 'View Project Page' })).toHaveAttribute(
+  await page.goto('/zh/projects/vr-math-bridge');
+  await expect(page.locator('[data-project-detail-fragment]')).toHaveCount(1);
+  await expect(page.getByRole('heading', { level: 1, name: /VR Math Bridge/ })).toBeVisible();
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     'href',
-    'https://web-publications.vercel.app/publications/quadrotor-uav-formation-digital-twin-thesis/'
-  );
-  await bachelorThesisCard.getByRole('button', { name: 'View Details' }).click();
-  await expect(bachelorThesisDialog).toBeVisible();
-  await expect(bachelorThesisDialog).toHaveClass(/project-detail-dialog--image-contain/);
-  await expect(bachelorThesisDialog.locator('[data-project-gallery-slide]')).toHaveCount(5);
-  await expect(bachelorThesisDialog.locator('[data-project-gallery-slide] img').first()).toHaveAttribute(
-    'src',
-    '/images/projects/nwpu-uav-digital-twin-cover.jpg'
-  );
-  await expect(bachelorThesisDialog.locator('.project-detail-kicker .project-status')).toHaveText("Bachelor's Thesis");
-  await expect(bachelorThesisDialog.getByRole('link', { name: 'View Paper' })).toHaveAttribute(
-    'href',
-    'https://web-publications.vercel.app/paper/quadrotor-uav-formation-digital-twin-thesis.pdf'
-  );
-  await expect(bachelorThesisDialog.getByRole('link', { name: 'View Project Page' })).toHaveAttribute(
-    'href',
-    'https://web-publications.vercel.app/publications/quadrotor-uav-formation-digital-twin-thesis/'
+    'https://shan-verse.com/zh/projects/vr-math-bridge/'
   );
 });

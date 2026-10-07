@@ -13,7 +13,7 @@ import {
   getPlainTextExcerpt,
   sortBlogPosts,
 } from '../utils/blog';
-import { getProjectStatus } from '../utils/projects';
+import { getProjectPath, getProjectRecord, getProjectStatus } from '../utils/projects';
 
 export const prerender = true;
 
@@ -50,6 +50,7 @@ function getProjectEntries(locale: Locale): CliIndexEntry[] {
 
     return category.items.map((project, index) => {
       const title = localizeString(project.title, locale);
+      const record = getProjectRecord(category.id, index);
       const tags = compactStrings([
         categoryTitle,
         getProjectStatus(project, category),
@@ -61,7 +62,7 @@ function getProjectEntries(locale: Locale): CliIndexEntry[] {
         type: 'project',
         title,
         description: localizeString(project.description, locale),
-        url: `${localizePath('/projects', locale)}#${category.id}`,
+        url: getProjectPath(record, locale),
         tags,
         source: categoryTitle,
       };

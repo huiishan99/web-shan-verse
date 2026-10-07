@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { projectCategories } from '../src/data/projects.ts';
-import { getProjectStatus } from '../src/utils/projects.ts';
+import { getProjectPath, getProjectStatus, projectRecords } from '../src/utils/projects.ts';
 
 const repositoryRoot = fileURLToPath(new URL('../', import.meta.url));
 
@@ -63,6 +63,21 @@ test('Spotify Furigana is published as a localized live project with real media'
   assert.equal(typeof spotifyProject.description.zh, 'string');
   assert.equal(typeof spotifyProject.description.ja, 'string');
   assert.equal(spotifyProject.detailImages.length, 2);
+});
+
+test('project detail slugs are explicit, unique, and localized into stable routes', () => {
+  const slugs = projectRecords.map(({ project: item, slug }) => {
+    assert.equal(item.slug, slug);
+    return slug;
+  });
+
+  assert.equal(new Set(slugs).size, projectRecords.length);
+
+  const mathBridge = projectRecords.find(({ slug }) => slug === 'vr-math-bridge');
+  assert.ok(mathBridge);
+  assert.equal(getProjectPath(mathBridge, 'en'), '/projects/vr-math-bridge');
+  assert.equal(getProjectPath(mathBridge, 'zh'), '/zh/projects/vr-math-bridge');
+  assert.equal(getProjectPath(mathBridge, 'ja'), '/ja/projects/vr-math-bridge');
 });
 
 test('every local project media reference resolves to a public asset', () => {

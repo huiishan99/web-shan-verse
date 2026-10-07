@@ -1,0 +1,19 @@
+---
+import ProjectDetailPage from '../../../components/pages/ProjectDetailPage.astro';
+import type { Locale } from '../../../i18n/config';
+import { getLocalizedProjectStaticPaths, type ProjectRecord } from '../../../utils/projects';
+
+export function getStaticPaths() {
+  return getLocalizedProjectStaticPaths();
+}
+
+interface Props {
+  record: ProjectRecord;
+  lang: Locale;
+  alternateLocales: Locale[];
+}
+
+const { record, lang, alternateLocales } = Astro.props;
+---
+
+<ProjectDetailPage record={record} lang={lang} alternateLocales={alternateLocales} />

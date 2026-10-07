@@ -17,6 +17,7 @@ export interface ProjectAward {
 }
 
 export interface ProjectItem {
+    slug?: string;            // 稳定详情页 URL；不设置时根据英文标题生成
     title: LocalizedString;
     description: LocalizedString;
     details?: LocalizedString;
@@ -70,6 +71,7 @@ export const projectCategories: ProjectCategory[] = [
         icon: "vr",
         items: [
             {
+                slug: "vr-car-scene-prototype",
                 title: "VR Car Scene Prototype",
                 description: {
                     en: "Unity VR car-scene prototype built during my ALPS ALPINE internship for Meta Quest testing.",
@@ -85,6 +87,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["Unity", "VR", "Meta Quest"]
             },
             {
+                slug: "ar-image-tracking",
                 title: "AR Image tracking",
                 description: {
                     en: "Unity AR image-tracking practice project that places and controls 3D dragon assets in an AR scene.",
@@ -95,6 +98,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["Unity", "C#", "AR Foundation"]
             },
             {
+                slug: "mamba-project",
                 title: "Mamba Project",
                 description: {
                     en: "University of Aizu CFS03 Unity VR project using an Oculus/XR scene and human anatomy model assets.",
@@ -105,6 +109,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["Unity", "C#", "VR", "Oculus"]
             },
             {
+                slug: "master-project",
                 title: "Master Project",
                 description: {
                     en: "Unity VR classroom research prototype with an embodied avatar, speech services, and a Python backend.",
@@ -122,6 +127,7 @@ export const projectCategories: ProjectCategory[] = [
         icon: "cube",
         items: [
             {
+                slug: "solar-system",
                 title: "Solar System",
                 description: {
                     en: "Unity practice scene simulating the rotation and revolution of the Sun, Earth, and Moon.",
@@ -132,6 +138,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["Unity", "C#", "3D"]
             },
             {
+                slug: "2d-platformer",
                 title: "2D Platformer",
                 description: {
                     en: "Unity 2D platformer practice project; the repository is not currently public.",
@@ -142,6 +149,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["Unity", "C#", "2D"]
             },
             {
+                slug: "2d-shooter-game",
                 title: "2D Shooter Game",
                 description: {
                     en: "Unity 2D spaceship shooter with enemies, projectiles, level scenes, score UI, and menu flow.",
@@ -184,6 +192,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["Unity", "C#", "2D", "Game UI"]
             },
             {
+                slug: "kitchen-chaos",
                 title: "Kitchen Chaos",
                 description: {
                     en: "Overcooked-style Unity cooking practice project with counters, ingredients, cutting recipes, and player input.",
@@ -201,6 +210,7 @@ export const projectCategories: ProjectCategory[] = [
         icon: "globe",
         items: [
             {
+                slug: "shan-verse",
                 title: "SHAN-VERSE",
                 description: {
                     en: "My personal portfolio and blog built with Astro, MDX, custom styling, sitemap, and project data tooling.",
@@ -223,6 +233,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["Astro", "MDX", "TypeScript", "CSS"]
             },
             {
+                slug: "furigana-for-spotify",
                 title: "Furigana for Spotify",
                 description: {
                     en: "Local-first Spicetify extension that adds hiragana, katakana, or romaji readings to Japanese Spotify lyrics.",
@@ -270,6 +281,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["TypeScript", "Spicetify", "Spotify Desktop", "Windows", "macOS"]
             },
             {
+                slug: "notion-next-chinese-blog",
                 title: "Notion Next Chinese Blog",
                 description: {
                     en: "Forked NotionNext deployment for a Notion-powered blog using Next.js and the Notion API.",
@@ -281,6 +293,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["Next.js", "Notion API", "JavaScript"]
             },
             {
+                slug: "math-note",
                 title: "Math-Note",
                 description: {
                     en: "AI math canvas app with a React/Vite frontend and FastAPI backend that sends drawn equations to Gemini.",
@@ -309,6 +322,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["React", "Vite", "TypeScript", "FastAPI", "Gemini"]
             },
             {
+                slug: "yumemi-test",
                 title: "Yumemi Test",
                 description: {
                     en: "Yumemi frontend test SPA that visualizes Japanese prefecture population trends with charts and filters.",
@@ -320,6 +334,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["React", "Vite", "TypeScript", "Highcharts", "Vitest"]
             },
             {
+                slug: "weather-app",
                 title: "Weather App",
                 description: {
                     en: "Static weather lookup app using OpenWeather data, city search, and weather-specific UI illustrations.",
@@ -348,6 +363,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["HTML", "CSS", "JavaScript", "OpenWeather API"]
             },
             {
+                slug: "falling-sand",
                 title: "Falling Sand",
                 description: {
                     en: "Interactive falling-sand sandbox with p5-style rendering, material rules, draggable controls, and pause/step tools.",
@@ -376,6 +392,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["JavaScript", "p5.js", "Vite"]
             },
             {
+                slug: "dark-light-toggle",
                 title: "Dark Light Toggle",
                 description: {
                     en: "Small HTML, CSS, and JavaScript UI experiment for an animated dark/light mode toggle.",
@@ -404,6 +421,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["HTML", "CSS", "JavaScript"]
             },
             {
+                slug: "dreamlight",
                 title: "DreamLight",
                 description: {
                     en: "Static promotional site for a BitSummit 2024 light-show and drone game concept.",
@@ -432,6 +450,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["HTML", "SCSS", "JavaScript"]
             },
             {
+                slug: "hexo-page",
                 title: "Hexo Page",
                 description: {
                     en: "Hexo blog deployment experiment on Vercel for testing static blog generation and theme structure.",
@@ -443,6 +462,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["Hexo", "JavaScript"]
             },
             {
+                slug: "notion-resume",
                 title: "Notion Resume",
                 description: {
                     en: "Minimal Notion-based personal page and resume hub linking to my public Notion home.",
@@ -454,6 +474,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["Notion", "CV"]
             },
             {
+                slug: "silver-game",
                 title: "Silver Game",
                 description: {
                     en: "Hackathon frontend for an elderly-focused social platform with realtime multimodal emotion analysis.",
@@ -482,6 +503,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["Next.js", "React", "TypeScript", "FastAPI", "PyTorch"]
             },
             {
+                slug: "ai-imageforge",
                 title: "AI-ImageForge",
                 description: {
                     en: "Streamlit AI image-generation app with Hugging Face models, style prompts, and GPU detection.",
@@ -499,6 +521,7 @@ export const projectCategories: ProjectCategory[] = [
         icon: "graduation",
         items: [
             {
+                slug: "embodied-avatars-generative-ai-vr-classroom-coursework",
                 title: "The Role of Embodied Avatars and Generative AI in Self Learning VR Classroom",
                 description: {
                     en: "Unity 2022.3 master's thesis project with VR classroom scenes, Convai avatar components, speech services, and a Python backend.",
@@ -510,6 +533,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["Master's Thesis", "Unity", "C#", "Python", "VR"]
             },
             {
+                slug: "human-activity-pattern-processing",
                 title: "Human Activity Pattern Processing",
                 description: {
                     en: "University of Aizu ITA09 coursework with Python scripts and Jupyter notebooks for activity-pattern processing.",
@@ -520,6 +544,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["Python", "Jupyter Notebook", "Machine Learning"]
             },
             {
+                slug: "advanced-robotics",
                 title: "Advanced Robotics",
                 description: {
                     en: "University of Aizu ITC03A Advanced Robotics coursework implemented mainly with MATLAB scripts.",
@@ -530,6 +555,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["MATLAB", "Robotics"]
             },
             {
+                slug: "biosignal-processing-and-data-mining",
                 title: "Biosignal Processing and Data Mining",
                 description: {
                     en: "University of Aizu ITA25 coursework with MATLAB assignments for biosignal processing and data mining.",
@@ -540,6 +566,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["MATLAB", "Biosignal Processing", "Data Mining"]
             },
             {
+                slug: "applied-statistics",
                 title: "Applied Statistics",
                 description: {
                     en: "University of Aizu CSC03F applied statistics coursework notes and assignment records.",
@@ -550,6 +577,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["Statistics", "Coursework"]
             },
             {
+                slug: "software-engineering",
                 title: "Software Engineering",
                 description: {
                     en: "University of Aizu SEC01F software engineering coursework notes and assignment records.",
@@ -567,6 +595,7 @@ export const projectCategories: ProjectCategory[] = [
         icon: "folder",
         items: [
             {
+                slug: "tetris-clone",
                 title: "Tetris Clone",
                 description: {
                     en: "Native Windows C++ Tetris clone with scoring, hold piece, ghost preview, levels, and best-score tracking.",
@@ -577,6 +606,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["C++", "Win32", "Game Dev"]
             },
             {
+                slug: "opengl-practice",
                 title: "OpenGL Practice",
                 description: {
                     en: "OpenGL learning project covering windows, triangles, buffers, shaders, textures, and basic 3D rendering.",
@@ -587,6 +617,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["C++", "OpenGL", "GLFW"]
             },
             {
+                slug: "c-exercises",
                 title: "C# Exercises",
                 description: {
                     en: "Collection of C#/.NET practice projects, including console, WPF, MVC, and Azure-style samples.",
@@ -597,6 +628,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["C#", ".NET", "WPF"]
             },
             {
+                slug: "c-snake-game",
                 title: "C# Snake Game",
                 description: {
                     en: "Classic Windows C# Snake game with keyboard controls and a simple desktop executable.",
@@ -607,6 +639,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["C#", ".NET Framework", "WinForms"]
             },
             {
+                slug: "beecrowd-practice",
                 title: "Beecrowd Practice",
                 description: {
                     en: "C# solutions archive for Beecrowd online judge problems, organized by problem number.",
@@ -617,6 +650,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["C#", ".NET", "OJ"]
             },
             {
+                slug: "pta-practice",
                 title: "PTA Practice",
                 description: {
                     en: "PTA online judge practice record; the repository is not currently public.",
@@ -627,6 +661,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["C#", "OJ"]
             },
             {
+                slug: "paiza-practice",
                 title: "Paiza Practice",
                 description: {
                     en: "Paiza online judge practice record; the repository is not currently public.",
@@ -637,6 +672,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["C#", "OJ"]
             },
             {
+                slug: "rockfall-game",
                 title: "Rockfall Game",
                 description: {
                     en: "Pygame avoidance game with data collection, Random Forest training, and AI-controlled play mode.",
@@ -647,6 +683,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["Python", "Pygame", "scikit-learn"]
             },
             {
+                slug: "go-11-projects",
                 title: "Go 11 Projects",
                 description: {
                     en: "Go learning repo following a project-based course, including a web server, CRUD API, MySQL app, and Slack bots.",
@@ -664,6 +701,7 @@ export const projectCategories: ProjectCategory[] = [
         icon: "publication",
         items: [
             {
+                slug: "confidence-gated-nids-stress-test",
                 title: "Cost-Aware Confidence-Gated Two-Stage Network Intrusion Detection under a Cross-File Cross-Class Stress Test",
                 authors: {
                     en: "Jiaming Zhang, Huishan Lai, Runtong He, Jingxue Chen, Chunhua Su",
@@ -684,6 +722,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["Network Intrusion Detection", "Distribution Shift", "Confidence Gating", "LLM Audit", "ICICS 2026"]
             },
             {
+                slug: "efficient-ai-for-network-security",
                 title: {
                     en: "Efficient AI for Network Security",
                     zh: "面向网络安全的高效 AI 研究",
@@ -703,6 +742,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["Network Security", "Machine Learning", "Efficient AI"]
             },
             {
+                slug: "robust-evaluation-for-multimodal-machine-learning",
                 title: {
                     en: "Robust Evaluation for Multimodal Machine Learning",
                     zh: "多模态机器学习的稳健评估研究",
@@ -722,6 +762,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["Multimodal Learning", "Model Evaluation", "Reliable AI"]
             },
             {
+                slug: "human-centered-xr-interaction-research",
                 title: {
                     en: "Human-Centered XR Interaction Research",
                     zh: "人本 XR 交互研究",
@@ -741,6 +782,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["Human-Computer Interaction", "Extended Reality", "Immersive Systems"]
             },
             {
+                slug: "interactive-world-models-research",
                 title: {
                     en: "Interactive World Models Research",
                     zh: "交互式世界模型研究",
@@ -755,6 +797,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["World Models", "Embodied AI", "Interactive Systems"]
             },
             {
+                slug: "brain-computer-interface-research",
                 title: {
                     en: "Brain–Computer Interface Research",
                     zh: "脑机接口研究",
@@ -769,6 +812,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["Brain–Computer Interface", "Human-Computer Interaction", "Collaborative Research"]
             },
             {
+                slug: "privacy-preserving-analytics-research",
                 title: {
                     en: "Privacy-Preserving Analytics Research",
                     zh: "隐私保护分析研究",
@@ -783,6 +827,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["Applied Cryptography", "Privacy-Preserving Analytics", "Research Collaboration"]
             },
             {
+                slug: "resilient-wireless-systems-research",
                 title: {
                     en: "Resilient Wireless Systems Research",
                     zh: "韧性无线系统研究",
@@ -804,6 +849,7 @@ export const projectCategories: ProjectCategory[] = [
         icon: "publication",
         items: [
             {
+                slug: "vr-math-bridge",
                 title: "VR Math Bridge: Bridging Interactivity in Online Education with AI and VR",
                 authors: {
                     en: "HuiShan Lai, Alaeddin Nassani, John Blake, Julián Villegas",
@@ -922,6 +968,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["AI-driven Education", "Virtual Reality", "Embodied Avatar","IEEE GEM 2025"]
             },
             {
+                slug: "vibe-coding-security",
                 title: "Assessing the Security of Vibe Coding: Baseline vs. Security-Oriented Prompts in LLM Code Generation",
                 authors: {
                     en: "Runtong He, Huishan Lai, Jingxue Chen, Chunhua Su",
@@ -1044,6 +1091,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["Large Language Models","Software Security","Vibe Coding","ISPEC 2025"]
             },
             {
+                slug: "bioadaptive-vr-attention-restoration",
                 title: "Enhancing VR Mandala Drawing and Natural Immersion for Attention Restoration with AI-Driven Bioadaptive Multimodal Interaction",
                 authors: {
                     en: "Tiantian Geng, Huishan Lai, Lei Jing",
@@ -1130,6 +1178,7 @@ export const projectCategories: ProjectCategory[] = [
         icon: "graduation",
         items: [
             {
+                slug: "embodied-avatars-generative-ai-vr-thesis",
                 title: "The Role of Embodied Avatars and Generative AI in Self Learning VR Classroom",
                 authors: {
                     en: "HuiShan Lai",
@@ -1165,6 +1214,7 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["Virtual Reality", "Generative AI", "Embodied Avatar"]
             },
             {
+                slug: "quadrotor-uav-digital-twin-thesis",
                 title: {
                     en: "Design and Implementation of a Digital Twin System for Quadrotor UAV Formation Flight",
                     zh: "四旋翼无人机编队飞行数字孪生系统的设计与实现",

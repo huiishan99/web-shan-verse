@@ -1,17 +1,24 @@
 const projectDialogOpeners = new WeakMap();
+const projectDetailCache = new Map();
+const galleryControllers = new WeakMap();
 
-function setupProjectGallery(dialog) {
-  const gallery = dialog.querySelector('[data-project-gallery]');
+function setupProjectGallery(root) {
+  const gallery = root.querySelector('[data-project-gallery]');
 
-  if (!(gallery instanceof HTMLElement) || gallery.dataset.projectGalleryBound === 'true') {
-    return;
+  if (!(gallery instanceof HTMLElement)) {
+    return null;
+  }
+
+  const existingController = galleryControllers.get(gallery);
+  if (existingController) {
+    return existingController;
   }
 
   const slides = Array.from(gallery.querySelectorAll('[data-project-gallery-slide]'))
     .filter((slide) => slide instanceof HTMLElement);
 
   if (slides.length === 0) {
-    return;
+    return null;
   }
 
   const previousButton = gallery.querySelector('[data-project-gallery-prev]');
@@ -37,23 +44,12 @@ function setupProjectGallery(dialog) {
     }
   };
 
-  dialog.addEventListener('project-gallery:show', (event) => {
-    const requestedIndex = Number(event.detail?.index);
-    if (Number.isInteger(requestedIndex)) {
-      showSlide(requestedIndex);
-    }
-  });
-
-  dialog.querySelectorAll('[data-project-gallery-show]').forEach((button) => {
-    if (!(button instanceof HTMLButtonElement)) {
-      return;
-    }
+  root.querySelectorAll('[data-project-gallery-show]').forEach((button) => {
+    if (!(button instanceof HTMLButtonElement)) return;
 
     button.addEventListener('click', () => {
       const requestedIndex = Number(button.dataset.projectGalleryShow);
-      if (!Number.isInteger(requestedIndex)) {
-        return;
-      }
+      if (!Number.isInteger(requestedIndex)) return;
 
       showSlide(requestedIndex);
       gallery.scrollIntoView({ block: 'start', behavior: 'smooth' });
@@ -77,7 +73,7 @@ function setupProjectGallery(dialog) {
     });
   });
 
-  dialog.addEventListener('keydown', (event) => {
+  root.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowLeft') {
       event.preventDefault();
       showSlide(currentIndex - 1);
@@ -89,53 +85,140 @@ function setupProjectGallery(dialog) {
     }
   });
 
-  gallery.dataset.projectGalleryBound = 'true';
+  const controller = { showSlide };
+  galleryControllers.set(gallery, controller);
   showSlide(0);
+  return controller;
 }
 
-function setupProjectDetails() {
-  document.querySelectorAll('[data-project-dialog-open]').forEach((trigger) => {
-    if (!(trigger instanceof HTMLButtonElement) || trigger.dataset.projectDialogBound === 'true') {
-      return;
+async function loadProjectDetail(href) {
+  const url = new URL(href, window.location.href);
+  url.hash = '';
+  const cacheKey = url.toString();
+
+  if (projectDetailCache.has(cacheKey)) {
+    return projectDetailCache.get(cacheKey);
+  }
+
+  const request = fetch(cacheKey, {
+    headers: {
+      'X-Shan-Project-Detail': 'dialog',
+    },
+  }).then(async (response) => {
+    if (!response.ok) {
+      throw new Error(`Project detail request failed: ${response.status}`);
     }
 
-    const dialogId = trigger.dataset.projectDialogOpen;
-    const dialog = dialogId ? document.getElementById(dialogId) : null;
+    const html = await response.text();
+    const documentFragment = new DOMParser().parseFromString(html, 'text/html');
+    const detailFragment = documentFragment.querySelector('[data-project-detail-fragment]');
 
-    if (!(dialog instanceof HTMLDialogElement)) {
-      return;
+    if (!(detailFragment instanceof HTMLElement)) {
+      throw new Error('Project detail fragment was not found.');
     }
 
-    setupProjectGallery(dialog);
-    trigger.dataset.projectDialogBound = 'true';
+    return {
+      html: detailFragment.innerHTML,
+      dialogClasses: detailFragment.dataset.projectDialogClasses || '',
+    };
+  }).catch((error) => {
+    projectDetailCache.delete(cacheKey);
+    throw error;
+  });
 
-    trigger.addEventListener('click', () => {
-      const requestedIndex = Number(trigger.dataset.projectGalleryStart ?? 0);
-      dialog.dispatchEvent(new CustomEvent('project-gallery:show', {
-        detail: { index: Number.isInteger(requestedIndex) ? requestedIndex : 0 },
-      }));
-      projectDialogOpeners.set(dialog, trigger);
+  projectDetailCache.set(cacheKey, request);
+  return request;
+}
 
-      if (!dialog.open) {
-        dialog.showModal();
+function setupStandaloneProjectDetails() {
+  document.querySelectorAll('[data-project-detail-fragment]').forEach((fragment) => {
+    if (fragment instanceof HTMLElement) {
+      setupProjectGallery(fragment);
+    }
+  });
+}
+
+function setupProjectDialog() {
+  const dialog = document.querySelector('[data-project-detail-dialog]');
+  if (!(dialog instanceof HTMLDialogElement)) return;
+
+  const contentHost = dialog.querySelector('[data-project-dialog-content]');
+  if (!(contentHost instanceof HTMLElement)) return;
+
+  if (dialog.dataset.projectDialogBound !== 'true') {
+    dialog.dataset.projectDialogBound = 'true';
+
+    const closeButton = dialog.querySelector('[data-project-dialog-close]');
+    if (closeButton instanceof HTMLButtonElement) {
+      closeButton.addEventListener('click', () => dialog.close());
+    }
+
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) {
+        dialog.close();
       }
     });
 
-    if (dialog.dataset.projectDialogBound !== 'true') {
-      dialog.dataset.projectDialogBound = 'true';
-      const closeButton = dialog.querySelector('[data-project-dialog-close]');
-      if (closeButton instanceof HTMLButtonElement) {
-        closeButton.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('close', () => {
+      projectDialogOpeners.get(dialog)?.focus();
+    });
+  }
+
+  document.querySelectorAll('[data-project-detail-link]').forEach((link) => {
+    if (!(link instanceof HTMLAnchorElement) || link.dataset.projectDetailBound === 'true') {
+      return;
+    }
+
+    link.dataset.projectDetailBound = 'true';
+
+    link.addEventListener('click', async (event) => {
+      if (
+        event.defaultPrevented
+        || event.button !== 0
+        || event.metaKey
+        || event.ctrlKey
+        || event.shiftKey
+        || event.altKey
+      ) {
+        return;
       }
 
-      dialog.addEventListener('click', (event) => {
-        if (event.target === dialog) {
-          dialog.close();
+      event.preventDefault();
+      link.setAttribute('aria-busy', 'true');
+
+      try {
+        const detail = await loadProjectDetail(link.href);
+        contentHost.innerHTML = detail.html;
+
+        dialog.className = [
+          'project-detail-dialog',
+          detail.dialogClasses,
+        ].filter(Boolean).join(' ');
+
+        const gallery = setupProjectGallery(dialog);
+        const requestedIndex = Number(link.dataset.projectGalleryStart ?? 0);
+        if (gallery && Number.isInteger(requestedIndex)) {
+          gallery.showSlide(requestedIndex);
         }
-      });
-      dialog.addEventListener('close', () => projectDialogOpeners.get(dialog)?.focus());
-    }
+
+        projectDialogOpeners.set(dialog, link);
+
+        if (!dialog.open) {
+          dialog.showModal();
+        }
+      } catch (error) {
+        console.error(error);
+        window.location.assign(link.href);
+      } finally {
+        link.removeAttribute('aria-busy');
+      }
+    });
   });
+}
+
+function setupProjectDetails() {
+  setupStandaloneProjectDetails();
+  setupProjectDialog();
 }
 
 if (document.readyState === 'loading') {

@@ -1,0 +1,219 @@
+---
+import Icon from '../Icon.astro';
+import type { Locale } from '../../i18n/config';
+import { localizeString } from '../../i18n/config';
+import { useTranslations } from '../../i18n/ui';
+import { getProjectStatus, type ProjectRecord } from '../../utils/projects';
+
+interface Props {
+  record: ProjectRecord;
+  lang: Locale;
+}
+
+const { record, lang } = Astro.props;
+const { project, category, slug } = record;
+const t = useTranslations(lang);
+const status = getProjectStatus(project, category);
+const metaTuple = t.projects.status[status];
+const meta = {
+  label: metaTuple[0],
+  title: metaTuple[1],
+};
+
+const highlightedAuthorPattern = /(HuiShan Lai|Huishan Lai)/g;
+const highlightedAuthorNames = new Set(['HuiShan Lai', 'Huishan Lai']);
+
+function getAuthorParts(authors: string) {
+  return authors.split(highlightedAuthorPattern)
+    .filter(Boolean)
+    .map((text) => ({
+      text,
+      highlighted: highlightedAuthorNames.has(text),
+    }));
+}
+
+const legacyDetailImage = project.detailImage || project.image;
+const projectDetailImages = project.detailImages?.length
+  ? project.detailImages.map((image) => ({
+      src: image.src,
+      alt: localizeString(image.alt, lang),
+      caption: image.caption ? localizeString(image.caption, lang) : '',
+      fit: image.fit || 'cover',
+    }))
+  : legacyDetailImage
+    ? [{
+        src: legacyDetailImage,
+        alt: localizeString(project.detailImageAlt || project.title, lang),
+        caption: '',
+        fit: project.detailImageFit || 'cover',
+      }]
+    : [];
+
+const awardImageIndex = project.award ? projectDetailImages.length : -1;
+const detailImages = project.award
+  ? [...projectDetailImages, {
+      src: project.award.image,
+      alt: localizeString(project.award.alt, lang),
+      caption: project.award.caption
+        ? localizeString(project.award.caption, lang)
+        : localizeString(project.award.title, lang),
+      fit: 'contain' as const,
+    }]
+  : projectDetailImages;
+
+const hasDetailImages = detailImages.length > 0;
+const detailImageFit = detailImages.some((image) => image.fit === 'contain') ? 'contain' : 'cover';
+const detailDescription = localizeString(project.details || project.description, lang);
+const dialogClasses = [
+  hasDetailImages ? 'project-detail-dialog--with-image' : 'project-detail-dialog--text-only',
+  hasDetailImages ? `project-detail-dialog--image-${detailImageFit}` : '',
+  `project-card--${status}`,
+].filter(Boolean).join(' ');
+---
+
+<div
+  class={`project-detail-fragment project-card--${status}`}
+  data-project-detail-fragment
+  data-project-slug={slug}
+  data-project-dialog-classes={dialogClasses}
+>
+  <div class="project-detail-panel">
+    {hasDetailImages && (
+      <div
+        id="project-detail-gallery"
+        class={`project-detail-gallery project-detail-gallery--${detailImageFit}`}
+        aria-label={t.projects.galleryLabel}
+        data-project-gallery
+      >
+        {detailImages.map((image, imageIndex) => (
+          <figure
+            class={`project-detail-media project-detail-media--${image.fit}`}
+            data-project-gallery-slide
+            hidden={imageIndex !== 0}
+          >
+            <div class="project-detail-image-stage">
+              <img
+                src={image.src}
+                alt={image.alt}
+                loading={imageIndex === 0 ? 'eager' : 'lazy'}
+                decoding="async"
+              />
+            </div>
+            {image.caption && <figcaption>{image.caption}</figcaption>}
+          </figure>
+        ))}
+
+        {detailImages.length > 1 && (
+          <>
+            <button
+              type="button"
+              class="project-detail-gallery-nav project-detail-gallery-nav--previous"
+              aria-label={t.projects.previousImage}
+              data-project-gallery-prev
+            >
+              <Icon name="chevronLeft" size={17} />
+            </button>
+            <button
+              type="button"
+              class="project-detail-gallery-nav project-detail-gallery-nav--next"
+              aria-label={t.projects.nextImage}
+              data-project-gallery-next
+            >
+              <Icon name="chevronRight" size={17} />
+            </button>
+            <div class="project-detail-gallery-footer">
+              <span class="project-detail-gallery-counter" data-project-gallery-counter aria-live="polite">
+                1 / {detailImages.length}
+              </span>
+              <div class="project-detail-gallery-dots">
+                {detailImages.map((_, imageIndex) => (
+                  <button
+                    type="button"
+                    aria-label={`${t.projects.viewImage} ${imageIndex + 1}`}
+                    aria-current={imageIndex === 0 ? 'true' : 'false'}
+                    data-project-gallery-dot={imageIndex}
+                  />
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    )}
+
+    <div class="project-detail-body">
+      <div class="project-detail-kicker">
+        <span>{localizeString(category.title, lang)}</span>
+        <span class={`project-status project-status--${status}`} title={meta.title}>
+          {meta.label}
+        </span>
+      </div>
+
+      <h1 id="project-detail-title" class="project-detail-title">{localizeString(project.title, lang)}</h1>
+
+      {(project.authors || project.conference) && (
+        <div class="project-detail-publication-meta">
+          {project.authors && (
+            <p class="project-authors">
+              {getAuthorParts(localizeString(project.authors, lang)).map((part) => (
+                <span class:list={{ 'project-author--highlighted': part.highlighted }}>{part.text}</span>
+              ))}
+            </p>
+          )}
+          {project.conference && (
+            <p class="project-conference">{localizeString(project.conference, lang)}</p>
+          )}
+        </div>
+      )}
+
+      <p class="project-detail-description">{detailDescription}</p>
+
+      {project.tags && project.tags.length > 0 && (
+        <div class="project-tags project-detail-tags">
+          {project.tags.map((tag) => (
+            <span class="tag">{localizeString(tag, lang)}</span>
+          ))}
+        </div>
+      )}
+
+      {(project.github || project.paper || project.caseStudy || project.award || project.website) && (
+        <div class="project-detail-links" aria-label={t.projects.detailsLinks}>
+          {project.github && (
+            <a href={project.github} target="_blank" rel="noopener noreferrer" class="project-detail-link">
+              <Icon name="github" size={15} />
+              <span>{t.projects.sourceTitle}</span>
+            </a>
+          )}
+          {project.paper && (
+            <a href={project.paper} target="_blank" rel="noopener noreferrer" class="project-detail-link">
+              <Icon name="publication" size={15} />
+              <span>{t.projects.paperTitle}</span>
+            </a>
+          )}
+          {project.caseStudy && (
+            <a href={project.caseStudy} target="_blank" rel="noopener noreferrer" class="project-detail-link">
+              <Icon name="globe" size={15} />
+              <span>{t.projects.caseStudyTitle}</span>
+            </a>
+          )}
+          {project.award && (
+            <button
+              type="button"
+              class="project-detail-link project-detail-link--button"
+              data-project-gallery-show={awardImageIndex}
+            >
+              <Icon name="award" size={15} />
+              <span>{t.projects.awardTitle}</span>
+            </button>
+          )}
+          {project.website && (
+            <a href={project.website} target="_blank" rel="noopener noreferrer" class="project-detail-link">
+              <Icon name="externalLink" size={15} />
+              <span>{t.projects.siteTitle}</span>
+            </a>
+          )}
+        </div>
+      )}
+    </div>
+  </div>
+</div>
