@@ -1,5 +1,5 @@
 import type { CollectionEntry } from 'astro:content';
-import type { TimelineYear } from '../data/timeline';
+import type { TimelineEvent, TimelineYear } from '../data/timeline';
 import {
   localizePath,
   localizeString,
@@ -20,7 +20,7 @@ export type ActivitySignal = {
   date: Date;
   datetime: string;
   displayDate: string;
-  dateSource: 'blog date' | 'timeline year';
+  dateSource: 'blog date' | 'timeline month';
   href: string;
   title: string;
   type: 'blog' | 'activity' | 'milestone';
@@ -31,6 +31,22 @@ const dateLocale: Record<Locale, string> = {
   zh: 'zh-CN',
   ja: 'ja-JP',
 };
+
+const timelineMonthIndex: Record<string, number> = {
+  january: 0,
+  february: 1,
+  march: 2,
+  april: 3,
+  may: 4,
+  june: 5,
+  july: 6,
+  august: 7,
+  september: 8,
+  october: 9,
+  november: 10,
+  december: 11,
+};
+
 const activityLabelLocale = 'en-US';
 const activityTimeZone = 'Asia/Tokyo';
 export const activityWeekdayLabels = ['', 'Mon', '', 'Wed', '', 'Fri', ''];
@@ -53,6 +69,23 @@ function formatActivityDate(date: Date, lang: Locale): string {
   return date.toLocaleDateString(dateLocale[lang], {
     month: 'short',
     day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+}
+
+function getTimelineMonthAnchor(event: TimelineEvent, year: number): Date {
+  const monthName = localizeString(event.month, 'en').toLowerCase();
+  const monthIndex = timelineMonthIndex[monthName] ?? 0;
+
+  // Timeline only stores month-level precision. The first day is a rendering
+  // anchor for the daily signal grid, not the actual date of the event.
+  return new Date(Date.UTC(year, monthIndex, 1));
+}
+
+function formatTimelineMonth(event: TimelineEvent, year: number, lang: Locale): string {
+  return getTimelineMonthAnchor(event, year).toLocaleDateString(dateLocale[lang], {
+    month: 'short',
     year: 'numeric',
     timeZone: 'UTC',
   });
@@ -183,13 +216,13 @@ export function buildHomepageActivityModel({
 
   const timelineSignals: ActivitySignal[] = timelineData.flatMap((yearData) =>
     yearData.events.map((event) => {
-      const yearAnchor = new Date(Date.UTC(yearData.year, 0, 1));
+      const monthAnchor = getTimelineMonthAnchor(event, yearData.year);
 
       return {
-        date: yearAnchor,
-        datetime: String(yearData.year),
-        displayDate: String(yearData.year),
-        dateSource: 'timeline year' as const,
+        date: monthAnchor,
+        datetime: monthAnchor.toISOString().slice(0, 7),
+        displayDate: formatTimelineMonth(event, yearData.year, lang),
+        dateSource: 'timeline month' as const,
         href: localizePath('/timeline', lang),
         title: localizeString(event.title, lang),
         type: event.weight === 'major' ? 'milestone' as const : 'activity' as const,
