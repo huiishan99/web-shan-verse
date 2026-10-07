@@ -1,11 +1,12 @@
 // Timeline Data - 以后添加新事件只需编辑这个文件
-// 按年份倒序排列，每年的事件按展示顺序排列
+// 按年份倒序排列，每年的事件按月份倒序排列
 import type { LocalizedString } from '../i18n/config';
 
 export type TimelineEventWeight = 'major' | 'standard' | 'note';
 export type TimelineEventCategory = 'research' | 'career' | 'education' | 'life' | 'travel' | 'project' | 'award';
 
 export interface TimelineEvent {
+  month: LocalizedString;
   title: LocalizedString;
   description: LocalizedString;
   weight?: TimelineEventWeight;
@@ -23,6 +24,7 @@ export const timelineData: TimelineYear[] = [
     year: 2026,
     events: [
       {
+        month: { en: "August", zh: "八月", ja: "8月" },
         title: {
           en: "Obon Holiday Trip to Tokyo",
           zh: "盂兰盆假期东京旅行",
@@ -37,6 +39,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: { en: "July", zh: "七月", ja: "7月" },
         title: {
           en: "Marriage Registration at Iwaki City Hall",
           zh: "在磐城市役所登记结婚",
@@ -51,6 +54,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: { en: "May", zh: "五月", ja: "5月" },
         title: {
           en: "ICICS 2026 Short Paper Acceptance",
           zh: "ICICS 2026 短论文接收",
@@ -65,6 +69,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: { en: "May", zh: "五月", ja: "5月" },
         title: {
           en: "First Personal Car",
           zh: "人生第一辆自己的车",
@@ -79,6 +84,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: { en: "May", zh: "五月", ja: "5月" },
         title: {
           en: "Department BBQ on Company Softball Day",
           zh: "公司垒球大会同日的部门 BBQ",
@@ -93,6 +99,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: { en: "May", zh: "五月", ja: "5月" },
         title: {
           en: "Department Welcome Party",
           zh: "部门欢迎会",
@@ -107,6 +114,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: { en: "April", zh: "四月", ja: "4月" },
         title: {
           en: "First Day at Iwaki Development Center",
           zh: "磐城开发中心配属初日",
@@ -121,6 +129,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: { en: "April", zh: "四月", ja: "4月" },
         title: {
           en: "Return to Iwaki",
           zh: "回到磐城",
@@ -135,6 +144,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: { en: "April", zh: "四月", ja: "4月" },
         title: {
           en: "Tokyo Head Office Training Completion",
           zh: "东京本社研修结束",
@@ -149,6 +159,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: { en: "April", zh: "四月", ja: "4月" },
         title: {
           en: "Alps Alpine Tokyo Head Office Training",
           zh: "Alps Alpine 东京本社研修",
@@ -163,6 +174,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: { en: "March", zh: "三月", ja: "3月" },
         title: {
           en: "Tokyo Trip Before Training",
           zh: "研修前前往东京",
@@ -177,6 +189,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: { en: "March", zh: "三月", ja: "3月" },
         title: {
           en: "Japanese AT Driver's License",
           zh: "取得日本 AT 驾照",
@@ -191,6 +204,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: { en: "March", zh: "三月", ja: "3月" },
         title: {
           en: "Moved from Aizuwakamatsu to Iwaki",
           zh: "从会津若松搬到磐城",
@@ -205,6 +219,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: { en: "January", zh: "一月", ja: "1月" },
         title: {
           en: "Driving School Intensive Camp Completion",
           zh: "完成驾校集训",
@@ -219,6 +234,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: { en: "January", zh: "一月", ja: "1月" },
         title: {
           en: "AHs 2026 Paper Acceptance",
           zh: "AHs 2026 论文接收",
@@ -238,6 +254,7 @@ export const timelineData: TimelineYear[] = [
     year: 2025,
     events: [
       {
+        month: { en: "December", zh: "十二月", ja: "12月" },
         title: { en: "Return to Japan after Travel", zh: "旅行后返回日本", ja: "旅行後に日本へ帰国" },
         weight: "standard",
         category: "travel",
@@ -249,6 +266,7 @@ export const timelineData: TimelineYear[] = [
       }
       ,
       {
+        month: { en: "October", zh: "十月", ja: "10月" },
         title: { en: "Extended China Travel", zh: "中国长途旅行", ja: "中国での長期旅行" },
         weight: "standard",
         category: "travel",
@@ -260,6 +278,7 @@ export const timelineData: TimelineYear[] = [
       }
       ,
       {
+        month: { en: "October", zh: "十月", ja: "10月" },
         title: { en: "Alps Alpine Official Job Offer", zh: "收到 Alps Alpine 正式录用通知", ja: "Alps Alpine の正式内定" },
         weight: "major",
         category: "career",
@@ -271,6 +290,7 @@ export const timelineData: TimelineYear[] = [
       }
       ,
       {
+        month: { en: "September", zh: "九月", ja: "9月" },
         title: { en: "Early Graduation from The University of Aizu", zh: "从会津大学提前毕业", ja: "会津大学を早期修了" },
         weight: "major",
         category: "education",
@@ -282,6 +302,7 @@ export const timelineData: TimelineYear[] = [
       }
       ,
       {
+        month: { en: "September", zh: "九月", ja: "9月" },
         title: { en: "ISPEC 2025 Full Paper Acceptance", zh: "ISPEC 2025 完整论文接收", ja: "ISPEC 2025 フルペーパー採択" },
         weight: "major",
         category: "research",
@@ -293,6 +314,7 @@ export const timelineData: TimelineYear[] = [
       }
       ,
       {
+        month: { en: "August", zh: "八月", ja: "8月" },
         title: { en: "Master's Thesis Presentation and Recognition", zh: "硕士论文发表与认可", ja: "修士論文発表と評価" },
         weight: "major",
         category: "research",
@@ -304,6 +326,7 @@ export const timelineData: TimelineYear[] = [
       }
       ,
       {
+        month: { en: "July", zh: "七月", ja: "7月" },
         title: { en: "IEEE GEM 2025 Conference Participation", zh: "参加 IEEE GEM 2025", ja: "IEEE GEM 2025 参加" },
         weight: "standard",
         category: "research",
@@ -314,6 +337,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: { en: "May", zh: "五月", ja: "5月" },
         title: { en: "IEEE GEM Full Paper Acceptance", zh: "IEEE GEM 完整论文接收", ja: "IEEE GEM フルペーパー採択" },
         weight: "major",
         category: "research",
@@ -324,6 +348,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: { en: "January", zh: "一月", ja: "1月" },
         title: { en: "Alps Alpine Informal Job Offer", zh: "收到 Alps Alpine 非正式内定", ja: "Alps Alpine から口頭内定" },
         weight: "major",
         category: "career",
@@ -340,6 +365,7 @@ export const timelineData: TimelineYear[] = [
     year: 2024,
     events: [
       {
+        month: "October",
         title: { en: "JPHACKS Hackathon Participation", zh: "参加 JPHACKS 黑客松", ja: "JPHACKS ハッカソン参加" },
         weight: "standard",
         category: "project",
@@ -350,6 +376,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: "September",
         title: { en: "Alps Alpine Corporation Internship", zh: "Alps Alpine 实习", ja: "Alps Alpine インターンシップ" },
         weight: "standard",
         category: "career",
@@ -360,6 +387,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: "August",
         title: { en: "Alps Alpine Workshop", zh: "Alps Alpine 工作坊", ja: "Alps Alpine ワークショップ" },
         weight: "standard",
         category: "career",
@@ -370,6 +398,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: "April",
         title: { en: "University of Aizu Enrollment", zh: "入学会津大学", ja: "会津大学入学" },
         weight: "major",
         category: "education",
@@ -380,6 +409,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: "March",
         title: { en: "ABK College Graduation and Relocation", zh: "ABK 毕业并搬家", ja: "ABK 卒業と引っ越し" },
         weight: "standard",
         category: "education",
@@ -390,6 +420,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: "February",
         title: { en: "Hamazushi Job End", zh: "结束滨寿司兼职", ja: "はま寿司のアルバイト終了" },
         weight: "note",
         category: "career",
@@ -400,6 +431,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: "January",
         title: { en: "CoCo ICHIBANYA Job End", zh: "结束 CoCo ICHIBANYA 兼职", ja: "CoCo ICHIBANYA のアルバイト終了" },
         weight: "note",
         category: "career",
@@ -415,6 +447,7 @@ export const timelineData: TimelineYear[] = [
     year: 2023,
     events: [
       {
+        month: "March",
         title: { en: "Hamazushi Part-time Job", zh: "开始滨寿司兼职", ja: "はま寿司のアルバイト開始" },
         weight: "note",
         category: "career",
@@ -430,6 +463,7 @@ export const timelineData: TimelineYear[] = [
     year: 2022,
     events: [
       {
+        month: "December",
         title: { en: "CoCo ICHIBANYA Part-time Job", zh: "开始 CoCo ICHIBANYA 兼职", ja: "CoCo ICHIBANYA のアルバイト開始" },
         weight: "note",
         category: "career",
@@ -440,6 +474,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: "October",
         title: { en: "Arrival in Japan", zh: "抵达日本", ja: "日本到着" },
         weight: "major",
         category: "life",
@@ -450,6 +485,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: "June",
         title: { en: "Northwestern Polytechnical University Graduation", zh: "西北工业大学毕业", ja: "西北工業大学卒業" },
         weight: "major",
         category: "education",
@@ -460,6 +496,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: "January",
         title: { en: "UEA Internship Completion", zh: "完成 UEA 实习", ja: "UEA インターン修了" },
         weight: "standard",
         category: "career",
@@ -475,6 +512,7 @@ export const timelineData: TimelineYear[] = [
     year: 2021,
     events: [
       {
+        month: "November",
         title: { en: "UEA Internship Program", zh: "开始 UEA 实习", ja: "UEA インターン開始" },
         weight: "standard",
         category: "career",
@@ -490,6 +528,7 @@ export const timelineData: TimelineYear[] = [
     year: 2020,
     events: [
       {
+        month: "August",
         title: { en: "Competition Awards", zh: "竞赛获奖", ja: "コンテスト受賞" },
         weight: "major",
         category: "award",
@@ -500,6 +539,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: "July",
         title: { en: "A-Project Team Formation", zh: "组建 A-Project 团队", ja: "A-Project チーム結成" },
         weight: "standard",
         category: "project",
@@ -515,6 +555,7 @@ export const timelineData: TimelineYear[] = [
     year: 2018,
     events: [
       {
+        month: "October",
         title: { en: "University Activities", zh: "大学社团活动", ja: "大学での活動" },
         weight: "note",
         category: "life",
@@ -525,6 +566,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: "September",
         title: { en: "Northwestern Polytechnical University Enrollment", zh: "入学西北工业大学", ja: "西北工業大学入学" },
         weight: "major",
         category: "education",
@@ -535,6 +577,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: "August",
         title: { en: "IFP Graduation", zh: "IFP 结业", ja: "IFP 修了" },
         weight: "standard",
         category: "education",
@@ -545,6 +588,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: "March",
         title: { en: "Arrival in Xian and IFP Enrollment", zh: "抵达西安并入读 IFP", ja: "西安到着と IFP 入学" },
         weight: "major",
         category: "education",
@@ -560,6 +604,7 @@ export const timelineData: TimelineYear[] = [
     year: 2017,
     events: [
       {
+        month: "December",
         title: { en: "Beaufort Middle School Graduation", zh: "Beaufort Middle School 毕业", ja: "Beaufort Middle School 卒業" },
         weight: "standard",
         category: "education",
@@ -575,6 +620,7 @@ export const timelineData: TimelineYear[] = [
     year: 2015,
     events: [
       {
+        month: "June",
         title: { en: "Transfer to Beaufort Middle School", zh: "转学至 Beaufort Middle School", ja: "Beaufort Middle School へ転校" },
         weight: "standard",
         category: "education",
@@ -590,6 +636,7 @@ export const timelineData: TimelineYear[] = [
     year: 2012,
     events: [
       {
+        month: "February",
         title: { en: "Transfer to Yu Yuan Secondary School", zh: "转学至育源中学", ja: "Yu Yuan Secondary School へ転校" },
         weight: "standard",
         category: "education",
@@ -600,6 +647,7 @@ export const timelineData: TimelineYear[] = [
         }
       },
       {
+        month: "January",
         title: { en: "St Cecilia Convent Secondary School Enrollment", zh: "入读 St Cecilia Convent Secondary School", ja: "St Cecilia Convent Secondary School 入学" },
         weight: "standard",
         category: "education",
@@ -615,6 +663,7 @@ export const timelineData: TimelineYear[] = [
     year: 2011,
     events: [
       {
+        month: "November",
         title: { en: "SJK(C) Tai Tong Graduation", zh: "大同小学毕业", ja: "SJK(C) Tai Tong 卒業" },
         weight: "standard",
         category: "education",
@@ -630,6 +679,7 @@ export const timelineData: TimelineYear[] = [
     year: 2006,
     events: [
       {
+        month: "January",
         title: { en: "Primary School Enrollment", zh: "入读小学", ja: "小学校入学" },
         weight: "standard",
         category: "education",
@@ -645,6 +695,7 @@ export const timelineData: TimelineYear[] = [
     year: 1999,
     events: [
       {
+        month: "June",
         title: { en: "Birth", zh: "出生", ja: "誕生" },
         weight: "major",
         category: "life",

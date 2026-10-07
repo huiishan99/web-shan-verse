@@ -5,7 +5,7 @@ import {
   type TimelineEvent,
   type TimelineEventWeight,
 } from '../../data/timeline';
-import { defaultLocale, localizeString, type Locale } from '../../i18n/config';
+import { defaultLocale, localizeMonth, localizeString, type Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
 
 interface Props {
@@ -14,8 +14,28 @@ interface Props {
 
 const { lang = defaultLocale } = Astro.props;
 const t = useTranslations(lang);
-
 type TimelineSignalType = 'activity' | 'milestone';
+
+const monthRank: Record<string, number> = {
+  january: 0,
+  february: 1,
+  march: 2,
+  april: 3,
+  may: 4,
+  june: 5,
+  july: 6,
+  august: 7,
+  september: 8,
+  october: 9,
+  november: 10,
+  december: 11,
+};
+
+type TimelineMonthGroup = {
+  key: string;
+  label: string;
+  events: TimelineEvent[];
+};
 
 function getEventWeight(event: TimelineEvent): TimelineEventWeight {
   return event.weight ?? 'standard';
@@ -27,6 +47,52 @@ function getSignalType(event: TimelineEvent): TimelineSignalType {
 
 function getSignalLabel(signalType: TimelineSignalType): string {
   return signalType === 'milestone' ? t.home.signalTypeMilestone : t.home.signalTypeActivity;
+}
+
+function getEventMonthIndex(event: TimelineEvent): number {
+  return monthRank[localizeString(event.month, 'en').toLowerCase()] ?? 0;
+}
+
+function getEventSortTime(event: TimelineEvent, year: number): number {
+  return Date.UTC(year, getEventMonthIndex(event), 1);
+}
+
+function getSortedEvents(events: TimelineEvent[], year: number): TimelineEvent[] {
+  return events
+    .map((event, index) => ({ event, index }))
+    .sort((first, second) => {
+      const timeDifference = getEventSortTime(second.event, year) - getEventSortTime(first.event, year);
+      if (timeDifference !== 0) return timeDifference;
+
+      return first.index - second.index;
+    })
+    .map(({ event }) => event);
+}
+
+function getMonthGroups(events: TimelineEvent[], year: number): TimelineMonthGroup[] {
+  return getSortedEvents(events, year).reduce<TimelineMonthGroup[]>((groups, event) => {
+    const key = localizeString(event.month, 'en');
+    const previousGroup = groups[groups.length - 1];
+
+    if (previousGroup?.key === key) {
+      previousGroup.events.push(event);
+      return groups;
+    }
+
+    groups.push({
+      key,
+      label: localizeMonth(event.month, lang),
+      events: [event],
+    });
+
+    return groups;
+  }, []);
+}
+
+function getDominantWeight(events: TimelineEvent[]): TimelineEventWeight {
+  if (events.some((event) => getEventWeight(event) === 'major')) return 'major';
+  if (events.some((event) => getEventWeight(event) === 'standard')) return 'standard';
+  return 'note';
 }
 
 ---
@@ -58,21 +124,36 @@ function getSignalLabel(signalType: TimelineSignalType): string {
             <h2 id={`year-${yearData.year}`} class="year-label">{yearData.year}</h2>
           </div>
 
-          <div class="year-events">
-            {yearData.events.map((event) => {
-              const weight = getEventWeight(event);
-              const signalType = getSignalType(event);
+          <div class="year-months">
+            {getMonthGroups(yearData.events, yearData.year).map((monthGroup) => {
+              const dominantWeight = getDominantWeight(monthGroup.events);
 
               return (
-                <section class={`timeline-event timeline-event--${weight} timeline-event--${signalType}`}>
-                  <div class="event-body">
-                    <div class="event-meta">
-                      <span class={`event-type event-type--${signalType}`}>{getSignalLabel(signalType)}</span>
-                    </div>
-                    <h3 class="event-title">{localizeString(event.title, lang)}</h3>
-                    <p class="event-desc">{localizeString(event.description, lang)}</p>
+                <article class={`month-cluster month-cluster--${dominantWeight}`}>
+                  <span class="month-marker" aria-hidden="true"></span>
+                  <header class="month-header">
+                    <span class="month-label">{monthGroup.label}</span>
+                  </header>
+
+                  <div class="month-events">
+                    {monthGroup.events.map((event) => {
+                      const weight = getEventWeight(event);
+                      const signalType = getSignalType(event);
+
+                      return (
+                        <section class={`timeline-event timeline-event--${weight} timeline-event--${signalType}`}>
+                          <div class="event-body">
+                            <div class="event-meta">
+                              <span class={`event-type event-type--${signalType}`}>{getSignalLabel(signalType)}</span>
+                            </div>
+                            <h3 class="event-title">{localizeString(event.title, lang)}</h3>
+                            <p class="event-desc">{localizeString(event.description, lang)}</p>
+                          </div>
+                        </section>
+                      );
+                    })}
                   </div>
-                </section>
+                </article>
               );
             })}
           </div>
@@ -192,35 +273,92 @@ function getSignalLabel(signalType: TimelineSignalType): string {
     line-height: 1;
   }
 
-  .year-events {
+  .year-months {
+    --month-offset: 2.5rem;
     --spine-left: 1.12rem;
     display: grid;
-    gap: 0.72rem;
+    gap: var(--space-md);
     min-width: 0;
     position: relative;
-    padding-left: 2.5rem;
+    padding-left: var(--month-offset);
   }
 
-  .year-events::before {
+  .month-cluster {
+    --month-accent: var(--color-brass);
+    --month-marker-top: 4.5rem;
+    display: grid;
+    gap: 0.55rem;
+    position: relative;
+  }
+
+  .month-cluster::before {
     content: '';
     position: absolute;
-    top: 1.05rem;
-    bottom: 1.05rem;
-    left: var(--spine-left);
+    top: 2.35rem;
+    bottom: calc(var(--space-md) * -1);
+    left: calc(var(--spine-left) - var(--month-offset));
     width: 1px;
     background: linear-gradient(
       180deg,
       rgba(201, 162, 39, 0.3),
-      rgba(142, 171, 226, 0.12) 52%,
+      rgba(142, 171, 226, 0.12) 46%,
       rgba(255, 255, 255, 0.04)
     );
     pointer-events: none;
   }
 
+  .month-cluster--note {
+    --month-accent: var(--color-brass);
+  }
+
+  .month-marker {
+    position: absolute;
+    display: block;
+    top: var(--month-marker-top);
+    left: calc(var(--spine-left) - var(--month-offset) - 4.5px);
+    z-index: 1;
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: var(--color-brass);
+    box-shadow: 0 0 12px rgba(201, 162, 39, 0.24);
+    transition:
+      transform 0.3s ease,
+      background 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+
+  .month-cluster:hover .month-marker {
+    background: var(--color-accent-gold);
+    transform: translateY(-2px) scale(1.12);
+    box-shadow: 0 0 16px rgba(201, 162, 39, 0.4);
+  }
+
+  .month-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-md);
+    padding-left: 1.15rem;
+  }
+
+  .month-label {
+    display: block;
+    color: var(--month-accent);
+    font-family: var(--font-display);
+    font-size: 1.42rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+  }
+
+  .month-events {
+    display: grid;
+    gap: 0.72rem;
+  }
+
   .timeline-event {
     --event-accent: var(--color-brass);
     display: block;
-    position: relative;
     min-width: 0;
     padding: 0.9rem 1.15rem 0.85rem;
     border: 1px solid rgba(201, 162, 39, 0.14);
@@ -236,20 +374,6 @@ function getSignalLabel(signalType: TimelineSignalType): string {
       background 0.3s ease,
       border-color 0.3s ease,
       box-shadow 0.3s ease;
-  }
-
-
-  .timeline-event::before {
-    content: '';
-    position: absolute;
-    top: 1.35rem;
-    left: -1.67rem;
-    z-index: 1;
-    width: 9px;
-    height: 9px;
-    border-radius: 999px;
-    background: var(--event-accent);
-    box-shadow: 0 0 12px rgba(201, 162, 39, 0.24);
   }
 
   .timeline-event:hover {
@@ -310,7 +434,6 @@ function getSignalLabel(signalType: TimelineSignalType): string {
     font-size: 0.7rem;
     text-transform: uppercase;
   }
-
 
   .event-type--activity {
     color: rgb(148, 196, 179);
@@ -395,14 +518,25 @@ function getSignalLabel(signalType: TimelineSignalType): string {
       --year-signal-shift-x: -0.4rem;
     }
 
-    .year-events {
+    .year-months {
+      --month-offset: 1.35rem;
       --spine-left: 0.45rem;
-      padding-left: 1.35rem;
-      gap: 0.62rem;
     }
 
-    .timeline-event::before {
-      left: -0.99rem;
+    .month-label {
+      font-size: 1.18rem;
+    }
+
+    .month-marker {
+      top: 4.5rem;
+    }
+
+    .month-header {
+      padding-left: 0.95rem;
+    }
+
+    .month-events {
+      gap: 0.62rem;
     }
 
     .timeline-event {
