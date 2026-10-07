@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { defaultLocale, localizePath, localizeString, type Locale } from '../../i18n/config';
+import { timelineData, type TimelineEvent } from '../../data/timeline';
+import { defaultLocale, localizeMonth, localizePath, localizeString, type Locale } from '../../i18n/config';
 import { travelPoints } from '../../data/travel';
 
 interface Props {
@@ -12,18 +13,38 @@ const { lang = defaultLocale } = Astro.props;
 const journeyCopy: Record<Locale, {
   title: string;
   back: string;
+  map: string;
+  timeline: string;
+  timelineKicker: string;
+  timelineTitle: string;
+  timelineHint: string;
 }> = {
   en: {
     title: 'Travel Atlas',
     back: 'Back Home',
+    map: 'Atlas',
+    timeline: 'Timeline',
+    timelineKicker: 'Personal chronology',
+    timelineTitle: 'Signals across time',
+    timelineHint: 'A year-and-month view of the milestones behind the atlas.',
   },
   zh: {
     title: '旅行星图',
     back: '返回首页',
+    map: '星图',
+    timeline: '时间线',
+    timelineKicker: '个人时间轴',
+    timelineTitle: '穿过时间的信号',
+    timelineHint: '以年份和月份组织星图背后的经历与节点。',
   },
   ja: {
     title: '旅の星図',
     back: 'ホームへ',
+    map: '星図',
+    timeline: 'タイムライン',
+    timelineKicker: '個人年表',
+    timelineTitle: '時間を横切るシグナル',
+    timelineHint: '星図の背景にある出来事を年と月でたどります。',
   },
 };
 
@@ -60,6 +81,38 @@ const scenePoints = travelPoints.map((point) => ({
   kind: point.kind,
   kindLabel: journeyKindLabels[lang][point.kind] ?? point.kind,
 }));
+
+type TimelineMonthGroup = {
+  key: string;
+  label: string;
+  events: TimelineEvent[];
+};
+
+const timelineYears = [...timelineData]
+  .sort((first, second) => second.year - first.year)
+  .map((yearData) => {
+    const monthGroups = yearData.events.reduce<TimelineMonthGroup[]>((groups, event) => {
+      const key = localizeString(event.month, 'en');
+      const previous = groups[groups.length - 1];
+
+      if (previous?.key === key) {
+        previous.events.push(event);
+        return groups;
+      }
+
+      groups.push({
+        key,
+        label: localizeMonth(event.month, lang),
+        events: [event],
+      });
+      return groups;
+    }, []);
+
+    return {
+      year: yearData.year,
+      monthGroups,
+    };
+  });
 ---
 
 <BaseLayout title={copy.title} lang={lang}>
@@ -80,6 +133,51 @@ const scenePoints = travelPoints.map((point) => ({
       </a>
     </div>
 
+    <div class="journey-mode-switcher" data-journey-modes aria-label={copy.title}>
+      <button class="journey-mode is-active" type="button" data-journey-mode="atlas" aria-pressed="true">
+        <span class="journey-mode-dot" aria-hidden="true"></span>
+        {copy.map}
+      </button>
+      <button class="journey-mode" type="button" data-journey-mode="timeline" aria-pressed="false">
+        <span class="journey-mode-dot" aria-hidden="true"></span>
+        {copy.timeline}
+      </button>
+    </div>
+
+    <aside class="journey-timeline-panel" data-timeline-panel aria-hidden="true">
+      <header class="journey-timeline-header">
+        <span class="journey-timeline-kicker">{copy.timelineKicker}</span>
+        <h2>{copy.timelineTitle}</h2>
+        <p>{copy.timelineHint}</p>
+      </header>
+
+      <div class="journey-timeline-scroll">
+        {timelineYears.map((yearData) => (
+          <section class="atlas-year">
+            <div class="atlas-year-label">
+              <span>{yearData.year}</span>
+            </div>
+            <div class="atlas-year-content">
+              {yearData.monthGroups.map((monthGroup) => (
+                <section class="atlas-month">
+                  <div class="atlas-month-label">{monthGroup.label}</div>
+                  <div class="atlas-month-events">
+                    {monthGroup.events.map((event) => (
+                      <article class:list={['atlas-event', { 'atlas-event--major': event.weight === 'major' }]}>
+                        <span class="atlas-event-node" aria-hidden="true"></span>
+                        <h3>{localizeString(event.title, lang)}</h3>
+                        <p>{localizeString(event.description, lang)}</p>
+                      </article>
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    </aside>
+
     <div class="journey-place-card" data-place-card hidden>
       <span class="journey-place-media" aria-hidden="true">
         <span class="journey-place-initial" data-place-initial></span>
@@ -99,14 +197,43 @@ const scenePoints = travelPoints.map((point) => ({
     initJourneyEarthScenes();
   }
 
+  function initJourneyModes() {
+    const shell = document.querySelector<HTMLElement>('[data-earth-scene]');
+    if (!shell || shell.dataset.modeSwitcherReady === 'true') return;
+
+    shell.dataset.modeSwitcherReady = 'true';
+    const panel = shell.querySelector<HTMLElement>('[data-timeline-panel]');
+    const buttons = [...shell.querySelectorAll<HTMLButtonElement>('[data-journey-mode]')];
+
+    const setMode = (mode: 'atlas' | 'timeline') => {
+      shell.classList.toggle('is-timeline-open', mode === 'timeline');
+      panel?.setAttribute('aria-hidden', String(mode !== 'timeline'));
+
+      buttons.forEach((button) => {
+        const isActive = button.dataset.journeyMode === mode;
+        button.classList.toggle('is-active', isActive);
+        button.setAttribute('aria-pressed', String(isActive));
+      });
+    };
+
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        setMode(button.dataset.journeyMode === 'timeline' ? 'timeline' : 'atlas');
+      });
+    });
+  }
+
+  function initJourneyPage() {
+    void loadJourneyEarthScenes();
+    initJourneyModes();
+  }
+
   if (!atlasWindow.__shanJourneyEarthReady) {
     atlasWindow.__shanJourneyEarthReady = true;
-    void loadJourneyEarthScenes();
-    document.addEventListener('astro:page-load', () => {
-      void loadJourneyEarthScenes();
-    });
+    initJourneyPage();
+    document.addEventListener('astro:page-load', initJourneyPage);
   } else {
-    void loadJourneyEarthScenes();
+    initJourneyPage();
   }
 </script>
 
@@ -194,6 +321,235 @@ const scenePoints = travelPoints.map((point) => ({
   .journey-back:hover,
   .journey-back:focus-visible {
     color: var(--color-brass-light);
+  }
+
+  .journey-mode-switcher {
+    position: absolute;
+    top: clamp(1.5rem, 3.2vw, 2.6rem);
+    right: clamp(1.4rem, 3vw, 2.8rem);
+    z-index: 4;
+    display: inline-flex;
+    gap: 0.28rem;
+    padding: 0.28rem;
+    border: 1px solid rgba(201, 162, 39, 0.2);
+    border-radius: 999px;
+    background: rgba(8, 10, 16, 0.58);
+    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.22);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .journey-mode {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.46rem;
+    min-height: 2.15rem;
+    padding: 0 0.88rem;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: rgba(225, 224, 220, 0.56);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .journey-mode:hover,
+  .journey-mode:focus-visible {
+    color: rgba(245, 238, 219, 0.88);
+  }
+
+  .journey-mode.is-active {
+    color: rgba(250, 239, 204, 0.96);
+    background: rgba(201, 162, 39, 0.12);
+    box-shadow: inset 0 0 0 1px rgba(201, 162, 39, 0.16);
+  }
+
+  .journey-mode-dot {
+    width: 0.36rem;
+    height: 0.36rem;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 9px currentColor;
+    opacity: 0.72;
+  }
+
+  .journey-timeline-panel {
+    position: absolute;
+    top: clamp(4.8rem, 8vw, 6rem);
+    right: clamp(1.4rem, 3vw, 2.8rem);
+    bottom: clamp(1.4rem, 3vw, 2.5rem);
+    z-index: 3;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    width: min(31rem, calc(100vw - 3rem));
+    overflow: hidden;
+    border: 1px solid rgba(201, 162, 39, 0.19);
+    border-radius: 14px;
+    background:
+      linear-gradient(155deg, rgba(201, 162, 39, 0.065), transparent 28%),
+      rgba(7, 9, 15, 0.78);
+    box-shadow:
+      0 28px 80px rgba(0, 0, 0, 0.48),
+      inset 0 1px 0 rgba(255, 255, 255, 0.025);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(1.4rem) scale(0.985);
+    transition: opacity 0.24s ease, transform 0.24s ease;
+    backdrop-filter: blur(22px) saturate(112%);
+    -webkit-backdrop-filter: blur(22px) saturate(112%);
+  }
+
+  .journey-shell.is-timeline-open .journey-timeline-panel {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0) scale(1);
+  }
+
+  .journey-shell.is-timeline-open .journey-vignette {
+    background:
+      linear-gradient(90deg, rgba(5, 6, 11, 0.62), rgba(5, 6, 11, 0.12) 48%, rgba(5, 6, 11, 0.62)),
+      linear-gradient(180deg, rgba(5, 6, 11, 0.5), transparent 28%, rgba(5, 6, 11, 0.66));
+  }
+
+  .journey-timeline-header {
+    padding: 1.35rem 1.45rem 1.1rem;
+    border-bottom: 1px solid rgba(201, 162, 39, 0.12);
+  }
+
+  .journey-timeline-kicker {
+    display: block;
+    margin-bottom: 0.48rem;
+    color: rgba(227, 194, 99, 0.76);
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .journey-timeline-header h2 {
+    margin: 0;
+    color: rgba(247, 239, 220, 0.96);
+    font-family: var(--font-display);
+    font-size: clamp(1.45rem, 2.5vw, 2rem);
+    font-weight: 600;
+    letter-spacing: 0.035em;
+  }
+
+  .journey-timeline-header p {
+    max-width: 34rem;
+    margin: 0.52rem 0 0;
+    color: rgba(210, 208, 201, 0.58);
+    font-size: 0.82rem;
+    line-height: 1.55;
+  }
+
+  .journey-timeline-scroll {
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding: 0.6rem 1.25rem 1.45rem;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(201, 162, 39, 0.26) transparent;
+  }
+
+  .atlas-year {
+    display: grid;
+    grid-template-columns: 4.2rem minmax(0, 1fr);
+    gap: 1rem;
+    padding: 1.15rem 0 1.35rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.045);
+  }
+
+  .atlas-year:last-child {
+    border-bottom: 0;
+  }
+
+  .atlas-year-label {
+    position: sticky;
+    top: 0.55rem;
+    align-self: start;
+    color: rgba(229, 194, 95, 0.92);
+    font-family: var(--font-display);
+    font-size: 1rem;
+    letter-spacing: 0.08em;
+  }
+
+  .atlas-year-content {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .atlas-month {
+    position: relative;
+    display: grid;
+    grid-template-columns: 3.9rem minmax(0, 1fr);
+    gap: 0.85rem;
+  }
+
+  .atlas-month-label {
+    padding-top: 0.12rem;
+    color: rgba(220, 216, 201, 0.46);
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .atlas-month-events {
+    position: relative;
+    display: grid;
+    gap: 0.86rem;
+    padding-left: 0.8rem;
+  }
+
+  .atlas-month-events::before {
+    content: '';
+    position: absolute;
+    top: 0.35rem;
+    bottom: 0.25rem;
+    left: 0.03rem;
+    width: 1px;
+    background: linear-gradient(rgba(201, 162, 39, 0.28), rgba(122, 156, 205, 0.08));
+  }
+
+  .atlas-event {
+    position: relative;
+    min-width: 0;
+  }
+
+  .atlas-event-node {
+    position: absolute;
+    top: 0.42rem;
+    left: -1.03rem;
+    width: 0.4rem;
+    height: 0.4rem;
+    border: 1px solid rgba(201, 162, 39, 0.5);
+    border-radius: 50%;
+    background: rgba(9, 11, 17, 0.96);
+    box-shadow: 0 0 8px rgba(201, 162, 39, 0.12);
+  }
+
+  .atlas-event--major .atlas-event-node {
+    background: rgba(201, 162, 39, 0.86);
+    box-shadow: 0 0 11px rgba(201, 162, 39, 0.28);
+  }
+
+  .atlas-event h3 {
+    margin: 0;
+    color: rgba(241, 236, 221, 0.9);
+    font-family: var(--font-editorial);
+    font-size: 0.94rem;
+    line-height: 1.25;
+  }
+
+  .atlas-event p {
+    margin: 0.28rem 0 0;
+    color: rgba(202, 201, 196, 0.5);
+    font-size: 0.72rem;
+    line-height: 1.45;
   }
 
   .journey-place-card {
@@ -330,6 +686,43 @@ const scenePoints = travelPoints.map((point) => ({
 
     .journey-back {
       font-size: 0.74rem;
+    }
+
+    .journey-mode-switcher {
+      top: 0.8rem;
+      right: 0.8rem;
+    }
+
+    .journey-mode {
+      min-height: 1.95rem;
+      padding-inline: 0.68rem;
+      font-size: 0.62rem;
+    }
+
+    .journey-timeline-panel {
+      top: 4rem;
+      right: 0.8rem;
+      bottom: 0.8rem;
+      width: calc(100vw - 1.6rem);
+      border-radius: 12px;
+    }
+
+    .journey-timeline-header {
+      padding: 1rem 1rem 0.85rem;
+    }
+
+    .journey-timeline-scroll {
+      padding: 0.45rem 0.9rem 1rem;
+    }
+
+    .atlas-year {
+      grid-template-columns: 3.45rem minmax(0, 1fr);
+      gap: 0.7rem;
+    }
+
+    .atlas-month {
+      grid-template-columns: 3.2rem minmax(0, 1fr);
+      gap: 0.65rem;
     }
 
     .journey-place-card {
