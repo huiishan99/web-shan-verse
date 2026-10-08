@@ -510,3 +510,31 @@ test('project detail routes are indexable standalone pages with localized varian
     'https://shan-verse.com/zh/projects/vr-math-bridge/'
   );
 });
+
+for (const viewport of [{ width: 393, height: 852 }, { width: 1440, height: 1000 }]) {
+  test(`authentic project thumbnails fill their cards at ${viewport.width}px while galleries stay uncropped`, async ({ page }, testInfo) => {
+    await page.setViewportSize(viewport);
+    await page.goto('/zh/projects');
+
+    for (const title of ['Furigana for Spotify', 'Math-Note', 'Tetris Clone']) {
+      const card = page.locator('.project-card').filter({ has: page.locator('h3', { hasText: title }) });
+      const image = card.locator('.project-image img');
+      await image.scrollIntoViewIfNeeded();
+      await expect(image).toHaveCSS('object-fit', 'cover');
+      await expect(image).toHaveCSS('padding', '0px');
+      await expect(image).toHaveJSProperty('complete', true);
+      expect(await image.evaluate((element: HTMLImageElement) => element.naturalWidth)).toBeGreaterThan(0);
+      const imageBounds = await image.boundingBox();
+      const cardBounds = await card.boundingBox();
+      expect(Math.abs(imageBounds!.width - (cardBounds!.width - 2))).toBeLessThanOrEqual(1);
+      expect(Math.abs(imageBounds!.x - (cardBounds!.x + 1))).toBeLessThanOrEqual(1);
+      await card.screenshot({ path: testInfo.outputPath(`${title.replaceAll(' ', '-')}-${viewport.width}.png`) });
+      await card.locator('[data-project-detail-link]').click();
+      const dialog = page.locator('[data-project-detail-dialog]');
+      await expect(dialog).toBeVisible();
+      await expect(dialog.locator('[data-project-gallery-slide]:not([hidden]) img')).toHaveCSS('object-fit', 'contain');
+      await page.keyboard.press('Escape');
+      await expect(dialog).not.toBeVisible();
+    }
+  });
+}
