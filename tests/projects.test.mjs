@@ -119,6 +119,46 @@ test('project detail slugs are explicit, unique, and localized into stable route
   assert.equal(getProjectPath(mathBridge, 'ja'), '/ja/projects/vr-math-bridge');
 });
 
+test('research archive corrects the website identity while preserving its stable routes', () => {
+  const record = projectRecords.find(({ slug }) => slug === 'hexo-page');
+  const { project: item, category: projectCategory } = record;
+  assert.equal(projectCategory.id, 'web');
+  assert.equal(item.title.en, 'Research Archive');
+  assert.equal(item.title.zh, '研究成果档案');
+  assert.equal(item.title.ja, '研究成果アーカイブ');
+  assert.equal(item.website, 'https://web-publications.vercel.app/');
+  assert.equal(item.github, undefined);
+  assert.equal(getProjectStatus(item, projectCategory), 'live');
+  assert.deepEqual(item.tags, ['Hexo', 'JavaScript', 'Markdown', 'EJS', 'CSS']);
+  assert.equal(item.image, item.detailImages[0].src);
+  assert.equal(item.detailImages[0].fit, 'contain');
+  for (const locale of ['en', 'zh', 'ja']) {
+    assert.ok(item.description[locale]);
+    assert.ok(item.details[locale]);
+    assert.ok(item.detailImages[0].alt[locale]);
+    assert.ok(item.detailImages[0].caption[locale]);
+    assert.equal(getProjectPath(record, locale), `${locale === 'en' ? '' : `/${locale}`}/projects/hexo-page`);
+  }
+});
+
+test('Yumemi documents its actual frontend stack and unavailable data API', () => {
+  const record = projectRecords.find(({ slug }) => slug === 'yumemi-test');
+  const { project: item } = record;
+  assert.equal(getProjectStatus(item, record.category), 'prototype');
+  assert.equal(item.github, 'https://github.com/huiishan99/web-yumemi-test');
+  assert.deepEqual(item.tags, ['TypeScript', 'React', 'Highcharts', 'Axios', 'CSS', 'Vite']);
+  assert.match(item.description.en, /data API is unavailable/);
+  assert.match(item.details.en, /Vitest and React Testing Library/);
+  assert.equal(item.image, item.detailImages[0].src);
+  assert.equal(item.detailImages[0].fit, 'contain');
+  for (const locale of ['en', 'zh', 'ja']) {
+    assert.ok(item.description[locale]);
+    assert.ok(item.details[locale]);
+    assert.ok(item.detailImages[0].alt[locale]);
+    assert.ok(item.detailImages[0].caption[locale]);
+  }
+});
+
 test('every local project media reference resolves to a public asset', () => {
   const mediaPaths = projectCategories.flatMap((projectCategory) =>
     projectCategory.items.flatMap((item) => [
