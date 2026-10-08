@@ -1,8 +1,8 @@
 # Selected project content and media sources
 
-Checked on 8 October 2026. This refresh changes only the existing Furigana for
-Spotify, Math-Note, and Tetris Clone entries. Category order, project slugs,
-components, and layout are unchanged.
+Checked on 8 October 2026. Source and media provenance for the targeted
+project entries documented below. Category order and stable project slugs
+are preserved.
 
 ## Furigana for Spotify
 
@@ -55,4 +55,44 @@ components, and layout are unchanged.
 
 All source and converted images were visually inspected before selection.
 The existing gallery `contain` behavior keeps the full screenshots visible
-on both project cards and detail pages without changing the components.
+on detail pages. Explicit card images use the existing edge-to-edge `cover`
+preview behavior.
+
+## Research Archive (formerly displayed as Hexo Page)
+
+- Public site: [HuiShan Lai · Research](https://web-publications.vercel.app/),
+  already linked from SHAN-VERSE's publication and thesis entries.
+- Verified the public research index and the
+  [VR Math Bridge project page](https://web-publications.vercel.app/publications/vr-math-bridge/),
+  including the visible figures, manuscript/publisher links, citation, and
+  BibTeX. This update describes the website implementation only; paper
+  records, scientific descriptions, and results are unchanged.
+- The live page identifies Hexo as its generator and loads CSS and JavaScript
+  assets. The authoring setup uses Markdown and EJS templates; Vercel hosts the
+  generated static site.
+- `research-archive-index.webp` is a WebP conversion of a genuine 1165 × 747
+  cloud-browser homepage capture taken on 8 October 2026, around 23:35 UTC.
+  No UI was generated, composited, retouched, or cropped.
+- The visible project name and destination were corrected while retaining the
+  existing `hexo-page` slug in EN/ZH/JA. The card keeps its full-bleed preview,
+  and the detail gallery shows the complete capture.
+- Only the already-public website and public-facing information are linked;
+  no private source repository URL or private research material is published.
+
+## Yumemi Test
+
+- Source: [`c16451d`](https://github.com/huiishan99/web-yumemi-test/tree/c16451de149c4d55254bcfc96433cdfd75507467).
+  Inspected the React/TypeScript application, population chart, Axios API
+  integration, ordinary CSS, component tests, and Vite configuration.
+- Application stack: React, TypeScript, Highcharts, Axios, and CSS.
+  Vite is build tooling; Vitest and React Testing Library are test tooling.
+  Installed packages alone are not treated as proof of implementation.
+- `yumemi-test-live.webp` is a WebP conversion of the genuine 1165 × 747
+  screenshot of the [public deployment](https://web-yumemi-test.vercel.app/)
+  captured on 8 October 2026 at 23:35:23 UTC.
+- The capture preserves the visible data-loading error, population-category
+  controls, and empty chart. No mock population data, DOM alteration, or image
+  compositing was used. The original API could not supply data in the observed
+  public UI; the cause was not independently diagnosed.
+- The entry uses an explicit prototype status and localized availability
+  wording. API replacement and changes to the application remain deferred.

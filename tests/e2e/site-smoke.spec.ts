@@ -520,6 +520,10 @@ for (const viewport of [{ width: 393, height: 852 }, { width: 1440, height: 1000
       const card = page.locator('.project-card').filter({ has: page.locator('h3', { hasText: title }) });
       const image = card.locator('.project-image img');
       await image.scrollIntoViewIfNeeded();
+      // Scrolling can place a card under the pointer and trigger its 3% hover zoom.
+      // Measure the resting layout after that existing transition has settled.
+      await page.mouse.move(0, 0);
+      await expect(image).toHaveCSS('transform', 'none');
       await expect(image).toHaveCSS('object-fit', 'cover');
       await expect(image).toHaveCSS('padding', '0px');
       await expect(image).toHaveJSProperty('complete', true);
@@ -538,3 +542,30 @@ for (const viewport of [{ width: 393, height: 852 }, { width: 1440, height: 1000
     }
   });
 }
+
+test('research archive and Yumemi keep full-bleed cards with honest localized details', async ({ page }) => {
+  await page.goto('/projects');
+  for (const title of ['Research Archive', 'Yumemi Test']) {
+    const card = page.locator('.project-card').filter({ has: page.getByRole('heading', { name: title, exact: true }) });
+    await expect(card.locator('.project-image img')).toHaveCSS('object-fit', 'cover');
+  }
+
+  const entries = [
+    { slug: 'hexo-page', image: 'research-archive-index.webp', status: 'live' },
+    { slug: 'yumemi-test', image: 'yumemi-test-live.webp', status: 'prototype' },
+  ];
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 850 });
+    for (const locale of ['', '/zh', '/ja']) {
+      for (const entry of entries) {
+        await page.goto(`${locale}/projects/${entry.slug}`);
+        await expect(page.locator('[data-project-detail-fragment]')).toHaveClass(new RegExp(`project-card--${entry.status}`));
+        const image = page.locator('.project-detail-media img');
+        await expect(image).toHaveAttribute('src', `/images/projects/${entry.image}`);
+        await expect(image).toHaveCSS('object-fit', 'contain');
+        await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+      }
+    }
+  }
+});

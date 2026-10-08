@@ -331,13 +331,36 @@ export const projectCategories: ProjectCategory[] = [
                 slug: "yumemi-test",
                 title: "Yumemi Test",
                 description: {
-                    en: "Yumemi frontend test SPA that visualizes Japanese prefecture population trends with charts and filters.",
-                    zh: "Yumemi 前端测试 SPA，用图表和筛选器可视化日本都道府县人口趋势。",
-                    ja: "都道府県別の人口推移をチャートとフィルターで可視化する Yumemi フロントエンド試験用 SPA。"
+                    en: "React/TypeScript frontend exercise for Japanese prefecture population charts, using Highcharts and Axios. The current demo's data API is unavailable.",
+                    zh: "基于 React/TypeScript 的日本都道府县人口图表前端练习，使用 Highcharts 与 Axios；当前演示的数据 API 暂不可用。",
+                    ja: "React/TypeScript、Highcharts、Axios を使った都道府県別人口グラフのフロントエンド課題。公開デモでは現在データ API を利用できません。"
                 },
+                details: {
+                    en: "This SPA was built for the Yumemi frontend coding exercise using React and TypeScript. React Hooks manage prefecture selection and population categories, Axios handles data requests, and Highcharts renders the comparison chart. The interface uses plain responsive CSS with light and dark themes. Vite provides the development server and production build; component tests use Vitest and React Testing Library. The public deployment currently renders the interface but cannot load the original API data, so its preview shows the real error message and empty chart. API replacement remains a separate future task.",
+                    zh: "这是为 Yumemi 前端编程测试制作的 React 与 TypeScript 单页应用。React Hooks 管理都道府县选择与人口分类，Axios 处理数据请求，Highcharts 绘制对比图表；界面使用原生 CSS 实现响应式布局与明暗主题。Vite 提供开发服务器和生产构建，组件测试使用 Vitest 与 React Testing Library。当前线上界面可以加载，但原有 API 数据请求失败，因此预览保留真实报错与空图表。API 替换留待后续单独处理。",
+                    ja: "Yumemi のフロントエンドコーディング試験向けに、React と TypeScript で制作した SPA です。React Hooks で都道府県選択と人口区分を管理し、Axios でデータを取得、Highcharts で比較グラフを描画します。通常の CSS でレスポンシブレイアウトとライト・ダークテーマを実装。Vite を開発サーバーと本番ビルドに、Vitest と React Testing Library をコンポーネントテストに使用しています。公開環境では現在、画面は表示されますが元の API データを取得できないため、プレビューにも実際のエラーと空のグラフを掲載しています。API の置き換えは今後の別作業です。"
+                },
+                status: "prototype",
                 github: "https://github.com/huiishan99/web-yumemi-test",
                 website: "https://web-yumemi-test.vercel.app/",
-                tags: ["React", "Vite", "TypeScript", "Highcharts", "Vitest"]
+                image: "/images/projects/yumemi-test-live.webp",
+                detailImages: [
+                    {
+                        src: "/images/projects/yumemi-test-live.webp",
+                        alt: {
+                            en: "Yumemi population-chart interface showing population-category buttons, a data-loading error, and an empty Highcharts chart",
+                            zh: "Yumemi 人口图表界面，显示人口分类按钮、数据加载失败提示与空白 Highcharts 图表",
+                            ja: "人口区分ボタン、データ取得エラー、空の Highcharts グラフを表示した Yumemi の画面"
+                        },
+                        caption: {
+                            en: "Current public interface · Captured 8 October 2026; data API unavailable",
+                            zh: "当前线上界面 · 截于 2026 年 10 月 8 日；数据 API 暂不可用",
+                            ja: "現在の公開画面 · 2026年10月8日撮影。データ API は利用不可"
+                        },
+                        fit: "contain"
+                    }
+                ],
+                tags: ["TypeScript", "React", "Highcharts", "Axios", "CSS", "Vite"]
             },
             {
                 slug: "weather-app",
@@ -457,15 +480,41 @@ export const projectCategories: ProjectCategory[] = [
             },
             {
                 slug: "hexo-page",
-                title: "Hexo Page",
-                description: {
-                    en: "Hexo blog deployment experiment on Vercel for testing static blog generation and theme structure.",
-                    zh: "部署在 Vercel 上的 Hexo 博客实验，用于测试静态博客生成和主题结构。",
-                    ja: "静的ブログ生成とテーマ構造を試すために Vercel にデプロイした Hexo ブログ実験。"
+                title: {
+                    en: "Research Archive",
+                    zh: "研究成果档案",
+                    ja: "研究成果アーカイブ"
                 },
-                github: "",
-                website: "https://hexo-six-green.vercel.app/",
-                tags: ["Hexo", "JavaScript"]
+                description: {
+                    en: "Personal research website built with Hexo, Markdown, and custom EJS templates, with dedicated pages for publications and theses.",
+                    zh: "使用 Hexo、Markdown 与定制 EJS 模板构建的个人研究网站，为论文与学位研究提供独立介绍页。",
+                    ja: "Hexo、Markdown、独自の EJS テンプレートで構築した個人研究サイト。論文と学位研究ごとに専用ページを設けています。"
+                },
+                details: {
+                    en: "HuiShan Lai's Research Archive brings public publications and thesis pages into one browsable index. The website uses Hexo to generate static pages from Markdown content and custom EJS templates, with CSS styling and JavaScript interactions. Vercel hosts the generated site. Each work's page provides its existing overview, figures, manuscript links, and citation information, with DOI or publisher links and BibTeX where available.",
+                    zh: "HuiShan Lai 的研究成果档案将已公开的论文与学位研究页面汇集到统一目录中。网站使用 Hexo，将 Markdown 内容与定制 EJS 模板生成静态页面，以 CSS 实现样式、JavaScript 提供交互，并部署在 Vercel。各项工作页面呈现已有的概述、图示、文稿链接与引用信息，并按实际情况提供 DOI、出版方链接和 BibTeX。",
+                    ja: "HuiShan Lai の研究成果アーカイブは、公開済みの論文と学位研究のページを一つの一覧にまとめたサイトです。Hexo を用いて Markdown の内容と独自の EJS テンプレートから静的ページを生成し、CSS でスタイル、JavaScript で操作機能を実装。生成したサイトは Vercel で公開しています。各成果のページには既存の概要、図、原稿リンク、引用情報を掲載し、利用可能な DOI・出版社リンク・BibTeX も提供します。"
+                },
+                status: "live",
+                website: "https://web-publications.vercel.app/",
+                image: "/images/projects/research-archive-index.webp",
+                detailImages: [
+                    {
+                        src: "/images/projects/research-archive-index.webp",
+                        alt: {
+                            en: "HuiShan Lai's public research archive homepage showing the Research heading and Publications section",
+                            zh: "HuiShan Lai 公开研究网站首页，显示 Research 标题与 Publications 论文目录",
+                            ja: "Research の見出しと Publications 一覧を表示した HuiShan Lai の公開研究サイトのトップページ"
+                        },
+                        caption: {
+                            en: "Live research website · Homepage captured on 8 October 2026",
+                            zh: "研究网站实景 · 首页截于 2026 年 10 月 8 日",
+                            ja: "公開研究サイトの実画面 · 2026年10月8日にトップページを撮影"
+                        },
+                        fit: "contain"
+                    }
+                ],
+                tags: ["Hexo", "JavaScript", "Markdown", "EJS", "CSS"]
             },
             {
                 slug: "notion-resume",
