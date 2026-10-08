@@ -415,7 +415,7 @@ test('project cards keep one lazy detail dialog while preserving the existing in
   const spotifyCard = page.locator('.project-card').filter({ hasText: 'Furigana for Spotify' });
   await expect(spotifyCard.locator('.project-image img')).toHaveAttribute(
     'src',
-    '/images/projects/spotify-furigana-social-preview.webp'
+    '/images/projects/spotify-furigana-lyrics.webp'
   );
   await spotifyCard.getByRole('link', { name: 'View Details' }).click();
   await expect(dialog).toBeVisible();
@@ -425,7 +425,7 @@ test('project cards keep one lazy detail dialog while preserving the existing in
   await expect(dialog.locator('[data-project-gallery-counter]')).toHaveText('2 / 2');
   await expect(dialog.locator('[data-project-gallery-slide]:not([hidden]) img')).toHaveAttribute(
     'src',
-    '/images/projects/spotify-furigana-lyrics.webp'
+    '/images/projects/spotify-furigana-social-preview.webp'
   );
   await dialog.getByRole('button', { name: 'Close project details' }).click();
 
