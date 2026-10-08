@@ -236,49 +236,48 @@ export const projectCategories: ProjectCategory[] = [
                 slug: "furigana-for-spotify",
                 title: "Furigana for Spotify",
                 description: {
-                    en: "Local-first Spicetify extension that adds hiragana, katakana, or romaji readings to Japanese Spotify lyrics.",
-                    zh: "本地优先的 Spicetify 扩展，为 Spotify 日语歌词添加平假名、片假名或罗马字注音。",
-                    ja: "Spotify の日本語歌詞にひらがな・カタカナ・ローマ字の読みを付ける、ローカル優先の Spicetify 拡張。"
+                    en: "Japanese lyric readings inside Spotify Desktop, with local conversion and an optional two-line desktop overlay on Windows and macOS. Requires Spicetify.",
+                    zh: "为 Spotify 桌面版日语歌词添加本地生成的注音，并在 Windows 与 macOS 上提供可选的双行桌面歌词悬浮窗。需要先安装 Spicetify。",
+                    ja: "Spotify Desktop の日本語歌詞にローカル生成の読みを表示。Windows と macOS 向けに、任意で使える2行のデスクトップ歌詞表示も備えています。Spicetify が必要です。"
                 },
                 details: {
-                    en: "Furigana for Spotify augments Japanese lyrics inside Spotify Desktop and also provides a transparent two-line desktop overlay on Windows and macOS. Readings are generated locally by default, Spotify credentials are not required, and optional online lookup can be enabled for higher-confidence readings. The public repository includes installation, update, diagnostics, and packaging workflows. This independent project is not affiliated with or endorsed by Spotify AB.",
-                    zh: "Furigana for Spotify 会在 Spotify 桌面版内部为日语歌词添加注音，并在 Windows 与 macOS 上提供透明的双行桌面歌词悬浮窗。默认情况下读音在本地生成，无需 Spotify 凭据；也可以选择启用在线查询以获得更高置信度的读音。公开仓库包含安装、更新、诊断与打包流程。本项目为独立开发，与 Spotify AB 无隶属或背书关系。",
-                    ja: "Furigana for Spotify は Spotify Desktop 内の日本語歌詞に読みを付け、Windows と macOS では透明な2行のデスクトップオーバーレイも提供します。読みは既定でローカル生成され、Spotify の認証情報は不要です。必要に応じて、より確度の高い読みを得るオンライン検索も有効化できます。公開リポジトリにはインストール、更新、診断、パッケージングのワークフローを収録しています。本プロジェクトは独立開発であり、Spotify AB との提携・承認関係はありません。"
+                    en: "Furigana for Spotify adds hiragana, katakana, or romaji to Japanese lyrics without leaving Spotify Desktop. Its TypeScript Spicetify extension uses Kuroshiro and Kuromoji for local readings, with optional online lookup and a local fallback. Desktop companions show the current and next lines using PowerShell/WPF on Windows and Swift/AppKit on macOS; the Windows launcher is written in C#. esbuild bundles the extension and Vitest checks its logic. The v0.6.3 release includes installation, update, and diagnostic tools. Spotify Desktop and Spicetify must already be installed; the extension does not require Spotify credentials. This independent project is not affiliated with or endorsed by Spotify AB.",
+                    zh: "Furigana for Spotify 让用户直接在 Spotify 桌面版中阅读带平假名、片假名或罗马字注音的日语歌词。TypeScript 编写的 Spicetify 扩展使用 Kuroshiro 与 Kuromoji 在本地生成读音，也支持可选的在线查询和本地回退。桌面伴随程序显示当前与下一行歌词：Windows 使用 PowerShell/WPF，macOS 使用 Swift/AppKit，Windows 启动器则以 C# 编写。开发工具采用 esbuild 打包、Vitest 测试。v0.6.3 包含安装、更新与诊断工具；使用前需安装 Spotify 桌面版和 Spicetify，扩展本身不需要 Spotify 凭据。本项目为独立开发，与 Spotify AB 无隶属或背书关系。",
+                    ja: "Furigana for Spotify は、Spotify Desktop 内の日本語歌詞にひらがな・カタカナ・ローマ字の読みを表示します。TypeScript 製の Spicetify 拡張で、Kuroshiro と Kuromoji によるローカル変換を基本とし、任意のオンライン検索とローカルへのフォールバックに対応しています。現在と次の歌詞を表示するデスクトップ機能は、Windows では PowerShell/WPF、macOS では Swift/AppKit で実装し、Windows ランチャーには C# を使用しています。開発には esbuild と Vitest を採用。v0.6.3 にはインストール・更新・診断ツールも含まれます。Spotify Desktop と Spicetify の事前インストールが必要ですが、拡張に Spotify の認証情報を渡す必要はありません。Spotify AB との提携・承認関係はありません。"
                 },
                 status: "live",
                 github: "https://github.com/huiishan99/extension-Furigana-for-Spotify",
-                image: "/images/projects/spotify-furigana-social-preview.webp",
                 detailImages: [
                     {
-                        src: "/images/projects/spotify-furigana-social-preview.webp",
+                        src: "/images/projects/spotify-furigana-lyrics.webp",
                         alt: {
-                            en: "Furigana for Spotify project preview with annotated Japanese lyrics",
-                            zh: "展示日语歌词注音效果的 Furigana for Spotify 项目预览图",
-                            ja: "日本語歌詞への読み表示を示す Furigana for Spotify のプロジェクトプレビュー"
+                            en: "Spotify Desktop on Windows showing Japanese lyrics with furigana in a real v0.5.1 capture",
+                            zh: "v0.5.1 的真实 Windows Spotify 桌面版截图，展示日语歌词上方的注音",
+                            ja: "Windows 版 Spotify Desktop で日本語歌詞にふりがなを表示した v0.5.1 の実画面"
                         },
                         caption: {
-                            en: "Project preview · Japanese lyrics with configurable readings",
-                            zh: "项目预览 · 为日语歌词显示可配置的读音",
-                            ja: "プロジェクトプレビュー · 日本語歌詞に設定可能な読みを表示"
+                            en: "Real Windows capture · v0.5.1 · Spotify 1.2.97.270 / Spicetify 2.44.0. Spotify UI, artwork, and lyrics belong to their respective rights holders.",
+                            zh: "Windows 实机截图 · v0.5.1 · Spotify 1.2.97.270 / Spicetify 2.44.0。Spotify 界面、封面与歌词的权利归各自权利人所有。",
+                            ja: "Windows 実機キャプチャ · v0.5.1 · Spotify 1.2.97.270 / Spicetify 2.44.0。UI、アートワーク、歌詞の権利は各権利者に帰属します。"
                         },
                         fit: "contain"
                     },
                     {
-                        src: "/images/projects/spotify-furigana-lyrics.webp",
+                        src: "/images/projects/spotify-furigana-social-preview.webp",
                         alt: {
-                            en: "Spotify Desktop lyrics view showing furigana above Japanese lyric lines",
-                            zh: "Spotify 桌面版歌词界面，在日语歌词上方显示注音",
-                            ja: "日本語歌詞の上にふりがなを表示した Spotify Desktop の歌詞画面"
+                            en: "Furigana for Spotify promotional graphic incorporating the real v0.5.1 lyrics screenshot",
+                            zh: "使用真实 v0.5.1 歌词截图制作的 Furigana for Spotify 项目宣传图",
+                            ja: "v0.5.1 の実際の歌詞画面を使用した Furigana for Spotify の紹介画像"
                         },
                         caption: {
-                            en: "Extension in use · Spotify UI, music artwork, and lyrics remain the property of their respective rights holders",
-                            zh: "扩展运行画面 · Spotify 界面、音乐封面与歌词的权利归各自权利人所有",
-                            ja: "拡張機能の実行画面 · Spotify の UI、楽曲アートワーク、歌詞の権利は各権利者に帰属します"
+                            en: "Repository promotional composite · Uses the v0.5.1 capture; not a new runtime screenshot",
+                            zh: "仓库宣传合成图 · 使用 v0.5.1 实机素材，并非新版运行截图",
+                            ja: "リポジトリの紹介用合成画像 · v0.5.1 の実画面を使用。新バージョンの実行画面ではありません"
                         },
                         fit: "contain"
                     }
                 ],
-                tags: ["TypeScript", "Spicetify", "Spotify Desktop", "Windows", "macOS"]
+                tags: ["TypeScript", "Spicetify", "Kuroshiro / Kuromoji", "PowerShell / WPF", "Swift / AppKit", "C#"]
             },
             {
                 slug: "notion-next-chinese-blog",
@@ -296,30 +295,35 @@ export const projectCategories: ProjectCategory[] = [
                 slug: "math-note",
                 title: "Math-Note",
                 description: {
-                    en: "AI math canvas app with a React/Vite frontend and FastAPI backend that sends drawn equations to Gemini.",
-                    zh: "AI 数学画布应用，React/Vite 前端与 FastAPI 后端会将手写公式发送给 Gemini 进行处理。",
-                    ja: "React/Vite フロントエンドと FastAPI バックエンドを持つ AI 数学キャンバスアプリ。描いた数式を Gemini に送信します。"
+                    en: "Browser math notebook with a drawing canvas, locally saved pages, and export. The public demo supports drawing; AI solving is currently disabled.",
+                    zh: "浏览器数学笔记本，支持手写画布、页面本地保存与导出。公开演示可体验绘图，AI 求解目前尚未开放。",
+                    ja: "手書きキャンバス、ページのローカル保存、書き出しを備えたブラウザー数学ノート。公開デモでは描画を試せますが、AI 求解は現在無効です。"
                 },
+                details: {
+                    en: "Math-Note combines a React/TypeScript canvas with a Python/FastAPI API. It supports multiple notebook pages, pen and eraser tools, undo/redo, local browser storage, and JSON/PDF export. The interface uses Tailwind CSS and Mantine, Vite builds the frontend, and MathJax renders returned equations. The backend integrates the Google Gen AI SDK for handwritten-image solving, with server-side credentials, image validation, request limits, and Cloudflare Turnstile verification. Frontend and API are deployed together on Vercel. As of 8 October 2026, drawing is available but public AI requests remain disabled pending Turnstile configuration; the preview shows no generated answer.",
+                    zh: "Math-Note 将 React/TypeScript 手写画布与 Python/FastAPI 接口结合，支持多页笔记、画笔与橡皮、撤销/重做、浏览器本地存储及 JSON/PDF 导出。界面使用 Tailwind CSS 与 Mantine，前端由 Vite 构建，返回的公式由 MathJax 渲染。后端通过 Google Gen AI SDK 接入手写图像求解，并实现服务端凭据管理、图像验证、请求限制与 Cloudflare Turnstile 人机验证。前端和 API 部署在同一个 Vercel 项目中。截至 2026 年 10 月 8 日，绘图功能可用，公开 AI 请求仍因 Turnstile 配置未完成而关闭；预览图不包含生成的答案。",
+                    ja: "Math-Note は React/TypeScript の手書きキャンバスと Python/FastAPI の API を組み合わせた数学ノートです。複数ページ、ペンと消しゴム、元に戻す・やり直す、ブラウザー内保存、JSON/PDF 書き出しに対応しています。UI は Tailwind CSS と Mantine、フロントエンドのビルドは Vite、返された数式の表示は MathJax を使用。バックエンドは Google Gen AI SDK による手書き画像の求解処理を備え、認証情報のサーバー管理、画像検証、リクエスト制限、Cloudflare Turnstile 検証を実装しています。フロントエンドと API は同じ Vercel プロジェクトにデプロイしています。2026年10月8日時点では描画を利用できますが、Turnstile の設定が完了するまで公開 AI リクエストは無効です。プレビューに生成された回答は含まれていません。"
+                },
+                status: "prototype",
                 github: "https://github.com/huiishan99/web-math-note",
                 website: "https://math-notes-clone.vercel.app/",
-                image: "/images/projects/math-note-live.webp",
                 detailImages: [
                     {
                         src: "/images/projects/math-note-live.webp",
                         alt: {
-                            en: "Running Math-Note drawing canvas with equation controls and a handwritten expression",
-                            zh: "正在运行的 Math-Note 手写画布，显示公式控制栏与手写表达式",
-                            ja: "数式ツールと手書き式を表示した、実行中の Math-Note キャンバス"
+                            en: "Math-Note drawing canvas with handwritten input and a banner explaining that AI solving is waiting for bot-protection setup",
+                            zh: "Math-Note 手写画布与输入内容，提示 AI 求解正在等待人机验证配置",
+                            ja: "手書き入力と、AI 求解がボット対策の設定待ちであることを示す Math-Note キャンバス"
                         },
                         caption: {
-                            en: "Live deployment · Interactive math canvas",
-                            zh: "在线部署 · 交互式数学画布",
-                            ja: "公開デプロイ · インタラクティブ数式キャンバス"
+                            en: "Public drawing demo · Captured 8 October 2026; AI solving disabled pending Turnstile setup",
+                            zh: "公开绘图演示 · 截于 2026 年 10 月 8 日；AI 求解因 Turnstile 待配置而关闭",
+                            ja: "公開の描画デモ · 2026年10月8日撮影。Turnstile 設定待ちのため AI 求解は無効"
                         },
                         fit: "contain"
                     }
                 ],
-                tags: ["React", "Vite", "TypeScript", "FastAPI", "Gemini"]
+                tags: ["TypeScript", "Python", "React", "FastAPI", "Tailwind CSS", "Vite"]
             },
             {
                 slug: "yumemi-test",
@@ -598,12 +602,47 @@ export const projectCategories: ProjectCategory[] = [
                 slug: "tetris-clone",
                 title: "Tetris Clone",
                 description: {
-                    en: "Native Windows C++ Tetris clone with scoring, hold piece, ghost preview, levels, and best-score tracking.",
-                    zh: "原生 Windows C++ 俄罗斯方块克隆，包含计分、保留方块、幽灵预览、等级和最高分记录。",
-                    ja: "スコア、ホールド、ゴーストプレビュー、レベル、ベストスコア記録を備えたネイティブ Windows C++ のテトリスクローン。"
+                    en: "Native Windows falling-block game built with C++17 and Win32/GDI, with hold, ghost and next-piece previews, adjustable controls, and a local leaderboard.",
+                    zh: "使用 C++17 与 Win32/GDI 编写的原生 Windows 俄罗斯方块游戏，支持保留方块、落点与后续方块预览、操作参数调整和本地排行榜。",
+                    ja: "C++17 と Win32/GDI で制作した Windows ネイティブの落ち物パズル。ホールド、ゴースト、次のブロック表示、操作設定、ローカルランキングを備えています。"
                 },
-                github: "https://github.com/huiishan99/cpp-tetris-game",
-                tags: ["C++", "Win32", "Game Dev"]
+                details: {
+                    en: "This C++17 game uses the Win32 API for its native Windows window and GDI for drawing. The rules include wall kicks, lock delay, hold, a ghost piece, a three-piece preview, and combo and spin-clear scoring. A settings screen adjusts key repeat timing, controls, window size, and sound; a local top-five leaderboard saves names and scores. CMake builds the game and a portable rule-testing target, while GitHub Actions also exercises the Windows UI and packaged executable. Windows builds are distributed as time-limited CI artifacts that require a GitHub sign-in, rather than a standalone release. The game window is Windows-only; the core tests also run on Linux and macOS.",
+                    zh: "这款 C++17 游戏使用 Win32 API 创建原生 Windows 窗口，以 GDI 绘制界面。规则包含踢墙、锁定延迟、保留方块、落点预览、三块预告，以及连击与旋转消行计分。设置界面可调整按键重复时序、键位、窗口大小和声音，本地前五名排行榜记录玩家名称与分数。CMake 用于构建游戏和可跨平台运行的规则测试，GitHub Actions 还会检查 Windows 原生界面与打包后的程序。Windows 构建通过有保存期限的 CI 产物提供，下载需要登录 GitHub，目前没有独立 Release。游戏窗口仅支持 Windows，核心规则测试也可在 Linux 和 macOS 上运行。",
+                    ja: "C++17 で実装し、Win32 API でネイティブ Windows ウィンドウを作成、GDI で描画するゲームです。壁蹴り、固定までの猶予、ホールド、ゴースト、3個先までのプレビュー、コンボと回転消去の加点に対応。設定画面ではキーリピート、操作キー、ウィンドウサイズ、音を調整でき、ローカルの上位5件に名前とスコアを保存します。CMake でゲームと移植可能なルールテストをビルドし、GitHub Actions では Windows UI と配布用実行ファイルも検証します。Windows ビルドは保存期間付きの CI アーティファクトとして配布し、ダウンロードには GitHub ログインが必要です。独立した Release はまだありません。ゲーム画面は Windows 専用で、コアのテストは Linux と macOS でも実行できます。"
+                },
+                github: "https://github.com/huiishan99/game-cpp-tetris",
+                detailImages: [
+                    {
+                        src: "/images/projects/tetris-gameplay.webp",
+                        alt: {
+                            en: "Native Windows Tetris game showing the board, held piece, ghost, next three pieces, and score",
+                            zh: "Windows 原生俄罗斯方块游戏画面，显示棋盘、保留方块、落点预览、后三块预告与分数",
+                            ja: "盤面、ホールド、ゴースト、次の3個、スコアを表示した Windows ネイティブゲームの実画面"
+                        },
+                        caption: {
+                            en: "Packaged Windows x64 game · Unedited UI capture from the 8 October 2026 CI run",
+                            zh: "Windows x64 打包程序 · 2026 年 10 月 8 日 CI 运行中的原始界面截图",
+                            ja: "Windows x64 配布用ビルド · 2026年10月8日の CI 実行で取得した未加工の画面"
+                        },
+                        fit: "contain"
+                    },
+                    {
+                        src: "/images/projects/tetris-settings.webp",
+                        alt: {
+                            en: "Tetris settings for key repeat timing, line-clear effects, controls, window size, sound, and player name",
+                            zh: "俄罗斯方块设置界面，可调整按键重复时序、消行特效、键位、窗口、声音与玩家名称",
+                            ja: "キーリピート、消去エフェクト、操作、ウィンドウ、音、プレイヤー名を調整する設定画面"
+                        },
+                        caption: {
+                            en: "In-game settings · Native Windows UI captured in the same CI run",
+                            zh: "游戏内设置 · 同一次 CI 运行中截取的 Windows 原生界面",
+                            ja: "ゲーム内設定 · 同じ CI 実行で取得した Windows ネイティブ UI"
+                        },
+                        fit: "contain"
+                    }
+                ],
+                tags: ["C++17", "Win32 API", "GDI", "CMake"]
             },
             {
                 slug: "opengl-practice",

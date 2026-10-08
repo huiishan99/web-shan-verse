@@ -65,6 +65,45 @@ test('Spotify Furigana is published as a localized live project with real media'
   assert.equal(spotifyProject.detailImages.length, 2);
 });
 
+test('refreshed software entries preserve localized facts and genuine preview context', () => {
+  const bySlug = (slug) => projectRecords.find((record) => record.slug === slug);
+  const spotify = bySlug('furigana-for-spotify');
+  const mathNote = bySlug('math-note');
+  const tetris = bySlug('tetris-clone');
+
+  for (const { project: item } of [spotify, mathNote, tetris]) {
+    for (const lang of ['en', 'zh', 'ja']) {
+      assert.ok(item.description[lang]);
+      assert.ok(item.details[lang]);
+      for (const image of item.detailImages) {
+        assert.ok(image.alt[lang]);
+        assert.ok(image.caption[lang]);
+        assert.equal(image.fit, 'contain');
+      }
+    }
+    // Use the existing gallery fallback so the complete UI stays visible on cards.
+    assert.equal(item.image, undefined);
+  }
+
+  assert.match(spotify.project.description.en, /Requires Spicetify/);
+  assert.match(spotify.project.details.en, /PowerShell\/WPF/);
+  assert.match(spotify.project.details.en, /Swift\/AppKit/);
+  assert.equal(spotify.project.detailImages[0].src, '/images/projects/spotify-furigana-lyrics.webp');
+  assert.match(spotify.project.detailImages[0].caption.en, /v0\.5\.1/);
+  assert.match(spotify.project.detailImages[1].caption.en, /promotional composite/);
+
+  assert.equal(getProjectStatus(mathNote.project, mathNote.category), 'prototype');
+  assert.match(mathNote.project.description.en, /AI solving is currently disabled/);
+  assert.match(mathNote.project.details.en, /pending Turnstile configuration/);
+  assert.ok(mathNote.project.tags.includes('Python'));
+  assert.ok(mathNote.project.tags.includes('FastAPI'));
+
+  assert.equal(tetris.project.github, 'https://github.com/huiishan99/game-cpp-tetris');
+  assert.deepEqual(tetris.project.tags, ['C++17', 'Win32 API', 'GDI', 'CMake']);
+  assert.equal(tetris.project.detailImages.length, 2);
+  assert.match(tetris.project.details.en, /game window is Windows-only/);
+});
+
 test('project detail slugs are explicit, unique, and localized into stable routes', () => {
   const slugs = projectRecords.map(({ project: item, slug }) => {
     assert.equal(item.slug, slug);
