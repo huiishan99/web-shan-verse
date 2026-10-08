@@ -520,6 +520,10 @@ for (const viewport of [{ width: 393, height: 852 }, { width: 1440, height: 1000
       const card = page.locator('.project-card').filter({ has: page.locator('h3', { hasText: title }) });
       const image = card.locator('.project-image img');
       await image.scrollIntoViewIfNeeded();
+      // Scrolling can place a card under the pointer and trigger its 3% hover zoom.
+      // Measure the resting layout after that existing transition has settled.
+      await page.mouse.move(0, 0);
+      await expect(image).toHaveCSS('transform', 'none');
       await expect(image).toHaveCSS('object-fit', 'cover');
       await expect(image).toHaveCSS('padding', '0px');
       await expect(image).toHaveJSProperty('complete', true);
