@@ -81,8 +81,8 @@ test('refreshed software entries preserve localized facts and genuine preview co
         assert.equal(image.fit, 'contain');
       }
     }
-    // Use the existing gallery fallback so the complete UI stays visible on cards.
-    assert.equal(item.image, undefined);
+    // Cards use edge-to-edge cover previews; galleries retain the complete UI.
+    assert.equal(item.image, item.detailImages[0].src);
   }
 
   assert.match(spotify.project.description.en, /Requires Spicetify/);

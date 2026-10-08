@@ -247,6 +247,7 @@ export const projectCategories: ProjectCategory[] = [
                 },
                 status: "live",
                 github: "https://github.com/huiishan99/extension-Furigana-for-Spotify",
+                image: "/images/projects/spotify-furigana-lyrics.webp",
                 detailImages: [
                     {
                         src: "/images/projects/spotify-furigana-lyrics.webp",
@@ -306,6 +307,7 @@ export const projectCategories: ProjectCategory[] = [
                 },
                 status: "prototype",
                 github: "https://github.com/huiishan99/web-math-note",
+                image: "/images/projects/math-note-live.webp",
                 website: "https://math-notes-clone.vercel.app/",
                 detailImages: [
                     {
@@ -612,6 +614,7 @@ export const projectCategories: ProjectCategory[] = [
                     ja: "C++17 で実装し、Win32 API でネイティブ Windows ウィンドウを作成、GDI で描画するゲームです。壁蹴り、固定までの猶予、ホールド、ゴースト、3個先までのプレビュー、コンボと回転消去の加点に対応。設定画面ではキーリピート、操作キー、ウィンドウサイズ、音を調整でき、ローカルの上位5件に名前とスコアを保存します。CMake でゲームと移植可能なルールテストをビルドし、GitHub Actions では Windows UI と配布用実行ファイルも検証します。Windows ビルドは保存期間付きの CI アーティファクトとして配布し、ダウンロードには GitHub ログインが必要です。独立した Release はまだありません。ゲーム画面は Windows 専用で、コアのテストは Linux と macOS でも実行できます。"
                 },
                 github: "https://github.com/huiishan99/game-cpp-tetris",
+                image: "/images/projects/tetris-gameplay.webp",
                 detailImages: [
                     {
                         src: "/images/projects/tetris-gameplay.webp",

@@ -32,3 +32,12 @@ jobs:
 
       - name: Verify
         run: npm run verify
+
+      - name: Upload browser verification screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-verification
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
