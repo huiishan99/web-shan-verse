@@ -5,7 +5,7 @@ experiments.
 
 ## Local development
 
-Use Node.js 22.12 or newer. The repository's expected version is recorded in
+Use Node.js 24 LTS. The repository's expected major version is recorded in
 `.nvmrc`.
 
 ```sh
