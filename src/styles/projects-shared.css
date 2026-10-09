@@ -153,7 +153,6 @@
     gap: 0.6rem;
     min-height: 1.6rem;
     padding: 0.22rem 1.1rem 0;
-    border-top: 1px solid rgba(201, 162, 39, 0.42);
     background: linear-gradient(90deg, transparent 4%, rgba(201, 162, 39, 0.045) 50%, transparent 96%);
     color: var(--project-editorial-gold);
     font-family: var(--font-body);
