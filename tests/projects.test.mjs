@@ -230,3 +230,38 @@ test('Solar System uses its authentic localized project media', () => {
   for (const locale of ['en', 'zh', 'ja']) assert.ok(solar.detailImageAlt[locale]);
   assert.equal(solar.github, 'https://github.com/huiishan99/unity-solar-system');
 });
+
+test('Snake documents the current Windows game and authentic localized screenshots', () => {
+  const item = projectRecords.find(({ slug }) => slug === 'c-snake-game').project;
+  assert.equal(item.github, 'https://github.com/huiishan99/game-csharp-snake');
+  assert.deepEqual(item.tags, ['C#', '.NET Framework 4.7.2', 'Windows Forms', 'System.Drawing']);
+  assert.match(item.description.en, /five play modes/);
+  assert.match(item.details.en, /Classic, Arcade, Maze, Speed Run, and Zen/);
+  assert.match(item.details.en, /per-mode local leaderboards/);
+  assert.equal(item.image, item.detailImages[0].src);
+  assert.equal(item.imagePosition, 'top');
+  assert.equal(item.detailImages.length, 2);
+  for (const locale of ['en', 'zh', 'ja']) {
+    assert.ok(item.description[locale]);
+    assert.ok(item.details[locale]);
+    for (const image of item.detailImages) {
+      assert.ok(image.alt[locale]);
+      assert.ok(image.caption[locale]);
+      assert.equal(image.fit, 'contain');
+    }
+  }
+});
+
+test('Notion Chinese Blog uses authentic localized media without changing its deployment copy', () => {
+  const item = projectRecords.find(({ slug }) => slug === 'notion-next-chinese-blog').project;
+  assert.equal(item.website, 'https://notion-next-huiishan99.vercel.app/');
+  assert.equal(item.image, '/images/projects/notion-chinese-blog-homepage.webp');
+  assert.equal(item.imagePosition, 'top');
+  assert.equal(item.detailImages[0].src, item.image);
+  assert.equal(item.detailImages[0].fit, 'contain');
+  assert.deepEqual(item.tags, ['Next.js', 'Notion API', 'JavaScript']);
+  for (const locale of ['en', 'zh', 'ja']) {
+    assert.ok(item.detailImages[0].alt[locale]);
+    assert.ok(item.detailImages[0].caption[locale]);
+  }
+});

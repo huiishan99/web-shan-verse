@@ -718,3 +718,73 @@ for (const locale of ['', '/zh', '/ja']) {
     });
   }
 }
+
+for (const locale of ['', '/zh', '/ja']) {
+  for (const width of [1440, 390]) {
+    test(`updated Snake card and screenshot gallery ${locale || '/en'} at ${width}px`, async ({ page }, testInfo) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(`${locale}/projects`);
+      const card = page.locator('.project-card').filter({ has: page.getByRole('heading', { name: 'C# Snake Game', exact: true }) });
+      const image = card.locator('.project-image img');
+      await image.scrollIntoViewIfNeeded();
+      await expect(image).toHaveCSS('object-fit', 'cover');
+      await expect(image).toHaveCSS('object-position', '50% 0%');
+      await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
+      await card.screenshot({ path: testInfo.outputPath(`snake-card-${width}.png`) });
+      await card.locator('[data-project-detail-link]').click();
+      const dialog = page.locator('[data-project-detail-dialog]');
+      await expect(dialog).toBeVisible();
+      const activeImage = dialog.locator('[data-project-gallery-slide]:not([hidden]) img');
+      await expect(activeImage).toHaveAttribute('src', '/images/projects/snake-gameplay.webp');
+      await expect(activeImage).toHaveCSS('object-fit', 'contain');
+      await dialog.locator('[data-project-gallery-next]').click();
+      await expect(activeImage).toHaveAttribute('src', '/images/projects/snake-menu.webp');
+      await dialog.locator('[data-project-gallery-prev]').click();
+      await expect(activeImage).toHaveAttribute('src', '/images/projects/snake-gameplay.webp');
+      await page.keyboard.press('Escape');
+      await expect(dialog).not.toBeVisible();
+      await expect(page).toHaveURL(new RegExp(`${locale}/projects/?$`));
+      await card.locator('[data-project-detail-link]').click();
+      await expect(dialog).toBeVisible();
+      await page.keyboard.press('Escape');
+      await expect(dialog).not.toBeVisible();
+      await page.goto(`${locale}/projects/c-snake-game`);
+      await expect(page.locator('.project-detail-description')).toContainText('.NET Framework 4.7.2');
+      await expect(page.locator('[data-project-gallery-slide]')).toHaveCount(2);
+      const galleryImage = page.locator('[data-project-gallery-slide]:not([hidden]) img');
+      await expect(galleryImage).toHaveCSS('object-fit', 'contain');
+      await expect.poll(() => galleryImage.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+      await page.screenshot({ path: testInfo.outputPath(`snake-detail-${width}.png`), fullPage: true });
+    });
+  }
+}
+
+test('Notion Chinese Blog has a genuine full-bleed card and uncropped localized details', async ({ page }, testInfo) => {
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const locale of ['', '/zh', '/ja']) {
+      await page.goto(`${locale}/projects`);
+      const card = page.locator('.project-card').filter({ has: page.getByRole('heading', { name: 'Notion Next Chinese Blog', exact: true }) });
+      const image = card.locator('.project-image img');
+      await image.scrollIntoViewIfNeeded();
+      await expect(image).toHaveCSS('object-fit', 'cover');
+      await expect(image).toHaveCSS('object-position', '50% 0%');
+      await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
+      await card.screenshot({ path: testInfo.outputPath(`notion-card-${locale.slice(1) || 'en'}-${width}.png`) });
+      await card.locator('[data-project-detail-link]').click();
+      const dialog = page.locator('[data-project-detail-dialog]');
+      await expect(dialog).toBeVisible();
+      await expect(dialog.locator('.project-detail-media img')).toHaveCSS('object-fit', 'contain');
+      await page.keyboard.press('Escape');
+      await expect(dialog).not.toBeVisible();
+      await page.goto(`${locale}/projects/notion-next-chinese-blog`);
+      const detailImage = page.locator('.project-detail-media img');
+      await expect(detailImage).toHaveAttribute('src', '/images/projects/notion-chinese-blog-homepage.webp');
+      await expect(detailImage).toHaveCSS('object-fit', 'contain');
+      await expect.poll(() => detailImage.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+      await page.screenshot({ path: testInfo.outputPath(`notion-detail-${locale.slice(1) || 'en'}-${width}.png`), fullPage: true });
+    }
+  }
+});

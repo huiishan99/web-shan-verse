@@ -121,3 +121,46 @@ preview behavior.
 - The full composition is preserved in the asset and contained detail view;
   card previews retain the site's full-bleed cover treatment. No generated image
   or external stock illustration is used.
+
+## C# Snake Game
+
+- Source: [`57a8b99`](https://github.com/huiishan99/game-csharp-snake/tree/57a8b99f495503ae554204af4755b7a98d1022b4).
+  Inspected the project file, game presets, engine, settings, leaderboards, and
+  custom rendering: C#, .NET Framework 4.7.2, Windows Forms, and System.Drawing.
+  MSBuild and GitHub Actions are build/test tooling.
+- `snake-gameplay.webp` and `snake-menu.webp` are lossless, pixel-identical RGB
+  conversions of 704 × 524 client-area PNG captures from the real Windows app
+  in [Windows CI run 37881084539](https://github.com/huiishan99/game-csharp-snake/actions/runs/37881084539),
+  on 9 October 2026. The run includes the startup board-size initialization fix.
+- [Original PNG files and provenance](https://github.com/huiishan99/game-csharp-snake/tree/c45d05a9a357da1d18d33758c725fd6c3d02b965/docs/screenshots)
+  preserve the captured gameplay and Maze menu at an immutable source commit.
+- The gameplay capture shows Maze mode with the Neon theme, obstacles, solid
+  walls, and a score of 120 reached through the game's actual movement and
+  tick handlers. The second capture shows the corresponding setup menu.
+  No game state was injected to manufacture the score, and no UI was generated,
+  composited, retouched, or cropped after capture.
+- Both source images and lossless conversions were visually inspected. Cards
+  retain the existing full-bleed `cover` treatment; detail galleries preserve
+  the full captures with `contain`. Other project cards and shared layout are
+  unchanged.
+
+## Notion Next Chinese Blog
+
+- Verified the existing [public destination](https://notion-next-huiishan99.vercel.app/)
+  identifies the user's Chinese blog: the page title, Hui Shan sidebar, linked
+  `huiishan99` GitHub profile, and personal UAV thesis article agree. It is not
+  a screenshot of the generic NotionNext demonstration site.
+- `notion-chinese-blog-homepage.webp` is a WebP conversion of a genuine
+  1165 × 747 cloud-browser homepage capture taken on 9 October 2026 at
+  03:52:48 UTC. The full viewport composition is preserved; no UI was generated,
+  composited, retouched, or cropped.
+- Existing NotionNext example posts and the blank-title entry remain visible
+  as they appeared on the live site. The existing description and technology
+  tags are unchanged; this is a media update, not an application migration.
+- The card uses the site's existing `cover` treatment, and the localized detail
+  gallery uses `contain` to show the full original composition.
+
+The Snake and Notion card previews align their original images to the top so
+the short mobile crop retains the snake/HUD and blog title. The optional image
+focus field leaves all other cards at their existing position and does not
+change any card dimensions, spacing, or detail-gallery composition.
