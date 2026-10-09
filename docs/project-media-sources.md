@@ -110,3 +110,14 @@ preview behavior.
 - The internship entry describes the assigned Unity HMI work, without claiming
   authorship of the complete Digital Cabin. Card previews use `cover`; the
   detail gallery preserves the full image with `contain`.
+
+## Solar System project preview
+
+- `solar-system-preview.webp` is an optimized 1197 × 746 copy of the actual
+  project screenshot embedded in the
+  [Solar System README](https://github.com/huiishan99/unity-solar-system/blob/main/README.md).
+- [Original PNG attachment](https://github.com/huiishan99/Unity_SolarSystem/assets/61934115/742ed8dc-9e79-4390-81a6-3ba95d920547)
+  shows the Earth and Moon in the Unity simulation, including its lower-left inset.
+- The full composition is preserved in the asset and contained detail view;
+  card previews retain the site's full-bleed cover treatment. No generated image
+  or external stock illustration is used.

@@ -222,3 +222,11 @@ test('four additional course overviews have localized copy without private sourc
   }
   assert.equal(projectRecords.filter(({ project: item }) => item.github?.includes('cfs03')).length, 1);
 });
+
+test('Solar System uses its authentic localized project media', () => {
+  const solar = projectCategories.find(({ id }) => id === 'unity').items.find(({ slug }) => slug === 'solar-system');
+  assert.equal(solar.image, '/images/projects/solar-system-preview.webp');
+  assert.equal(solar.detailImageFit, 'contain');
+  for (const locale of ['en', 'zh', 'ja']) assert.ok(solar.detailImageAlt[locale]);
+  assert.equal(solar.github, 'https://github.com/huiishan99/unity-solar-system');
+});
