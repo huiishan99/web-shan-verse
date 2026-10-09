@@ -619,10 +619,30 @@ for (const locale of ['', '/zh', '/ja']) {
 }
 
 for (const locale of ['', '/zh', '/ja']) {
-  for (const width of [1440, 390]) {
+  for (const width of [1440, 393]) {
     test(`Selected Work markers sit below previews ${locale || '/en'} at ${width}px`, async ({ page }, testInfo) => {
       await page.setViewportSize({ width, height: 1000 });
       await page.goto(`${locale}/projects`);
+      const spacingMeasurements: Array<{ kind: string; before: number; after: number }> = [];
+      const measureMarkerGap = async (card: ReturnType<typeof page.locator>, kind: string, beforePadding: number, expectedPadding: number) => {
+        const result = await card.evaluate((element, { beforePadding }) => {
+          const content = element.querySelector<HTMLElement>('.project-content')!;
+          const marker = element.querySelector('.featured-banner')!;
+          const title = element.querySelector('h3')!;
+          const gap = () => title.getBoundingClientRect().top - marker.getBoundingClientRect().bottom;
+          const after = gap();
+          const padding = parseFloat(getComputedStyle(content).paddingTop);
+          content.style.paddingTop = `${beforePadding}px`;
+          const before = gap();
+          content.style.removeProperty('padding-top');
+          return { before, after, padding };
+        }, { beforePadding });
+        expect(result.padding).toBeCloseTo(expectedPadding, 1);
+        expect(result.after).toBeGreaterThanOrEqual(7);
+        expect(result.after).toBeLessThan(result.before);
+        expect(result.before - result.after).toBeCloseTo(beforePadding - expectedPadding, 1);
+        spacingMeasurements.push({ kind, before: result.before, after: result.after });
+      };
       const selectedCards = page.locator('.project-card--selected');
       await expect(selectedCards).toHaveCount(2);
       for (const card of await selectedCards.all()) {
@@ -630,6 +650,7 @@ for (const locale of ['', '/zh', '/ja']) {
         await expect(marker).toHaveCSS('position', 'static');
         await expect(marker).toHaveCSS('border-top-width', '0px');
         await expect(card).toHaveCSS('border-top-width', '1px');
+        await measureMarkerGap(card, 'selected', width > 768 ? 32 : 13.6, width > 768 ? 12 : 8);
         await card.scrollIntoViewIfNeeded();
         await page.mouse.move(0, 0);
         const layout = await card.evaluate((element) => {
@@ -667,12 +688,32 @@ for (const locale of ['', '/zh', '/ja']) {
       await expect(awardCard).not.toHaveClass(/project-card--selected/);
       await expect(awardCard.locator('.featured-banner')).toHaveCSS('border-top-width', '0px');
       await expect(awardCard).toHaveCSS('border-top-width', '1px');
+      await measureMarkerGap(awardCard, 'award', width > 768 ? 17.92 : 13.6, width > 768 ? 14.4 : 11.2);
       for (const card of await page.locator('.project-section:is(#research, #publications, #theses) .project-card').all()) {
         await expect(card).toHaveCSS('border-top-width', '1px');
         await expect(card.locator('.project-content')).toHaveCSS('border-top-width', '0px');
         if (await card.locator('.project-image').count()) await expect(card.locator('.project-image')).toHaveCSS('border-bottom-width', '0px');
       }
       await awardCard.screenshot({ path: testInfo.outputPath(`presentation-award-${width}.png`) });
+      await testInfo.attach('marker-title-spacing', { body: JSON.stringify(spacingMeasurements, null, 2), contentType: 'application/json' });
+      const solarCard = page.locator('#unity .project-card').filter({ has: page.getByRole('heading', { name: 'Solar System', exact: true }) });
+      const solarImage = solarCard.locator('.project-image img');
+      await solarImage.scrollIntoViewIfNeeded();
+      await page.mouse.move(0, 0);
+      await expect(solarImage).toHaveCSS('transform', 'none');
+      await expect(solarImage).toHaveCSS('object-fit', 'cover');
+      await expect.poll(() => solarImage.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
+      const solarBounds = await solarImage.boundingBox();
+      const solarCardBounds = await solarCard.boundingBox();
+      expect(Math.abs(solarBounds!.width - (solarCardBounds!.width - 2))).toBeLessThanOrEqual(1);
+      await solarCard.screenshot({ path: testInfo.outputPath(`solar-system-${width}.png`) });
+      await solarCard.locator('[data-project-detail-link]').click();
+      await expect(dialog).toBeVisible();
+      await expect(dialog.locator('.project-detail-media img')).toHaveAttribute('src', '/images/projects/solar-system-preview.webp');
+      await expect(dialog.locator('.project-detail-media img')).toHaveCSS('object-fit', 'contain');
+      await page.keyboard.press('Escape');
+      await expect(dialog).not.toBeVisible();
+      await expect(solarCard.locator('[data-project-detail-link]')).toBeFocused();
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     });
   }

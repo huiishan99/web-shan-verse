@@ -300,6 +300,11 @@
     margin-top: auto;
   }
 
+  /* Bring the editorial marker closer to its title without tightening ordinary cards. */
+  .project-card--selected .project-content {
+    padding-top: 0.75rem;
+  }
+
   .project-card.featured:where(:not(.project-card--selected)) .project-content {
     padding-top: calc(var(--space-lg) + 1.25rem);
   }
@@ -947,7 +952,7 @@
   }
 
   .project-section:is(#research, #publications, #theses) .project-card--academic-preview.featured .project-content {
-    padding-top: 1.12rem;
+    padding-top: 0.9rem;
   }
 
   .project-section:is(#research, #publications, #theses) .project-main {
@@ -1057,6 +1062,10 @@
 
     .project-content {
       padding: 0.85rem;
+    }
+
+    .project-card--selected .project-content {
+      padding-top: 0.5rem;
     }
 
     .project-card.featured:where(:not(.project-card--selected)) .project-content {
@@ -1174,7 +1183,7 @@
     }
 
     .project-section:is(#research, #publications, #theses) .project-card--academic-preview.featured .project-content {
-      padding-top: 0.85rem;
+      padding-top: 0.7rem;
     }
 
     .project-section:is(#research, #publications, #theses) .project-main {

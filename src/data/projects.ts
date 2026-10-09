@@ -155,6 +155,13 @@ export const projectCategories: ProjectCategory[] = [
                     zh: "Unity 练习场景，模拟太阳、地球和月球的自转与公转。",
                     ja: "太陽・地球・月の自転と公転をシミュレーションする Unity 練習シーン。"
                 },
+                image: "/images/projects/solar-system-preview.webp",
+                detailImageAlt: {
+                    en: "Earth and Moon against a star field in the Solar System Unity simulation",
+                    zh: "Solar System Unity 模拟中的地球与月球，背景为星空",
+                    ja: "Solar System の Unity シミュレーションで、星空を背景に表示された地球と月"
+                },
+                detailImageFit: "contain",
                 github: "https://github.com/huiishan99/unity-solar-system",
                 tags: ["Unity", "C#", "3D"]
             },
