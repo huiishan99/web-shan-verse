@@ -728,6 +728,7 @@ for (const locale of ['', '/zh', '/ja']) {
       const image = card.locator('.project-image img');
       await image.scrollIntoViewIfNeeded();
       await expect(image).toHaveCSS('object-fit', 'cover');
+      await expect(image).toHaveCSS('object-position', '50% 0%');
       await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
       await card.screenshot({ path: testInfo.outputPath(`snake-card-${width}.png`) });
       await card.locator('[data-project-detail-link]').click();
@@ -768,6 +769,7 @@ test('Notion Chinese Blog has a genuine full-bleed card and uncropped localized 
       const image = card.locator('.project-image img');
       await image.scrollIntoViewIfNeeded();
       await expect(image).toHaveCSS('object-fit', 'cover');
+      await expect(image).toHaveCSS('object-position', '50% 0%');
       await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
       await card.screenshot({ path: testInfo.outputPath(`notion-card-${locale.slice(1) || 'en'}-${width}.png`) });
       await card.locator('[data-project-detail-link]').click();

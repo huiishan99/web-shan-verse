@@ -239,6 +239,7 @@ test('Snake documents the current Windows game and authentic localized screensho
   assert.match(item.details.en, /Classic, Arcade, Maze, Speed Run, and Zen/);
   assert.match(item.details.en, /per-mode local leaderboards/);
   assert.equal(item.image, item.detailImages[0].src);
+  assert.equal(item.imagePosition, 'top');
   assert.equal(item.detailImages.length, 2);
   for (const locale of ['en', 'zh', 'ja']) {
     assert.ok(item.description[locale]);
@@ -255,6 +256,7 @@ test('Notion Chinese Blog uses authentic localized media without changing its de
   const item = projectRecords.find(({ slug }) => slug === 'notion-next-chinese-blog').project;
   assert.equal(item.website, 'https://notion-next-huiishan99.vercel.app/');
   assert.equal(item.image, '/images/projects/notion-chinese-blog-homepage.webp');
+  assert.equal(item.imagePosition, 'top');
   assert.equal(item.detailImages[0].src, item.image);
   assert.equal(item.detailImages[0].fit, 'contain');
   assert.deepEqual(item.tags, ['Next.js', 'Notion API', 'JavaScript']);

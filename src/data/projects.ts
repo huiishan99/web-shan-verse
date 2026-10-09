@@ -34,6 +34,7 @@ export interface ProjectItem {
     caseStudy?: string;     // 自己网站上的项目或论文介绍页
     website?: string;       // 网站/演示链接
     image?: string;         // 预览图路径 (放在 public/images/projects/)
+    imagePosition?: 'center' | 'top'; // Optional preview focus; detail images stay unchanged
     detailImage?: string;   // 详情弹窗图片；不设置时可回退到预览图
     detailImageAlt?: LocalizedString;
     detailImageFit?: 'cover' | 'contain';
@@ -319,6 +320,7 @@ export const projectCategories: ProjectCategory[] = [
                 github: "https://github.com/huiishan99/web-notion-next",
                 website: "https://notion-next-huiishan99.vercel.app/",
                 image: "/images/projects/notion-chinese-blog-homepage.webp",
+                imagePosition: "top",
                 detailImages: [
                     {
                         src: "/images/projects/notion-chinese-blog-homepage.webp",
@@ -854,6 +856,7 @@ export const projectCategories: ProjectCategory[] = [
                 },
                 github: "https://github.com/huiishan99/game-csharp-snake",
                 image: "/images/projects/snake-gameplay.webp",
+                imagePosition: "top",
                 detailImages: [
                     {
                         src: "/images/projects/snake-gameplay.webp",

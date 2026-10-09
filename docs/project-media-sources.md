@@ -159,3 +159,8 @@ preview behavior.
   tags are unchanged; this is a media update, not an application migration.
 - The card uses the site's existing `cover` treatment, and the localized detail
   gallery uses `contain` to show the full original composition.
+
+The Snake and Notion card previews align their original images to the top so
+the short mobile crop retains the snake/HUD and blog title. The optional image
+focus field leaves all other cards at their existing position and does not
+change any card dimensions, spacing, or detail-gallery composition.
