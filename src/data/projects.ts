@@ -88,9 +88,9 @@ export const projectCategories: ProjectCategory[] = [
                     "zh": "我的实习工作聚焦于指定的汽车 HMI 课题，使用 Unity 构建美国高速公路自动驾驶场景，探索下一代交互界面概念。",
                     "ja": "インターンシップでは、与えられた車載 HMI の課題に取り組みました。Unity で米国の高速道路を舞台にした自動運転シナリオを構築し、次世代インターフェースのコンセプトを検討しました。"
                 },
-                image: "/images/projects/alps-alpine-digital-cabin-reference.png",
+                image: "/images/projects/alps-alpine-digital-cabin-reference.jpg",
                 detailImages: [{
-                    src: "/images/projects/alps-alpine-digital-cabin-reference.png",
+                    src: "/images/projects/alps-alpine-digital-cabin-reference.jpg",
                     alt: {
                         en: "Alps Alpine Digital Cabin reference showing a panoramic dashboard, steering control, and center touchscreen",
                         zh: "阿尔派 Digital Cabin 参考图，展示全景仪表台、转向控制器与中央触控屏",

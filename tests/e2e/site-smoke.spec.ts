@@ -398,7 +398,7 @@ test('project cards keep one lazy detail dialog while preserving the existing in
   await vrTrigger.click();
   await expect(dialog).toBeVisible();
   await expect(dialog).toHaveClass(/project-detail-dialog--with-image/);
-  await expect(dialog.locator('.project-detail-media img')).toHaveAttribute('src', '/images/projects/alps-alpine-digital-cabin-reference.png');
+  await expect(dialog.locator('.project-detail-media img')).toHaveAttribute('src', '/images/projects/alps-alpine-digital-cabin-reference.jpg');
   await expect(dialog.locator('figcaption')).toContainText('Reference image');
   await expect(dialog.getByRole('link', { name: 'webCG', exact: true })).toHaveAttribute('href', 'https://www.webcg.net/articles/-/43538');
   await expect(dialog.locator('.project-detail-description')).toContainText('assigned automotive HMI topic');
@@ -614,6 +614,57 @@ for (const locale of ['', '/zh', '/ja']) {
       await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
       await expect(page.getByRole('link', { name: 'webCG', exact: true })).toHaveAttribute('href', 'https://www.webcg.net/articles/-/43538');
       await page.screenshot({ path: testInfo.outputPath(`cabin-detail-${viewport.width}.png`), fullPage: true });
+    });
+  }
+}
+
+for (const locale of ['', '/zh', '/ja']) {
+  for (const width of [1440, 390]) {
+    test(`Selected Work markers sit below previews ${locale || '/en'} at ${width}px`, async ({ page }, testInfo) => {
+      await page.setViewportSize({ width, height: 1000 });
+      await page.goto(`${locale}/projects`);
+      const selectedCards = page.locator('.project-card--selected');
+      await expect(selectedCards).toHaveCount(2);
+      for (const card of await selectedCards.all()) {
+        const marker = card.locator('.featured-banner');
+        await expect(marker).toHaveCSS('position', 'static');
+        await card.scrollIntoViewIfNeeded();
+        await page.mouse.move(0, 0);
+        const layout = await card.evaluate((element) => {
+          const marker = element.querySelector('.featured-banner')!.getBoundingClientRect();
+          const image = element.querySelector('.project-image')?.getBoundingClientRect();
+          const content = element.querySelector('.project-content')!.getBoundingClientRect();
+          return { markerTop: marker.top, markerBottom: marker.bottom, imageBottom: image?.bottom, contentTop: content.top };
+        });
+        if (layout.imageBottom !== undefined) expect(layout.markerTop).toBeGreaterThanOrEqual(layout.imageBottom - 1);
+        expect(layout.contentTop).toBeGreaterThanOrEqual(layout.markerBottom - 1);
+      }
+      const cabinCard = selectedCards.filter({ has: page.locator(`a[href="${locale}/projects/vr-car-scene-prototype"]`) });
+      const image = cabinCard.locator('.project-image img');
+      await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth === 1460 && element.naturalHeight === 973)).toBe(true);
+      await expect(image).toHaveCSS('object-fit', 'cover');
+      await expect(cabinCard.locator('a[href*="webcg.net"], figcaption')).toHaveCount(0);
+      await cabinCard.scrollIntoViewIfNeeded();
+      await page.mouse.move(0, 0);
+      await expect(image).toHaveCSS('transform', 'none');
+      await cabinCard.screenshot({ path: testInfo.outputPath(`selected-cabin-${width}.png`) });
+      const trigger = cabinCard.locator('[data-project-detail-link]');
+      await trigger.click();
+      const dialog = page.locator('[data-project-detail-dialog]');
+      await expect(dialog).toBeVisible();
+      await expect(dialog.locator('.project-detail-media img')).toHaveCSS('object-fit', 'contain');
+      await expect(dialog.getByRole('link', { name: 'webCG', exact: true })).toBeVisible();
+      await page.keyboard.press('Escape');
+      await expect(dialog).not.toBeVisible();
+      await expect(trigger).toBeFocused();
+      await trigger.click();
+      await expect(dialog).toBeVisible();
+      await page.keyboard.press('Escape');
+      await expect(dialog).not.toBeVisible();
+      const awardCard = page.locator('.project-card').filter({ has: page.locator('.featured-banner', { hasText: 'Presentation Award' }) });
+      await expect(awardCard).not.toHaveClass(/project-card--selected/);
+      await awardCard.screenshot({ path: testInfo.outputPath(`presentation-award-${width}.png`) });
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     });
   }
 }

@@ -107,7 +107,7 @@ function getAuthorParts(authors: string) {
 
             return (
               <>
-                <article class={`project-card project-card--${status} ${project.featured ? 'featured' : ''} ${hasAcademicPreview ? 'project-card--academic-preview' : ''}`}>
+                <article class={`project-card project-card--${status} ${project.featured ? 'featured' : ''} ${project.featured && !project.featuredLabel ? 'project-card--selected' : ''} ${hasAcademicPreview ? 'project-card--academic-preview' : ''}`}>
                   {cardImage && (
                     <div class={`project-image project-image--${cardImageFit}`}>
                       <img src={cardImage} alt={cardImageAlt} loading="lazy" decoding="async" />
