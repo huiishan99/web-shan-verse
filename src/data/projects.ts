@@ -318,6 +318,23 @@ export const projectCategories: ProjectCategory[] = [
                 },
                 github: "https://github.com/huiishan99/web-notion-next",
                 website: "https://notion-next-huiishan99.vercel.app/",
+                image: "/images/projects/notion-chinese-blog-homepage.webp",
+                detailImages: [
+                    {
+                        src: "/images/projects/notion-chinese-blog-homepage.webp",
+                        alt: {
+                            en: "Hui Shan's Chinese blog homepage with the personal sidebar, UAV thesis post, and NotionNext example content",
+                            zh: "Hui Shan 的中文博客首页，展示个人侧栏、无人机毕业设计文章及 NotionNext 示例内容",
+                            ja: "Hui Shan のプロフィール欄、UAV 卒業研究の記事、NotionNext のサンプル記事を表示する中国語ブログのトップページ"
+                        },
+                        caption: {
+                            en: "Public blog homepage · Actual browser capture on 9 October 2026",
+                            zh: "公开博客首页 · 2026 年 10 月 9 日的真实浏览器截图",
+                            ja: "公開ブログのトップページ · 2026年10月9日の実際のブラウザー画面"
+                        },
+                        fit: "contain"
+                    }
+                ],
                 tags: ["Next.js", "Notion API", "JavaScript"]
             },
             {
@@ -826,12 +843,48 @@ export const projectCategories: ProjectCategory[] = [
                 slug: "c-snake-game",
                 title: "C# Snake Game",
                 description: {
-                    en: "Classic Windows C# Snake game with keyboard controls and a simple desktop executable.",
-                    zh: "经典 Windows C# 贪吃蛇游戏，支持键盘控制并提供简单桌面可执行程序。",
-                    ja: "キーボード操作とシンプルなデスクトップ実行ファイルを備えた、クラシックな Windows C# スネークゲーム。"
+                    en: "Windows Snake game with five play modes, four visual themes, repeatable seeded challenges, and local leaderboards.",
+                    zh: "Windows 贪吃蛇游戏，提供五种玩法、四套视觉主题、可重复挑战的种子布局和本地排行榜。",
+                    ja: "5 種類のゲームモード、4 種類のテーマ、シードで再現できるチャレンジ、ローカルランキングを備えた Windows 向けスネークゲーム。"
                 },
-                github: "https://github.com/huiishan99/csharp-snake-game",
-                tags: ["C#", ".NET Framework", "WinForms"]
+                details: {
+                    en: "C# and Windows Forms on .NET Framework 4.7.2 power the desktop game, with custom System.Drawing rendering. Classic, Arcade, Maze, Speed Run, and Zen presets combine wrapping or solid walls, obstacles, and progressive speed. Three board sizes, four themes, seeded food and obstacle layouts, per-mode local leaderboards, saved preferences, sound effects, and start/resume countdowns round out the game. MSBuild and GitHub Actions build and test the Windows application.",
+                    zh: "使用 C#、.NET Framework 4.7.2 与 Windows Forms 开发，通过 System.Drawing 自绘游戏界面。Classic、Arcade、Maze、Speed Run 和 Zen 五种预设组合穿墙或实体边界、障碍物与渐进速度。支持三种棋盘尺寸、四套主题、由种子复现的食物与障碍布局、分模式本地排行榜、偏好保存、音效以及开始和继续倒计时。使用 MSBuild 与 GitHub Actions 构建和测试 Windows 程序。",
+                    ja: "C#、.NET Framework 4.7.2、Windows Forms を使用し、System.Drawing で画面を独自描画。Classic、Arcade、Maze、Speed Run、Zen のプリセットで、端のループ・壁・障害物・段階的な加速を組み合わせます。3 種類の盤面サイズ、4 種類のテーマ、シードで再現するエサと障害物、モード別ローカルランキング、設定保存、効果音、開始・再開時のカウントダウンに対応。MSBuild と GitHub Actions で Windows アプリをビルド・検証します。"
+                },
+                github: "https://github.com/huiishan99/game-csharp-snake",
+                image: "/images/projects/snake-gameplay.webp",
+                detailImages: [
+                    {
+                        src: "/images/projects/snake-gameplay.webp",
+                        alt: {
+                            en: "Windows Snake game showing the active playfield and game status",
+                            zh: "Windows 贪吃蛇游戏运行画面，展示棋盘与游戏状态",
+                            ja: "盤面とゲームの状態を表示する Windows スネークゲームの実画面"
+                        },
+                        caption: {
+                            en: "Windows game · Runtime capture from the 9 October 2026 CI run",
+                            zh: "Windows 游戏 · 2026 年 10 月 9 日 CI 运行中的实机截图",
+                            ja: "Windows ゲーム · 2026年10月9日の CI 実行で取得した実画面"
+                        },
+                        fit: "contain"
+                    },
+                    {
+                        src: "/images/projects/snake-menu.webp",
+                        alt: {
+                            en: "Snake start menu with game mode, board size, theme, challenge seed, and speed controls",
+                            zh: "贪吃蛇开始菜单，可设置游戏模式、棋盘尺寸、主题、挑战种子和速度",
+                            ja: "モード、盤面サイズ、テーマ、チャレンジシード、速度を選べる開始メニュー"
+                        },
+                        caption: {
+                            en: "Game setup · Native Windows interface from the same CI run",
+                            zh: "游戏设置 · 同一次 CI 运行中截取的 Windows 原生界面",
+                            ja: "ゲーム設定 · 同じ CI 実行で取得した Windows ネイティブ UI"
+                        },
+                        fit: "contain"
+                    }
+                ],
+                tags: ["C#", ".NET Framework 4.7.2", "Windows Forms", "System.Drawing"]
             },
             {
                 slug: "beecrowd-practice",
