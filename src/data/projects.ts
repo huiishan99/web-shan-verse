@@ -66,28 +66,37 @@ export type ProjectStatus =
 
 export const projectCategories: ProjectCategory[] = [
     {
-        id: "vr",
-        title: { en: "VR/XR Projects", zh: "VR/XR 项目", ja: "VR/XR プロジェクト" },
-        icon: "vr",
+        id: "unity",
+        title: { en: "Unity Projects", zh: "Unity 项目", ja: "Unity プロジェクト" },
+        icon: "cube",
         items: [
             {
                 slug: "vr-car-scene-prototype",
-                title: "VR Car Scene Prototype",
+                title: {
+                    "en": "Digital Cabin HMI Prototype",
+                    "zh": "数字座舱 HMI 原型",
+                    "ja": "デジタルコックピット HMI プロトタイプ"
+                },
                 description: {
-                    en: "Unity VR car-scene prototype built during my ALPS ALPINE internship for Meta Quest testing.",
-                    zh: "在 ALPS ALPINE 实习期间制作的 Unity VR 汽车场景原型，用于 Meta Quest 测试。",
-                    ja: "ALPS ALPINE のインターン中に制作した Unity VR 車載シーンのプロトタイプ。Meta Quest でのテスト向けに開発しました。"
+                    "en": "Unity prototype of a future automotive digital cabin HMI, developed during my ALPS ALPINE internship.",
+                    "zh": "在 ALPS ALPINE 实习期间使用 Unity 开发的未来汽车数字座舱 HMI 原型。",
+                    "ja": "ALPS ALPINE のインターンシップで Unity を使って開発した、未来の車載デジタルコックピット HMI プロトタイプ。"
                 },
                 details: {
-                    en: "This internship prototype explored how a Unity-built automotive VR scene could be prepared and checked on Meta Quest hardware. The public record focuses on the development context and device-validation workflow; internal assets, product requirements, and company implementation details are intentionally omitted.",
-                    zh: "这个实习原型探索了如何将 Unity 构建的汽车 VR 场景部署到 Meta Quest 硬件上并进行检查。公开介绍仅保留开发背景与设备验证流程；内部资源、产品需求和公司实现细节均有意省略。",
-                    ja: "このインターンシップ用プロトタイプでは、Unity で構築した車載 VR シーンを Meta Quest 実機へ展開し、確認する流れを検討しました。公開情報は開発背景とデバイス検証の範囲に限定し、社内アセット、製品要件、実装詳細は意図的に省略しています。"
+                    "en": "Built with Unity, the prototype combines an autonomous-driving scenario on a U.S. highway with experimental next-generation human–machine interface concepts. Developed during my ALPS ALPINE internship, it was designed for exhibition at CES 2025.",
+                    "zh": "使用 Unity 构建美国高速公路上的自动驾驶场景，并加入实验性的下一代人机交互界面概念。该原型在 ALPS ALPINE 实习期间开发，为 CES 2025 展示而设计。",
+                    "ja": "Unity で米国の高速道路を舞台にした自動運転シナリオを構築し、実験的な次世代ヒューマンマシンインターフェースを組み合わせました。ALPS ALPINE のインターンシップで、CES 2025 での展示を想定して開発した原型です。"
                 },
                 featured: true,
-                tags: ["Unity", "VR", "Meta Quest"]
+                tags: [
+                    "Unity",
+                    "HMI",
+                    "Digital Cabin"
+                ]
             },
             {
                 slug: "ar-image-tracking",
+                status: "prototype",
                 title: "AR Image tracking",
                 description: {
                     en: "Unity AR image-tracking practice project that places and controls 3D dragon assets in an AR scene.",
@@ -99,17 +108,19 @@ export const projectCategories: ProjectCategory[] = [
             },
             {
                 slug: "mamba-project",
+                status: "prototype",
                 title: "Mamba Project",
                 description: {
                     en: "University of Aizu CFS03 Unity VR project using an Oculus/XR scene and human anatomy model assets.",
                     zh: "会津大学 CFS03 Unity VR 项目，使用 Oculus/XR 场景和人体解剖模型资源。",
                     ja: "会津大学 CFS03 の Unity VR プロジェクト。Oculus/XR シーンと人体解剖モデルアセットを使用しています。"
                 },
-                github: "https://github.com/huiishan99/uoa-cfs03-manba-project",
+                github: "https://github.com/huiishan99/uoa-cfs03-unity-manba-project",
                 tags: ["Unity", "C#", "VR", "Oculus"]
             },
             {
                 slug: "master-project",
+                status: "prototype",
                 title: "Master Project",
                 description: {
                     en: "Unity VR classroom research prototype with an embodied avatar, speech services, and a Python backend.",
@@ -119,13 +130,6 @@ export const projectCategories: ProjectCategory[] = [
                 github: "https://github.com/huiishan99/uoa-master-research-unity",
                 tags: ["Unity", "C#", "Python", "VR"]
             },
-        ]
-    },
-    {
-        id: "unity",
-        title: { en: "Unity Projects", zh: "Unity 项目", ja: "Unity プロジェクト" },
-        icon: "cube",
-        items: [
             {
                 slug: "solar-system",
                 title: "Solar System",
@@ -141,9 +145,9 @@ export const projectCategories: ProjectCategory[] = [
                 slug: "2d-platformer",
                 title: "2D Platformer",
                 description: {
-                    en: "Unity 2D platformer practice project; the repository is not currently public.",
-                    zh: "Unity 2D 平台跳跃练习项目；仓库目前未公开。",
-                    ja: "Unity の 2D プラットフォーマー練習プロジェクト。リポジトリは現在非公開です。"
+                    "en": "Unity and C# practice project for a 2D platform-jumping game.",
+                    "zh": "使用 Unity 与 C# 制作的 2D 平台跳跃游戏练习项目。",
+                    "ja": "Unity と C# で制作した 2D プラットフォームゲームの練習プロジェクト。"
                 },
                 github: "",
                 tags: ["Unity", "C#", "2D"]
@@ -213,14 +217,14 @@ export const projectCategories: ProjectCategory[] = [
                 slug: "shan-verse",
                 title: "SHAN-VERSE",
                 description: {
-                    en: "My personal portfolio and blog built with Astro, MDX, custom styling, sitemap, and project data tooling.",
-                    zh: "我的个人作品集与博客网站，使用 Astro、MDX、自定义样式、站点地图和项目数据工具构建。",
-                    ja: "Astro、MDX、カスタムスタイル、サイトマップ、プロジェクトデータ用ツールで構築した個人ポートフォリオ兼ブログサイト。"
+                    "en": "Astro and MDX portfolio and blog with multilingual pages, project galleries, and a personal timeline.",
+                    "zh": "使用 Astro 与 MDX 构建的作品集与博客，包含多语言页面、项目图集和个人时间线。",
+                    "ja": "Astro と MDX で構築したポートフォリオ兼ブログ。多言語ページ、プロジェクトギャラリー、個人年表を備えています。"
                 },
                 details: {
-                    en: "SHAN-VERSE is the living system behind this portfolio: an Astro and MDX static site with multilingual routes, structured project and timeline data, custom visual components, and build-time validation. It is also where I gradually publish research status, personal records, and technical writing while keeping private work appropriately abstract.",
-                    zh: "SHAN-VERSE 是这份个人作品集背后的持续演进系统：它以 Astro 与 MDX 构建，包含多语言路由、结构化项目与时间线数据、自定义视觉组件和构建期验证。这里也用于逐步公开研究状态、个人记录与技术写作，同时对尚未公开的工作保持适当抽象。",
-                    ja: "SHAN-VERSE は、このポートフォリオを支える継続的に発展するシステムです。Astro と MDX を基盤に、多言語ルート、構造化されたプロジェクト／タイムラインデータ、独自のビジュアルコンポーネント、ビルド時検証を備えています。未公開の研究を適切に抽象化しながら、研究状況、個人記録、技術記事を段階的に公開する場所でもあります。"
+                    "en": "Astro generates static pages from MDX articles and TypeScript project and timeline data. Custom CSS and interactive components provide the layout, galleries, and project dialogs. TypeScript checks, ESLint, unit tests, and Playwright validate the site.",
+                    "zh": "Astro 将 MDX 文章及 TypeScript 项目与时间线数据生成为静态页面；自定义 CSS 与交互组件实现布局、图集和项目详情弹窗。使用 TypeScript 检查、ESLint、单元测试与 Playwright 验证网站。",
+                    "ja": "Astro が MDX 記事と TypeScript のプロジェクト・年表データから静的ページを生成します。独自の CSS と対話型コンポーネントでレイアウト、ギャラリー、詳細ダイアログを実装。TypeScript、ESLint、単体テスト、Playwright で検証しています。"
                 },
                 detailImage: "/images/header_galaxy.jpg",
                 detailImageAlt: {
@@ -236,14 +240,14 @@ export const projectCategories: ProjectCategory[] = [
                 slug: "furigana-for-spotify",
                 title: "Furigana for Spotify",
                 description: {
-                    en: "Japanese lyric readings inside Spotify Desktop, with local conversion and an optional two-line desktop overlay on Windows and macOS. Requires Spicetify.",
-                    zh: "为 Spotify 桌面版日语歌词添加本地生成的注音，并在 Windows 与 macOS 上提供可选的双行桌面歌词悬浮窗。需要先安装 Spicetify。",
-                    ja: "Spotify Desktop の日本語歌詞にローカル生成の読みを表示。Windows と macOS 向けに、任意で使える2行のデスクトップ歌詞表示も備えています。Spicetify が必要です。"
+                    "en": "TypeScript Spicetify extension adding Japanese lyric readings and optional Windows/macOS desktop overlays. Requires Spicetify.",
+                    "zh": "TypeScript 编写的 Spicetify 扩展，为日语歌词添加注音，并提供可选的 Windows/macOS 桌面歌词悬浮窗。需要先安装 Spicetify。",
+                    "ja": "TypeScript 製の Spicetify 拡張。日本語歌詞の読みと、任意の Windows/macOS デスクトップ歌詞表示を追加します。Spicetify が必要です。"
                 },
                 details: {
-                    en: "Furigana for Spotify adds hiragana, katakana, or romaji to Japanese lyrics without leaving Spotify Desktop. Its TypeScript Spicetify extension uses Kuroshiro and Kuromoji for local readings, with optional online lookup and a local fallback. Desktop companions show the current and next lines using PowerShell/WPF on Windows and Swift/AppKit on macOS; the Windows launcher is written in C#. esbuild bundles the extension and Vitest checks its logic. The v0.6.3 release includes installation, update, and diagnostic tools. Spotify Desktop and Spicetify must already be installed; the extension does not require Spotify credentials. This independent project is not affiliated with or endorsed by Spotify AB.",
-                    zh: "Furigana for Spotify 让用户直接在 Spotify 桌面版中阅读带平假名、片假名或罗马字注音的日语歌词。TypeScript 编写的 Spicetify 扩展使用 Kuroshiro 与 Kuromoji 在本地生成读音，也支持可选的在线查询和本地回退。桌面伴随程序显示当前与下一行歌词：Windows 使用 PowerShell/WPF，macOS 使用 Swift/AppKit，Windows 启动器则以 C# 编写。开发工具采用 esbuild 打包、Vitest 测试。v0.6.3 包含安装、更新与诊断工具；使用前需安装 Spotify 桌面版和 Spicetify，扩展本身不需要 Spotify 凭据。本项目为独立开发，与 Spotify AB 无隶属或背书关系。",
-                    ja: "Furigana for Spotify は、Spotify Desktop 内の日本語歌詞にひらがな・カタカナ・ローマ字の読みを表示します。TypeScript 製の Spicetify 拡張で、Kuroshiro と Kuromoji によるローカル変換を基本とし、任意のオンライン検索とローカルへのフォールバックに対応しています。現在と次の歌詞を表示するデスクトップ機能は、Windows では PowerShell/WPF、macOS では Swift/AppKit で実装し、Windows ランチャーには C# を使用しています。開発には esbuild と Vitest を採用。v0.6.3 にはインストール・更新・診断ツールも含まれます。Spotify Desktop と Spicetify の事前インストールが必要ですが、拡張に Spotify の認証情報を渡す必要はありません。Spotify AB との提携・承認関係はありません。"
+                    "en": "Kuroshiro and Kuromoji generate hiragana, katakana, or romaji locally, with optional online lookup. Desktop overlays use PowerShell/WPF on Windows and Swift/AppKit on macOS; the Windows launcher uses C#. esbuild bundles the extension and Vitest tests its logic. Requires Spotify Desktop and Spicetify. This independent project is not affiliated with Spotify AB.",
+                    "zh": "Kuroshiro 与 Kuromoji 在本地生成平假名、片假名或罗马字，也支持可选的在线查询。桌面歌词在 Windows 上使用 PowerShell/WPF，在 macOS 上使用 Swift/AppKit；Windows 启动器使用 C#。扩展由 esbuild 打包、Vitest 测试。需要 Spotify 桌面版与 Spicetify。本项目独立开发，与 Spotify AB 无隶属关系。",
+                    "ja": "Kuroshiro と Kuromoji でひらがな・カタカナ・ローマ字をローカル生成し、任意のオンライン検索にも対応します。デスクトップ表示には Windows で PowerShell/WPF、macOS で Swift/AppKit を使用し、Windows ランチャーは C# 製です。esbuild でビルドし、Vitest でテスト。Spotify Desktop と Spicetify が必要です。Spotify AB とは無関係の独立したプロジェクトです。"
                 },
                 status: "live",
                 github: "https://github.com/huiishan99/extension-Furigana-for-Spotify",
@@ -296,14 +300,14 @@ export const projectCategories: ProjectCategory[] = [
                 slug: "math-note",
                 title: "Math-Note",
                 description: {
-                    en: "Browser math notebook with a drawing canvas, locally saved pages, and export. The public demo supports drawing; AI solving is currently disabled.",
-                    zh: "浏览器数学笔记本，支持手写画布、页面本地保存与导出。公开演示可体验绘图，AI 求解目前尚未开放。",
-                    ja: "手書きキャンバス、ページのローカル保存、書き出しを備えたブラウザー数学ノート。公開デモでは描画を試せますが、AI 求解は現在無効です。"
+                    "en": "React/TypeScript math notebook with a drawing canvas, local pages, and export. AI solving is currently disabled in the public demo.",
+                    "zh": "React/TypeScript 数学笔记本，支持手写画布、本地页面保存与导出。公开演示的 AI 求解目前尚未开放。",
+                    "ja": "React/TypeScript の数学ノート。手書きキャンバス、ローカル保存、書き出しに対応。公開デモの AI 求解は現在無効です。"
                 },
                 details: {
-                    en: "Math-Note combines a React/TypeScript canvas with a Python/FastAPI API. It supports multiple notebook pages, pen and eraser tools, undo/redo, local browser storage, and JSON/PDF export. The interface uses Tailwind CSS and Mantine, Vite builds the frontend, and MathJax renders returned equations. The backend integrates the Google Gen AI SDK for handwritten-image solving, with server-side credentials, image validation, request limits, and Cloudflare Turnstile verification. Frontend and API are deployed together on Vercel. As of 8 October 2026, drawing is available but public AI requests remain disabled pending Turnstile configuration; the preview shows no generated answer.",
-                    zh: "Math-Note 将 React/TypeScript 手写画布与 Python/FastAPI 接口结合，支持多页笔记、画笔与橡皮、撤销/重做、浏览器本地存储及 JSON/PDF 导出。界面使用 Tailwind CSS 与 Mantine，前端由 Vite 构建，返回的公式由 MathJax 渲染。后端通过 Google Gen AI SDK 接入手写图像求解，并实现服务端凭据管理、图像验证、请求限制与 Cloudflare Turnstile 人机验证。前端和 API 部署在同一个 Vercel 项目中。截至 2026 年 10 月 8 日，绘图功能可用，公开 AI 请求仍因 Turnstile 配置未完成而关闭；预览图不包含生成的答案。",
-                    ja: "Math-Note は React/TypeScript の手書きキャンバスと Python/FastAPI の API を組み合わせた数学ノートです。複数ページ、ペンと消しゴム、元に戻す・やり直す、ブラウザー内保存、JSON/PDF 書き出しに対応しています。UI は Tailwind CSS と Mantine、フロントエンドのビルドは Vite、返された数式の表示は MathJax を使用。バックエンドは Google Gen AI SDK による手書き画像の求解処理を備え、認証情報のサーバー管理、画像検証、リクエスト制限、Cloudflare Turnstile 検証を実装しています。フロントエンドと API は同じ Vercel プロジェクトにデプロイしています。2026年10月8日時点では描画を利用できますが、Turnstile の設定が完了するまで公開 AI リクエストは無効です。プレビューに生成された回答は含まれていません。"
+                    "en": "React, TypeScript, Tailwind CSS, and Mantine provide a multi-page canvas with pen/eraser tools, undo/redo, local storage, and JSON/PDF export. A Python/FastAPI backend integrates the Google Gen AI SDK for image solving; MathJax renders equations and Vite builds the frontend. Public AI requests remain disabled pending Turnstile configuration.",
+                    "zh": "React、TypeScript、Tailwind CSS 与 Mantine 实现多页画布、画笔/橡皮、撤销/重做、本地存储和 JSON/PDF 导出。Python/FastAPI 后端通过 Google Gen AI SDK 实现图像求解，MathJax 渲染公式，Vite 构建前端。公开 AI 请求仍因 Turnstile 配置未完成而关闭。",
+                    "ja": "React、TypeScript、Tailwind CSS、Mantine で複数ページのキャンバス、ペン・消しゴム、元に戻す・やり直す、ローカル保存、JSON/PDF 出力を実装。Python/FastAPI のバックエンドが Google Gen AI SDK で画像を処理し、MathJax で数式を表示、Vite でフロントエンドをビルドします。Turnstile 設定が完了するまで公開 AI リクエストは無効です。"
                 },
                 status: "prototype",
                 github: "https://github.com/huiishan99/web-math-note",
@@ -336,9 +340,9 @@ export const projectCategories: ProjectCategory[] = [
                     ja: "React/TypeScript、Highcharts、Axios を使った都道府県別人口グラフのフロントエンド課題。公開デモでは現在データ API を利用できません。"
                 },
                 details: {
-                    en: "This SPA was built for the Yumemi frontend coding exercise using React and TypeScript. React Hooks manage prefecture selection and population categories, Axios handles data requests, and Highcharts renders the comparison chart. The interface uses plain responsive CSS with light and dark themes. Vite provides the development server and production build; component tests use Vitest and React Testing Library. The public deployment currently renders the interface but cannot load the original API data, so its preview shows the real error message and empty chart. API replacement remains a separate future task.",
-                    zh: "这是为 Yumemi 前端编程测试制作的 React 与 TypeScript 单页应用。React Hooks 管理都道府县选择与人口分类，Axios 处理数据请求，Highcharts 绘制对比图表；界面使用原生 CSS 实现响应式布局与明暗主题。Vite 提供开发服务器和生产构建，组件测试使用 Vitest 与 React Testing Library。当前线上界面可以加载，但原有 API 数据请求失败，因此预览保留真实报错与空图表。API 替换留待后续单独处理。",
-                    ja: "Yumemi のフロントエンドコーディング試験向けに、React と TypeScript で制作した SPA です。React Hooks で都道府県選択と人口区分を管理し、Axios でデータを取得、Highcharts で比較グラフを描画します。通常の CSS でレスポンシブレイアウトとライト・ダークテーマを実装。Vite を開発サーバーと本番ビルドに、Vitest と React Testing Library をコンポーネントテストに使用しています。公開環境では現在、画面は表示されますが元の API データを取得できないため、プレビューにも実際のエラーと空のグラフを掲載しています。API の置き換えは今後の別作業です。"
+                    "en": "React Hooks manage prefecture selection and population categories, Axios requests data, and Highcharts draws comparison charts. Responsive CSS supports light and dark themes. Vite builds the app; tests use Vitest and React Testing Library. The public interface loads, but its original data API is unavailable.",
+                    "zh": "React Hooks 管理都道府县选择与人口分类，Axios 请求数据，Highcharts 绘制对比图表。响应式 CSS 支持明暗主题，Vite 构建应用，Vitest 与 React Testing Library 用于测试。公开界面可加载，但原有数据 API 暂不可用。",
+                    "ja": "React Hooks で都道府県選択と人口区分を管理し、Axios でデータを取得、Highcharts で比較グラフを描画します。レスポンシブ CSS は明暗テーマに対応。Vite でビルドし、Vitest と React Testing Library でテストします。公開画面は表示されますが、元のデータ API は現在利用できません。"
                 },
                 status: "prototype",
                 github: "https://github.com/huiishan99/web-yumemi-test",
@@ -366,9 +370,9 @@ export const projectCategories: ProjectCategory[] = [
                 slug: "weather-app",
                 title: "Weather App",
                 description: {
-                    en: "Static weather lookup app using OpenWeather data, city search, and weather-specific UI illustrations.",
-                    zh: "静态天气查询应用，使用 OpenWeather 数据、城市搜索和对应天气的 UI 插图。",
-                    ja: "OpenWeather のデータ、都市検索、天気に応じた UI イラストを使った静的な天気検索アプリ。"
+                    "en": "HTML, CSS, and JavaScript weather app with city search, OpenWeather data, and weather-specific illustrations.",
+                    "zh": "使用 HTML、CSS 和 JavaScript 构建的天气应用，支持城市搜索、OpenWeather 数据与天气插图。",
+                    "ja": "HTML、CSS、JavaScript 製の天気アプリ。都市検索、OpenWeather データ、天気別のイラストを備えています。"
                 },
                 github: "https://github.com/huiishan99/web-weather-app",
                 website: "https://js-weather-app-nine-wine.vercel.app",
@@ -395,9 +399,9 @@ export const projectCategories: ProjectCategory[] = [
                 slug: "falling-sand",
                 title: "Falling Sand",
                 description: {
-                    en: "Interactive falling-sand sandbox with p5-style rendering, material rules, draggable controls, and pause/step tools.",
-                    zh: "交互式 falling-sand 沙盒，包含 p5 风格渲染、材料规则、可拖拽控制和暂停/单步工具。",
-                    ja: "p5 風レンダリング、素材ルール、ドラッグ可能なコントロール、一時停止/ステップ機能を備えたインタラクティブな falling-sand サンドボックス。"
+                    "en": "JavaScript and p5.js falling-sand sandbox with material rules, draggable controls, and pause/step tools; built with Vite.",
+                    "zh": "使用 JavaScript 与 p5.js 构建的落沙沙盒，包含材料规则、可拖拽控件及暂停/单步工具，由 Vite 构建。",
+                    "ja": "JavaScript と p5.js による落ち砂サンドボックス。素材ルール、ドラッグ操作、一時停止・ステップ機能を備え、Vite でビルドします。"
                 },
                 github: "https://github.com/huiishan99/web-falling-sand",
                 website: "https://huiishan99.github.io/web-falling-sand/",
@@ -453,9 +457,9 @@ export const projectCategories: ProjectCategory[] = [
                 slug: "dreamlight",
                 title: "DreamLight",
                 description: {
-                    en: "Static promotional site for a BitSummit 2024 light-show and drone game concept.",
-                    zh: "为 BitSummit 2024 灯光秀与无人机游戏概念制作的静态宣传网站。",
-                    ja: "BitSummit 2024 向けのライトショーとドローンゲーム構想のために制作した静的プロモーションサイト。"
+                    "en": "HTML, SCSS, and JavaScript promotional site for a BitSummit 2024 light-show and drone game concept.",
+                    "zh": "使用 HTML、SCSS 和 JavaScript 制作的宣传网站，介绍 BitSummit 2024 灯光秀与无人机游戏概念。",
+                    "ja": "HTML、SCSS、JavaScript で制作した、BitSummit 2024 向けライトショー・ドローンゲーム構想の紹介サイト。"
                 },
                 github: "https://github.com/huiishan99/web-dreamlight",
                 website: "https://web-dreamlight.vercel.app/",
@@ -532,9 +536,9 @@ export const projectCategories: ProjectCategory[] = [
                 slug: "silver-game",
                 title: "Silver Game",
                 description: {
-                    en: "Hackathon frontend for an elderly-focused social platform with realtime multimodal emotion analysis.",
-                    zh: "面向老年人社交平台的黑客松前端，包含实时多模态情绪分析。",
-                    ja: "高齢者向けソーシャルプラットフォームのハッカソン用フロントエンド。リアルタイムのマルチモーダル感情分析を備えています。"
+                    "en": "Next.js, React, and TypeScript hackathon frontend for an older-adult social platform, connected to FastAPI/PyTorch emotion analysis.",
+                    "zh": "使用 Next.js、React 和 TypeScript 构建的黑客松前端，为面向老年人的社交平台接入 FastAPI/PyTorch 情绪分析。",
+                    "ja": "Next.js、React、TypeScript 製のハッカソン用フロントエンド。高齢者向け交流プラットフォームに FastAPI/PyTorch の感情分析を接続します。"
                 },
                 github: "https://github.com/huiishan99/web-ai-in-action-frontend",
                 website: "https://web-ai-in-action-frontend.vercel.app",
@@ -576,6 +580,82 @@ export const projectCategories: ProjectCategory[] = [
         icon: "graduation",
         items: [
             {
+                "slug": "wireless-and-mobile-networks",
+                "title": {
+                    "en": "Wireless and Mobile Networks",
+                    "zh": "无线与移动网络",
+                    "ja": "無線・モバイルネットワーク"
+                },
+                "description": {
+                    "en": "University of Aizu CNC05A coursework archive of written assignments and reports on wireless and mobile networks.",
+                    "zh": "会津大学 CNC05A 课程作业记录，包含无线与移动网络相关的书面练习和报告。",
+                    "ja": "会津大学 CNC05A の授業記録。無線・モバイルネットワークの筆記課題とレポートをまとめています。"
+                },
+                "tags": [
+                    "Wireless Networks",
+                    "Mobile Networks",
+                    "Coursework"
+                ],
+                "status": "coursework"
+            },
+            {
+                "slug": "mathematics-and-post-quantum-cryptography",
+                "title": {
+                    "en": "Mathematics and Post-Quantum Cryptography",
+                    "zh": "数学与后量子密码学",
+                    "ja": "数学と耐量子計算機暗号"
+                },
+                "description": {
+                    "en": "University of Aizu CSA23 coursework archive of mathematics and post-quantum cryptography exercises and a written report.",
+                    "zh": "会津大学 CSA23 课程作业记录，包含数学、后量子密码学练习和书面报告。",
+                    "ja": "会津大学 CSA23 の授業記録。数学・耐量子計算機暗号の演習とレポートをまとめています。"
+                },
+                "tags": [
+                    "Mathematics",
+                    "Post-Quantum Cryptography",
+                    "Coursework"
+                ],
+                "status": "coursework"
+            },
+            {
+                "slug": "numerical-modeling-and-simulations",
+                "title": {
+                    "en": "Numerical Modeling and Simulations",
+                    "zh": "数值建模与仿真",
+                    "ja": "数値モデリングとシミュレーション"
+                },
+                "description": {
+                    "en": "University of Aizu CSC08A coursework on floating-point representation, precision, and summation order through written exercises and C examples.",
+                    "zh": "会津大学 CSC08A 课程作业，通过书面练习与 C 语言示例探讨浮点表示、精度和求和顺序。",
+                    "ja": "会津大学 CSC08A の授業課題。筆記演習と C のコード例を通じて、浮動小数点表現、精度、加算順序を扱います。"
+                },
+                "tags": [
+                    "C",
+                    "Numerical Computing",
+                    "Floating-Point Arithmetic"
+                ],
+                "status": "coursework"
+            },
+            {
+                "slug": "research-paper-writing-seminar",
+                "title": {
+                    "en": "Research Paper Writing Seminar I",
+                    "zh": "研究论文写作研讨 I",
+                    "ja": "研究論文ライティング演習 I"
+                },
+                "description": {
+                    "en": "University of Aizu RPW1 academic-writing coursework on literature surveys, paper structure, titles and abstracts, and technical reporting.",
+                    "zh": "会津大学 RPW1 学术写作课程作业，涵盖文献调研、论文结构、标题与摘要和技术报告。",
+                    "ja": "会津大学 RPW1 の学術ライティング課題。文献調査、論文構成、タイトル・要旨、技術レポートを扱います。"
+                },
+                "tags": [
+                    "Academic Writing",
+                    "Literature Review",
+                    "Coursework"
+                ],
+                "status": "coursework"
+            },
+            {
                 slug: "embodied-avatars-generative-ai-vr-classroom-coursework",
                 title: "The Role of Embodied Avatars and Generative AI in Self Learning VR Classroom",
                 description: {
@@ -591,33 +671,33 @@ export const projectCategories: ProjectCategory[] = [
                 slug: "human-activity-pattern-processing",
                 title: "Human Activity Pattern Processing",
                 description: {
-                    en: "University of Aizu ITA09 coursework with Python scripts and Jupyter notebooks for activity-pattern processing.",
-                    zh: "会津大学 ITA09 课程项目，使用 Python 脚本和 Jupyter Notebook 处理活动模式数据。",
-                    ja: "会津大学 ITA09 の授業課題。Python スクリプトと Jupyter Notebook を用いて活動パターン処理を行いました。"
+                    "en": "University of Aizu ITA09 Python/Jupyter coursework on activity recognition, signal alignment, and signature matching using NumPy, pandas, Matplotlib, and scikit-learn.",
+                    "zh": "会津大学 ITA09 Python/Jupyter 课程作业，使用 NumPy、pandas、Matplotlib 与 scikit-learn 练习活动识别、信号对齐和签名匹配。",
+                    "ja": "会津大学 ITA09 の Python/Jupyter 課題。NumPy、pandas、Matplotlib、scikit-learn を用いて、活動認識、信号の位置合わせ、署名照合を学習します。"
                 },
-                github: "https://github.com/huiishan99/uoa-human-activity-pattern-processing",
+                github: "https://github.com/huiishan99/uoa-ita09-human-activity-pattern-processing",
                 tags: ["Python", "Jupyter Notebook", "Machine Learning"]
             },
             {
                 slug: "advanced-robotics",
                 title: "Advanced Robotics",
                 description: {
-                    en: "University of Aizu ITC03A Advanced Robotics coursework implemented mainly with MATLAB scripts.",
-                    zh: "会津大学 ITC03A Advanced Robotics 课程项目，主要使用 MATLAB 脚本实现。",
-                    ja: "会津大学 ITC03A Advanced Robotics の授業課題。主に MATLAB スクリプトで実装しました。"
+                    "en": "University of Aizu ITC03A MATLAB coursework on coordinate transforms, robot-arm forward/inverse kinematics, and dynamics.",
+                    "zh": "会津大学 ITC03A MATLAB 课程作业，练习坐标变换、机械臂正逆运动学和动力学。",
+                    "ja": "会津大学 ITC03A の MATLAB 課題。座標変換、ロボットアームの順・逆運動学、動力学を扱います。"
                 },
-                github: "https://github.com/huiishan99/uoa-advanced-robotics",
+                github: "https://github.com/huiishan99/uoa-itc03a-advanced-robotics",
                 tags: ["MATLAB", "Robotics"]
             },
             {
                 slug: "biosignal-processing-and-data-mining",
                 title: "Biosignal Processing and Data Mining",
                 description: {
-                    en: "University of Aizu ITA25 coursework with MATLAB assignments for biosignal processing and data mining.",
-                    zh: "会津大学 ITA25 课程项目，包含用于生物信号处理与数据挖掘的 MATLAB 作业。",
-                    ja: "会津大学 ITA25 の授業課題。生体信号処理とデータマイニングのための MATLAB 課題を含みます。"
+                    "en": "University of Aizu ITA25 MATLAB coursework on wavelet decomposition, signal denoising, peak detection, and sample entropy.",
+                    "zh": "会津大学 ITA25 MATLAB 课程作业，练习小波分解、信号去噪、峰值检测和样本熵。",
+                    "ja": "会津大学 ITA25 の MATLAB 課題。ウェーブレット分解、信号のノイズ除去、ピーク検出、サンプルエントロピーを扱います。"
                 },
-                github: "https://github.com/huiishan99/uoa-biosignal-processing-and-data-mining",
+                github: "https://github.com/huiishan99/uoa-ita25-biosignal-processing-and-data-mining",
                 tags: ["MATLAB", "Biosignal Processing", "Data Mining"]
             },
             {
@@ -628,7 +708,7 @@ export const projectCategories: ProjectCategory[] = [
                     zh: "会津大学 CSC03F 应用统计课程笔记与作业记录。",
                     ja: "会津大学 CSC03F 応用統計の授業ノートと課題記録。"
                 },
-                github: "https://github.com/huiishan99/uoa-applied-statistics",
+                github: "https://github.com/huiishan99/uoa-csc03f-applied-statistics",
                 tags: ["Statistics", "Coursework"]
             },
             {
@@ -639,7 +719,7 @@ export const projectCategories: ProjectCategory[] = [
                     zh: "会津大学 SEC01F 软件工程课程笔记与作业记录。",
                     ja: "会津大学 SEC01F ソフトウェア工学の授業ノートと課題記録。"
                 },
-                github: "https://github.com/huiishan99/uoa-software-engineering",
+                github: "https://github.com/huiishan99/uoa-sec01f-software-engineering",
                 tags: ["Software Engineering", "Coursework"]
             },
         ]
@@ -658,9 +738,9 @@ export const projectCategories: ProjectCategory[] = [
                     ja: "C++17 と Win32/GDI で制作した Windows ネイティブの落ち物パズル。ホールド、ゴースト、次のブロック表示、操作設定、ローカルランキングを備えています。"
                 },
                 details: {
-                    en: "This C++17 game uses the Win32 API for its native Windows window and GDI for drawing. The rules include wall kicks, lock delay, hold, a ghost piece, a three-piece preview, and combo and spin-clear scoring. A settings screen adjusts key repeat timing, controls, window size, and sound; a local top-five leaderboard saves names and scores. CMake builds the game and a portable rule-testing target, while GitHub Actions also exercises the Windows UI and packaged executable. Windows builds are distributed as time-limited CI artifacts that require a GitHub sign-in, rather than a standalone release. The game window is Windows-only; the core tests also run on Linux and macOS.",
-                    zh: "这款 C++17 游戏使用 Win32 API 创建原生 Windows 窗口，以 GDI 绘制界面。规则包含踢墙、锁定延迟、保留方块、落点预览、三块预告，以及连击与旋转消行计分。设置界面可调整按键重复时序、键位、窗口大小和声音，本地前五名排行榜记录玩家名称与分数。CMake 用于构建游戏和可跨平台运行的规则测试，GitHub Actions 还会检查 Windows 原生界面与打包后的程序。Windows 构建通过有保存期限的 CI 产物提供，下载需要登录 GitHub，目前没有独立 Release。游戏窗口仅支持 Windows，核心规则测试也可在 Linux 和 macOS 上运行。",
-                    ja: "C++17 で実装し、Win32 API でネイティブ Windows ウィンドウを作成、GDI で描画するゲームです。壁蹴り、固定までの猶予、ホールド、ゴースト、3個先までのプレビュー、コンボと回転消去の加点に対応。設定画面ではキーリピート、操作キー、ウィンドウサイズ、音を調整でき、ローカルの上位5件に名前とスコアを保存します。CMake でゲームと移植可能なルールテストをビルドし、GitHub Actions では Windows UI と配布用実行ファイルも検証します。Windows ビルドは保存期間付きの CI アーティファクトとして配布し、ダウンロードには GitHub ログインが必要です。独立した Release はまだありません。ゲーム画面は Windows 専用で、コアのテストは Linux と macOS でも実行できます。"
+                    "en": "C++17, Win32, and GDI implement the game window, drawing, wall kicks, hold, ghost/next-piece previews, and scoring. Settings control key repeat, bindings, window size, and sound; a local leaderboard stores scores. CMake builds the game and portable rule tests, while GitHub Actions tests Windows UI and packages time-limited artifacts requiring GitHub sign-in. The game window is Windows-only; core tests also run on Linux and macOS.",
+                    "zh": "C++17、Win32 与 GDI 实现游戏窗口、绘图、踢墙、暂存、落点/后续方块预览和计分。设置可调整按键重复、键位、窗口尺寸与声音，本地排行榜保存成绩。CMake 构建游戏与跨平台规则测试，GitHub Actions 测试 Windows UI 并生成需要 GitHub 登录的限时构建产物。游戏窗口仅支持 Windows，核心测试也可在 Linux 与 macOS 上运行。",
+                    "ja": "C++17、Win32、GDI でゲームウィンドウ、描画、壁蹴り、ホールド、ゴースト・次ブロック表示、得点処理を実装。設定でキーリピート、割り当て、画面サイズ、サウンド設定を調整し、スコアをローカル保存します。CMake でゲームと移植可能なルールテストをビルドし、GitHub Actions で Windows UI を検証、GitHub ログインが必要な期限付き成果物を配布。ゲーム画面は Windows 専用で、ルールテストは Linux・macOS でも動作します。"
                 },
                 github: "https://github.com/huiishan99/game-cpp-tetris",
                 image: "/images/projects/tetris-gameplay.webp",
@@ -700,9 +780,9 @@ export const projectCategories: ProjectCategory[] = [
                 slug: "opengl-practice",
                 title: "OpenGL Practice",
                 description: {
-                    en: "OpenGL learning project covering windows, triangles, buffers, shaders, textures, and basic 3D rendering.",
-                    zh: "OpenGL 学习项目，覆盖窗口、三角形、缓冲区、着色器、纹理和基础 3D 渲染。",
-                    ja: "ウィンドウ、三角形、バッファ、シェーダー、テクスチャ、基本的な 3D レンダリングを扱う OpenGL 学習プロジェクト。"
+                    "en": "C++ and OpenGL practice project using GLFW for windows, with buffers, shaders, textures, and basic 3D rendering.",
+                    "zh": "使用 C++、OpenGL 与 GLFW 的图形练习项目，涵盖窗口、缓冲区、着色器、纹理和基础 3D 渲染。",
+                    "ja": "C++、OpenGL、GLFW のグラフィックス練習。ウィンドウ、バッファー、シェーダー、テクスチャー、基本的な 3D 描画を扱います。"
                 },
                 github: "https://github.com/huiishan99/opengl-vector-graphic",
                 tags: ["C++", "OpenGL", "GLFW"]
@@ -744,9 +824,9 @@ export const projectCategories: ProjectCategory[] = [
                 slug: "pta-practice",
                 title: "PTA Practice",
                 description: {
-                    en: "PTA online judge practice record; the repository is not currently public.",
-                    zh: "PTA 在线评测练习记录；仓库目前未公开。",
-                    ja: "PTA オンラインジャッジの練習記録。リポジトリは現在非公開です。"
+                    "en": "C# practice archive for PTA online judge problems.",
+                    "zh": "面向 PTA 在线评测题目的 C# 编程练习记录。",
+                    "ja": "PTA オンラインジャッジ向けの C# プログラミング練習記録。"
                 },
                 github: "",
                 tags: ["C#", "OJ"]
@@ -755,9 +835,9 @@ export const projectCategories: ProjectCategory[] = [
                 slug: "paiza-practice",
                 title: "Paiza Practice",
                 description: {
-                    en: "Paiza online judge practice record; the repository is not currently public.",
-                    zh: "Paiza 在线评测练习记录；仓库目前未公开。",
-                    ja: "Paiza オンラインジャッジの練習記録。リポジトリは現在非公開です。"
+                    "en": "C# practice archive for Paiza online judge problems.",
+                    "zh": "面向 Paiza 在线评测题目的 C# 编程练习记录。",
+                    "ja": "Paiza オンラインジャッジ向けの C# プログラミング練習記録。"
                 },
                 github: "",
                 tags: ["C#", "OJ"]
@@ -766,9 +846,9 @@ export const projectCategories: ProjectCategory[] = [
                 slug: "rockfall-game",
                 title: "Rockfall Game",
                 description: {
-                    en: "Pygame avoidance game with data collection, Random Forest training, and AI-controlled play mode.",
-                    zh: "Pygame 躲避类游戏，包含数据收集、随机森林训练和 AI 控制游玩模式。",
-                    ja: "データ収集、ランダムフォレスト学習、AI 操作モードを備えた Pygame の回避ゲーム。"
+                    "en": "Python/Pygame avoidance game with data collection, scikit-learn Random Forest training, and AI-controlled play.",
+                    "zh": "Python/Pygame 躲避游戏，支持数据采集、scikit-learn 随机森林训练和 AI 自动游玩。",
+                    "ja": "Python/Pygame の回避ゲーム。データ収集、scikit-learn のランダムフォレスト学習、AI 自動プレイに対応します。"
                 },
                 github: "https://github.com/huiishan99/python-rockfall-game",
                 tags: ["Python", "Pygame", "scikit-learn"]

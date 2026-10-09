@@ -364,7 +364,7 @@ test('project category navigation wraps into two readable desktop rows', async (
   await page.goto('/projects');
 
   const routeItems = page.locator('.category-route-item');
-  await expect(routeItems).toHaveCount(8);
+  await expect(routeItems).toHaveCount(7);
 
   const routeLayout = await routeItems.evaluateAll((items) => items.map((item) => {
     const bounds = item.getBoundingClientRect();
@@ -379,7 +379,7 @@ test('project category navigation wraps into two readable desktop rows', async (
     return counts;
   }, {});
 
-  expect(Object.values(rowCounts)).toEqual([5, 3]);
+  expect(Object.values(rowCounts)).toEqual([5, 2]);
   expect(routeLayout.every((item) => item.titleFits)).toBe(true);
 });
 
@@ -391,7 +391,7 @@ test('project cards keep one lazy detail dialog while preserving the existing in
   await expect(page.locator('[data-project-detail-fragment]')).toHaveCount(0);
   await expect(page.locator('.project-detail-title')).toHaveCount(0);
 
-  const vrCard = page.locator('.project-card').filter({ hasText: 'VR Car Scene Prototype' });
+  const vrCard = page.locator('.project-card').filter({ hasText: 'Digital Cabin HMI Prototype' });
   const vrTrigger = vrCard.getByRole('link', { name: 'View Details' });
   await expect(vrTrigger).toHaveAttribute('href', '/projects/vr-car-scene-prototype');
 
@@ -399,7 +399,7 @@ test('project cards keep one lazy detail dialog while preserving the existing in
   await expect(dialog).toBeVisible();
   await expect(dialog).toHaveClass(/project-detail-dialog--text-only/);
   await expect(dialog.locator('.project-detail-media')).toHaveCount(0);
-  await expect(dialog.locator('.project-detail-description')).toContainText('Meta Quest hardware');
+  await expect(dialog.locator('.project-detail-description')).toContainText('next-generation human–machine interface');
 
   await page.keyboard.press('Escape');
   await expect(dialog).not.toBeVisible();
@@ -569,3 +569,35 @@ test('research archive and Yumemi keep full-bleed cards with honest localized de
     }
   }
 });
+
+for (const locale of ['', '/zh', '/ja']) {
+  for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844 }]) {
+    test(`unified project categories and course details ${locale || '/en'} at ${viewport.width}px`, async ({ page }, testInfo) => {
+      await page.setViewportSize(viewport);
+      await page.goto(`${locale}/projects`);
+      await expect(page.locator('.category-route-item')).toHaveCount(7);
+      await expect(page.locator('.category-route-item[href="#vr"], #vr')).toHaveCount(0);
+      await expect(page.locator('#unity .project-card')).toHaveCount(8);
+      await expect(page.locator('#school .project-card')).toHaveCount(10);
+      await page.locator('.category-routes').screenshot({ path: testInfo.outputPath(`categories-${viewport.width}.png`) });
+      await page.locator('.category-route-item[href="#unity"]').click();
+      await expect(page).toHaveURL(/#unity$/);
+      await expect(page.locator('#unity')).toBeInViewport();
+      await page.locator('.category-route-item[href="#school"]').click();
+      await expect(page).toHaveURL(/#school$/);
+      const detailLink = page.locator(`a.project-detail-trigger[href="${locale}/projects/numerical-modeling-and-simulations"]`);
+      await detailLink.click();
+      const dialog = page.locator('[data-project-detail-dialog]');
+      await expect(dialog).toBeVisible();
+      await expect(dialog.locator('.project-detail-description')).toContainText('CSC08A');
+      await expect(dialog.locator('a[href*="github.com"]')).toHaveCount(0);
+      await page.keyboard.press('Escape');
+      await expect(dialog).not.toBeVisible();
+      await expect(detailLink).toBeFocused();
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      await page.goto(`${locale}/projects/vr-car-scene-prototype`);
+      await expect(page.locator('h1')).toContainText('HMI');
+      await expect(page.locator('.project-detail-description')).not.toContainText('Quest');
+    });
+  }
+}
