@@ -397,13 +397,21 @@ test('project cards keep one lazy detail dialog while preserving the existing in
 
   await vrTrigger.click();
   await expect(dialog).toBeVisible();
-  await expect(dialog).toHaveClass(/project-detail-dialog--text-only/);
-  await expect(dialog.locator('.project-detail-media')).toHaveCount(0);
-  await expect(dialog.locator('.project-detail-description')).toContainText('next-generation human–machine interface');
+  await expect(dialog).toHaveClass(/project-detail-dialog--with-image/);
+  await expect(dialog.locator('.project-detail-media img')).toHaveAttribute('src', '/images/projects/alps-alpine-digital-cabin-reference.png');
+  await expect(dialog.locator('figcaption')).toContainText('Reference image');
+  await expect(dialog.getByRole('link', { name: 'webCG', exact: true })).toHaveAttribute('href', 'https://www.webcg.net/articles/-/43538');
+  await expect(dialog.locator('.project-detail-description')).toContainText('assigned automotive HMI topic');
 
   await page.keyboard.press('Escape');
   await expect(dialog).not.toBeVisible();
   await expect(vrTrigger).toBeFocused();
+
+  await page.locator('.project-card').filter({ hasText: 'AR Image tracking' }).getByRole('link', { name: 'View Details' }).click();
+  await expect(dialog).toHaveClass(/project-detail-dialog--text-only/);
+  await expect(dialog.locator('.project-detail-media')).toHaveCount(0);
+  await page.keyboard.press('Escape');
+  await expect(dialog).not.toBeVisible();
 
   const siteCard = page.locator('.project-card').filter({ hasText: 'SHAN-VERSE' });
   await siteCard.getByRole('link', { name: 'View Details' }).click();
@@ -581,6 +589,9 @@ for (const locale of ['', '/zh', '/ja']) {
       await expect(page.locator('#school .project-card')).toHaveCount(10);
       await page.locator('.category-routes').screenshot({ path: testInfo.outputPath(`categories-${viewport.width}.png`) });
       await page.locator('.category-route-item[href="#unity"]').click();
+      const cabinCard = page.locator('#unity .project-card').filter({ has: page.locator(`a.project-detail-trigger[href="${locale}/projects/vr-car-scene-prototype"]`) });
+      await expect(cabinCard.locator('.project-image img')).toHaveCSS('object-fit', 'cover');
+      await cabinCard.screenshot({ path: testInfo.outputPath(`cabin-card-${viewport.width}.png`) });
       await expect(page).toHaveURL(/#unity$/);
       await expect(page.locator('#unity')).toBeInViewport();
       await page.locator('.category-route-item[href="#school"]').click();
@@ -598,6 +609,11 @@ for (const locale of ['', '/zh', '/ja']) {
       await page.goto(`${locale}/projects/vr-car-scene-prototype`);
       await expect(page.locator('h1')).toContainText('HMI');
       await expect(page.locator('.project-detail-description')).not.toContainText('Quest');
+      const image = page.locator('.project-detail-media img');
+      await expect(image).toHaveCSS('object-fit', 'contain');
+      await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
+      await expect(page.getByRole('link', { name: 'webCG', exact: true })).toHaveAttribute('href', 'https://www.webcg.net/articles/-/43538');
+      await page.screenshot({ path: testInfo.outputPath(`cabin-detail-${viewport.width}.png`), fullPage: true });
     });
   }
 }

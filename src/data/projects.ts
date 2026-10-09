@@ -7,6 +7,7 @@ export interface ProjectDetailImage {
     alt: LocalizedString;
     caption?: LocalizedString;
     fit?: 'cover' | 'contain';
+    source?: { label: string; url: string }; // Attribution for a reference image
 }
 
 export interface ProjectAward {
@@ -78,15 +79,31 @@ export const projectCategories: ProjectCategory[] = [
                     "ja": "デジタルコックピット HMI プロトタイプ"
                 },
                 description: {
-                    "en": "Unity prototype of a future automotive digital cabin HMI, developed during my ALPS ALPINE internship.",
-                    "zh": "在 ALPS ALPINE 实习期间使用 Unity 开发的未来汽车数字座舱 HMI 原型。",
-                    "ja": "ALPS ALPINE のインターンシップで Unity を使って開発した、未来の車載デジタルコックピット HMI プロトタイプ。"
+                    "en": "Unity HMI prototype developed for an assigned Digital Cabin topic during my ALPS ALPINE internship.",
+                    "zh": "在 ALPS ALPINE 实习期间，使用 Unity 完成 Digital Cabin 相关课题的 HMI 原型开发。",
+                    "ja": "ALPS ALPINE のインターンシップで、Digital Cabin に関連する課題に取り組み、Unity で開発した HMI プロトタイプ。"
                 },
                 details: {
-                    "en": "Built with Unity, the prototype combines an autonomous-driving scenario on a U.S. highway with experimental next-generation human–machine interface concepts. Developed during my ALPS ALPINE internship, it was designed for exhibition at CES 2025.",
-                    "zh": "使用 Unity 构建美国高速公路上的自动驾驶场景，并加入实验性的下一代人机交互界面概念。该原型在 ALPS ALPINE 实习期间开发，为 CES 2025 展示而设计。",
-                    "ja": "Unity で米国の高速道路を舞台にした自動運転シナリオを構築し、実験的な次世代ヒューマンマシンインターフェースを組み合わせました。ALPS ALPINE のインターンシップで、CES 2025 での展示を想定して開発した原型です。"
+                    "en": "My internship work focused on a Unity prototype for an assigned automotive HMI topic, using a U.S. highway autonomous-driving scenario to explore next-generation interface concepts.",
+                    "zh": "我的实习工作聚焦于指定的汽车 HMI 课题，使用 Unity 构建美国高速公路自动驾驶场景，探索下一代交互界面概念。",
+                    "ja": "インターンシップでは、与えられた車載 HMI の課題に取り組みました。Unity で米国の高速道路を舞台にした自動運転シナリオを構築し、次世代インターフェースのコンセプトを検討しました。"
                 },
+                image: "/images/projects/alps-alpine-digital-cabin-reference.png",
+                detailImages: [{
+                    src: "/images/projects/alps-alpine-digital-cabin-reference.png",
+                    alt: {
+                        en: "Alps Alpine Digital Cabin reference showing a panoramic dashboard, steering control, and center touchscreen",
+                        zh: "阿尔派 Digital Cabin 参考图，展示全景仪表台、转向控制器与中央触控屏",
+                        ja: "パノラマ型ダッシュボード、ステアリング、中央タッチスクリーンを示すアルプスアルパイン Digital Cabin の参考画像"
+                    },
+                    caption: {
+                        en: "Alps Alpine Digital Cabin · Reference image",
+                        zh: "阿尔派 Digital Cabin · 参考图",
+                        ja: "アルプスアルパイン Digital Cabin · 参考画像"
+                    },
+                    source: { label: "webCG", url: "https://www.webcg.net/articles/-/43538" },
+                    fit: "contain"
+                }],
                 featured: true,
                 tags: [
                     "Unity",

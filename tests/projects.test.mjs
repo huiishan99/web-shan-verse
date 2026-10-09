@@ -196,10 +196,14 @@ test('Unity contains all former VR entries without a separate VR category', () =
   assert.deepEqual(cabin.tags, ['Unity', 'HMI', 'Digital Cabin']);
   for (const locale of ['en', 'zh', 'ja']) {
     assert.match(cabin.description[locale], /Unity/);
-    assert.match(cabin.details[locale], /CES 2025/);
+    assert.doesNotMatch(cabin.details[locale], /CES 2025/);
+    assert.ok(cabin.detailImages[0].caption[locale]);
     assert.doesNotMatch(cabin.description[locale] + cabin.details[locale], /VR|Quest/);
   }
-  assert.match(cabin.details.en, /designed for exhibition/);
+  assert.match(cabin.details.en, /assigned automotive HMI topic/);
+  assert.equal(cabin.image, cabin.detailImages[0].src);
+  assert.equal(cabin.detailImages[0].fit, 'contain');
+  assert.deepEqual(cabin.detailImages[0].source, { label: 'webCG', url: 'https://www.webcg.net/articles/-/43538' });
 });
 
 test('four additional course overviews have localized copy without private source links', () => {
