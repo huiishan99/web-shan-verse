@@ -96,3 +96,14 @@ preview behavior.
   public UI; the cause was not independently diagnosed.
 - The entry uses an explicit prototype status and localized availability
   wording. API replacement and changes to the application remain deferred.
+
+## Alps Alpine Digital Cabin reference
+
+- `alps-alpine-digital-cabin-reference.png` is the user-selected, unmodified
+  579 × 388 PNG reference image, sourced from
+  [webCG's Digital Cabin coverage](https://www.webcg.net/articles/-/43538).
+- The caption identifies it as a reference image and links to webCG. It is not
+  presented as a screenshot of the internship prototype or as a CES 2025 image.
+- The internship entry describes the assigned Unity HMI work, without claiming
+  authorship of the complete Digital Cabin. Card previews use `cover`; the
+  detail gallery preserves the full image with `contain`.

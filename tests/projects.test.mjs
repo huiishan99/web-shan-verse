@@ -48,8 +48,8 @@ test('master and bachelor theses are kept in their own category after publicatio
 
 test('project status inference is shared by pages and the CLI index', () => {
   assert.equal(getProjectStatus(project(), category('publications')), 'publication');
-  assert.equal(getProjectStatus(project(), category('vr')), 'private');
-  assert.equal(getProjectStatus(project({ github: 'https://github.com/example' }), category('vr')), 'prototype');
+  assert.equal(getProjectStatus(project(), category('unity')), 'private');
+  assert.equal(getProjectStatus(project({ github: 'https://github.com/example' }), category('unity')), 'practice');
   assert.equal(getProjectStatus(project({ website: 'https://example.com' }), category('unity')), 'live');
 });
 
@@ -179,4 +179,46 @@ test('every local project media reference resolves to a public asset', () => {
       `Missing project media asset: ${mediaPath}`
     );
   }
+});
+
+test('Unity contains all former VR entries without a separate VR category', () => {
+  assert.equal(projectCategories.some(({ id }) => id === 'vr'), false);
+  const unity = projectCategories.find(({ id }) => id === 'unity');
+  assert.equal(unity.items.length, 8);
+  for (const slug of ['vr-car-scene-prototype', 'ar-image-tracking', 'mamba-project', 'master-project']) {
+    assert.ok(unity.items.some((item) => item.slug === slug));
+  }
+  for (const slug of ['ar-image-tracking', 'mamba-project', 'master-project']) {
+    const item = unity.items.find((project) => project.slug === slug);
+    assert.equal(getProjectStatus(item, unity), 'prototype');
+  }
+  const cabin = unity.items.find(({ slug }) => slug === 'vr-car-scene-prototype');
+  assert.deepEqual(cabin.tags, ['Unity', 'HMI', 'Digital Cabin']);
+  for (const locale of ['en', 'zh', 'ja']) {
+    assert.match(cabin.description[locale], /Unity/);
+    assert.doesNotMatch(cabin.details[locale], /CES 2025/);
+    assert.ok(cabin.detailImages[0].caption[locale]);
+    assert.doesNotMatch(cabin.description[locale] + cabin.details[locale], /VR|Quest/);
+  }
+  assert.match(cabin.details.en, /assigned automotive HMI topic/);
+  assert.equal(cabin.image, cabin.detailImages[0].src);
+  assert.equal(cabin.detailImages[0].fit, 'contain');
+  assert.deepEqual(cabin.detailImages[0].source, { label: 'webCG', url: 'https://www.webcg.net/articles/-/43538' });
+});
+
+test('four additional course overviews have localized copy without private source links', () => {
+  const school = projectCategories.find(({ id }) => id === 'school');
+  assert.equal(school.items.length, 10);
+  assert.equal(projectRecords.length, 53);
+  for (const slug of ['wireless-and-mobile-networks', 'mathematics-and-post-quantum-cryptography', 'numerical-modeling-and-simulations', 'research-paper-writing-seminar']) {
+    const item = school.items.find((project) => project.slug === slug);
+    assert.ok(item);
+    assert.equal(item.status, 'coursework');
+    for (const field of ['github', 'website', 'paper', 'caseStudy']) assert.equal(item[field], undefined);
+    for (const locale of ['en', 'zh', 'ja']) {
+      assert.ok(item.title[locale]);
+      assert.ok(item.description[locale]);
+    }
+  }
+  assert.equal(projectRecords.filter(({ project: item }) => item.github?.includes('cfs03')).length, 1);
 });

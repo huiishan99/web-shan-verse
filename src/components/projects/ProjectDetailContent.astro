@@ -39,6 +39,7 @@ const projectDetailImages = project.detailImages?.length
       alt: localizeString(image.alt, lang),
       caption: image.caption ? localizeString(image.caption, lang) : '',
       fit: image.fit || 'cover',
+      source: image.source,
     }))
   : legacyDetailImage
     ? [{
@@ -46,6 +47,7 @@ const projectDetailImages = project.detailImages?.length
         alt: localizeString(project.detailImageAlt || project.title, lang),
         caption: '',
         fit: project.detailImageFit || 'cover',
+        source: undefined,
       }]
     : [];
 
@@ -58,6 +60,7 @@ const detailImages = project.award
         ? localizeString(project.award.caption, lang)
         : localizeString(project.award.title, lang),
       fit: 'contain' as const,
+      source: undefined,
     }]
   : projectDetailImages;
 
@@ -99,7 +102,12 @@ const dialogClasses = [
                 decoding="async"
               />
             </div>
-            {image.caption && <figcaption>{image.caption}</figcaption>}
+            {(image.caption || image.source) && (
+              <figcaption>
+                {image.caption}
+                {image.source && <> · <a href={image.source.url} target="_blank" rel="noopener noreferrer">{image.source.label}</a></>}
+              </figcaption>
+            )}
           </figure>
         ))}
 
