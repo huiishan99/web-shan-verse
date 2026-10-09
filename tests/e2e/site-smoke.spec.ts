@@ -628,6 +628,8 @@ for (const locale of ['', '/zh', '/ja']) {
       for (const card of await selectedCards.all()) {
         const marker = card.locator('.featured-banner');
         await expect(marker).toHaveCSS('position', 'static');
+        await expect(marker).toHaveCSS('border-top-width', '0px');
+        await expect(card).toHaveCSS('border-top-width', '1px');
         await card.scrollIntoViewIfNeeded();
         await page.mouse.move(0, 0);
         const layout = await card.evaluate((element) => {
@@ -663,6 +665,13 @@ for (const locale of ['', '/zh', '/ja']) {
       await expect(dialog).not.toBeVisible();
       const awardCard = page.locator('.project-card').filter({ has: page.locator('.featured-banner', { hasText: 'Presentation Award' }) });
       await expect(awardCard).not.toHaveClass(/project-card--selected/);
+      await expect(awardCard.locator('.featured-banner')).toHaveCSS('border-top-width', '0px');
+      await expect(awardCard).toHaveCSS('border-top-width', '1px');
+      for (const card of await page.locator('.project-section:is(#research, #publications, #theses) .project-card').all()) {
+        await expect(card).toHaveCSS('border-top-width', '1px');
+        await expect(card.locator('.project-content')).toHaveCSS('border-top-width', '0px');
+        if (await card.locator('.project-image').count()) await expect(card.locator('.project-image')).toHaveCSS('border-bottom-width', '0px');
+      }
       await awardCard.screenshot({ path: testInfo.outputPath(`presentation-award-${width}.png`) });
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     });
