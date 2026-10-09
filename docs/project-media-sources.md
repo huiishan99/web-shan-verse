@@ -99,9 +99,12 @@ preview behavior.
 
 ## Alps Alpine Digital Cabin reference
 
-- `alps-alpine-digital-cabin-reference.png` is the user-selected, unmodified
-  579 × 388 PNG reference image, sourced from
-  [webCG's Digital Cabin coverage](https://www.webcg.net/articles/-/43538).
+- `alps-alpine-digital-cabin-reference.jpg` is the unmodified 1460 × 973 JPEG
+  of the same user-selected cabin photograph, replacing the 579 × 388 preview.
+  The higher-resolution source is published in the `srcset` of
+  [webCG's Digital Cabin gallery](https://www.webcg.net/articles/gallery/43538)
+  ([image file](https://webcg.ismcdn.jp/mwimgs/0/5/1460wm/img_050ae7e6826cc717bab36c71f938b477303245.jpg)).
+  It is a source photograph, not an AI-generated or upscaled image.
 - The caption identifies it as a reference image and links to webCG. It is not
   presented as a screenshot of the internship prototype or as a CES 2025 image.
 - The internship entry describes the assigned Unity HMI work, without claiming

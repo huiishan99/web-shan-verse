@@ -166,6 +166,13 @@
     z-index: 1;
   }
 
+  /* Selected Work follows the preview in normal flow; award ribbons keep their layout. */
+  .project-card--selected .featured-banner {
+    position: static;
+    flex-shrink: 0;
+    padding: 0.35rem 1.1rem;
+  }
+
   .featured-banner::before,
   .featured-banner::after {
     content: "";
@@ -294,7 +301,7 @@
     margin-top: auto;
   }
 
-  .project-card.featured .project-content {
+  .project-card.featured:where(:not(.project-card--selected)) .project-content {
     padding-top: calc(var(--space-lg) + 1.25rem);
   }
 
@@ -936,7 +943,7 @@
     padding: 1.12rem 1.25rem;
   }
 
-  .project-section:is(#research, #publications, #theses) .project-card.featured .project-content {
+  .project-section:is(#research, #publications, #theses) .project-card.featured:where(:not(.project-card--selected)) .project-content {
     padding-top: calc(1.12rem + 1.2rem);
   }
 
@@ -1053,7 +1060,7 @@
       padding: 0.85rem;
     }
 
-    .project-card.featured .project-content {
+    .project-card.featured:where(:not(.project-card--selected)) .project-content {
       padding-top: calc(0.85rem + 1rem);
     }
 
@@ -1163,7 +1170,7 @@
       padding: 0.85rem;
     }
 
-    .project-section:is(#research, #publications, #theses) .project-card.featured .project-content {
+    .project-section:is(#research, #publications, #theses) .project-card.featured:where(:not(.project-card--selected)) .project-content {
       padding-top: calc(0.85rem + 1rem);
     }
 
