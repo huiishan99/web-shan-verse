@@ -92,11 +92,26 @@ test('refreshed software entries preserve localized facts and genuine preview co
   assert.match(spotify.project.detailImages[0].caption.en, /v0\.5\.1/);
   assert.match(spotify.project.detailImages[1].caption.en, /promotional composite/);
 
-  assert.equal(getProjectStatus(mathNote.project, mathNote.category), 'prototype');
-  assert.match(mathNote.project.description.en, /AI solving is currently disabled/);
-  assert.match(mathNote.project.details.en, /pending Turnstile configuration/);
+  assert.equal(getProjectStatus(mathNote.project, mathNote.category), 'live');
+  for (const locale of ['en', 'zh', 'ja']) {
+    assert.match(mathNote.project.description[locale], /Gemini 2\.5 Flash/);
+    assert.match(mathNote.project.details[locale], /Gemini 2\.5 Flash/);
+    assert.match(mathNote.project.details[locale], /Python\/FastAPI/);
+    assert.match(mathNote.project.details[locale], /Vercel/);
+    assert.match(mathNote.project.details[locale], /Cloudflare Turnstile/);
+    const copy = [
+      mathNote.project.description[locale],
+      mathNote.project.details[locale],
+      mathNote.project.detailImages[0].alt[locale],
+      mathNote.project.detailImages[0].caption[locale],
+    ].join(' ');
+    assert.doesNotMatch(copy, /disabled|pending|waiting|尚未|未完成|待配置|等待|無効|設定待ち|完了するまで/i);
+  }
   assert.ok(mathNote.project.tags.includes('Python'));
   assert.ok(mathNote.project.tags.includes('FastAPI'));
+  assert.ok(mathNote.project.tags.includes('Gemini 2.5 Flash'));
+  assert.ok(mathNote.project.tags.includes('Vercel'));
+  assert.ok(mathNote.project.tags.includes('Cloudflare Turnstile'));
 
   assert.equal(tetris.project.github, 'https://github.com/huiishan99/game-cpp-tetris');
   assert.deepEqual(tetris.project.tags, ['C++17', 'Win32 API', 'GDI', 'CMake']);
