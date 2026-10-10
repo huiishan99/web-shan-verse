@@ -41,6 +41,17 @@ generated-app syntax check). The screenshot contains third-party Spotify UI,
 music artwork, and lyrics solely to demonstrate the extension; those materials
 remain the property of their respective rights holders.
 
+## 2026-10-10 Math-Note capture
+
+`math-note-live.webp` was captured from `https://math-notes-clone.vercel.app/`
+with a 1180 x 757 Chromium viewport, preserving the previous asset dimensions
+and gallery layout. The page returned HTTP 200; pen input rendered the example
+`1 + 1 =` without the previous configuration banner. Calculation requests were
+blocked during capture and none were attempted. The public read-only
+`/api/calculate/status` endpoint reported `gemini-2.5-flash`, with Gemini and
+human verification configured. Successful real AI solving was confirmed by the
+user; this capture verifies the visible canvas only.
+
 ## Deferred captures
 
 The following public pages were checked but deliberately not added as project

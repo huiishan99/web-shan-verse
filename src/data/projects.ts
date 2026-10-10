@@ -343,16 +343,16 @@ export const projectCategories: ProjectCategory[] = [
                 slug: "math-note",
                 title: "Math-Note",
                 description: {
-                    "en": "React/TypeScript math notebook with a drawing canvas, local pages, and export. AI solving is currently disabled in the public demo.",
-                    "zh": "React/TypeScript 数学笔记本，支持手写画布、本地页面保存与导出。公开演示的 AI 求解目前尚未开放。",
-                    "ja": "React/TypeScript の数学ノート。手書きキャンバス、ローカル保存、書き出しに対応。公開デモの AI 求解は現在無効です。"
+                    "en": "Handwritten math notebook powered by Gemini 2.5 Flash, with canvas input, formula recognition, and AI solving.",
+                    "zh": "基于 Gemini 2.5 Flash 的手写数学笔记工具，支持画布输入、公式识别与 AI 求解。",
+                    "ja": "Gemini 2.5 Flash を使った手書き数学ノート。キャンバス入力、数式認識、AI による計算に対応。"
                 },
                 details: {
-                    "en": "React, TypeScript, Tailwind CSS, and Mantine provide a multi-page canvas with pen/eraser tools, undo/redo, local storage, and JSON/PDF export. A Python/FastAPI backend integrates the Google Gen AI SDK for image solving; MathJax renders equations and Vite builds the frontend. Public AI requests remain disabled pending Turnstile configuration.",
-                    "zh": "React、TypeScript、Tailwind CSS 与 Mantine 实现多页画布、画笔/橡皮、撤销/重做、本地存储和 JSON/PDF 导出。Python/FastAPI 后端通过 Google Gen AI SDK 实现图像求解，MathJax 渲染公式，Vite 构建前端。公开 AI 请求仍因 Turnstile 配置未完成而关闭。",
-                    "ja": "React、TypeScript、Tailwind CSS、Mantine で複数ページのキャンバス、ペン・消しゴム、元に戻す・やり直す、ローカル保存、JSON/PDF 出力を実装。Python/FastAPI のバックエンドが Google Gen AI SDK で画像を処理し、MathJax で数式を表示、Vite でフロントエンドをビルドします。Turnstile 設定が完了するまで公開 AI リクエストは無効です。"
+                    "en": "React, TypeScript, Vite, Tailwind CSS, and Mantine power a multi-page canvas with pen/eraser tools, undo/redo, local storage, and JSON/PDF export. A Python/FastAPI backend uses the Google Gen AI SDK and Gemini 2.5 Flash to recognize and solve handwritten formulas from canvas images; MathJax renders the results. The web app runs on Vercel with Cloudflare Turnstile verification.",
+                    "zh": "React、TypeScript、Vite、Tailwind CSS 与 Mantine 构建多页画布，支持画笔/橡皮、撤销/重做、本地存储和 JSON/PDF 导出。Python/FastAPI 后端通过 Google Gen AI SDK 调用 Gemini 2.5 Flash，识别并求解画布图像中的手写公式，MathJax 渲染结果。网页部署在 Vercel，并使用 Cloudflare Turnstile 进行人机验证。",
+                    "ja": "React、TypeScript、Vite、Tailwind CSS、Mantine で複数ページのキャンバス、ペン・消しゴム、元に戻す・やり直す、ローカル保存、JSON/PDF 出力を実装。Python/FastAPI のバックエンドが Google Gen AI SDK で Gemini 2.5 Flash を呼び出し、キャンバス画像の手書き数式を認識して計算し、MathJax で結果を表示します。Vercel にデプロイし、Cloudflare Turnstile で人間による操作を確認します。"
                 },
-                status: "prototype",
+                status: "live",
                 github: "https://github.com/huiishan99/web-math-note",
                 image: "/images/projects/math-note-live.webp",
                 website: "https://math-notes-clone.vercel.app/",
@@ -360,19 +360,19 @@ export const projectCategories: ProjectCategory[] = [
                     {
                         src: "/images/projects/math-note-live.webp",
                         alt: {
-                            en: "Math-Note drawing canvas with handwritten input and a banner explaining that AI solving is waiting for bot-protection setup",
-                            zh: "Math-Note 手写画布与输入内容，提示 AI 求解正在等待人机验证配置",
-                            ja: "手書き入力と、AI 求解がボット対策の設定待ちであることを示す Math-Note キャンバス"
+                            en: "Math-Note drawing canvas with equation controls and a handwritten expression",
+                            zh: "Math-Note 手写画布，显示公式控制栏与手写表达式",
+                            ja: "数式ツールと手書き式を表示した Math-Note キャンバス"
                         },
                         caption: {
-                            en: "Public drawing demo · Captured 8 October 2026; AI solving disabled pending Turnstile setup",
-                            zh: "公开绘图演示 · 截于 2026 年 10 月 8 日；AI 求解因 Turnstile 待配置而关闭",
-                            ja: "公開の描画デモ · 2026年10月8日撮影。Turnstile 設定待ちのため AI 求解は無効"
+                            en: "Drawing canvas · Captured 10 October 2026",
+                            zh: "手写画布 · 截于 2026 年 10 月 10 日",
+                            ja: "手書きキャンバス · 2026年10月10日撮影"
                         },
                         fit: "contain"
                     }
                 ],
-                tags: ["TypeScript", "Python", "React", "FastAPI", "Tailwind CSS", "Vite"]
+                tags: ["TypeScript", "Python", "React", "FastAPI", "Tailwind CSS", "Vite", "Gemini 2.5 Flash", "Vercel", "Cloudflare Turnstile"]
             },
             {
                 slug: "yumemi-test",
