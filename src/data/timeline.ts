@@ -24,6 +24,22 @@ export const timelineData: TimelineYear[] = [
     year: 2026,
     events: [
       {
+        month: { en: "October", zh: "十月", ja: "10月" },
+        date: "2026-10-11",
+        title: {
+          en: "CATN Paper Acceptance at IEEE ComSoc-ICACT",
+          zh: "CATN 论文获 IEEE ComSoc-ICACT 接收",
+          ja: "CATN 論文が IEEE ComSoc-ICACT に採択"
+        },
+        weight: "major",
+        category: "research",
+        description: {
+          en: 'On October 11, 2026, "CATN Latent Channel Reweighting for Compact Tabular IoT Intrusion Detection" was accepted by the IEEE ComSoc-ICACT Technical Program Committee.',
+          zh: '2026 年 10 月 11 日，论文《CATN Latent Channel Reweighting for Compact Tabular IoT Intrusion Detection》获 IEEE ComSoc-ICACT 技术程序委员会接收。',
+          ja: '2026年10月11日、論文「CATN Latent Channel Reweighting for Compact Tabular IoT Intrusion Detection」が IEEE ComSoc-ICACT の技術プログラム委員会に採択されました。'
+        }
+      },
+      {
         month: { en: "August", zh: "八月", ja: "8月" },
         title: {
           en: "Obon Holiday Trip to Tokyo",
