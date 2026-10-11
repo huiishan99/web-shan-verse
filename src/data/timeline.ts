@@ -27,16 +27,16 @@ export const timelineData: TimelineYear[] = [
         month: { en: "October", zh: "十月", ja: "10月" },
         date: "2026-10-11",
         title: {
-          en: "IEEE ComSoc-ICACT Paper Acceptance",
-          zh: "IEEE ComSoc-ICACT 论文接收",
-          ja: "IEEE ComSoc-ICACT 論文採択"
+          en: "ICACT 2027 Paper Acceptance",
+          zh: "ICACT 2027 论文接收",
+          ja: "ICACT 2027 論文採択"
         },
         weight: "major",
         category: "research",
         description: {
-          en: "A research paper was accepted by IEEE ComSoc-ICACT, with me as the second author.",
-          zh: "一篇研究论文被 IEEE ComSoc-ICACT 接收，我为第二作者。",
-          ja: "研究論文が IEEE ComSoc-ICACT に採択され、私は第二著者として参加しました。"
+          en: "A research paper was accepted by ICACT 2027, with me as the second author.",
+          zh: "一篇研究论文被 ICACT 2027 接收，我为第二作者。",
+          ja: "研究論文が ICACT 2027 に採択され、私は第二著者として参加しました。"
         }
       },
       {
