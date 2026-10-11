@@ -974,22 +974,23 @@ export const projectCategories: ProjectCategory[] = [
             },
             {
                 slug: "efficient-ai-for-network-security",
-                title: {
-                    en: "Efficient AI for Network Security",
-                    zh: "面向网络安全的高效 AI 研究",
-                    ja: "ネットワークセキュリティのための効率的 AI 研究"
+                title: "CATN Latent Channel Reweighting for Compact Tabular IoT Intrusion Detection",
+                authors: {
+                    en: "Jiaming Zhang, Huishan Lai, Runtong He, Chunhua Su",
+                    zh: "Jiaming Zhang, Huishan Lai, Runtong He, Chunhua Su",
+                    ja: "Jiaming Zhang, Huishan Lai, Runtong He, Chunhua Su"
                 },
                 conference: {
-                    en: "Double-blind submission · Details withheld during review",
-                    zh: "双盲匿名投稿 · 审稿期间暂不公开细节",
-                    ja: "ダブルブラインド投稿 · 査読中は詳細非公開"
+                    en: "IEEE ComSoc-ICACT · Publication pending",
+                    zh: "IEEE ComSoc-ICACT · 待正式发表",
+                    ja: "IEEE ComSoc-ICACT · 正式公開待ち"
                 },
                 description: {
-                    en: "Ongoing research on efficient machine-learning approaches for network security. The manuscript title, venue, methods, datasets, and results will remain private until the double-blind review process has concluded.",
-                    zh: "围绕网络安全中的高效机器学习方法开展研究。为遵守双盲评审要求，论文标题、投稿会议、具体方法、数据集和实验结果将在评审结束前保持非公开。",
-                    ja: "ネットワークセキュリティに向けた効率的な機械学習手法を研究しています。ダブルブラインド査読を守るため、論文名、投稿先、具体的な手法、データセット、結果は査読終了まで非公開とします。"
+                    en: "Accepted by the IEEE ComSoc-ICACT Technical Program Committee on October 11, 2026. Publication is pending.",
+                    zh: "于 2026 年 10 月 11 日获 IEEE ComSoc-ICACT 技术程序委员会接收，待正式发表。",
+                    ja: "2026年10月11日に IEEE ComSoc-ICACT の技術プログラム委員会に採択されました。正式公開はこれからです。"
                 },
-                status: "under-review",
+                status: "accepted",
                 tags: ["Network Security", "Machine Learning", "Efficient AI"]
             },
             {
