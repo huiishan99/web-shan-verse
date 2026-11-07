@@ -315,8 +315,8 @@
     align-items: center;
     gap: 0.44rem 0.62rem;
     justify-content: flex-start;
-    margin-top: 0.7rem;
-    padding-top: 0.1rem;
+    margin-top: 0;
+    padding-top: 0;
   }
 
   .project-detail-trigger {
@@ -983,11 +983,6 @@
     gap: 0.28rem;
   }
 
-  .project-section:is(#research, #publications, #theses) .project-meta-row {
-    margin-top: 0.7rem;
-    padding-top: 0.1rem;
-  }
-  
   @media (max-width: 768px) {
     .category-routes {
       margin-bottom: var(--space-lg);
@@ -1129,7 +1124,6 @@
 
     .project-meta-row {
       gap: 0.34rem 0.5rem;
-      margin-top: 0.55rem;
     }
 
     .project-status {
@@ -1199,11 +1193,6 @@
       margin-bottom: 0.7rem;
       line-height: 1.48;
       -webkit-line-clamp: 3;
-    }
-
-    .project-section:is(#research, #publications, #theses) .project-meta-row {
-      margin-top: 0.55rem;
-      padding-top: 0.1rem;
     }
 
     .project-detail-dialog,

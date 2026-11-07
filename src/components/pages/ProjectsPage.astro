@@ -145,14 +145,6 @@ function getAuthorParts(authors: string) {
                   </div>
 
                   <div class="project-card-footer">
-                    {project.tags && project.tags.length > 0 && (
-                      <div class="project-tags">
-                        {project.tags.map((tag) => (
-                          <span class="tag">{localizeString(tag, lang)}</span>
-                        ))}
-                      </div>
-                    )}
-
                     <div class="project-meta-row">
                       {(project.github || project.paper || project.caseStudy || project.award || project.website) && (
                         <div class="project-links">
