@@ -2,6 +2,8 @@ name = "shan-verse-site-stats"
 main = "./worker.js"
 compatibility_date = "2026-05-17"
 workers_dev = true
+preview_urls = false
+keep_vars = true
 
 routes = [
   { pattern = "shan-verse.com/api/site-stats*", zone_name = "shan-verse.com" }

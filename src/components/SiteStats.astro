@@ -7,6 +7,7 @@ interface Props {
     views?: string;
     visitors?: string;
     online?: string;
+    onlineHint?: string;
   };
 }
 
@@ -38,7 +39,7 @@ const statsEndpoint = import.meta.env.PROD
       <span class="site-stat-value" data-site-stat="visitors">--</span>
       <span class="site-stat-label">{labels.visitors || 'Visitors'}</span>
     </span>
-    <span class="site-stat site-stat--online">
+    <span class="site-stat site-stat--online" title={labels.onlineHint}>
       <span class="site-stat-value" data-site-stat="online">--</span>
       <span class="site-stat-label">{labels.online || 'Online'}</span>
     </span>
@@ -55,12 +56,44 @@ const statsEndpoint = import.meta.env.PROD
     globalWindow.__shanSiteStatsReady = true;
 
     const heartbeatMs = 240000;
+    const refreshMs = 15000;
     const retryBaseMs = 15000;
+    const requestTimeoutMs = 10000;
+    const clientIdKey = 'shan-verse-stats-client-v1';
+    const clientIdPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     let heartbeatTimer = 0;
+    let refreshTimer = 0;
     let retryTimer = 0;
     let consecutiveFailures = 0;
+    let requestSequence = 0;
+    let latestHandledRequest = 0;
+    let lastStats: Record<string, unknown> | undefined;
+    let readPending = false;
+    let memoryClientId: string | undefined;
     const pendingPageviewPaths = new Set<string>();
     let unavailableLogged = false;
+
+    function readOrCreateClientId(): string {
+      try {
+        const savedId = window.localStorage.getItem(clientIdKey);
+        if (savedId?.length === 36 && clientIdPattern.test(savedId)) {
+          memoryClientId = savedId.toLowerCase();
+          return memoryClientId;
+        }
+        memoryClientId ||= crypto.randomUUID();
+        window.localStorage.setItem(clientIdKey, memoryClientId);
+      } catch {
+        memoryClientId ||= crypto.randomUUID();
+      }
+      return memoryClientId;
+    }
+
+    function getClientId(): Promise<string> {
+      if (navigator.locks) {
+        return navigator.locks.request(clientIdKey, readOrCreateClientId);
+      }
+      return Promise.resolve(readOrCreateClientId());
+    }
 
     function formatCount(value: unknown): string {
       const numberValue = Number(value);
@@ -72,21 +105,31 @@ const statsEndpoint = import.meta.env.PROD
       }).format(Math.round(numberValue));
     }
 
-    function updateStats(data: Record<string, unknown>) {
+    function renderStats(data: Record<string, unknown>) {
       document.querySelectorAll<HTMLElement>('[data-site-stats]').forEach((root) => {
-        root.classList.remove('is-unavailable');
+        root.classList.toggle('is-unavailable', consecutiveFailures > 0);
 
         root.querySelector<HTMLElement>('[data-site-stat="views"]')!.textContent = formatCount(data.views);
         root.querySelector<HTMLElement>('[data-site-stat="visitors"]')!.textContent = formatCount(data.visitors);
-        root.querySelector<HTMLElement>('[data-site-stat="online"]')!.textContent = formatCount(data.online);
+        root.querySelector<HTMLElement>('[data-site-stat="online"]')!.textContent = consecutiveFailures > 0
+          ? '--'
+          : formatCount(data.online);
       });
+    }
+
+    function updateStats(data: Record<string, unknown>) {
       consecutiveFailures = 0;
       unavailableLogged = false;
+      if (retryTimer) window.clearTimeout(retryTimer);
+      retryTimer = 0;
+      lastStats = data;
+      renderStats(data);
     }
 
     function markUnavailable(error: unknown) {
       document.querySelectorAll<HTMLElement>('[data-site-stats]').forEach((root) => {
         root.classList.add('is-unavailable');
+        root.querySelector<HTMLElement>('[data-site-stat="online"]')!.textContent = '--';
       });
 
       if (!unavailableLogged) {
@@ -104,11 +147,12 @@ const statsEndpoint = import.meta.env.PROD
       }
     }
 
-    async function sendStatsEvent(eventType: 'pageview' | 'heartbeat') {
+    async function sendStatsEvent(eventType: 'pageview' | 'heartbeat' | 'read') {
       const root = document.querySelector<HTMLElement>('[data-site-stats]');
       const endpoint = root?.dataset.endpoint;
       if (!endpoint) return;
       if (document.visibilityState === 'hidden') return;
+      if (eventType === 'read' && readPending) return;
 
       const path = `${window.location.pathname}${window.location.search}`;
       if (eventType === 'pageview' && globalWindow.__shanSiteStatsLastPath === path) {
@@ -118,13 +162,25 @@ const statsEndpoint = import.meta.env.PROD
         return;
       }
 
+      const requestId = ++requestSequence;
+      const controller = new AbortController();
+      const requestTimeout = window.setTimeout(() => controller.abort(), requestTimeoutMs);
+
       try {
         if (eventType === 'pageview') pendingPageviewPaths.add(path);
-        const response = await fetch(endpoint, {
+        if (eventType === 'read') readPending = true;
+        const clientId = eventType === 'read' ? undefined : await getClientId();
+        const response = await fetch(endpoint, eventType === 'read' ? {
+          cache: 'no-store',
+          signal: controller.signal,
+        } : {
           method: 'POST',
+          cache: 'no-store',
+          signal: controller.signal,
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             event: eventType,
+            clientId,
             path,
             title: document.title,
           }),
@@ -132,28 +188,44 @@ const statsEndpoint = import.meta.env.PROD
         });
 
         if (!response.ok) throw new Error(`Stats request failed with ${response.status}`);
-        updateStats(await response.json());
+        const data = await response.json();
+        if (requestId >= latestHandledRequest) {
+          latestHandledRequest = requestId;
+          updateStats(data);
+        }
         const currentPath = `${window.location.pathname}${window.location.search}`;
         if (eventType === 'pageview' && currentPath === path) {
           globalWindow.__shanSiteStatsLastPath = path;
         }
-        startHeartbeat();
+        startTimers();
       } catch (error) {
-        markUnavailable(error);
+        if (requestId >= latestHandledRequest) {
+          latestHandledRequest = requestId;
+          markUnavailable(error);
+        }
       } finally {
+        window.clearTimeout(requestTimeout);
         if (eventType === 'pageview') pendingPageviewPaths.delete(path);
+        if (eventType === 'read') readPending = false;
       }
     }
 
     function trackPageview() {
+      if (lastStats) renderStats(lastStats);
       sendStatsEvent('pageview');
     }
 
-    function startHeartbeat() {
-      if (heartbeatTimer) return;
-      heartbeatTimer = window.setInterval(() => {
-        sendStatsEvent('heartbeat');
-      }, heartbeatMs);
+    function startTimers() {
+      if (!heartbeatTimer) {
+        heartbeatTimer = window.setInterval(() => {
+          if (!retryTimer) sendStatsEvent('heartbeat');
+        }, heartbeatMs);
+      }
+      if (!refreshTimer) {
+        refreshTimer = window.setInterval(() => {
+          if (!consecutiveFailures) sendStatsEvent('read');
+        }, refreshMs);
+      }
     }
 
     trackPageview();
@@ -163,6 +235,11 @@ const statsEndpoint = import.meta.env.PROD
       }
     });
     document.addEventListener('astro:page-load', trackPageview);
+    window.addEventListener('online', () => {
+      if (retryTimer) window.clearTimeout(retryTimer);
+      retryTimer = 0;
+      sendStatsEvent('heartbeat');
+    });
   }
 </script>
 

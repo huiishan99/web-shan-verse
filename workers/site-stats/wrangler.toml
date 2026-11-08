@@ -1,0 +1,31 @@
+name = "shan-verse-site-stats"
+main = "./worker.js"
+account_id = "ad2e0a540679aca1064385e77ccb4e90"
+compatibility_date = "2026-05-17"
+workers_dev = true
+preview_urls = false
+keep_vars = true
+
+routes = [
+  { pattern = "shan-verse.com/api/site-stats*", zone_name = "shan-verse.com" }
+]
+
+# Retain historical visitor markers for read-only migration and deduplication.
+kv_namespaces = [
+  { binding = "SITE_STATS", id = "013f3783e3a2421485b89ca76b270f98" }
+]
+
+[[durable_objects.bindings]]
+name = "SITE_STATS_COUNTER"
+class_name = "SiteStatsCounter"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["SiteStatsCounter"]
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+invocation_logs = true
+
+# VISITOR_HASH_SALT is an existing encrypted secret; never replace it on rollout.

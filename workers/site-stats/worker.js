@@ -4,7 +4,9 @@ const COUNTER_KEYS = {
 };
 const INITIALIZED_KEY = 'meta:initialized';
 const ACTIVE_PREFIX = 'active:';
+const ACTIVE_BROWSER_PREFIX = `${ACTIVE_PREFIX}browser:`;
 const ACTIVE_WINDOW_MS = 300_000;
+const CLIENT_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const DEFAULT_ALLOWED_ORIGINS = [
   'https://shan-verse.com',
   'https://www.shan-verse.com',
@@ -65,12 +67,12 @@ function getClientIp(request) {
   return forwarded.split(',')[0].trim();
 }
 
-async function hashVisitor(ip, env) {
+async function hashIdentity(identity, env) {
   if (!env.VISITOR_HASH_SALT) {
     throw new Error('VISITOR_HASH_SALT is missing');
   }
 
-  const input = new TextEncoder().encode(`${env.VISITOR_HASH_SALT}:${ip || 'unknown'}`);
+  const input = new TextEncoder().encode(`${env.VISITOR_HASH_SALT}:${identity}`);
   const digest = await crypto.subtle.digest('SHA-256', input);
 
   return [...new Uint8Array(digest)]
@@ -98,19 +100,19 @@ async function requestCounter(env, payload) {
     throw new Error('SITE_STATS_COUNTER Durable Object binding is missing');
   }
 
-  const legacy = await getLegacyCounters(env);
   const id = env.SITE_STATS_COUNTER.idFromName('global');
   const stub = env.SITE_STATS_COUNTER.get(id);
   return stub.fetch(new Request('https://site-stats.internal/update', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ...payload, legacy }),
+    body: JSON.stringify(payload),
   }));
 }
 
 export class SiteStatsCounter {
-  constructor(state) {
+  constructor(state, env = {}) {
     this.state = state;
+    this.env = env;
   }
 
   async fetch(request) {
@@ -124,8 +126,9 @@ export class SiteStatsCounter {
       let visitors = toCounter(await storage.get(COUNTER_KEYS.visitors));
 
       if (!(await storage.get(INITIALIZED_KEY))) {
-        views = Math.max(views, toCounter(payload.legacy?.views));
-        visitors = Math.max(visitors, toCounter(payload.legacy?.visitors));
+        const legacy = await getLegacyCounters(this.env);
+        views = Math.max(views, legacy.views);
+        visitors = Math.max(visitors, legacy.visitors);
         await storage.put(COUNTER_KEYS.views, views);
         await storage.put(COUNTER_KEYS.visitors, visitors);
         await storage.put(INITIALIZED_KEY, true);
@@ -143,22 +146,45 @@ export class SiteStatsCounter {
         }
 
         const visitorKey = `visitor:${payload.visitorHash}`;
-        if (!(await storage.get(visitorKey))) {
-          visitors += 1;
+        if ((await storage.get(visitorKey)) === undefined) {
+          const legacyVisitor = this.env.SITE_STATS
+            ? await this.env.SITE_STATS.get(visitorKey)
+            : null;
+          if (legacyVisitor === null) {
+            visitors += 1;
+            await storage.put(COUNTER_KEYS.visitors, visitors);
+          }
           await storage.put(visitorKey, now);
-          await storage.put(COUNTER_KEYS.visitors, visitors);
         }
-        await storage.put(`${ACTIVE_PREFIX}${payload.visitorHash}`, now);
+        if (payload.browserHash) {
+          await storage.put(`${ACTIVE_BROWSER_PREFIX}${payload.browserHash}`, {
+            lastActiveAt: now,
+            visitorHash: payload.visitorHash,
+          });
+        } else {
+          await storage.put(`${ACTIVE_PREFIX}${payload.visitorHash}`, now);
+        }
       }
 
       const activeVisitors = await storage.list({ prefix: ACTIVE_PREFIX });
-      let online = 0;
-      for (const [key, lastActiveAt] of activeVisitors) {
-        if (now - toCounter(lastActiveAt) <= ACTIVE_WINDOW_MS) {
-          online += 1;
-        } else {
+      const representedVisitorHashes = new Set();
+      const legacyVisitorHashes = new Set();
+      let onlineBrowsers = 0;
+      for (const [key, entry] of activeVisitors) {
+        const isBrowser = key.startsWith(ACTIVE_BROWSER_PREFIX);
+        const lastActiveAt = isBrowser ? entry?.lastActiveAt : entry;
+        if (now - toCounter(lastActiveAt) > ACTIVE_WINDOW_MS) {
           await storage.delete(key);
+        } else if (isBrowser) {
+          onlineBrowsers += 1;
+          representedVisitorHashes.add(entry.visitorHash);
+        } else {
+          legacyVisitorHashes.add(key.slice(ACTIVE_PREFIX.length));
         }
+      }
+      let online = onlineBrowsers;
+      for (const visitorHash of legacyVisitorHashes) {
+        if (!representedVisitorHashes.has(visitorHash)) online += 1;
       }
 
       return jsonResponse({
@@ -182,8 +208,20 @@ async function handleStats(request, env) {
     return jsonResponse({ ok: false, error: 'Invalid stats event' }, { status: 400 });
   }
 
-  const visitorHash = await hashVisitor(getClientIp(request), env);
-  return requestCounter(env, { action: payload.event, visitorHash });
+  const hasClientId = Object.hasOwn(payload, 'clientId');
+  if (hasClientId && (
+    typeof payload.clientId !== 'string'
+    || payload.clientId.length !== 36
+    || !CLIENT_ID_PATTERN.test(payload.clientId)
+  )) {
+    return jsonResponse({ ok: false, error: 'Invalid client ID' }, { status: 400 });
+  }
+
+  const visitorHash = await hashIdentity(getClientIp(request) || 'unknown', env);
+  const browserHash = hasClientId
+    ? await hashIdentity(`browser:${payload.clientId.toLowerCase()}`, env)
+    : undefined;
+  return requestCounter(env, { action: payload.event, visitorHash, browserHash });
 }
 
 export default {
@@ -215,7 +253,9 @@ export default {
       response = jsonResponse({ ok: false, error: 'Stats service unavailable' }, { status: 500 });
     }
 
-    headers.forEach((value, key) => response.headers.set(key, value));
-    return response;
+    // Durable Object fetch responses have immutable headers; clone before adding CORS.
+    const finalResponse = new Response(response.body, response);
+    headers.forEach((value, key) => finalResponse.headers.set(key, value));
+    return finalResponse;
   },
 };

@@ -21,6 +21,7 @@ export const ui = {
       views: 'Views',
       visitors: 'Visitors',
       online: 'Online',
+      onlineHint: 'Browsers active in the last 5 minutes. Tabs in the same browser count as one; older clients may be grouped by network.',
     },
     music: {
       play: 'Play background music',
@@ -228,6 +229,7 @@ export const ui = {
       views: '浏览量',
       visitors: '访客',
       online: '在线',
+      onlineHint: '最近 5 分钟内活跃的浏览器；同一浏览器的多个标签只计一次，旧版客户端可能按网络合并。',
     },
     music: {
       play: '播放背景音乐',
@@ -435,6 +437,7 @@ export const ui = {
       views: '閲覧数',
       visitors: '訪問者',
       online: 'オンライン',
+      onlineHint: '過去5分間のアクティブなブラウザー。同じブラウザーの複数タブは1件として数え、旧クライアントはネットワーク単位でまとめる場合があります。',
     },
     music: {
       play: '背景音楽を再生',
