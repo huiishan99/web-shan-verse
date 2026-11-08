@@ -72,16 +72,16 @@ export const timelineData: TimelineYear[] = [
       {
         month: { en: "May", zh: "五月", ja: "5月" },
         title: {
-          en: "ICICS 2026 Short Paper Acceptance",
-          zh: "ICICS 2026 短论文接收",
-          ja: "ICICS 2026 ショートペーパー採択"
+          en: "ICICS 2026 Paper Acceptance",
+          zh: "ICICS 2026 论文接收",
+          ja: "ICICS 2026 論文採択"
         },
         weight: "major",
         category: "research",
         description: {
-          en: "Received the acceptance notification for a short paper at ICICS 2026.",
-          zh: "收到 ICICS 2026 短论文被接收的通知。",
-          ja: "ICICS 2026 のショートペーパー採択通知を受け取りました。"
+          en: "Received the acceptance notification for a paper at ICICS 2026.",
+          zh: "收到 ICICS 2026 论文被接收的通知。",
+          ja: "ICICS 2026 の論文採択通知を受け取りました。"
         }
       },
       {

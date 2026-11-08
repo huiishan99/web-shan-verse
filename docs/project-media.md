@@ -52,6 +52,16 @@ blocked during capture and none were attempted. The public read-only
 human verification configured. Successful real AI solving was confirmed by the
 user; this capture verifies the visible canvas only.
 
+## Confidence-gated network intrusion detection
+
+The four `confidence-gated-nids-*.png` assets are unchanged PNG files from the
+[paper project page](https://web-publications.vercel.app/publications/confidence-gated-network-intrusion-detection/),
+checked on 7 November 2026: `system` (1545 × 925), `cost` (1008 × 420),
+`subclass` (1091 × 466), and `calibration` (1133 × 520). The F1–invocation-rate
+chart supplies the card preview; the gallery contains all four figures without cropping.
+The subclass chart combines attack recall with the benign true-negative rate;
+the captions preserve that distinction.
+
 ## Deferred captures
 
 The following public pages were checked but deliberately not added as project

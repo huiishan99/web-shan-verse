@@ -952,27 +952,6 @@ export const projectCategories: ProjectCategory[] = [
         icon: "publication",
         items: [
             {
-                slug: "confidence-gated-nids-stress-test",
-                title: "Cost-Aware Confidence-Gated Two-Stage Network Intrusion Detection under a Cross-File Cross-Class Stress Test",
-                authors: {
-                    en: "Jiaming Zhang, Huishan Lai, Runtong He, Jingxue Chen, Chunhua Su",
-                    zh: "Jiaming Zhang, Huishan Lai, Runtong He, Jingxue Chen, Chunhua Su",
-                    ja: "Jiaming Zhang, Huishan Lai, Runtong He, Jingxue Chen, Chunhua Su"
-                },
-                conference: {
-                    en: "ICICS 2026 · Short paper · Publication pending",
-                    zh: "ICICS 2026 · Short Paper · 待正式发表",
-                    ja: "ICICS 2026 · ショートペーパー · 正式公開待ち"
-                },
-                description: {
-                    en: "A cost-aware two-stage NIDS pipeline for cross-file, cross-class distribution shift. An LSTM fast path escalates ambiguous flows to a lightweight verifier, while LLMs are limited to generating structured audit rationales rather than primary decisions.",
-                    zh: "面向跨文件、跨类别分布偏移的成本感知两阶段网络入侵检测流程：LSTM 快速路径将模糊流量交给轻量级验证器处理，LLM 仅用于生成结构化审计解释，而不承担主要决策。",
-                    ja: "ファイル間・クラス間の分布シフトに対応する、コストを考慮した二段階 NIDS パイプラインです。LSTM の高速経路が曖昧なフローだけを軽量検証器へ送り、LLM は主要な判定ではなく構造化された監査根拠の生成に限定します。"
-                },
-                status: "accepted",
-                tags: ["Network Intrusion Detection", "Distribution Shift", "Confidence Gating", "LLM Audit", "ICICS 2026"]
-            },
-            {
                 slug: "efficient-ai-for-network-security",
                 title: "CATN Latent Channel Reweighting for Compact Tabular IoT Intrusion Detection",
                 authors: {
@@ -1421,6 +1400,83 @@ export const projectCategories: ProjectCategory[] = [
                 paper: "https://dl.acm.org/doi/10.1145/3795011.3795053",
                 caseStudy: "https://web-publications.vercel.app/publications/bioadaptive-vr-attention-restoration/",
                 tags: ["Virtual Reality","Multimodal Interaction","AI-Driven","AHs 2026"]
+            },
+            {
+                slug: "confidence-gated-nids-stress-test",
+                title: "Cost-Aware Confidence-Gated Two-Stage Network Intrusion Detection under a Cross-File Cross-Class Stress Test",
+                authors: {
+                    en: "Jiaming Zhang, Huishan Lai, Runtong He, Jingxue Chen, Chunhua Su",
+                    zh: "Jiaming Zhang, Huishan Lai, Runtong He, Jingxue Chen, Chunhua Su",
+                    ja: "Jiaming Zhang, Huishan Lai, Runtong He, Jingxue Chen, Chunhua Su"
+                },
+                conference: "International Conference on Information and Communications Security (ICICS 2026)",
+                description: {
+                    en: "Learning-based Network Intrusion Detection Systems (NIDS) often perform well under closed-set evaluation but may fail under cross-class distribution shift, where test-time attacks belong to unseen families. This paper presents a cost-aware two-stage pipeline in which an LSTM fast path performs high-throughput screening and only ambiguous samples are escalated to a lightweight Random Forest verifier operating on a compact numeric flow summary. We evaluate the pipeline on CIC-IDS-2017 using a cross-file cross-class protocol: the LSTM is trained on benign and denial-of-service traffic and tested on benign and unseen web attacks. The LSTM alone suffers severe recall degradation. A selectively invoked verifier trained under strict disjoint few-shot adaptation substantially recovers detection performance while exposing an explicit accuracy–cost trade-off through verifier invocation rate. Large Language Models (LLMs) are positioned only as an optional audit layer that generates structured JSON rationales without overriding verifier decisions. Additional analyses cover calibration collapse under shift, multi-seed stability, verifier latency, LLM schema compliance, and deployment-base-rate implications.",
+                    zh: "基于学习的网络入侵检测系统（NIDS）在闭集评估中往往表现良好，但在跨类别分布偏移下可能失效，即测试时的攻击来自训练中未见的攻击家族。本文提出一种成本感知的两阶段流程，由 LSTM 快速路径执行高吞吐量筛查，仅将模糊样本转交给基于精简数值流摘要运行的轻量级随机森林验证器。我们在 CIC-IDS-2017 上采用跨文件、跨类别协议评估该流程：LSTM 使用良性流量和拒绝服务流量训练，并在良性流量与未见的 Web 攻击上测试。单独使用 LSTM 时，召回率严重下降。在严格保证数据不重叠的少样本适应设置下训练并按需调用的验证器，大幅恢复了检测性能，同时通过验证器调用率呈现明确的准确性与成本权衡。大语言模型（LLM）仅作为可选审计层，生成结构化 JSON 解释，不覆盖验证器的判定。补充分析涵盖分布偏移下的校准崩溃、多随机种子稳定性、验证器延迟、LLM 输出的模式合规性，以及部署时基础发生率对结果的影响。",
+                    ja: "学習ベースのネットワーク侵入検知システム（NIDS）は、閉集合評価では高い性能を示すことが多い一方、テスト時の攻撃が未知の攻撃ファミリーに属するクラス間の分布シフトでは機能しない場合があります。本論文では、LSTM の高速経路で高スループットのスクリーニングを行い、曖昧なサンプルだけをコンパクトな数値フロー要約に基づく軽量なランダムフォレスト検証器へ送る、コストを考慮した二段階パイプラインを提案します。CIC-IDS-2017 を用い、ファイル間・クラス間の評価プロトコルで検証します。LSTM は正常通信とサービス拒否攻撃の通信で学習し、正常通信と未知の Web 攻撃でテストします。LSTM 単独では再現率が大幅に低下します。データの重複を厳密に排除した少数ショット適応の条件で学習し、必要な場合だけ呼び出す検証器は、検知性能を大きく回復させるとともに、検証器の呼び出し率を通じて精度とコストの明確なトレードオフを示します。大規模言語モデル（LLM）は、検証器の判定を上書きせず、構造化された JSON 形式の根拠を生成する任意の監査レイヤーとしてのみ位置付けます。追加分析では、分布シフト下の校正の崩壊、複数の乱数シードに対する安定性、検証器のレイテンシー、LLM のスキーマ準拠性、および導入時の攻撃の基礎出現率がもたらす影響を扱います。"
+                },
+                detailImages: [
+                    {
+                        src: "/images/projects/confidence-gated-nids-cost.png",
+                        alt: {
+                            en: "Attack F1 versus verifier invocation rate for the LSTM alone, confidence-gated pipeline, and always-on Random Forest verifier",
+                            zh: "比较单独 LSTM、置信度门控流程和始终调用随机森林验证器的攻击检测 F1 与验证器调用率",
+                            ja: "LSTM 単独、信頼度ゲート付きパイプライン、常時実行のランダムフォレスト検証器における攻撃 F1 と検証器呼び出し率の比較"
+                        },
+                        caption: {
+                            en: "Figure 2 · Attack F1 and verifier invocation rate",
+                            zh: "图 2 · 攻击检测 F1 与验证器调用率",
+                            ja: "図 2 · 攻撃 F1 と検証器呼び出し率"
+                        },
+                        fit: "contain"
+                    },
+                    {
+                        src: "/images/projects/confidence-gated-nids-system.png",
+                        alt: {
+                            en: "LSTM confidence gate with a direct fast path, five-feature Random Forest verifier, and separate optional LLM audit branch",
+                            zh: "LSTM 置信度门控流程，包含直接快速路径、五特征随机森林验证器和独立的可选 LLM 审计分支",
+                            ja: "直接判定の高速経路、5特徴のランダムフォレスト検証器、独立した任意の LLM 監査分岐を備えた LSTM 信頼度ゲート"
+                        },
+                        caption: {
+                            en: "Figure 1 · Detection pipeline; optional LLM audit never changes the final decision",
+                            zh: "图 1 · 检测流程；可选 LLM 审计不改变最终判定",
+                            ja: "図 1 · 検知パイプライン。任意の LLM 監査は最終判定を変更しません"
+                        },
+                        fit: "contain"
+                    },
+                    {
+                        src: "/images/projects/confidence-gated-nids-subclass.png",
+                        alt: {
+                            en: "50-shot gated pipeline: Brute Force recall 0.53, benign true-negative rate 1.00, XSS recall 0.62, and SQL-injection recall zero",
+                            zh: "50-shot 门控流程：暴力破解召回率 0.53、良性流量真负率 1.00、XSS 召回率 0.62、SQL 注入召回率为零",
+                            ja: "50-shot ゲート付きパイプライン：ブルートフォース再現率 0.53、正常通信の真陰性率 1.00、XSS 再現率 0.62、SQL インジェクション再現率 0"
+                        },
+                        caption: {
+                            en: "Figure 3 · Attack subclass recall and benign true-negative rate",
+                            zh: "图 3 · 攻击子类召回率与良性流量真负率",
+                            ja: "図 3 · 攻撃サブクラスの再現率と正常通信の真陰性率"
+                        },
+                        fit: "contain"
+                    },
+                    {
+                        src: "/images/projects/confidence-gated-nids-calibration.png",
+                        alt: {
+                            en: "LSTM reliability diagrams comparing in-distribution and cross-class test traffic; blue bars show empirical attack rates and the red line shows mean confidence",
+                            zh: "比较分布内与跨类别测试流量的 LSTM 可靠性图；蓝柱表示实际攻击率，红线表示平均置信度",
+                            ja: "分布内通信とクラス間テスト通信を比較した LSTM の信頼度図。青い棒は実測攻撃率、赤い線は平均信頼度を示します"
+                        },
+                        caption: {
+                            en: "Calibration · Reliability deteriorates under cross-class distribution shift",
+                            zh: "校准对比 · 跨类别分布偏移下的可靠性恶化",
+                            ja: "校正の比較 · クラス間の分布シフトによる信頼性の低下"
+                        },
+                        fit: "contain"
+                    }
+                ],
+                status: "publication",
+                paper: "https://link.springer.com/chapter/10.1007/978-981-92-6843-6_31",
+                caseStudy: "https://web-publications.vercel.app/publications/confidence-gated-network-intrusion-detection/",
+                tags: ["Network Intrusion Detection", "Distribution Shift", "Confidence Gating", "LLM Audit", "ICICS 2026"]
             }
         ]
     },
