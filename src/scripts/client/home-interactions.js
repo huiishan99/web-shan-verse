@@ -174,21 +174,6 @@ import { validateGithubSnapshot } from '../../utils/github-contributions.js';
     return entry.promise;
   }
 
-  function showDataStatus(activity, snapshot) {
-    const status = activity.querySelector('[data-github-data-status]');
-    const message = activity.querySelector('[data-github-fallback-message]');
-    if (message) message.hidden = Boolean(snapshot);
-    if (!status) return;
-    status.hidden = !snapshot;
-    if (snapshot) {
-      const date = new Intl.DateTimeFormat(document.documentElement.lang || 'en', {
-        year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC',
-      }).format(parseUTCDate(snapshot.rangeEnd));
-      status.dateTime = snapshot.rangeEnd;
-      status.textContent = status.dataset.label.replace('{date}', date);
-    }
-  }
-
   async function setupGithubActivity(activity) {
     if (activity.dataset.source !== SNAPSHOT_URL) {
       activity.dataset.ready = 'false';
@@ -203,8 +188,6 @@ import { validateGithubSnapshot } from '../../utils/github-contributions.js';
     for (const root of roots) renderCalendar(root, buildWeeks(root.dataset.start, root.dataset.end, []));
     activity.classList.add('is-loading');
     activity.classList.remove('is-enhanced', 'is-unavailable', 'is-fallback', 'is-image-unavailable');
-    const message = activity.querySelector('[data-github-fallback-message]');
-    if (message) message.hidden = true;
     activity.setAttribute('aria-busy', 'true');
     const request = loadContributionData(username);
 
@@ -224,7 +207,6 @@ import { validateGithubSnapshot } from '../../utils/github-contributions.js';
       activity.classList.add('is-enhanced');
       activity.classList.remove('is-loading', 'is-unavailable');
       activity.setAttribute('aria-busy', 'false');
-      showDataStatus(activity, snapshot);
     } catch (error) {
       const cached = githubCalendarState.contributionRequests.get(username);
       if (cached?.promise === request) githubCalendarState.contributionRequests.delete(username);
@@ -234,7 +216,6 @@ import { validateGithubSnapshot } from '../../utils/github-contributions.js';
       activity.classList.remove('is-loading', 'is-enhanced');
       activity.classList.add('is-unavailable');
       activity.setAttribute('aria-busy', 'false');
-      showDataStatus(activity, null);
     }
   }
 

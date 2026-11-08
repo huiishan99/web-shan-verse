@@ -2,7 +2,6 @@ import { expect, test, type Page, type Route } from '@playwright/test';
 
 const SNAPSHOT_PATTERN = /\/data\/github-contributions\.json(?:\?.*)?$/;
 const SOURCE_URL = 'https://github.com/users/huiishan99/contributions';
-const PROFILE_URL = 'https://github.com/huiishan99';
 const DAY_MS = 86_400_000;
 const externalRequests = new WeakMap<Page, string[]>();
 type Contribution = { date: string; count: number; level: number };
@@ -53,11 +52,7 @@ async function expectEnhanced(page: Page, fixture: Fixture, count = 7) {
     await expect(cell).toHaveClass(/github-calendar-day--4/);
   }
   await expect(activity.locator('.github-activity-fallback, img')).toHaveCount(0);
-  await expect(activity.locator('[data-github-fallback-message]')).toBeHidden();
-  const status = activity.locator('[data-github-data-status]');
-  await expect(status).toBeVisible();
-  await expect(status).toHaveAttribute('datetime', fixture.snapshot.rangeEnd);
-  await expect(status).toHaveText(/\S/);
+  await expect(activity.locator('[data-github-data-status], [data-github-fallback-message]')).toHaveCount(0);
 }
 async function expectUnavailable(page: Page) {
   const activity = page.locator('[data-github-activity]');
@@ -68,11 +63,7 @@ async function expectUnavailable(page: Page) {
   expect(await activity.locator('.github-calendar--full .github-calendar-day--unknown').count()).toBeGreaterThan(300);
   await expect(activity.locator('.github-calendar-day--0, .github-calendar-day--1, .github-calendar-day--2, .github-calendar-day--3, .github-calendar-day--4')).toHaveCount(0);
   await expect(activity.locator('.github-activity-fallback, img')).toHaveCount(0);
-  await expect(activity.locator('[data-github-data-status]')).toBeHidden();
-  const message = activity.locator('[data-github-fallback-message]');
-  await expect(message).toBeVisible();
-  await expect(message.getByRole('link')).toHaveAttribute('href', PROFILE_URL);
-  await expect(message.getByRole('link')).toHaveAccessibleName(/\S/);
+  await expect(activity.locator('[data-github-data-status], [data-github-fallback-message]')).toHaveCount(0);
 }
 async function pauseAfterLoad(page: Page) {
   const now = await page.evaluate(() => Date.now());
@@ -286,8 +277,7 @@ for (const path of ['/', '/zh', '/ja']) {
     const activity = page.locator('[data-github-activity]');
     await expect(activity).toHaveClass(/is-enhanced/);
     await expect(activity).toHaveAttribute('aria-busy', 'false');
-    await expect(activity.locator('[data-github-data-status]')).toHaveAttribute('datetime', snapshot.rangeEnd);
-    await expect(activity.locator('[data-github-data-status]')).toBeVisible();
+    await expect(activity.locator('[data-github-data-status], [data-github-fallback-message]')).toHaveCount(0);
     await expect(activity.locator('img')).toHaveCount(0);
     expect(requestUrls).toHaveLength(1);
     expect(new URL(requestUrls[0]).pathname).toBe('/data/github-contributions.json');

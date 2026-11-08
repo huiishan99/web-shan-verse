@@ -295,10 +295,7 @@ const buyMeACoffeeUrl = 'https://buymeacoffee.com/huiishan99w';
           >
             <div class="github-activity-header">
               <span><Icon name="github" size={14} /> {t.home.githubContributions}</span>
-              <div class="github-activity-meta">
-                <time class="github-data-status" data-github-data-status data-label={t.home.githubDataThrough} hidden></time>
-                <a href={githubProfileUrl} target="_blank" rel="noopener noreferrer">@{githubUsername}</a>
-              </div>
+              <a href={githubProfileUrl} target="_blank" rel="noopener noreferrer">@{githubUsername}</a>
             </div>
             <a
               class="github-activity-frame"
@@ -325,9 +322,6 @@ const buyMeACoffeeUrl = 'https://buymeacoffee.com/huiishan99w';
                 aria-label={`${githubUsername} ${t.home.githubCalendarLabel}`}
               ></div>
             </a>
-            <p class="github-activity-notice" data-github-fallback-message role="status" hidden>
-              <a href={githubProfileUrl} target="_blank" rel="noopener noreferrer">{t.home.githubActivityUnavailable}</a>
-            </p>
           </div>
         </div>
 
@@ -833,7 +827,6 @@ const buyMeACoffeeUrl = 'https://buymeacoffee.com/huiishan99w';
 
   .github-activity-header {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: var(--space-sm);
@@ -857,20 +850,6 @@ const buyMeACoffeeUrl = 'https://buymeacoffee.com/huiishan99w';
 
   .github-activity-header a:hover {
     color: var(--color-link-hover);
-  }
-
-  .github-activity-meta {
-    display: inline-flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 0.7rem;
-    margin-left: auto;
-  }
-
-  .github-data-status {
-    color: var(--color-text-muted);
-    font-size: 0.6rem;
   }
 
   .github-activity-frame {
@@ -904,13 +883,6 @@ const buyMeACoffeeUrl = 'https://buymeacoffee.com/huiishan99w';
 
   .github-activity.is-loading .github-calendar {
     opacity: 0.52;
-  }
-
-  .github-activity-notice {
-    margin: 0.5rem 0 0;
-    color: var(--color-text-muted);
-    font-size: 0.75rem;
-    line-height: 1.6;
   }
 
   :global(.github-calendar-years),

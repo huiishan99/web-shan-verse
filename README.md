@@ -63,8 +63,8 @@ disabled.
 
 The original gold calendar renders data from the same-origin
 `public/data/github-contributions.json` snapshot. Browsers do not depend on a
-third-party API or chart image. The header shows the last covered date; days
-outside the snapshot are unknown, rather than zero contributions.
+third-party API or chart image. Source and coverage dates remain in the snapshot
+for maintenance. Days outside the snapshot are unknown, rather than zero contributions.
 
 `npm run update:github` reads the public GitHub contribution page and validates
 the daily counts and date coverage before atomically replacing the snapshot.
