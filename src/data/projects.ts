@@ -1076,9 +1076,9 @@ export const projectCategories: ProjectCategory[] = [
                     ja: "HuiShan Lai, Alaeddin Nassani, John Blake, Julián Villegas"
                 },
                 conference: {
-                    en: "2025 IEEE Gaming, Entertainment, and Media Conference (GEM)",
-                    zh: "2025 IEEE Gaming, Entertainment, and Media Conference (GEM)",
-                    ja: "2025 IEEE Gaming, Entertainment, and Media Conference (GEM)"
+                    en: "IEEE Gaming, Entertainment, and Media Conference (GEM 2025)",
+                    zh: "IEEE Gaming, Entertainment, and Media Conference (GEM 2025)",
+                    ja: "IEEE Gaming, Entertainment, and Media Conference (GEM 2025)"
                 },
                 description: {
                     en: "We present VR Math Bridge, a virtual reality (VR)-based application designed to enhance calculus education by combining immersive virtual environments with artificial intelligence (AI)-driven teaching assistance. VR Math Bridge creates a virtual classroom where students interact with Khan Academy videos and a 3D AI assistant that provides real-time, personalized feedback to their questions. This system leverages a floating panel for chapter selection, a virtual blackboard for video playback, and Cognitive 3D for analyzing user engagement. To demonstrate the system’s capabilities, we developed a prototype on Quest 3, focusing on derivatives as the initial test topic. We conducted a preliminary subjective evaluation (n=2) of the prototype to collect early insights for future user study evaluation.",
@@ -1195,9 +1195,9 @@ export const projectCategories: ProjectCategory[] = [
                     ja: "Runtong He, Huishan Lai, Jingxue Chen, Chunhua Su"
                 },
                 conference: {
-                    en: "ISPEC 2025: 20th International Conference on Information Security Practice and Experience",
-                    zh: "ISPEC 2025: 20th International Conference on Information Security Practice and Experience",
-                    ja: "ISPEC 2025: 20th International Conference on Information Security Practice and Experience"
+                    en: "International Conference on Information Security Practice and Experience (ISPEC 2025)",
+                    zh: "International Conference on Information Security Practice and Experience (ISPEC 2025)",
+                    ja: "International Conference on Information Security Practice and Experience (ISPEC 2025)"
                 },
                 description: {
                     en: "Large Language Models (LLMs) are increasingly used in software development through so-called “vibe coding,” where developers specify tasks in natural language and rely on the model to produce executable code. While this paradigm lowers barriers to entry and accelerates prototyping, it raises concerns about security. Prior studies show that a substantial fraction of AI-generated code contains exploitable vulnerabilities, and functional correctness does not guarantee safety. This paper investigates whether security-oriented prompting improves the security of LLM-generated code. We design ten representative Python tasks inspired by OWASP Top 10 and CWE categories, and evaluate outputs from an open-source 20B-parameter model using static analysis (Bandit) and lightweight runtime probes.",
@@ -1318,9 +1318,9 @@ export const projectCategories: ProjectCategory[] = [
                     ja: "Tiantian Geng, Huishan Lai, Lei Jing"
                 },
                 conference: {
-                    en: "AHs 2026: The Augmented Humans International Conference 2026",
-                    zh: "AHs 2026: The Augmented Humans International Conference 2026",
-                    ja: "AHs 2026: The Augmented Humans International Conference 2026"
+                    en: "The Augmented Humans International Conference (AHs 2026)",
+                    zh: "The Augmented Humans International Conference (AHs 2026)",
+                    ja: "The Augmented Humans International Conference (AHs 2026)"
                 },
                 description: {
                     en: "Digital attention fatigue is a pervasive challenge, yet most virtual reality (VR) interventions for restoration rely on passive nature exposure that lacks responsiveness to the user's internal state. Integrating Attention Restoration Theory (ART) with physiological computing, we propose a bioadaptive VR system that combines active mandala drawing within a 360° nature scene, using real-time heart rate variability (HRV) to modulate visual fog, ambient music, and haptic feedback. In a within-subject pilot study (N=11), we compared an AI-driven bioadaptive multimodal condition (AI) against an otherwise identical VR condition without bioadaptive multimodal feedback (NF), using behavioral (Oddball task), neural (EEG), autonomic (HRV), and subjective measures.",
