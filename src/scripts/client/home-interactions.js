@@ -1,10 +1,18 @@
+import { validateGithubSnapshot } from '../../utils/github-contributions.js';
+
 (() => {
-  const API_ROOT = 'https://github-contributions-api.jogruber.de/v4/';
+  const SNAPSHOT_URL = '/data/github-contributions.json';
+  const REQUEST_TIMEOUT_MS = 3000;
+  const CACHE_TTL_MS = 300000;
   const WEEKDAYS = ['', 'Mon', '', 'Wed', '', 'Fri', ''];
   const githubCalendarState = window.__shanGithubCalendarState || {
     contributionRequests: new Map(),
     isListening: false,
   };
+  if (githubCalendarState.source !== SNAPSHOT_URL) {
+    githubCalendarState.contributionRequests = new Map();
+    githubCalendarState.source = SNAPSHOT_URL;
+  }
   window.__shanGithubCalendarState = githubCalendarState;
   const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', timeZone: 'UTC' });
   const dateFormatter = new Intl.DateTimeFormat('en-US', {
@@ -42,7 +50,7 @@
       days.push({
         date: new Date(date),
         key,
-        contribution: contributionByDate.get(key) || { count: 0, level: 0 },
+        contribution: contributionByDate.get(key),
       });
     }
 
@@ -122,11 +130,13 @@
       weekEl.className = 'github-calendar-week';
 
       week.forEach((day) => {
-        const count = Number(day.contribution.count) || 0;
-        const level = Math.max(0, Math.min(4, Number(day.contribution.level) || 0));
+        const count = day.contribution?.count;
+        const level = day.contribution?.level ?? 0;
         const cell = document.createElement('span');
-        cell.className = `github-calendar-day github-calendar-day--${level}`;
-        cell.title = `${dateFormatter.format(day.date)}: ${count} GitHub contribution${count === 1 ? '' : 's'}`;
+        cell.className = `github-calendar-day github-calendar-day--${count === undefined ? 'unknown' : level}`;
+        cell.title = count === undefined
+          ? `${dateFormatter.format(day.date)}: GitHub activity unavailable`
+          : `${dateFormatter.format(day.date)}: ${count} GitHub contribution${count === 1 ? '' : 's'}`;
         cell.setAttribute('aria-label', cell.title);
         weekEl.append(cell);
       });
@@ -143,58 +153,95 @@
 
   function loadContributionData(username) {
     const { contributionRequests } = githubCalendarState;
+    const cached = contributionRequests.get(username);
+    if (cached?.expiresAt > Date.now()) return cached.promise;
 
-    if (!contributionRequests.has(username)) {
-      contributionRequests.set(
-        username,
-        fetch(`${API_ROOT}${encodeURIComponent(username)}?y=last`).then(async (response) => {
-          if (!response.ok) throw new Error(`GitHub contribution API returned ${response.status}`);
-          const data = await response.json();
-          if (!Array.isArray(data.contributions)) throw new Error('Invalid contribution payload');
-          return data.contributions;
-        })
-      );
-    }
-
-    return contributionRequests.get(username);
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+    const entry = { expiresAt: Infinity, promise: null };
+    entry.promise = fetch(SNAPSHOT_URL, {
+      signal: controller.signal,
+    }).then(async (response) => {
+      if (!response.ok) throw new Error(`GitHub contribution snapshot returned ${response.status}`);
+      const snapshot = validateGithubSnapshot(await response.json(), username);
+      entry.expiresAt = Date.now() + CACHE_TTL_MS;
+      return snapshot;
+    }).catch((error) => {
+      if (contributionRequests.get(username) === entry) contributionRequests.delete(username);
+      throw error;
+    }).finally(() => window.clearTimeout(timeout));
+    contributionRequests.set(username, entry);
+    return entry.promise;
   }
 
-  async function setupGithubCalendar(root) {
-    if (root.dataset.ready === 'true') return;
-    root.dataset.ready = 'true';
+  function showDataStatus(activity, snapshot) {
+    const status = activity.querySelector('[data-github-data-status]');
+    const message = activity.querySelector('[data-github-fallback-message]');
+    if (message) message.hidden = Boolean(snapshot);
+    if (!status) return;
+    status.hidden = !snapshot;
+    if (snapshot) {
+      const date = new Intl.DateTimeFormat(document.documentElement.lang || 'en', {
+        year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC',
+      }).format(parseUTCDate(snapshot.rangeEnd));
+      status.dateTime = snapshot.rangeEnd;
+      status.textContent = status.dataset.label.replace('{date}', date);
+    }
+  }
 
-    const username = root.dataset.username;
-    const start = root.dataset.start;
-    const end = root.dataset.end;
-    const activity = root.closest('[data-github-activity]');
-    if (!username || !start || !end || !activity) return;
+  async function setupGithubActivity(activity) {
+    if (activity.dataset.source !== SNAPSHOT_URL) {
+      activity.dataset.ready = 'false';
+      activity.dataset.source = SNAPSHOT_URL;
+    }
+    if (activity.dataset.ready === 'true' || activity.dataset.ready === 'loading') return;
+    const roots = [...activity.querySelectorAll('[data-github-calendar]')];
+    const username = roots[0]?.dataset.username;
+    if (!username || !roots.length || roots.some((root) => !root.dataset.start || !root.dataset.end)) return;
+    activity.dataset.ready = 'loading';
 
-    const loadingWeeks = buildWeeks(start, end, []);
-    renderCalendar(root, loadingWeeks);
+    for (const root of roots) renderCalendar(root, buildWeeks(root.dataset.start, root.dataset.end, []));
     activity.classList.add('is-loading');
-    activity.classList.remove('is-enhanced', 'is-fallback');
+    activity.classList.remove('is-enhanced', 'is-unavailable', 'is-fallback', 'is-image-unavailable');
+    const message = activity.querySelector('[data-github-fallback-message]');
+    if (message) message.hidden = true;
     activity.setAttribute('aria-busy', 'true');
+    const request = loadContributionData(username);
 
     try {
-      const contributions = await loadContributionData(username);
-      const weeks = buildWeeks(start, end, contributions);
-      renderCalendar(root, weeks);
+      const snapshot = await request;
+      const today = toDateKey(new Date());
+      const calendars = roots.map((root) => buildWeeks(root.dataset.start, root.dataset.end, snapshot.contributions));
+      for (const weeks of calendars) {
+        const pastDays = weeks.flat().filter((day) => day.key <= today);
+        if (!pastDays.some((day) => day.contribution)) {
+          throw new Error('GitHub contribution snapshot does not overlap the displayed dates');
+        }
+      }
+      if (!activity.isConnected) return;
+      roots.forEach((root, index) => renderCalendar(root, calendars[index]));
+      activity.dataset.ready = 'true';
       activity.classList.add('is-enhanced');
-      activity.classList.remove('is-loading', 'is-fallback');
+      activity.classList.remove('is-loading', 'is-unavailable');
       activity.setAttribute('aria-busy', 'false');
+      showDataStatus(activity, snapshot);
     } catch (error) {
-      console.warn('GitHub contribution calendar fallback:', error);
-      root.dataset.ready = 'false';
+      const cached = githubCalendarState.contributionRequests.get(username);
+      if (cached?.promise === request) githubCalendarState.contributionRequests.delete(username);
+      if (!activity.isConnected) return;
+      console.warn('GitHub contribution calendar unavailable:', error);
+      activity.dataset.ready = 'false';
       activity.classList.remove('is-loading', 'is-enhanced');
-      activity.classList.add('is-fallback');
+      activity.classList.add('is-unavailable');
       activity.setAttribute('aria-busy', 'false');
+      showDataStatus(activity, null);
     }
   }
 
   function setupGithubCalendars() {
     document
-      .querySelectorAll('[data-github-calendar]')
-      .forEach((root) => setupGithubCalendar(root));
+      .querySelectorAll('[data-github-activity]')
+      .forEach((activity) => setupGithubActivity(activity));
   }
 
   window.__shanSetupGithubCalendars = setupGithubCalendars;
@@ -205,6 +252,10 @@
       window.__shanSetupGithubCalendars?.();
     });
     githubCalendarState.isListening = true;
+  }
+  if (!githubCalendarState.isOnlineListening) {
+    window.addEventListener('online', () => window.__shanSetupGithubCalendars?.());
+    githubCalendarState.isOnlineListening = true;
   }
 })();
 

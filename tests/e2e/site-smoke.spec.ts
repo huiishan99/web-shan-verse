@@ -15,14 +15,6 @@ async function mockRuntimeServices(page: Page) {
   await page.route('https://**/*', async (route) => {
     const url = new URL(route.request().url());
 
-    if (url.hostname === 'github-contributions-api.jogruber.de') {
-      await route.fulfill({
-        contentType: 'application/json',
-        body: JSON.stringify({ contributions: [] }),
-      });
-      return;
-    }
-
     if (url.hostname === 'challenges.cloudflare.com') {
       await route.fulfill({
         contentType: 'application/javascript',
@@ -109,12 +101,26 @@ test('GitHub activity keeps the designed calendar while contribution data loads'
   const githubResponseGate = new Promise<void>((resolve) => {
     releaseGithubResponse = resolve;
   });
+  const today = new Date();
+  const contributions = Array.from({ length: 365 }, (_, index) => {
+    const date = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
+    date.setUTCDate(date.getUTCDate() - (364 - index));
+    return { date: date.toISOString().slice(0, 10), count: index === 364 ? 4 : 0, level: index === 364 ? 2 : 0 };
+  });
 
-  await page.route('https://github-contributions-api.jogruber.de/v4/**', async (route) => {
+  await page.route('**/data/github-contributions.json', async (route) => {
     await githubResponseGate;
     await route.fulfill({
       contentType: 'application/json',
-      body: JSON.stringify({ contributions: [] }),
+      body: JSON.stringify({
+        schemaVersion: 1,
+        username: 'huiishan99',
+        source: 'https://github.com/users/huiishan99/contributions',
+        fetchedAt: today.toISOString(),
+        rangeStart: contributions[0].date,
+        rangeEnd: contributions.at(-1)!.date,
+        contributions,
+      }),
     });
   });
 
@@ -123,12 +129,13 @@ test('GitHub activity keeps the designed calendar while contribution data loads'
 
   await expect(githubActivity).toHaveClass(/is-loading/);
   await expect(githubActivity.locator('.github-calendar--full')).toBeVisible();
-  await expect(githubActivity.locator('.github-activity-fallback')).toBeHidden();
+  await expect(githubActivity.locator('img')).toHaveCount(0);
   expect(await githubActivity.locator('.github-calendar--full .github-calendar-day').count()).toBeGreaterThan(300);
 
   releaseGithubResponse();
   await expect(githubActivity).toHaveClass(/is-enhanced/);
   await expect(githubActivity).toHaveAttribute('aria-busy', 'false');
+  await expect(githubActivity.locator('.github-calendar--full .github-calendar-day--2')).toHaveCount(1);
 });
 
 test('desktop activity signals stay aligned with the chart and scroll inside their custom rail', async ({ page }) => {

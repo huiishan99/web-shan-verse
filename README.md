@@ -58,3 +58,18 @@ workarounds and known Astro cache behavior live in `docs/dev-notes.md`.
 The Cloudflare Worker source and setup notes live in `workers/site-stats/`.
 Local Astro development intentionally leaves the production statistics endpoint
 disabled.
+
+## GitHub contribution calendar
+
+The original gold calendar renders data from the same-origin
+`public/data/github-contributions.json` snapshot. Browsers do not depend on a
+third-party API or chart image. The header shows the last covered date; days
+outside the snapshot are unknown, rather than zero contributions.
+
+`npm run update:github` reads the public GitHub contribution page and validates
+the daily counts and date coverage before atomically replacing the snapshot.
+The Pages workflow refreshes it before each release and daily at 09:15 Japan
+time. If GitHub is unavailable, an existing valid snapshot is retained with its
+original dates; no valid snapshot means the refresh fails. No token is needed.
+Normal local builds and the verification gate use the checked-in snapshot and
+remain independent of external network availability.

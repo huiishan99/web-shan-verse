@@ -9,6 +9,10 @@ on:
   # 允许从 Actions 选项卡手动运行此工作流
   workflow_dispatch:
 
+  # Refresh the public contribution snapshot daily at 09:15 in Japan.
+  schedule:
+    - cron: "15 0 * * *"
+
 # 设置 GITHUB_TOKEN 的权限以允许部署到 GitHub Pages
 permissions:
   contents: read
@@ -49,6 +53,10 @@ jobs:
 
       - name: Install browser
         run: npx playwright install --with-deps chromium
+        working-directory: ${{ env.BUILD_PATH }}
+
+      - name: Refresh public GitHub contributions
+        run: npm run update:github
         working-directory: ${{ env.BUILD_PATH }}
 
       - name: Verify and build
