@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../Icon.astro';
+import AboutNavigation from '../about/AboutNavigation.astro';
 import TrustedInlineHtml from '../TrustedInlineHtml.astro';
 import {
   pageHeader,
@@ -24,6 +25,14 @@ interface Props {
 
 const { lang = defaultLocale } = Astro.props;
 const t = useTranslations(lang);
+const pageSections = [
+  { id: 'education', label: t.about.education },
+  { id: 'experience', label: t.about.experience },
+  { id: 'awards', label: t.about.awards },
+  { id: 'skills', label: t.about.skills },
+  { id: 'languages', label: t.about.languages },
+  { id: 'beyond-code', label: t.about.beyondCode },
+];
 
 const wikipediaPreviewCopy = {
   en: {
@@ -141,7 +150,7 @@ function getInstitutionMonogram(name: LocalizedString) {
         
         <!-- Education -->
         <div class="section">
-          <h2>
+          <h2 id="education" tabindex="-1">
             <Icon name="graduation" size={22} />
             {t.about.education}
           </h2>
@@ -195,7 +204,7 @@ function getInstitutionMonogram(name: LocalizedString) {
         
         <!-- Experience -->
         <div class="section">
-          <h2>
+          <h2 id="experience" tabindex="-1">
             <Icon name="briefcase" size={22} />
             {t.about.experience}
           </h2>
@@ -248,7 +257,7 @@ function getInstitutionMonogram(name: LocalizedString) {
 
         <!-- Awards -->
         <div class="section">
-          <h2>
+          <h2 id="awards" tabindex="-1">
             <Icon name="award" size={22} />
             {t.about.awards}
           </h2>
@@ -272,7 +281,7 @@ function getInstitutionMonogram(name: LocalizedString) {
         
         <!-- Skills -->
         <div class="section">
-          <h2>
+          <h2 id="skills" tabindex="-1">
             <Icon name="gear" size={22} />
             {t.about.skills}
           </h2>
@@ -293,7 +302,7 @@ function getInstitutionMonogram(name: LocalizedString) {
         
         <!-- Languages -->
         <div class="section">
-          <h2>
+          <h2 id="languages" tabindex="-1">
             <Icon name="globe" size={22} />
             {t.about.languages}
           </h2>
@@ -310,7 +319,7 @@ function getInstitutionMonogram(name: LocalizedString) {
         
         <!-- Interests / Beyond Code -->
         <div class="section">
-          <h2>
+          <h2 id="beyond-code" tabindex="-1">
             <Icon name="heart" size={22} />
             {t.about.beyondCode}
           </h2>
@@ -427,6 +436,7 @@ function getInstitutionMonogram(name: LocalizedString) {
             ))}
           </div>
         </div>
+        <AboutNavigation title={t.about.onThisPage} toggleLabel={t.about.sections} sections={pageSections} />
       </aside>
     </div>
   </div>
@@ -464,9 +474,16 @@ function getInstitutionMonogram(name: LocalizedString) {
 
   .about-sidebar {
     position: sticky;
-    top: 100px;
+    top: calc(100px - 0.5rem);
     align-self: start;
     height: fit-content;
+    max-height: calc(100dvh - 108px);
+    margin: -0.5rem;
+    padding: 0.5rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-brass-dark) transparent;
   }
   
   .intro-section {
@@ -509,6 +526,12 @@ function getInstitutionMonogram(name: LocalizedString) {
     display: flex;
     align-items: center;
     gap: var(--space-sm);
+    scroll-margin-top: 8rem;
+  }
+
+  .section h2:focus-visible {
+    outline: 2px solid var(--color-brass-light);
+    outline-offset: 4px;
   }
   
   /* Timeline */
@@ -1023,6 +1046,14 @@ function getInstitutionMonogram(name: LocalizedString) {
       order: -1;
       position: static;
       height: auto;
+      max-height: none;
+      margin: 0;
+      padding: 0;
+      overflow: visible;
+    }
+
+    .section h2 {
+      scroll-margin-top: 9rem;
     }
     
     .languages-list {
@@ -1031,6 +1062,12 @@ function getInstitutionMonogram(name: LocalizedString) {
     
     .interests-grid {
       grid-template-columns: 1fr;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(html:has(.about-layout)) {
+      scroll-behavior: auto;
     }
   }
 

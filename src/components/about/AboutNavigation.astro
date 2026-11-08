@@ -1,0 +1,196 @@
+---
+import Icon from '../Icon.astro';
+
+interface Props {
+  title: string;
+  toggleLabel: string;
+  sections: { id: string; label: string }[];
+}
+
+const { title, toggleLabel, sections } = Astro.props;
+---
+
+<div class="about-navigation" data-about-navigation>
+  <nav class="about-toc about-toc-desktop" aria-label={title}>
+    <p class="about-toc-title">{title}</p>
+    <ol class="about-toc-list">
+      {sections.map((section, index) => (
+        <li>
+          <a href={`#${section.id}`} data-about-jump>
+            <span class="about-toc-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+            <span>{section.label}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </nav>
+
+  <details class="about-toc-mobile">
+    <summary aria-label={title} title={toggleLabel}>
+      <span class="about-toc-open-icon" aria-hidden="true"><Icon name="menu" size={20} /></span>
+      <span class="about-toc-close-icon" aria-hidden="true"><Icon name="chevronLeft" size={20} /></span>
+    </summary>
+    <nav class="about-toc about-toc-panel" aria-label={title}>
+      <p class="about-toc-title">{title}</p>
+      <ol class="about-toc-list">
+        {sections.map((section, index) => (
+          <li>
+            <a href={`#${section.id}`} data-about-jump>
+              <span class="about-toc-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+              <span>{section.label}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  </details>
+</div>
+
+<script>
+  import '../../scripts/client/about-navigation.js';
+</script>
+
+<style>
+  .about-navigation {
+    margin-top: var(--space-md);
+  }
+
+  .about-toc {
+    padding: 1.1rem;
+    background: var(--surface-glass);
+    border: 1px solid var(--surface-border);
+    border-radius: var(--surface-radius);
+  }
+
+  .about-toc-title {
+    margin: 0 0 0.7rem;
+    padding-left: 0.7rem;
+    color: var(--color-brass-light);
+    font-family: var(--font-navigation);
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .about-toc-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .about-toc-list a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 38px;
+    padding: 0.45rem 0.7rem;
+    color: var(--color-text-secondary);
+    border-left: 2px solid var(--color-border-accent);
+    font-family: var(--font-navigation);
+    font-size: 1rem;
+    line-height: 1.35;
+    text-decoration: none;
+  }
+
+  .about-toc-number {
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+  }
+
+  .about-toc-list a:hover,
+  .about-toc-list a[aria-current='location'] {
+    color: var(--color-brass-light);
+    background: rgba(201, 162, 39, 0.08);
+    border-left-color: var(--color-brass);
+  }
+
+  .about-toc-list a:focus-visible,
+  .about-toc-mobile summary:focus-visible {
+    outline: 2px solid var(--color-brass-light);
+    outline-offset: 3px;
+  }
+
+  .about-toc-mobile {
+    display: none;
+  }
+
+  @media (max-width: 900px) {
+    .about-navigation {
+      margin: 0;
+    }
+
+    .about-toc-desktop {
+      display: none;
+    }
+
+    .about-toc-mobile {
+      --about-toc-top: clamp(8.5rem, 27dvh, 14rem);
+      display: block;
+      position: fixed;
+      top: var(--about-toc-top);
+      left: env(safe-area-inset-left, 0px);
+      z-index: 110;
+    }
+
+    .about-toc-mobile summary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      color: var(--color-brass-light);
+      background: rgba(18, 18, 24, 0.94);
+      border: 1px solid rgba(201, 162, 39, 0.38);
+      border-left: 0;
+      border-radius: 0 10px 10px 0;
+      list-style: none;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+    }
+
+    .about-toc-mobile summary:focus-visible {
+      outline-offset: -4px;
+    }
+
+    .about-toc-open-icon,
+    .about-toc-close-icon {
+      display: flex;
+    }
+
+    .about-toc-close-icon,
+    .about-toc-mobile[open] .about-toc-open-icon {
+      display: none;
+    }
+
+    .about-toc-mobile[open] .about-toc-close-icon {
+      display: flex;
+    }
+
+    .about-toc-mobile summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .about-toc-mobile[open] summary {
+      background: #252017;
+      border-color: var(--color-brass);
+    }
+
+    .about-toc-panel {
+      position: absolute;
+      top: 0;
+      left: calc(100% + 0.5rem);
+      width: min(17rem, calc(100vw - 5rem - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px)));
+      max-height: calc(100dvh - var(--about-toc-top) - max(4.5rem, env(safe-area-inset-bottom, 0px)));
+      overflow-y: auto;
+      background: #121218;
+      border-color: rgba(201, 162, 39, 0.3);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+    }
+
+    .about-toc-list a {
+      min-height: 44px;
+    }
+  }
+</style>

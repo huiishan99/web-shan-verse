@@ -113,6 +113,8 @@ export const ui = {
     },
     about: {
       title: 'About',
+      onThisPage: 'On this page',
+      sections: 'Sections',
       education: 'Education',
       experience: 'Experience',
       awards: 'Awards',
@@ -318,6 +320,8 @@ export const ui = {
     },
     about: {
       title: '关于',
+      onThisPage: '本页导航',
+      sections: '目录',
       education: '教育经历',
       experience: '经历',
       awards: '奖项',
@@ -523,6 +527,8 @@ export const ui = {
     },
     about: {
       title: '私について',
+      onThisPage: 'ページ内ナビ',
+      sections: '目次',
       education: '学歴',
       experience: '経験',
       awards: '受賞',
