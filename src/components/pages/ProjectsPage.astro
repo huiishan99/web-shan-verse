@@ -6,7 +6,7 @@ import type { ProjectStatus } from '../../data/projects';
 import { defaultLocale, localizeString, type Locale } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
 import '../../styles/projects-shared.css';
-import { getProjectPath, getProjectRecord, getProjectStatus } from '../../utils/projects';
+import { getProjectDisplayRecords, getProjectPath, getProjectPreviewImage, getProjectStatus } from '../../utils/projects';
 
 interface Props {
   lang?: Locale;
@@ -83,13 +83,13 @@ function getAuthorParts(authors: string) {
         </h2>
         
         <div class="projects-grid">
-          {category.items.map((project, projectIndex) => {
+          {getProjectDisplayRecords(category).map((record) => {
+            const { project } = record;
             const status = getProjectStatus(project, category);
             const meta = statusMeta[status];
-            const record = getProjectRecord(category.id, projectIndex);
             const detailPath = getProjectPath(record, lang);
             const firstDetailImage = project.detailImages?.[0];
-            const cardImage = project.image || project.detailImage || firstDetailImage?.src;
+            const cardImage = getProjectPreviewImage(project);
             const hasAcademicPreview = Boolean(cardImage) && academicCategoryIds.has(category.id);
             const cardImageAlt = firstDetailImage && firstDetailImage.src === cardImage
               ? localizeString(firstDetailImage.alt, lang)

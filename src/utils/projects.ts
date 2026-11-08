@@ -81,6 +81,19 @@ export function getProjectRecord(categoryId: string, projectIndex: number): Proj
   return record;
 }
 
+export function getProjectPreviewImage(project: ProjectItem): string | undefined {
+  return project.image || project.detailImage || project.detailImages?.[0]?.src;
+}
+
+export function getProjectDisplayRecords(category: ProjectCategory): ProjectRecord[] {
+  return category.items
+    .map((_, projectIndex) => getProjectRecord(category.id, projectIndex))
+    .sort((first, second) =>
+      Number(Boolean(getProjectPreviewImage(second.project)))
+      - Number(Boolean(getProjectPreviewImage(first.project)))
+    );
+}
+
 export function getProjectRecordBySlug(slug: string): ProjectRecord | undefined {
   return projectRecordBySlug.get(slug);
 }

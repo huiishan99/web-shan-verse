@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { projectCategories } from '../src/data/projects.ts';
-import { getProjectPath, getProjectStatus, projectRecords } from '../src/utils/projects.ts';
+import { getProjectDisplayRecords, getProjectPath, getProjectPreviewImage, getProjectRecord, getProjectStatus, projectRecords } from '../src/utils/projects.ts';
 
 const repositoryRoot = fileURLToPath(new URL('../', import.meta.url));
 
@@ -134,6 +134,31 @@ test('project detail slugs are explicit, unique, and localized into stable route
   assert.equal(getProjectPath(mathBridge, 'ja'), '/ja/projects/vr-math-bridge');
 });
 
+test('preview-first display preserves source order and canonical detail identities', () => {
+  const unity = projectCategories.find(({ id }) => id === 'unity');
+  const sourceOrder = unity.items.map(({ slug }) => slug);
+  const display = getProjectDisplayRecords(unity);
+
+  assert.deepEqual(display.map(({ slug }) => slug), [
+    'vr-car-scene-prototype', 'solar-system', '2d-shooter-game',
+    'ar-image-tracking', 'mamba-project', '2d-platformer', 'kitchen-chaos',
+  ]);
+  assert.deepEqual(unity.items.map(({ slug }) => slug), sourceOrder);
+  for (const record of display) {
+    assert.equal(record, getProjectRecord('unity', record.projectIndex));
+    assert.equal(record.project, unity.items[record.projectIndex]);
+    assert.equal(getProjectPath(record, 'en'), `/projects/${record.project.slug}`);
+  }
+});
+
+test('preview detection follows card image fallbacks and excludes award-only media', () => {
+  const gallery = [{ src: '/gallery.png' }];
+  assert.equal(getProjectPreviewImage(project({ image: '/card.png', detailImage: '/detail.png', detailImages: gallery })), '/card.png');
+  assert.equal(getProjectPreviewImage(project({ image: '', detailImage: '/detail.png', detailImages: gallery })), '/detail.png');
+  assert.equal(getProjectPreviewImage(project({ detailImages: gallery })), '/gallery.png');
+  assert.equal(getProjectPreviewImage(project({ award: { image: '/award.png' }, detailImages: [] })), undefined);
+});
+
 test('research archive corrects the website identity while preserving its stable routes', () => {
   const record = projectRecords.find(({ slug }) => slug === 'hexo-page');
   const { project: item, category: projectCategory } = record;
@@ -196,14 +221,16 @@ test('every local project media reference resolves to a public asset', () => {
   }
 });
 
-test('Unity contains all former VR entries without a separate VR category', () => {
+test('Unity keeps its VR entries while omitting the removed Master Project', () => {
   assert.equal(projectCategories.some(({ id }) => id === 'vr'), false);
   const unity = projectCategories.find(({ id }) => id === 'unity');
-  assert.equal(unity.items.length, 8);
-  for (const slug of ['vr-car-scene-prototype', 'ar-image-tracking', 'mamba-project', 'master-project']) {
+  assert.equal(unity.items.length, 7);
+  assert.equal(projectRecords.some(({ slug }) => slug === 'master-project'), false);
+  assert.ok(projectRecords.some(({ slug }) => slug === 'embodied-avatars-generative-ai-vr-thesis'));
+  for (const slug of ['vr-car-scene-prototype', 'ar-image-tracking', 'mamba-project']) {
     assert.ok(unity.items.some((item) => item.slug === slug));
   }
-  for (const slug of ['ar-image-tracking', 'mamba-project', 'master-project']) {
+  for (const slug of ['ar-image-tracking', 'mamba-project']) {
     const item = unity.items.find((project) => project.slug === slug);
     assert.equal(getProjectStatus(item, unity), 'prototype');
   }
@@ -224,7 +251,7 @@ test('Unity contains all former VR entries without a separate VR category', () =
 test('four additional course overviews have localized copy without private source links', () => {
   const school = projectCategories.find(({ id }) => id === 'school');
   assert.equal(school.items.length, 10);
-  assert.equal(projectRecords.length, 53);
+  assert.equal(projectRecords.length, 52);
   for (const slug of ['wireless-and-mobile-networks', 'mathematics-and-post-quantum-cryptography', 'numerical-modeling-and-simulations', 'research-paper-writing-seminar']) {
     const item = school.items.find((project) => project.slug === slug);
     assert.ok(item);

@@ -585,7 +585,7 @@ for (const locale of ['', '/zh', '/ja']) {
       await page.goto(`${locale}/projects`);
       await expect(page.locator('.category-route-item')).toHaveCount(7);
       await expect(page.locator('.category-route-item[href="#vr"], #vr')).toHaveCount(0);
-      await expect(page.locator('#unity .project-card')).toHaveCount(8);
+      await expect(page.locator('#unity .project-card')).toHaveCount(7);
       await expect(page.locator('#school .project-card')).toHaveCount(10);
       await page.locator('.category-routes').screenshot({ path: testInfo.outputPath(`categories-${viewport.width}.png`) });
       await page.locator('.category-route-item[href="#unity"]').click();

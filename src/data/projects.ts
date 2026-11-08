@@ -137,18 +137,6 @@ export const projectCategories: ProjectCategory[] = [
                 tags: ["Unity", "C#", "VR", "Oculus"]
             },
             {
-                slug: "master-project",
-                status: "prototype",
-                title: "Master Project",
-                description: {
-                    en: "Unity VR classroom research prototype with an embodied avatar, speech services, and a Python backend.",
-                    zh: "Unity VR 教室研究原型，包含具身头像、语音服务和 Python 后端。",
-                    ja: "身体化アバター、音声サービス、Python バックエンドを備えた Unity VR 教室研究プロトタイプ。"
-                },
-                github: "https://github.com/huiishan99/uoa-master-research-unity",
-                tags: ["Unity", "C#", "Python", "VR"]
-            },
-            {
                 slug: "solar-system",
                 title: "Solar System",
                 description: {
