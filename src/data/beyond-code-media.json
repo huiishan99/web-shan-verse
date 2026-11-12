@@ -322,5 +322,14 @@
     "artwork": "/images/beyond-code/studio-pixar.jpg",
     "artworkSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/21/Pixaranimationstudios.jpg/330px-Pixaranimationstudios.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
     "artworkUsageSource": "https://en.wikipedia.org/wiki/Pixar"
+  },
+  "movies-ratatouille": {
+    "description": "Ratatouille is a 2007 American animated comedy-drama film written and directed by Brad Bird, from a story by Jan Pinkava, Jim Capobianco and Bird. Produced by Pixar Animation Studios for Walt Disney Pictures, the film stars the voices of Patton Oswalt, Lou Romano, Ian Holm, Janeane Garofalo, Peter O'Toole, Brian Dennehy, Peter Sohn and Brad Garrett.",
+    "source": "https://en.wikipedia.org/wiki/Ratatouille_(film)",
+    "descriptionTitle": "Ratatouille (film)",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/movies-ratatouille.jpg",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/5/50/RatatouillePoster.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Ratatouille_(film)"
   }
 }
