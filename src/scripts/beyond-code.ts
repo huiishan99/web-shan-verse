@@ -4,6 +4,7 @@ import {
 } from '../utils/beyond-code-graph.js';
 import { solveStatic, stepPhysics } from '../utils/beyond-code-physics.js';
 import { createViewHistory } from '../utils/beyond-code-navigation.js';
+import { segmentBetweenCircles } from '../utils/beyond-code-links.js';
 
 interface GraphNode {
   id: string; category: string; type: string; title: string; subtitle: string;
@@ -62,7 +63,7 @@ function setupBeyondCode() {
   const primaryIds = new Set(data.categories.flatMap((entry) =>
     data.nodes.filter((node) => node.category === entry.id && !node.isContext).slice(0, 2).map((node) => node.id),
   ));
-  const contentLayout: LayoutNode[] = createGraphLayout(data.nodes).map((node: Omit<LayoutNode, 'vx' | 'vy' | 'targetX' | 'targetY' | 'element'>) => ({
+  const contentLayout: LayoutNode[] = createGraphLayout(data.nodes, data.edges).map((node: Omit<LayoutNode, 'vx' | 'vy' | 'targetX' | 'targetY' | 'element'>) => ({
     ...node, vx: 0, vy: 0, targetX: node.x, targetY: node.y,
     element: root.querySelector<HTMLButtonElement>(`[data-node="${node.id}"]`)!,
   }));
@@ -319,26 +320,9 @@ function setupBeyondCode() {
   }
 
   function updateTargets(syncStatic = true) {
+    // Browsing never rearranges the graph. Relations influence the bounded base
+    // anchors once; only an explicit drag adds a transient placement offset.
     for (const node of layout) { node.targetX = node.anchorX; node.targetY = node.anchorY; }
-    if (!selected && category !== 'all') {
-      const center=categoryCenter(category);
-      const external=contentLayout.filter((node)=>visibleIds.has(node.id)&&categoryOf(node.id)!==category);
-      external.forEach((node,index)=>{
-        node.targetX=center.x+Math.cos(index*2.4+2.3)*340;
-        node.targetY=center.y+Math.sin(index*2.4+2.3)*250;
-      });
-    }
-    if (selected) {
-      const center = positions.get(selected)!;
-      const others = [...neighbors].filter((id) => id !== selected);
-      const spread = others.length <= 2 ? Math.PI * 0.8 : Math.PI * 2;
-      others.forEach((id, index) => {
-        const node = positions.get(id)!;
-        const angle = -Math.PI / 2 + (index + 0.5) * spread / Math.max(1, others.length);
-        node.targetX = center.anchorX + Math.cos(angle) * 195;
-        node.targetY = center.anchorY + Math.sin(angle) * 165;
-      });
-    }
     for (const node of layout) {
       const offset = userOffsets.get(node.id);
       if (offset) { node.targetX += offset.x; node.targetY += offset.y; }
@@ -499,7 +483,7 @@ function setupBeyondCode() {
     wake();
   }
 
-  function render(now: number) {
+  function render() {
     ctx!.clearRect(0, 0, width, height);
     const view = viewport();
     const screenPoints = new Map<string, Point>();
@@ -527,15 +511,25 @@ function setupBeyondCode() {
       if (showLabel) labelCandidates.push({node,point:position,size});
     }
 
-    // Dashed spokes are category membership, not asserted creator/adaptation facts.
-    for (const edge of membershipEdges) {
+    // One visual grammar: quiet straight threads, always outside image rings.
+    // Membership remains separate data and never appears as a factual relation.
+    const emphasis = drag?.node ?? hovered ?? keyboardFocus ?? selected;
+    const drawLink = (edge: {source:string;target:string}, membership: boolean) => {
       const from = screenPoints.get(edge.source); const to = screenPoints.get(edge.target);
-      if (!from || !to) continue;
-      const active = hovered === edge.source || keyboardFocus === edge.source || drag?.node === edge.source;
-      ctx!.save(); ctx!.strokeStyle = `rgba(190,161,96,${active ? .52 : .24})`;
-      ctx!.lineWidth = active ? 1.25 : .85; ctx!.setLineDash([2,6]);
-      ctx!.beginPath(); ctx!.moveTo(from.x,from.y); ctx!.lineTo(to.x,to.y); ctx!.stroke(); ctx!.restore();
-    }
+      if (!from || !to) return;
+      const radius = (id: string) => nodeSize({id}) / 2 + (hubById.has(id) ? 5 : 6);
+      const segment = segmentBetweenCircles(from, to, radius(edge.source), radius(edge.target), 3);
+      if (!segment) return;
+      const active = emphasis === edge.source || emphasis === edge.target;
+      const opacity = active ? .65 : emphasis ? .065 : membership ? .15 : .28;
+      ctx!.strokeStyle = `rgba(183,172,145,${opacity})`;
+      ctx!.beginPath(); ctx!.moveTo(segment.from.x, segment.from.y);
+      ctx!.lineTo(segment.to.x, segment.to.y); ctx!.stroke();
+    };
+    ctx!.save(); ctx!.lineWidth = .9; ctx!.lineCap = 'round'; ctx!.setLineDash([]);
+    for (const edge of membershipEdges) drawLink(edge, true);
+    for (const edge of data.edges) drawLink(edge, false);
+    ctx!.restore();
 
     // Place readable captions around the image, rather than letting long names collide.
     for (const {node,point,size} of labelCandidates) {
@@ -573,48 +567,6 @@ function setupBeyondCode() {
       if(canShow)occupied.push({x:point.x+best.x-4,y:point.y+best.y-3,w:labelWidth+8,h:labelHeight+6});
     }
 
-    for (const edge of data.edges) {
-      const from = screenPoints.get(edge.source); const to = screenPoints.get(edge.target);
-      if (!from || !to) continue;
-      const active = selected === edge.source || selected === edge.target
-        || hovered === edge.source || hovered === edge.target || keyboardFocus === edge.source || keyboardFocus === edge.target;
-      const opacity = active ? .82 : selected ? .1 : .4;
-      ctx!.save(); ctx!.strokeStyle = `rgba(218,186,113,${opacity})`; ctx!.lineWidth = active ? 1.65 : 1.15;
-      if (edge.relationship === 'shared-universe') ctx!.setLineDash([3,5]);
-      const bend = Math.min(65, Math.hypot(to.x-from.x,to.y-from.y) * .1);
-      const middle = { x: (from.x + to.x) / 2, y: (from.y + to.y) / 2 - bend };
-      ctx!.beginPath(); ctx!.moveTo(from.x,from.y); ctx!.quadraticCurveTo(middle.x,middle.y,to.x,to.y); ctx!.stroke();
-      if (active) {
-        ctx!.font = '12px "Crimson Pro", Georgia, serif'; ctx!.textAlign = 'center';
-        const textWidth = ctx!.measureText(edge.label).width;
-        const length=Math.max(1,Math.hypot(to.x-from.x,to.y-from.y));
-        const normal={x:-(to.y-from.y)/length,y:(to.x-from.x)/length};
-        let caption={x:(from.x+to.x)/2,y:(from.y+to.y)/2-bend/2};
-        let score=Infinity;
-        for(const t of [.5,.4,.6,.3,.7])for(const offset of [15,-15,29,-29]) {
-          const point={
-            x:(1-t)**2*from.x+2*(1-t)*t*middle.x+t*t*to.x+normal.x*offset,
-            y:(1-t)**2*from.y+2*(1-t)*t*middle.y+t*t*to.y+normal.y*offset,
-          };
-          const box={x:point.x-textWidth/2-6,y:point.y-9,w:textWidth+12,h:17};
-          let overlap=0;
-          for(const other of occupied)overlap+=Math.max(0,Math.min(box.x+box.w,other.x+other.w)-Math.max(box.x,other.x))*Math.max(0,Math.min(box.y+box.h,other.y+other.h)-Math.max(box.y,other.y));
-          if(overlap<score){score=overlap;caption=point;}
-        }
-        if(score<5) {
-          ctx!.fillStyle = 'rgba(10,10,15,.92)'; ctx!.fillRect(caption.x-textWidth/2-6,caption.y-9,textWidth+12,17);
-          ctx!.fillStyle = '#b8a16d'; ctx!.fillText(edge.label,caption.x,caption.y+3);
-          occupied.push({x:caption.x-textWidth/2-6,y:caption.y-9,w:textWidth+12,h:17});
-        }
-        if (motion && !reducedMotion.matches) {
-          const t = (now * .00006) % 1;
-          const x = (1-t)**2*from.x+2*(1-t)*t*middle.x+t*t*to.x;
-          const y = (1-t)**2*from.y+2*(1-t)*t*middle.y+t*t*to.y;
-          ctx!.fillStyle = 'rgba(237,209,135,.8)'; ctx!.beginPath(); ctx!.arc(x,y,1.5,0,Math.PI*2); ctx!.fill();
-        }
-      }
-      ctx!.restore();
-    }
   }
 
   function tick(now: number) {
@@ -631,7 +583,7 @@ function setupBeyondCode() {
     if (animate) {
       stepPhysics(layout, physicsLinks(), physicsOptions(dt, now));
     } else solveStatic(layout, physicsLinks(), physicsOptions());
-    render(now);
+    render();
     if (animate) frame = requestAnimationFrame(tick);
   }
 

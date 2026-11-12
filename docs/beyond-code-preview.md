@@ -11,6 +11,65 @@ on 2026-11-12. The constellation checkpoint is `7045510`. Reuse the site's
 near-black background, brass accents, serif typography, and existing interest
 content. No new runtime dependency or backend is required.
 
+## Approved refinement: coherent connections (2026-11-13)
+
+Authority: owner feedback after published `e61fb81` requests more consistent,
+Obsidian-like connections and less stretching around Cyberpunk. This scoped local
+preview supersedes the earlier dashed membership/curved factual-line styling and
+the category/selection-driven neighbor relocation described below. After reviewing
+the local result, the owner explicitly approved commit and push of this revision.
+
+Problem: the category-only base layout places the Cyberpunk fact endpoints 1355
+world units apart. Filtering then relocates external neighbors onto a 340x250
+ellipse; selection relocates them onto a different 195x165 ellipse. Browsing
+therefore causes large target changes, while three line styles, captions and
+moving points add visual noise. The data relation itself remains valid.
+
+Design review: styling alone cannot repair target movement. A full unanchored
+force-library migration would add dependencies and weaken category stability.
+Use a single bounded, deterministic relation-aware pass for base anchors instead,
+then retain those anchors across category/selection changes. Browsing changes
+visibility, emphasis, camera and introduction; explicit drag owns scene placement.
+Keep the existing category hubs, page-local Back, data and drag semantics.
+
+All canvas edges use one thin, solid, straight stroke family, trimmed outside the
+visible circle rings. Opacity highlights the hovered/focused/selected relationship;
+category membership remains quieter. Remove canvas captions and moving particles;
+the detail panel retains the actual relationship meanings. Preserve circular
+artwork dimensions independently of flex layout. No factual edge is hidden just
+because it is long, removed, or inferred from proximity.
+
+References: [Obsidian Graph view](https://obsidian.md/help/plugins/graph) separates
+link thickness from layout forces; [D3 link force](https://d3js.org/d3-force/link)
+documents distance/strength as separate controls. This implementation keeps its
+current bounded solver and renderer rather than introducing either product.
+
+Acceptance: all 49 content nodes, eight sourced facts and eight hubs remain;
+cross-category lengths shrink by a common rule without collapsing images; links
+cannot reverse or enter rings when circles overlap; selecting Cyberpunk and
+returning must not rewrite anchors. Verify desktop/mobile filtered selection,
+Back, drag-following, pause, search/index and lifecycle. Tests must cover bounds,
+determinism, invalid edges, finite coordinates and trimmed-segment geometry.
+Retain explicit evidence limits for real touch hardware and OS reduced motion.
+
+### Coherent-connection review packet
+
+| Item | Result / boundary |
+| --- | --- |
+| Goal | A consistent, quiet connection layer without browsing-induced stretching. |
+| Behavior delta | All links use trimmed 0.9px solid straight threads and opacity-only emphasis. Relationship explanations remain in details. Category/selection no longer rewrite neighbor targets. |
+| Architecture delta | Optional semantic-edge input to the existing base-layout helper; one bounded deterministic relaxation. New pure circle-segment helper. No dependency, backend or persistence added. |
+| Invariants | 43 favorites, 6 context entities, 8 factual relations and 8 layout hubs preserved; no Cyberpunk-specific exception. Ordinary titles remain quiet. Manual work/component and category/group dragging retain their existing semantics. |
+| Assumptions | Category geography is a soft presentation constraint; linked works may sit near category borders. Screen collision avoidance can still adjust positions as zoom/visibility changes, but browsing never changes canonical anchors. |
+| Automated evidence | 129 unit tests pass, including 8 layout and 6 line-geometry tests. ESLint passes; Astro checks 115 files with zero diagnostics. The 297-page build and generated HTML validation pass. |
+| Layout evidence | In unstretched logical coordinates Cyberpunk shrinks 1355.20 to 356.10, Howl film/book 753.30 to 288.11. Maximum displacement 504.29 stays below 520; all base centers stay about 100 apart. Category collection means remain 12.4–79.6 from their original category centers. |
+| Browser evidence / counterexamples | Paused Games to Cyberpunk selection changes normalized relative positions by less than 0.01; Back returns to the prior Games coordinates. A 105.5px game drag moved Edgerunners 97.0px after settling and Ramen 1.6px, with no accidental selection. At 390x844 both Cyberpunk covers measure 40.33px square; details, Back twice, search/index and About/back re-entry work without horizontal overflow. |
+| Regression surface | Base anchors, line geometry, visibility/colliders, detail camera and history. Overlapping circles intentionally leave no drawable segment; hidden nodes cannot add strokes. Manual drag remains the only source of retained scene placement. |
+| Known risks / trajectory | Initial relaxation is bounded, not an optimal crossing-free graph; a straight edge may still cross a third node and screen collisions can cause small local adjustments. Mobile category remapping does not guarantee the same lengths as the desktop base (Howl film/book remains about 597 world units). Actual touch hardware and OS reduced motion remain unverified. Independent final source review found no blocking issue. The owner accepted the local preview and authorized commit/push. |
+
+Browser evidence and the mobile preview are saved outside the repository in
+`2026/11/13/beyond-line-polish/browser-checks.json` and adjacent screenshots.
+
 ## Published checkpoint: clearer content and responsive bubbles
 
 Authority: the four subsequent owner annotations define this revision. Published
@@ -114,7 +173,7 @@ rate.
 Browser measurements are saved outside the repository in
 `beyond-physics-browser-checks.json`, alongside desktop and mobile preview images.
 
-## Active refinement: quiet labels and local navigation
+## Published navigation checkpoint: quiet labels and local navigation (`e61fb81`)
 
 Authority: the owner accepted the responsive-bubble checkpoint and explicitly
 requested publishing these follow-up changes as well. Keep the same visual theme
