@@ -2,6 +2,7 @@ import {
   clamp, clusterCenters, connectedIds, createGraphLayout,
   fitCamera, screenToWorld, worldToScreen, zoomAt,
 } from '../utils/beyond-code-graph.js';
+import { solveStatic, stepPhysics } from '../utils/beyond-code-physics.js';
 
 interface GraphNode {
   id: string; category: string; type: string; title: string; subtitle: string;
@@ -11,6 +12,11 @@ interface GraphEdge { id: string; source: string; target: string; relationship: 
 interface GraphCategory { id: string; title: string }
 interface Camera { x: number; y: number; scale: number }
 interface Point { x: number; y: number }
+interface GraphDrag {
+  pointerId: number; start: Point; last: Point; node: string | null;
+  moved: boolean; touch: boolean; world: Point | null;
+  origin: Point | null; pointerOffset: Point;
+}
 interface LayoutNode {
   id: string; x: number; y: number; anchorX: number; anchorY: number;
   major: boolean; phase: number; radius: number; vx: number; vy: number;
@@ -47,6 +53,9 @@ function setupBeyondCode() {
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const mobileQuery = window.matchMedia('(max-width: 640px)');
   const nodeById = new Map(data.nodes.map((node) => [node.id, node]));
+  const primaryIds = new Set(data.categories.flatMap((entry) =>
+    data.nodes.filter((node) => node.category === entry.id && !node.isContext).slice(0, 2).map((node) => node.id),
+  ));
   const layout: LayoutNode[] = createGraphLayout(data.nodes).map((node: Omit<LayoutNode, 'vx' | 'vy' | 'targetX' | 'targetY' | 'element'>) => ({
     ...node, vx: 0, vy: 0, targetX: node.x, targetY: node.y,
     element: root.querySelector<HTMLButtonElement>(`[data-node="${node.id}"]`)!,
@@ -71,7 +80,9 @@ function setupBeyondCode() {
   let inView = true;
   let motion = !reducedMotion.matches;
   let lastDrag = 0;
-  let drag: { pointerId: number; start: Point; last: Point; node: string | null; moved: boolean; touch: boolean } | null = null;
+  let drag: GraphDrag | null = null;
+  // Gesture positions live only in this scene; reset/filter/navigation restore its layout.
+  const userOffsets = new Map<string, Point>();
   let initialized = false;
   let horizontalStretch = 1;
   let anchorModeMobile = mobileQuery.matches;
@@ -86,6 +97,60 @@ function setupBeyondCode() {
     if (mobileQuery.matches) return mobileCenters[id];
     const center=clusterCenters[id as keyof typeof clusterCenters];
     return {x:center.x*horizontalStretch,y:center.y};
+  }
+
+  function isMajor(id: string) {
+    return primaryIds.has(id) || category !== 'all' || !!query || neighbors.has(id);
+  }
+
+  function nodeSize(node: { id: string }) {
+    const entry = nodeById.get(node.id)!;
+    if (entry.type === 'topic' && !entry.artwork) return 20;
+    return clamp((isMajor(node.id) ? 59 : 32) * Math.sqrt(camera.scale), 23, 82);
+  }
+
+  function physicsOptions(dt = 1 / 30, idleTime?: number) {
+    const dragging = !!drag?.node && drag.moved;
+    const fixed = keyboardFocus ?? hovered;
+    return {
+      dt, scale: camera.scale, activeIds: visibleIds,
+      draggedId: dragging ? drag!.node : null,
+      dragPoint: dragging ? drag!.world : null,
+      fixedIds: new Set(!dragging && fixed ? [fixed] : []),
+      categoryFor: (node: { id: string }) => nodeById.get(node.id)?.category,
+      // Both solver and DOM use the exact same screen-space size; the ring adds 6px.
+      radiusFor: (node: { id: string }) => nodeSize(node) / 2 + 6,
+      padding: 4,
+      anchorOffsetFor: idleTime === undefined ? undefined : (node: { id: string }) => {
+        const phase = positions.get(node.id)!.phase;
+        return { x: Math.sin(idleTime * .00038 + phase) * 8, y: Math.cos(idleTime * .00031 + phase) * 10 };
+      },
+    };
+  }
+
+  function linkedComponent(id: string) {
+    const component = new Set([id]);
+    const queue = [id];
+    while (queue.length) {
+      const current = queue.shift()!;
+      for (const next of connectedIds(current, data.edges)) {
+        if (!component.has(next)) { component.add(next); queue.push(next); }
+      }
+    }
+    return component;
+  }
+
+  function resetTransientGesture() {
+    const captured = drag;
+    drag = null;
+    if (captured) {
+      const owner = captured.node ? positions.get(captured.node)!.element : graph;
+      if (owner.hasPointerCapture(captured.pointerId)) owner.releasePointerCapture(captured.pointerId);
+      if (captured.moved) lastDrag = performance.now();
+    }
+    hovered = null;
+    graph.classList.remove('is-dragging');
+    for (const node of layout) { node.vx = 0; node.vy = 0; }
   }
 
   function viewport() {
@@ -162,7 +227,7 @@ function setupBeyondCode() {
     return labels[data.lang]?.[edge.relationship]?.[forward ? 0 : 1] ?? edge.label;
   }
 
-  function updateTargets() {
+  function updateTargets(syncStatic = true) {
     for (const node of layout) { node.targetX = node.anchorX; node.targetY = node.anchorY; }
     if (!selected && category !== 'all') {
       const center=categoryCenter(category);
@@ -183,7 +248,11 @@ function setupBeyondCode() {
         node.targetY = center.anchorY + Math.sin(angle) * 165;
       });
     }
-    if (reducedMotion.matches || !motion) {
+    for (const node of layout) {
+      const offset = userOffsets.get(node.id);
+      if (offset) { node.targetX += offset.x; node.targetY += offset.y; }
+    }
+    if (syncStatic && (reducedMotion.matches || !motion)) {
       for (const node of layout) { node.x = node.targetX; node.y = node.targetY; node.vx = 0; node.vy = 0; }
     }
   }
@@ -207,6 +276,7 @@ function setupBeyondCode() {
   function selectNode(id: string) {
     const node = nodeById.get(id);
     if (!node) return;
+    resetTransientGesture();
     selected = id;
     neighbors = connectedIds(id, data.edges);
     detail.hidden = false;
@@ -256,6 +326,7 @@ function setupBeyondCode() {
   }
 
   function closeDetail(restoreFocus = false, refit = true) {
+    resetTransientGesture();
     const previous = selected;
     selected = null; neighbors = new Set();
     detail.hidden = true;
@@ -275,6 +346,7 @@ function setupBeyondCode() {
   }
 
   function setView(next: string) {
+    resetTransientGesture();
     mode = next;
     graph.hidden = next === 'index'; indexView.hidden = next !== 'index';
     root!.classList.toggle('is-index', next === 'index');
@@ -286,6 +358,8 @@ function setupBeyondCode() {
   }
 
   function chooseCategory(id: string) {
+    resetTransientGesture();
+    userOffsets.clear();
     category = id;
     closeDetail(false, false);
     for (const button of root!.querySelectorAll<HTMLButtonElement>('[data-beyond-category]')) {
@@ -299,6 +373,8 @@ function setupBeyondCode() {
     width = stage.clientWidth; height = stage.clientHeight;
     const nextStretch = mobileQuery.matches ? 1 : Math.max(1, width / Math.max(300,height-65) / 1.55);
     if (Math.abs(nextStretch-horizontalStretch)>.01 || !initialized || mobileQuery.matches || anchorModeMobile!==mobileQuery.matches) {
+      resetTransientGesture();
+      userOffsets.clear();
       horizontalStretch=nextStretch;
       anchorModeMobile=mobileQuery.matches;
       for (const node of layout) {
@@ -336,11 +412,8 @@ function setupBeyondCode() {
       if (!visibleIds.has(node.id)) continue;
       const position = worldToScreen(node, camera, view);
       screenPoints.set(node.id, position);
-      const entry=nodeById.get(node.id)!;
-      const peers=data.nodes.filter((item)=>item.category===entry.category&&!item.isContext);
-      const primary=peers.slice(0,2).some((item)=>item.id===node.id);
-      const major = primary || category !== 'all' || !!query || neighbors.has(node.id);
-      const size = nodeById.get(node.id)?.type === 'topic' ? 20 : clamp((major ? 59 : 32) * Math.sqrt(camera.scale), 23, 82);
+      const major = isMajor(node.id);
+      const size = nodeSize(node);
       node.element.style.setProperty('--node-size', `${size}px`);
       const minor = (!major || mobileOverview) && hovered !== node.id && keyboardFocus !== node.id && !neighbors.has(node.id);
       node.element.classList.toggle('is-minor', minor);
@@ -355,7 +428,7 @@ function setupBeyondCode() {
       const center = categoryCenter(id);
       const point = worldToScreen({ x: center.x, y: center.y - (mobileOverview ? 180 : 245) }, camera, view);
       element.style.transform = `translate(${point.x}px, ${point.y}px) translate(-50%, -50%)`;
-      element.hidden = !!query || (category !== 'all' && category !== id);
+      element.hidden = category === 'all' || !!query || category !== id;
       element.classList.toggle('is-muted', !!selected);
       if (element.hidden || selected) continue;
       occupied.push({x:point.x-65,y:point.y-12,w:130,h:30});
@@ -450,6 +523,7 @@ function setupBeyondCode() {
     frame = 0;
     if (!alive || document.hidden || !inView || mode !== 'graph') return;
     if (now - lastTime < 1000 / 30) { frame = requestAnimationFrame(tick); return; }
+    const dt = lastTime ? Math.min((now - lastTime) / 1000, .05) : 1 / 30;
     lastTime = now;
     const animate = motion && !reducedMotion.matches;
     const cameraEase = animate ? .12 : 1;
@@ -457,15 +531,8 @@ function setupBeyondCode() {
     camera.y += (targetCamera.y-camera.y)*cameraEase;
     camera.scale += (targetCamera.scale-camera.scale)*cameraEase;
     if (animate) {
-      for (const node of layout) {
-        if (drag?.node === node.id || hovered === node.id || keyboardFocus === node.id) continue;
-        const driftX = Math.sin(now*.00038+node.phase)*10;
-        const driftY = Math.cos(now*.00031+node.phase)*12;
-        node.vx = (node.vx+(node.targetX+driftX-node.x)*.014)*.78;
-        node.vy = (node.vy+(node.targetY+driftY-node.y)*.014)*.78;
-        node.x += node.vx; node.y += node.vy;
-      }
-    }
+      stepPhysics(layout, data.edges, physicsOptions(dt, now));
+    } else solveStatic(layout, data.edges, physicsOptions());
     render(now);
     if (animate) frame = requestAnimationFrame(tick);
   }
@@ -485,7 +552,16 @@ function setupBeyondCode() {
     const target = (event.target as Element).closest<HTMLButtonElement>('[data-node]');
     if ((event.target as Element).closest('[data-cluster]')) return;
     const point = pointerPoint(event);
-    drag = { pointerId:event.pointerId, start:point, last:point, node:target?.dataset.node ?? null, moved:false, touch:event.pointerType==='touch' };
+    const node = target?.dataset.node ? positions.get(target.dataset.node)! : null;
+    const world = screenToWorld(point, camera, viewport());
+    targetCamera = { ...camera };
+    drag = {
+      pointerId:event.pointerId, start:point, last:point, node:node?.id ?? null,
+      moved:false, touch:event.pointerType==='touch',
+      world:node ? { x:node.x, y:node.y } : null,
+      origin:node ? { x:node.x, y:node.y } : null,
+      pointerOffset:node ? { x:world.x-node.x, y:world.y-node.y } : { x:0, y:0 },
+    };
     (target || graph).setPointerCapture(event.pointerId);
   }, { signal });
 
@@ -498,7 +574,12 @@ function setupBeyondCode() {
     if (drag.node) {
       const node = positions.get(drag.node)!;
       const world = screenToWorld(point, camera, viewport());
-      node.x=world.x; node.y=world.y; node.vx=0; node.vy=0;
+      drag.world={x:world.x-drag.pointerOffset.x,y:world.y-drag.pointerOffset.y};
+      node.x=drag.world.x; node.y=drag.world.y; node.vx=0; node.vy=0;
+      if (!motion || reducedMotion.matches) {
+        // User-driven updates still propagate; no timer continues the motion afterward.
+        stepPhysics(layout, data.edges, physicsOptions());
+      }
     } else {
       const dx=(point.x-drag.last.x)/camera.scale;
       const dy=drag.touch ? 0 : (point.y-drag.last.y)/camera.scale;
@@ -509,8 +590,20 @@ function setupBeyondCode() {
 
   const endDrag = (event: PointerEvent) => {
     if (!drag || drag.pointerId!==event.pointerId) return;
-    if (drag.moved) lastDrag=performance.now();
+    if (event.type !== 'pointerup') { resetTransientGesture(); wake(); return; }
+    if (drag.moved) {
+      lastDrag=performance.now();
+      if (drag.node && drag.world && drag.origin) {
+        const delta={x:drag.world.x-drag.origin.x,y:drag.world.y-drag.origin.y};
+        for (const id of linkedComponent(drag.node)) {
+          if (!visibleIds.has(id)) continue;
+          const previous=userOffsets.get(id) ?? {x:0,y:0};
+          userOffsets.set(id,{x:previous.x+delta.x,y:previous.y+delta.y});
+        }
+      }
+    }
     drag=null; graph.classList.remove('is-dragging'); wake();
+    updateTargets(false);
   };
   graph.addEventListener('pointerup',endDrag,{signal});
   graph.addEventListener('pointercancel',endDrag,{signal});
@@ -548,7 +641,7 @@ function setupBeyondCode() {
   graph.addEventListener('pointerleave',()=>{hovered=null;wake();},{signal});
   graph.addEventListener('focusin',(event)=>{ keyboardFocus=(event.target as HTMLElement).closest<HTMLElement>('[data-node]')?.dataset.node??null; wake(); },{signal});
   graph.addEventListener('focusout',()=>{keyboardFocus=null;wake();},{signal});
-  search.addEventListener('input',()=>{ query=search.value.trim().toLocaleLowerCase(); closeDetail(false,false); applyVisibility(); },{signal});
+  search.addEventListener('input',()=>{ userOffsets.clear(); query=search.value.trim().toLocaleLowerCase(); closeDetail(false,false); applyVisibility(); },{signal});
   document.addEventListener('keydown',(event)=>{if(event.key==='Escape'&&selected)closeDetail(true);},{signal});
   document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(frame);frame=0;}else wake();},{signal});
   reducedMotion.addEventListener('change',()=>{motion=!reducedMotion.matches;motionButton.setAttribute('aria-pressed',String(motion));camera={...targetCamera};updateTargets();wake();},{signal});
@@ -561,7 +654,7 @@ function setupBeyondCode() {
   motionButton.setAttribute('aria-pressed',String(motion));
   resize(); root.classList.add('is-ready');
   state.cleanup=()=>{
-    alive=false; cancelAnimationFrame(frame); controller.abort();
+    alive=false; resetTransientGesture(); cancelAnimationFrame(frame); controller.abort();
     resizeObserver.disconnect(); intersection.disconnect();
   };
 }

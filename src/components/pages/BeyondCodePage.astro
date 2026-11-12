@@ -10,7 +10,7 @@ const { lang = 'en' } = Astro.props;
 const copy = {
   en: {
     eyebrow: 'A PERSONAL CONSTELLATION', title: 'Beyond Code',
-    subtitle: 'Stories, sounds, and little worlds I keep coming back to.',
+    subtitle: "What I've watched, read, played, and listened to, plus the food, hobbies, and ideas I enjoy.",
     all: 'All', search: 'Find something…', constellation: 'Constellation', index: 'Index',
     hint: 'Drag to wander · Select to explore', reset: 'Return to the whole constellation',
     zoomIn: 'Zoom in', zoomOut: 'Zoom out', motion: 'Gentle motion', close: 'Close introduction',
@@ -19,7 +19,7 @@ const copy = {
     context: 'Related creator or source', playing: 'Pause preview', play: 'Play preview',
   },
   zh: {
-    eyebrow: '我的兴趣星群', title: '代码之外', subtitle: '那些总让我想要再次走近的故事、声音与小小世界。',
+    eyebrow: '我的兴趣星群', title: '代码之外', subtitle: '记录我看过、读过、玩过、听过的作品，以及喜欢的食物、爱好和想法。',
     all: '全部', search: '寻找一颗星…', constellation: '星群', index: '索引',
     hint: '拖动漫游 · 点选探索', reset: '回到完整星群', zoomIn: '放大', zoomOut: '缩小',
     motion: '轻柔漂浮', close: '关闭介绍', related: '相连的世界', nearby: '同一片星群',
@@ -27,7 +27,7 @@ const copy = {
     collection: '我的收藏', context: '相关创作者或原作', playing: '暂停试听', play: '试听',
   },
   ja: {
-    eyebrow: '私の小さな星座', title: 'コードを超えて', subtitle: '何度でも戻りたくなる物語、音楽、小さな世界。',
+    eyebrow: '私の小さな星座', title: 'コードを超えて', subtitle: '観たもの、読んだもの、遊んだもの、聴いたもの。好きな食べ物や趣味、関心のあることも。',
     all: 'すべて', search: '星を探す…', constellation: '星座', index: '一覧',
     hint: 'ドラッグで散策 · 選んで探索', reset: '星座全体に戻る', zoomIn: '拡大', zoomOut: '縮小',
     motion: '穏やかな動き', close: '紹介を閉じる', related: 'つながる世界', nearby: '同じ星座から',
@@ -93,7 +93,7 @@ const graphData = JSON.stringify({
         <canvas class="beyond-links" data-beyond-canvas aria-hidden="true"></canvas>
         <div class="beyond-clusters">
           {localizedCategories.map((category) => (
-            <button type="button" class="beyond-cluster" data-cluster={category.id} aria-label={category.title}>
+            <button type="button" class="beyond-cluster" data-cluster={category.id} aria-label={category.title} hidden>
               <span>{category.title}</span><Icon name="arrowRight" size={13} />
             </button>
           ))}
@@ -205,10 +205,10 @@ const graphData = JSON.stringify({
   .beyond-node--person .beyond-node-art,.beyond-node--group .beyond-node-art,.beyond-node--studio .beyond-node-art { border-style:dashed; }
   .beyond-node[data-node='studio-ghibli'] .beyond-node-art { background:#c9c3b5; }
   .beyond-node[data-node='studio-ghibli'] .beyond-node-art img { object-fit:contain; padding:5px; }
-  .beyond-node--topic .beyond-node-art { width:20px; height:20px; background:rgba(201,162,39,.06); border-color:rgba(201,162,39,.4); }
-  .beyond-node--topic .beyond-node-art :global(svg) { width:11px;height:11px;opacity:.8; }
+  .beyond-node--topic:not(.has-artwork) .beyond-node-art { width:20px; height:20px; background:rgba(201,162,39,.06); border-color:rgba(201,162,39,.4); }
+  .beyond-node--topic:not(.has-artwork) .beyond-node-art :global(svg) { width:11px;height:11px;opacity:.8; }
   .beyond-node-orbit { position:absolute; width:calc(var(--node-size,52px) + 12px); height:calc(var(--node-size,52px) + 12px); border:1px solid rgba(201,162,39,.08); border-radius:50%; pointer-events:none; transition:border-color .3s; }
-  .beyond-node--topic .beyond-node-orbit { display:none; }
+  .beyond-node--topic:not(.has-artwork) .beyond-node-orbit { display:none; }
   .beyond-node-label { position:absolute; display:block; font-size:14px; line-height:1.2; margin:0; width:125px; left:50%; top:50%; max-width:125px; text-wrap:balance; text-shadow:0 1px 8px #08080d,0 0 6px #08080d; pointer-events:auto; }
   .beyond-node-subtitle { display:none; }
   .beyond-node.is-minor .beyond-node-art { filter:saturate(.8); }
