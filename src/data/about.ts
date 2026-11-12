@@ -377,6 +377,7 @@ export const interests: InterestCategory[] = [
     icon: "film",
     items: [
       { title: { en: "Coco", zh: "寻梦环游记", ja: "リメンバー・ミー" }, wikiPage: "Coco (2017 film)" },
+      { title: { en: "Ratatouille", zh: "料理鼠王", ja: "レミーのおいしいレストラン" }, wikiPage: "Ratatouille (film)" },
       { title: { en: "Flipped", zh: "怦然心动", ja: "Flipped" }, wikiPage: "Flipped (2010 film)" },
       { title: { en: "Howl's Moving Castle", zh: "哈尔的移动城堡", ja: "ハウルの動く城" }, wikiPage: "Howl's Moving Castle (film)" },
       { title: { en: "The Truman Show", zh: "楚门的世界", ja: "トゥルーマン・ショー" }, wikiPage: "The Truman Show" },
