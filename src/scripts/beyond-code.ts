@@ -3,6 +3,7 @@ import {
   fitCamera, screenToWorld, worldToScreen, zoomAt,
 } from '../utils/beyond-code-graph.js';
 import { solveStatic, stepPhysics } from '../utils/beyond-code-physics.js';
+import { createViewHistory } from '../utils/beyond-code-navigation.js';
 
 interface GraphNode {
   id: string; category: string; type: string; title: string; subtitle: string;
@@ -24,6 +25,10 @@ interface LayoutNode {
 }
 interface GraphData { nodes: GraphNode[]; edges: GraphEdge[]; categories: GraphCategory[]; copy: Record<string,string>; lang: string }
 interface GraphState { cleanup?: () => void; bootstrapped?: boolean }
+interface ViewSnapshot {
+  category: string; query: string; mode: string; selected: string | null;
+  camera: Camera; userOffsets: [string, Point][];
+}
 
 const globalWindow = window as typeof window & { __shanBeyondCode?: GraphState };
 const state = globalWindow.__shanBeyondCode ??= {};
@@ -43,6 +48,7 @@ function setupBeyondCode() {
   const indexView = root.querySelector<HTMLElement>('[data-beyond-index]')!;
   const search = root.querySelector<HTMLInputElement>('[data-beyond-search]')!;
   const motionButton = root.querySelector<HTMLButtonElement>('[data-beyond-motion]')!;
+  const backButton = root.querySelector<HTMLButtonElement>('[data-beyond-back]')!;
   const title = root.querySelector<HTMLElement>('[data-detail-title]')!;
   const media = root.querySelector<HTMLElement>('[data-detail-image]')!;
   const source = root.querySelector<HTMLAnchorElement>('[data-detail-source]')!;
@@ -56,14 +62,30 @@ function setupBeyondCode() {
   const primaryIds = new Set(data.categories.flatMap((entry) =>
     data.nodes.filter((node) => node.category === entry.id && !node.isContext).slice(0, 2).map((node) => node.id),
   ));
-  const layout: LayoutNode[] = createGraphLayout(data.nodes).map((node: Omit<LayoutNode, 'vx' | 'vy' | 'targetX' | 'targetY' | 'element'>) => ({
+  const contentLayout: LayoutNode[] = createGraphLayout(data.nodes).map((node: Omit<LayoutNode, 'vx' | 'vy' | 'targetX' | 'targetY' | 'element'>) => ({
     ...node, vx: 0, vy: 0, targetX: node.x, targetY: node.y,
     element: root.querySelector<HTMLButtonElement>(`[data-node="${node.id}"]`)!,
   }));
+  // Category hubs are navigation/layout bodies, never favorites or factual relations.
+  const hubs = data.categories.map((entry, index) => {
+    const center = clusterCenters[entry.id as keyof typeof clusterCenters];
+    return { id: `category-hub-${entry.id}`, category: entry.id,
+      x: center.x, y: center.y - 205, anchorX: center.x, anchorY: center.y - 205,
+      targetX: center.x, targetY: center.y - 205, vx: 0, vy: 0,
+      major: true, radius: 28, phase: index * 1.7,
+      element: root.querySelector<HTMLButtonElement>(`[data-category-hub="${entry.id}"]`)!,
+    };
+  });
+  const hubById = new Map(hubs.map((hub) => [hub.id, hub]));
+  const layout: LayoutNode[] = [...contentLayout, ...hubs];
+  const membershipEdges = data.nodes.map((node) => ({ source: `category-hub-${node.category}`, target: node.id }));
   const positions = new Map(layout.map((node) => [node.id, node]));
-  const clusterElements = [...root.querySelectorAll<HTMLElement>('[data-cluster]')];
+  const history = createViewHistory();
+  let restoringView = false;
+  let editingSearch = false;
   let category = 'all';
   let query = '';
+  let searchText = '';
   let selected: string | null = null;
   let hovered: string | null = null;
   let keyboardFocus: string | null = null;
@@ -104,9 +126,21 @@ function setupBeyondCode() {
   }
 
   function nodeSize(node: { id: string }) {
+    if (hubById.has(node.id)) return clamp(45 * Math.sqrt(camera.scale), 44, 54);
     const entry = nodeById.get(node.id)!;
     if (entry.type === 'topic' && !entry.artwork) return 20;
     return clamp((isMajor(node.id) ? 59 : 32) * Math.sqrt(camera.scale), 23, 82);
+  }
+
+  function categoryOf(id: string) {
+    return hubById.get(id)?.category ?? nodeById.get(id)!.category;
+  }
+
+  function physicsLinks() {
+    // Membership is activated for a hub gesture only. A work drag cannot pull
+    // every sibling through its category's star-shaped navigation links.
+    return drag?.node && hubById.has(drag.node)
+      ? [...data.edges, ...membershipEdges.filter((edge) => edge.source === drag!.node)] : data.edges;
   }
 
   function physicsOptions(dt = 1 / 30, idleTime?: number) {
@@ -117,9 +151,10 @@ function setupBeyondCode() {
       draggedId: dragging ? drag!.node : null,
       dragPoint: dragging ? drag!.world : null,
       fixedIds: new Set(!dragging && fixed ? [fixed] : []),
-      categoryFor: (node: { id: string }) => nodeById.get(node.id)?.category,
-      // Both solver and DOM use the exact same screen-space size; the ring adds 6px.
-      radiusFor: (node: { id: string }) => nodeSize(node) / 2 + 6,
+      categoryFor: (node: { id: string }) => categoryOf(node.id),
+      // Hubs also reserve the compact caption below their orbit. Work circles
+      // share their exact screen-space image size and add the 6px outer ring.
+      radiusFor: (node: { id: string }) => nodeSize(node) / 2 + (hubById.has(node.id) ? 26 : 6),
       padding: 4,
       anchorOffsetFor: idleTime === undefined ? undefined : (node: { id: string }) => {
         const phase = positions.get(node.id)!.phase;
@@ -129,6 +164,8 @@ function setupBeyondCode() {
   }
 
   function linkedComponent(id: string) {
+    const hub = hubById.get(id);
+    if (hub) return new Set([id, ...data.nodes.filter((node) => node.category === hub.category).map((node) => node.id)]);
     const component = new Set([id]);
     const queue = [id];
     while (queue.length) {
@@ -138,6 +175,54 @@ function setupBeyondCode() {
       }
     }
     return component;
+  }
+
+  function snapshot(): ViewSnapshot {
+    return { category, query: searchText, mode, selected, camera: { ...targetCamera },
+      userOffsets: [...userOffsets].map(([id, point]) => [id, { ...point }]) };
+  }
+
+  function rememberView() {
+    if (restoringView) return;
+    history.push(snapshot());
+    backButton.disabled = !history.canGoBack();
+  }
+
+  function stepBack() {
+    const previous = history.back() as ViewSnapshot | undefined;
+    if (!previous) return;
+    restoringView = true;
+    editingSearch = false;
+    search.value = previous.query;
+    searchText = previous.query;
+    query = previous.query.trim().toLocaleLowerCase();
+    chooseCategory(previous.category);
+    setView(previous.mode);
+    for (const [id, point] of previous.userOffsets) userOffsets.set(id, { ...point });
+    if (previous.selected) selectNode(previous.selected);
+    else { updateTargets(); applyVisibility(false); }
+    setCamera(previous.camera);
+    restoringView = false;
+    backButton.disabled = !history.canGoBack();
+    if (previous.selected) title.focus({ preventScroll: true });
+    else if (previous.query) search.focus({ preventScroll: true });
+    else root!.querySelector<HTMLButtonElement>(`[data-beyond-category="${previous.category}"]`)?.focus({ preventScroll: true });
+    wake();
+  }
+
+  function updateMotionControl() {
+    motionButton.setAttribute('aria-pressed', String(motion));
+    motionButton.disabled = reducedMotion.matches;
+    const label = reducedMotion.matches ? data.copy.reducedMotion : motion ? data.copy.pauseMotion : data.copy.resumeMotion;
+    motionButton.setAttribute('aria-label', label);
+    motionButton.title = label;
+  }
+
+  function navigate(action: () => void) {
+    rememberView();
+    restoringView = true;
+    try { action(); } finally { restoringView = false; }
+    editingSearch = false;
   }
 
   function resetTransientGesture() {
@@ -188,6 +273,12 @@ function setupBeyondCode() {
         data.nodes.filter((node)=>node.category===entry.id&&!node.isContext).slice(0,3).map((node)=>node.id),
       ));
     }
+    if (!selected && !query && mode === 'graph') {
+      for (const hub of hubs) {
+        if ((category === 'all' || category === hub.category)
+          && data.nodes.some((node) => node.category === hub.category && visibleIds.has(node.id))) visibleIds.add(hub.id);
+      }
+    }
     updateTargets();
     for (const node of layout) {
       const visible = visibleIds.has(node.id);
@@ -231,7 +322,7 @@ function setupBeyondCode() {
     for (const node of layout) { node.targetX = node.anchorX; node.targetY = node.anchorY; }
     if (!selected && category !== 'all') {
       const center=categoryCenter(category);
-      const external=layout.filter((node)=>visibleIds.has(node.id)&&nodeById.get(node.id)!.category!==category);
+      const external=contentLayout.filter((node)=>visibleIds.has(node.id)&&categoryOf(node.id)!==category);
       external.forEach((node,index)=>{
         node.targetX=center.x+Math.cos(index*2.4+2.3)*340;
         node.targetY=center.y+Math.sin(index*2.4+2.3)*250;
@@ -275,7 +366,9 @@ function setupBeyondCode() {
 
   function selectNode(id: string) {
     const node = nodeById.get(id);
-    if (!node) return;
+    if (!node || selected === id) return;
+    rememberView();
+    editingSearch = false;
     resetTransientGesture();
     selected = id;
     neighbors = connectedIds(id, data.edges);
@@ -314,7 +407,7 @@ function setupBeyondCode() {
     const next = fitCamera(focusPoints, viewport(), mobileQuery.matches ? 72 : 125);
     next.scale = Math.min(next.scale, mobileQuery.matches ? 0.95 : 1.35);
     setCamera(next);
-    for (const item of layout) {
+    for (const item of contentLayout) {
       item.element.setAttribute('aria-pressed', String(item.id === selected));
       item.element.classList.toggle('is-selected', item.id === selected);
       item.element.classList.toggle('is-neighbor', neighbors.has(item.id) && item.id !== selected);
@@ -325,13 +418,14 @@ function setupBeyondCode() {
     wake();
   }
 
-  function closeDetail(restoreFocus = false, refit = true) {
+  function closeDetail(restoreFocus = false, refit = true, record = false) {
+    if (record && selected) rememberView();
     resetTransientGesture();
     const previous = selected;
     selected = null; neighbors = new Set();
     detail.hidden = true;
     root!.classList.remove('is-detail-open');
-    for (const node of layout) {
+    for (const node of contentLayout) {
       node.element.classList.remove('is-selected','is-neighbor','is-muted');
       node.element.setAttribute('aria-pressed','false');
     }
@@ -346,6 +440,8 @@ function setupBeyondCode() {
   }
 
   function setView(next: string) {
+    if (mode !== next || selected) rememberView();
+    editingSearch = false;
     resetTransientGesture();
     mode = next;
     graph.hidden = next === 'index'; indexView.hidden = next !== 'index';
@@ -358,6 +454,8 @@ function setupBeyondCode() {
   }
 
   function chooseCategory(id: string) {
+    if (category !== id || selected) rememberView();
+    editingSearch = false;
     resetTransientGesture();
     userOffsets.clear();
     category = id;
@@ -379,9 +477,9 @@ function setupBeyondCode() {
       anchorModeMobile=mobileQuery.matches;
       for (const node of layout) {
         const anchor=originalAnchors.get(node.id)!;
-        const entry=nodeById.get(node.id)!;
-        const originalCenter=clusterCenters[entry.category as keyof typeof clusterCenters];
-        const center=categoryCenter(entry.category);
+        const nodeCategory=categoryOf(node.id);
+        const originalCenter=clusterCenters[nodeCategory as keyof typeof clusterCenters];
+        const center=categoryCenter(nodeCategory);
         node.anchorX=mobileQuery.matches?center.x+(anchor.x-originalCenter.x)*.85:anchor.x*horizontalStretch;
         node.anchorY=mobileQuery.matches?center.y+(anchor.y-originalCenter.y)*.85:anchor.y;
         node.x=node.anchorX; node.y=node.anchorY;
@@ -404,7 +502,6 @@ function setupBeyondCode() {
   function render(now: number) {
     ctx!.clearRect(0, 0, width, height);
     const view = viewport();
-    const mobileOverview = mobileQuery.matches && category === 'all' && !query && !selected;
     const screenPoints = new Map<string, Point>();
     const labelCandidates: { node: LayoutNode; point: Point; size: number }[] = [];
     const occupied: { x:number; y:number; w:number; h:number }[] = [];
@@ -412,32 +509,32 @@ function setupBeyondCode() {
       if (!visibleIds.has(node.id)) continue;
       const position = worldToScreen(node, camera, view);
       screenPoints.set(node.id, position);
-      const major = isMajor(node.id);
       const size = nodeSize(node);
-      node.element.style.setProperty('--node-size', `${size}px`);
-      const minor = (!major || mobileOverview) && hovered !== node.id && keyboardFocus !== node.id && !neighbors.has(node.id);
-      node.element.classList.toggle('is-minor', minor);
       node.element.style.transform = `translate(${position.x}px, ${position.y}px) translate(-50%, -50%)`;
-      node.element.dataset.category = nodeById.get(node.id)!.category;
       occupied.push({x:position.x-size/2-4,y:position.y-size/2-4,w:size+8,h:size+8});
-      if ((!minor || hovered===node.id || keyboardFocus===node.id) && (!selected || neighbors.has(node.id))) labelCandidates.push({node,point:position,size});
+      if (hubById.has(node.id)) {
+        node.element.style.setProperty('--hub-size', `${size}px`);
+        node.element.setAttribute('aria-pressed', String(category === categoryOf(node.id)));
+        occupied.push({x:position.x-65,y:position.y+size/2+6,w:130,h:32});
+        continue;
+      }
+      node.element.style.setProperty('--node-size', `${size}px`);
+      node.element.classList.toggle('is-minor', !isMajor(node.id));
+      node.element.dataset.category = categoryOf(node.id);
+      const showLabel = hovered === node.id || keyboardFocus === node.id || selected === node.id;
+      const label = node.element.querySelector<HTMLElement>('.beyond-node-label')!;
+      label.style.visibility = showLabel ? 'visible' : 'hidden';
+      if (showLabel) labelCandidates.push({node,point:position,size});
     }
 
-    for (const element of clusterElements) {
-      const id = element.dataset.cluster!;
-      const center = categoryCenter(id);
-      const point = worldToScreen({ x: center.x, y: center.y - (mobileOverview ? 180 : 245) }, camera, view);
-      element.style.transform = `translate(${point.x}px, ${point.y}px) translate(-50%, -50%)`;
-      element.hidden = category === 'all' || !!query || category !== id;
-      element.classList.toggle('is-muted', !!selected);
-      if (element.hidden || selected) continue;
-      occupied.push({x:point.x-65,y:point.y-12,w:130,h:30});
-      // Open arcs mark category regions, not semantic relationships.
-      const origin = worldToScreen(center, camera, view);
-      ctx!.save(); ctx!.strokeStyle = 'rgba(177,151,86,.065)'; ctx!.lineWidth = 1;
-      ctx!.setLineDash([2, 12]); ctx!.beginPath();
-      ctx!.ellipse(origin.x, origin.y, 280 * camera.scale, 220 * camera.scale, -.12, .2, Math.PI * 1.9);
-      ctx!.stroke(); ctx!.restore();
+    // Dashed spokes are category membership, not asserted creator/adaptation facts.
+    for (const edge of membershipEdges) {
+      const from = screenPoints.get(edge.source); const to = screenPoints.get(edge.target);
+      if (!from || !to) continue;
+      const active = hovered === edge.source || keyboardFocus === edge.source || drag?.node === edge.source;
+      ctx!.save(); ctx!.strokeStyle = `rgba(190,161,96,${active ? .52 : .24})`;
+      ctx!.lineWidth = active ? 1.25 : .85; ctx!.setLineDash([2,6]);
+      ctx!.beginPath(); ctx!.moveTo(from.x,from.y); ctx!.lineTo(to.x,to.y); ctx!.stroke(); ctx!.restore();
     }
 
     // Place readable captions around the image, rather than letting long names collide.
@@ -479,9 +576,10 @@ function setupBeyondCode() {
     for (const edge of data.edges) {
       const from = screenPoints.get(edge.source); const to = screenPoints.get(edge.target);
       if (!from || !to) continue;
-      const active = selected === edge.source || selected === edge.target;
-      const opacity = selected ? (active ? .62 : .035) : .15;
-      ctx!.save(); ctx!.strokeStyle = `rgba(203,173,99,${opacity})`; ctx!.lineWidth = active ? 1.15 : .7;
+      const active = selected === edge.source || selected === edge.target
+        || hovered === edge.source || hovered === edge.target || keyboardFocus === edge.source || keyboardFocus === edge.target;
+      const opacity = active ? .82 : selected ? .1 : .4;
+      ctx!.save(); ctx!.strokeStyle = `rgba(218,186,113,${opacity})`; ctx!.lineWidth = active ? 1.65 : 1.15;
       if (edge.relationship === 'shared-universe') ctx!.setLineDash([3,5]);
       const bend = Math.min(65, Math.hypot(to.x-from.x,to.y-from.y) * .1);
       const middle = { x: (from.x + to.x) / 2, y: (from.y + to.y) / 2 - bend };
@@ -531,8 +629,8 @@ function setupBeyondCode() {
     camera.y += (targetCamera.y-camera.y)*cameraEase;
     camera.scale += (targetCamera.scale-camera.scale)*cameraEase;
     if (animate) {
-      stepPhysics(layout, data.edges, physicsOptions(dt, now));
-    } else solveStatic(layout, data.edges, physicsOptions());
+      stepPhysics(layout, physicsLinks(), physicsOptions(dt, now));
+    } else solveStatic(layout, physicsLinks(), physicsOptions());
     render(now);
     if (animate) frame = requestAnimationFrame(tick);
   }
@@ -549,10 +647,10 @@ function setupBeyondCode() {
 
   graph.addEventListener('pointerdown', (event) => {
     if (event.button !== 0 || event.isPrimary === false) return;
-    const target = (event.target as Element).closest<HTMLButtonElement>('[data-node]');
-    if ((event.target as Element).closest('[data-cluster]')) return;
+    const target = (event.target as Element).closest<HTMLButtonElement>('[data-node],[data-category-hub]');
     const point = pointerPoint(event);
-    const node = target?.dataset.node ? positions.get(target.dataset.node)! : null;
+    const nodeId = target?.dataset.node ?? (target?.dataset.categoryHub ? `category-hub-${target.dataset.categoryHub}` : null);
+    const node = nodeId ? positions.get(nodeId)! : null;
     const world = screenToWorld(point, camera, viewport());
     targetCamera = { ...camera };
     drag = {
@@ -578,7 +676,7 @@ function setupBeyondCode() {
       node.x=drag.world.x; node.y=drag.world.y; node.vx=0; node.vy=0;
       if (!motion || reducedMotion.matches) {
         // User-driven updates still propagate; no timer continues the motion afterward.
-        stepPhysics(layout, data.edges, physicsOptions());
+        stepPhysics(layout, physicsLinks(), physicsOptions());
       }
     } else {
       const dx=(point.x-drag.last.x)/camera.scale;
@@ -615,43 +713,47 @@ function setupBeyondCode() {
 
   root.addEventListener('click',(event)=>{
     const target=event.target as Element;
+    const intentionalClick = (event as MouseEvent).detail === 0 || performance.now()-lastDrag>250;
     const node=target.closest<HTMLElement>('[data-node]');
-    if (node) { if (performance.now()-lastDrag>250) selectNode(node.dataset.node!); return; }
+    if (node) { if (intentionalClick) selectNode(node.dataset.node!); return; }
     const related=target.closest<HTMLElement>('[data-related-node]');
     if (related) { selectNode(related.dataset.relatedNode!); return; }
     const item=target.closest<HTMLElement>('[data-index-node]');
-    if (item) { setView('graph'); selectNode(item.dataset.indexNode!); return; }
-    const categoryButton=target.closest<HTMLElement>('[data-beyond-category],[data-cluster]');
-    if (categoryButton) { chooseCategory(categoryButton.dataset.beyondCategory ?? categoryButton.dataset.cluster!); return; }
+    if (item) { navigate(() => { setView('graph'); selectNode(item.dataset.indexNode!); }); return; }
+    const categoryButton=target.closest<HTMLElement>('[data-beyond-category],[data-category-hub]');
+    if (categoryButton) { if (!categoryButton.dataset.categoryHub || intentionalClick) chooseCategory(categoryButton.dataset.beyondCategory ?? categoryButton.dataset.categoryHub!); return; }
     const viewButton=target.closest<HTMLElement>('[data-beyond-view]');
     if (viewButton) { setView(viewButton.dataset.beyondView!); return; }
-    if (target.closest('[data-beyond-close]')) { closeDetail(true); return; }
+    if (target.closest('[data-beyond-close]')) { closeDetail(true, true, true); return; }
+    if (target.closest('[data-beyond-back]')) { stepBack(); return; }
     if (target.closest('[data-beyond-reset]')) {
-      search.value=''; query=''; chooseCategory('all'); return;
+      if (category === 'all' && !searchText && !selected && mode === 'graph') { chooseCategory('all'); return; }
+      navigate(() => { search.value=''; searchText=''; query=''; chooseCategory('all'); }); return;
     }
     const zoom=target.closest<HTMLElement>('[data-beyond-zoom]');
     if (zoom) { const view=viewport(); setCamera(zoomAt(camera,{x:view.width/2,y:view.height/2},camera.scale*(zoom.dataset.beyondZoom==='in'?1.3:1/1.3),view)); return; }
-    if (target.closest('[data-beyond-motion]')) { motion=!motion && !reducedMotion.matches; motionButton.setAttribute('aria-pressed',String(motion)); wake(); }
+    if (target.closest('[data-beyond-motion]')) { motion=!motion && !reducedMotion.matches; updateMotionControl(); wake(); }
   },{signal});
 
   graph.addEventListener('pointerover',(event)=>{
-    const node=(event.target as Element).closest<HTMLElement>('[data-node]');
-    hovered=node?.dataset.node??null; wake();
+    const node=(event.target as Element).closest<HTMLElement>('[data-node],[data-category-hub]');
+    hovered=node?.dataset.node ?? (node?.dataset.categoryHub ? `category-hub-${node.dataset.categoryHub}` : null); wake();
   },{signal});
   graph.addEventListener('pointerleave',()=>{hovered=null;wake();},{signal});
-  graph.addEventListener('focusin',(event)=>{ keyboardFocus=(event.target as HTMLElement).closest<HTMLElement>('[data-node]')?.dataset.node??null; wake(); },{signal});
+  graph.addEventListener('focusin',(event)=>{ const node=(event.target as HTMLElement).closest<HTMLElement>('[data-node],[data-category-hub]'); keyboardFocus=node?.dataset.node ?? (node?.dataset.categoryHub ? `category-hub-${node.dataset.categoryHub}` : null); wake(); },{signal});
   graph.addEventListener('focusout',()=>{keyboardFocus=null;wake();},{signal});
-  search.addEventListener('input',()=>{ userOffsets.clear(); query=search.value.trim().toLocaleLowerCase(); closeDetail(false,false); applyVisibility(); },{signal});
-  document.addEventListener('keydown',(event)=>{if(event.key==='Escape'&&selected)closeDetail(true);},{signal});
+  search.addEventListener('input',()=>{ if (!editingSearch) rememberView(); editingSearch=true; userOffsets.clear(); searchText=search.value; query=searchText.trim().toLocaleLowerCase(); closeDetail(false,false); applyVisibility(); },{signal});
+  search.addEventListener('blur',()=>{editingSearch=false;},{signal});
+  document.addEventListener('keydown',(event)=>{if(event.key==='Escape'&&selected)closeDetail(true,true,true);},{signal});
   document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(frame);frame=0;}else wake();},{signal});
-  reducedMotion.addEventListener('change',()=>{motion=!reducedMotion.matches;motionButton.setAttribute('aria-pressed',String(motion));camera={...targetCamera};updateTargets();wake();},{signal});
+  reducedMotion.addEventListener('change',()=>{motion=!reducedMotion.matches;updateMotionControl();camera={...targetCamera};updateTargets();wake();},{signal});
   mobileQuery.addEventListener('change',resize,{signal});
   const resizeObserver=new ResizeObserver(resize); resizeObserver.observe(stage);
   const intersection=new IntersectionObserver(([entry])=>{
     inView=entry.isIntersecting;
     if(!inView){cancelAnimationFrame(frame);frame=0;}else wake();
   }); intersection.observe(stage);
-  motionButton.setAttribute('aria-pressed',String(motion));
+  updateMotionControl();
   resize(); root.classList.add('is-ready');
   state.cleanup=()=>{
     alive=false; resetTransientGesture(); cancelAnimationFrame(frame); controller.abort();

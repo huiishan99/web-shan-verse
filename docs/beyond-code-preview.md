@@ -11,11 +11,11 @@ on 2026-11-12. The constellation checkpoint is `7045510`. Reuse the site's
 near-black background, brass accents, serif typography, and existing interest
 content. No new runtime dependency or backend is required.
 
-## Active local revision: clearer content and responsive bubbles
+## Published checkpoint: clearer content and responsive bubbles
 
 Authority: the four subsequent owner annotations define this revision. Published
-checkpoint `478fdc4` was the previous accepted version (Pages and CodeQL both
-passed for that exact head). The owner approved this revision for commit and push
+checkpoint `478fdc4` was the preceding accepted version (Pages and CodeQL both
+passed for that exact head). This revision was committed and pushed as `133250b`
 before the next navigation refinements. The requirements below supersede the earlier simple
 independent-drift behavior, while preserving collection data and relationship
 meaning.
@@ -114,13 +114,60 @@ rate.
 Browser measurements are saved outside the repository in
 `beyond-physics-browser-checks.json`, alongside desktop and mobile preview images.
 
+## Active refinement: quiet labels and local navigation
+
+Authority: the owner accepted the responsive-bubble checkpoint and explicitly
+requested publishing these follow-up changes as well. Keep the same visual theme
+and collection. Work labels appear only on hover, keyboard focus or selection;
+remove the bottom instruction sentence. Motion controls name the actual action.
+
+Design: introduce eight client-layout category hubs, separate from the 49 content
+nodes and eight factual edges. Dashed membership links connect category hubs to
+visible category members; stronger solid curves remain factual relationships.
+Hubs share the collider/drag loop. Dragging a hub translates that category;
+dragging a work retains its factual connected-component behavior. Hubs cannot
+invent favorites or enter introduction/creator relationship lists.
+
+Back is page-local bounded navigation, never browser history: snapshot category,
+query, view, selected item, camera and temporary placements before discrete
+navigation. Consecutive search edits coalesce. Returning restores the prior view
+and focus without leaving Beyond Code. The explicit About link remains separate.
+
+Verification targets: quiet idle labels and discoverable keyboard labels; visible
+membership versus factual lines; category click and drag; search/index/detail
+Back traversal, empty-stack safety, mobile category access and navigation cleanup.
+Keep the existing size rule (first two favorites per category emphasized in All;
+category/search/selected neighbors emphasized dynamically) and explain it to the
+owner. No rating or popularity semantics are implied. Main risks are membership
+springs overpowering factual edges, hidden colliders and accidental Back loops.
+
+### Navigation refinement review packet
+
+| Item | Result / boundary |
+| --- | --- |
+| Goal | Quiet idle canvas, clearer associations and a safe way to step back inside Beyond Code. |
+| Behavior delta | Content labels appear on hover/focus/selection; eight category bubbles connect members with dashed spokes; factual curves are brighter. Back sits below filters; footer hint removed; motion control uses pause/play and localized action names. |
+| Architecture delta | Eight synthetic layout bodies, no extra content nodes. Membership forces activate only during a hub drag. A cloned, 32-entry page-local history restores category/query/mode/selection/camera/placements. |
+| Invariants | Collection remains 43 favorites plus 6 context nodes, with 8 sourced factual edges. Membership never enters detail relationship data. Hidden bodies cannot collide. Back never calls browser history. |
+| Assumptions | Existing first-two-per-category emphasis is visual hierarchy, not a preference ranking. Hub captions remain readable while ordinary titles are quiet. |
+| Evidence | 115 unit tests, ESLint, Astro check (112 files, zero diagnostics), 297-page static build and generated HTML validation pass. Independent source review found and resolved hub collider sizing and same-view/empty-reset history boundaries. |
+| Browser evidence | A 116.6px Games-hub drag moved its ten members 66.9–151.4px after settling; distant Ramen moved 2.9px. No category activation or item selection after dragging. Idle labels absent; keyboard-focused Stardew name became visible. |
+| Counterexamples tested | Games/detail/Back/category/Back/All; Index/search/detail/Back/search/Back/full Index/Back/All; paused Bohemian Rhapsody/Queen/Back/song/Back/Music/Back/All; empty All Reset leaves Back disabled. At 390x844 Hobbies/Traveling/Back/Hobbies/Back/All worked without horizontal overflow; hub and Back targets measure 44px. About/back re-entry resets to 49 content nodes, 8 hubs and empty history. |
+| Regression surface | Canvas links, captions, hub contacts, gesture capture, search/index/detail state and Astro cleanup. The independent final source review found no material unresolved issue. |
+| Known risks / trajectory | Actual touch hardware and OS reduced-motion remain outside browser evidence. This is bounded damped motion, not a fluid solver. Continue with this local renderer; no dependency or data-model migration is justified. Owner authorized commit/push of this revision. |
+
+Measurements are preserved in `beyond-navigation-browser-checks.json` outside the
+repository with the desktop/mobile preview images. An immediate scripted click
+during the category camera flight did not select the moving song; the stable,
+paused traversal above verified relationship Back behavior separately.
+
 ## Acceptance criteria and invariants
 
 - Every existing interest remains reachable by name and category. A visible
   classification or index provides a direct route without requiring graph search.
 - Names remain readable; drifting nodes do not become moving click targets.
   Dragging pans the scene, while an intentional click selects a node.
-- Categories describe spatial organization. Edges describe explicit facts such
+- Category hubs and dashed spokes describe membership. Work-to-work edges describe explicit facts such
   as performer, author, adaptation, production, or shared fictional universe;
   visual proximity alone must not generate an asserted relation.
 - Existing interests remain the source of favorite content. Additional artists,
