@@ -1,0 +1,326 @@
+{
+  "games-the-legend-of-zelda-breath-of-the-wild": {
+    "description": "The Legend of Zelda: Breath of the Wild is a 2017 action-adventure game developed by Nintendo EPD for the Wii U and Nintendo Switch. Set near the end of the Zelda timeline, it follows Link as he sets out to save Princess Zelda and prevent Calamity Ganon from destroying the world.",
+    "source": "https://en.wikipedia.org/wiki/The_Legend_of_Zelda%3A_Breath_of_the_Wild",
+    "descriptionTitle": "The Legend of Zelda: Breath of the Wild",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/games-the-legend-of-zelda-breath-of-the-wild.jpg",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/c/c6/The_Legend_of_Zelda_Breath_of_the_Wild.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/The_Legend_of_Zelda%3A_Breath_of_the_Wild"
+  },
+  "games-baldurs-gate-3": {
+    "description": "Baldur's Gate 3 is a role-playing video game by Larian Studios. It is the third installment in the Baldur's Gate series.",
+    "source": "https://en.wikipedia.org/wiki/Baldur's_Gate_3",
+    "descriptionTitle": "Baldur's Gate 3",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/games-baldurs-gate-3.jpg",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/1/12/Baldur%27s_Gate_3_cover_art.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Baldur's_Gate_3"
+  },
+  "games-stardew-valley": {
+    "description": "Stardew Valley is a 2016 farm life simulation video game developed by Eric \"ConcernedApe\" Barone. Players take the role of a character who inherits their deceased grandfather's dilapidated farm.",
+    "source": "https://en.wikipedia.org/wiki/Stardew_Valley",
+    "descriptionTitle": "Stardew Valley",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/games-stardew-valley.png",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/f/fd/Logo_of_Stardew_Valley.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Stardew_Valley"
+  },
+  "games-persona-5": {
+    "description": "Persona 5 is a 2016 role-playing video game developed by P-Studio. The game is the sixth installment in the Persona series, itself a spin-off from the Megami Tensei franchise.",
+    "source": "https://en.wikipedia.org/wiki/Persona_5",
+    "descriptionTitle": "Persona 5",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/games-persona-5.jpg",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/b/b0/Persona_5_cover_art.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Persona_5"
+  },
+  "games-crusader-kings-iii": {
+    "description": "Crusader Kings III is a grand strategy role-playing video game set in the Middle Ages, developed by Paradox Development Studio and published by Paradox Interactive as a sequel to Crusader Kings (2004) and Crusader Kings II (2012), featuring similar gameplay, centred around historical bloodlines and dynasties. The game was released on PC on 1 September 2020 and on the Xbox Series X/S and PlayStation 5 on 29 March 2022 in most regions.",
+    "source": "https://en.wikipedia.org/wiki/Crusader_Kings_III",
+    "descriptionTitle": "Crusader Kings III",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/games-crusader-kings-iii.jpg",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/a/a3/Crusader_Kings_III.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Crusader_Kings_III"
+  },
+  "games-cyberpunk-2077": {
+    "description": "Cyberpunk 2077 is a 2020 action role-playing game developed by CD Projekt Red and published by CD Projekt. Based on and set in the fictional universe of Mike Pondsmith's Cyberpunk tabletop game series, Cyberpunk 2077 takes place in the dystopian metropolis of Night City in California.",
+    "source": "https://en.wikipedia.org/wiki/Cyberpunk_2077",
+    "descriptionTitle": "Cyberpunk 2077",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/games-cyberpunk-2077.jpg",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/9/9f/Cyberpunk_2077_box_art.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Cyberpunk_2077"
+  },
+  "games-disco-elysium-the-final-cut": {
+    "description": "Disco Elysium is a 2019 role-playing video game by ZA/UM. The game was written and designed by a team led by Estonian novelist Robert Kurvitz and executive producer Kaur Kender, featuring a painterly art style and music by the English band Sea Power.",
+    "source": "https://en.wikipedia.org/wiki/Disco_Elysium",
+    "descriptionTitle": "Disco Elysium",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/games-disco-elysium-the-final-cut.jpg",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/0/0d/Disco_Elysium_Poster.jpeg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Disco_Elysium"
+  },
+  "games-uncharted-waters-new-horizons": {
+    "description": "Uncharted Waters, originally released as Daikoukai Jidai , is a Japanese business simulation/strategy/role-playing video game series produced by Koei under its \"Rekoeition\" brand, themed around seafaring adventures during the Age of Discovery. In the games, the player takes up the role of a captain and manages a seagoing fleet to participate in trades, privateering, treasure hunting, exploration and plain piracy.",
+    "source": "https://en.wikipedia.org/wiki/Uncharted_Waters",
+    "descriptionTitle": "Uncharted Waters",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "games-resident-evil-4": {
+    "description": "Resident Evil 4 is a 2005 survival horror game developed and published by Capcom for the GameCube. Players control the special agent Leon S.",
+    "source": "https://en.wikipedia.org/wiki/Resident_Evil_4",
+    "descriptionTitle": "Resident Evil 4",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/games-resident-evil-4.jpg",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/d/d9/Resi4-gc-cover.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Resident_Evil_4"
+  },
+  "games-the-legend-of-sword-and-fairy-4": {
+    "description": "The Legend of Sword and Fairy 4, also known as Sword and Fairy 4 (仙劍四) or Chinese Paladin 4, is a xianxia-themed fantasy adventure role-playing video game developed by Taiwanese game company Softstar Entertainment's Shanghai subsidiary and released in 2007. It is the fifth installment in The Legend of Sword and Fairy video game series, and serves as an independent prequel to the third game.",
+    "source": "https://en.wikipedia.org/wiki/The_Legend_of_Sword_and_Fairy_4",
+    "descriptionTitle": "The Legend of Sword and Fairy 4",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/games-the-legend-of-sword-and-fairy-4.jpg",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/8/8e/The_Legend_of_Sword_and_Fairy_4_%28Cover%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/The_Legend_of_Sword_and_Fairy_4"
+  },
+  "movies-coco": {
+    "description": "Coco is a 2017 American animated fantasy film directed by Lee Unkrich, and written by Adrian Molina and Matthew Aldrich. Produced by Pixar Animation Studios for Walt Disney Pictures, the film stars the voices of Anthony Gonzalez, Gael García Bernal, Benjamin Bratt, Alanna Ubach, Renée Victor, Ana Ofelia Murguía and Edward James Olmos.",
+    "source": "https://en.wikipedia.org/wiki/Coco_(2017_film)",
+    "descriptionTitle": "Coco (2017 film)",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/movies-coco.jpg",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/9/98/Coco_%282017_film%29_poster.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Coco_(2017_film)"
+  },
+  "movies-flipped": {
+    "description": "Flipped is a 2010 American romantic comedy-drama film co-written and directed by Rob Reiner, and based on Wendelin Van Draanen's 2001 novel of the same name. Starring Callan McAuliffe, Madeline Carroll, Rebecca De Mornay, Anthony Edwards, John Mahoney, Penelope Ann Miller, Aidan Quinn, and Kevin Weisman.",
+    "source": "https://en.wikipedia.org/wiki/Flipped_(2010_film)",
+    "descriptionTitle": "Flipped (2010 film)",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/movies-flipped.jpg",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/3/3a/Flipped_poster.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Flipped_(2010_film)"
+  },
+  "movies-howls-moving-castle": {
+    "description": "Howl's Moving Castle is a 2004 Japanese animated fantasy film written and directed by Hayao Miyazaki, based on Diana Wynne Jones' 1986 novel. The film was produced by Toshio Suzuki, animated by Studio Ghibli, and distributed by Toho.",
+    "source": "https://en.wikipedia.org/wiki/Howl's_Moving_Castle_(film)",
+    "descriptionTitle": "Howl's Moving Castle (film)",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/movies-howls-moving-castle.jpg",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/a/a0/Howls-moving-castleposter.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Howl's_Moving_Castle_(film)"
+  },
+  "movies-the-truman-show": {
+    "description": "The Truman Show is a 1998 American comedy-drama film directed by Peter Weir, and written and co-produced by Andrew Niccol. It stars Jim Carrey as Truman Burbank, a man who is unaware that he is living on a colossal soundstage, and that his life is the subject of a reality television show.",
+    "source": "https://en.wikipedia.org/wiki/The_Truman_Show",
+    "descriptionTitle": "The Truman Show",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/movies-the-truman-show.jpg",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/c/cd/Trumanshow.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/The_Truman_Show"
+  },
+  "movies-interstellar": {
+    "description": "Interstellar is a 2014 epic science fiction drama film directed by Christopher Nolan, who co-wrote the screenplay with his brother, Jonathan Nolan. It features an ensemble cast led by Matthew McConaughey, Anne Hathaway, Jessica Chastain, Bill Irwin, Ellen Burstyn, and Michael Caine.",
+    "source": "https://en.wikipedia.org/wiki/Interstellar_(film)",
+    "descriptionTitle": "Interstellar (film)",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/movies-interstellar.jpg",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/b/bc/Interstellar_film_poster.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Interstellar_(film)"
+  },
+  "movies-the-lord-of-the-rings": {
+    "description": "The Lord of the Rings is a trilogy of epic fantasy films directed by Peter Jackson. The films are based on the novel by J.",
+    "source": "https://en.wikipedia.org/wiki/The_Lord_of_the_Rings_(film_series)",
+    "descriptionTitle": "The Lord of the Rings (film series)",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "movies-the-reluctant-fundamentalist": {
+    "description": "The Reluctant Fundamentalist is a 2013 American political thriller drama film directed by Mira Nair and starring Riz Ahmed, Kate Hudson, and Liev Schreiber. It is based on the 2007 novel of the same name by Mohsin Hamid.",
+    "source": "https://en.wikipedia.org/wiki/The_Reluctant_Fundamentalist_(film)",
+    "descriptionTitle": "The Reluctant Fundamentalist (film)",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/movies-the-reluctant-fundamentalist.jpg",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/5/5a/The_Reluctant_Fundamentalist_poster.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/The_Reluctant_Fundamentalist_(film)"
+  },
+  "movies-maharaja": {
+    "description": "Maharaja is a 2024 Indian Tamil -language neo-noir action thriller film directed by Nithilan Saminathan. Produced by The Route, Think Studios and Passion Studios, the film stars Vijay Sethupathi, alongside Anurag Kashyap and Sachana Namidass.",
+    "source": "https://en.wikipedia.org/wiki/Maharaja_(2024_film)",
+    "descriptionTitle": "Maharaja (2024 film)",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/movies-maharaja.jpg",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/8/82/Maharaja_2024_film_poster.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Maharaja_(2024_film)"
+  },
+  "drama-love-death-robots": {
+    "description": "Love, Death & Robots is an adult animated anthology web series created by Tim Miller for Netflix. Although the series is produced by Blur Studio, its individual episodes are drawn from the work of an international variety of animation studios.",
+    "source": "https://en.wikipedia.org/wiki/Love%2C_Death_%26_Robots",
+    "descriptionTitle": "Love, Death & Robots",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/drama-love-death-robots.png",
+    "artworkSource": "https://thumb.wikimedia.org/wikipedia/en/thumb/c/cb/Love%2C_Death_%26_Robots_Logo.png/330px-Love%2C_Death_%26_Robots_Logo.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Love%2C_Death_%26_Robots"
+  },
+  "drama-cyberpunk-edgerunners": {
+    "description": "Cyberpunk: Edgerunners  is an original net animation (ONA) miniseries created by Rafał Jaki. It was co-produced by the Polish video game company CD Projekt Red and the Japanese animation studio Trigger, and premiered on Netflix on September 13, 2022.",
+    "source": "https://en.wikipedia.org/wiki/Cyberpunk%3A_Edgerunners",
+    "descriptionTitle": "Cyberpunk: Edgerunners",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/drama-cyberpunk-edgerunners.jpg",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/a/a1/Cyberpunk_Edgerunners_poster.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Cyberpunk%3A_Edgerunners"
+  },
+  "drama-the-queens-gambit": {
+    "description": "The Queen's Gambit is a 2020 American coming-of-age period drama television miniseries based on the 1983 eponymous novel by Walter Tevis. The title refers to the \"Queen's Gambit\", a chess opening.",
+    "source": "https://en.wikipedia.org/wiki/The_Queen's_Gambit_(miniseries)",
+    "descriptionTitle": "The Queen's Gambit (miniseries)",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/drama-the-queens-gambit.png",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/1/12/The_Queen%27s_Gambit_%28miniseries%29.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/The_Queen's_Gambit_(miniseries)"
+  },
+  "drama-gin-tama": {
+    "description": "Gintama  is a Japanese manga series written and illustrated by Hideaki Sorachi. It was serialized in Shueisha's shōnen manga magazine Weekly Shōnen Jump from December 2003 to September 2018, later in Jump Giga from December 2018 to February 2019, and concluded on the Gintama app, where it ran from May to June 2019.",
+    "source": "https://en.wikipedia.org/wiki/Gintama",
+    "descriptionTitle": "Gintama",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/drama-gin-tama.png",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/a/a9/Gintama_vol._01.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Gintama"
+  },
+  "drama-doraemon": {
+    "description": "Doraemon  is a Japanese manga series written and illustrated by Fujiko F. Fujio.",
+    "source": "https://en.wikipedia.org/wiki/Doraemon",
+    "descriptionTitle": "Doraemon",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/drama-doraemon.jpg",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/c/c8/Doraemon_volume_1_cover.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Doraemon"
+  },
+  "books-les-miserables": {
+    "description": "Les Misérables is a French epic historical novel by Victor Hugo, first published on 31 March 1862, that is considered one of the greatest novels of the 19th century. Les Misérables has been popularized through numerous adaptations for film, television, and the stage, including a musical.",
+    "source": "https://en.wikipedia.org/wiki/Les_Mis%C3%A9rables",
+    "descriptionTitle": "Les Misérables",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/books-les-miserables.jpg",
+    "artworkSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fd/Monsieur_Madeleine_par_Gustave_Brion.jpg/330px-Monsieur_Madeleine_par_Gustave_Brion.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Les_Mis%C3%A9rables"
+  },
+  "books-a-thousand-splendid-suns": {
+    "description": "A Thousand Splendid Suns is a 2007 novel by Afghan-American author Khaled Hosseini, following the huge success of his bestselling 2003 debut The Kite Runner. Mariam, an illegitimate teenager from Herat, is forced to marry a shoemaker from Kabul after a family tragedy.",
+    "source": "https://en.wikipedia.org/wiki/A_Thousand_Splendid_Suns",
+    "descriptionTitle": "A Thousand Splendid Suns",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/books-a-thousand-splendid-suns.gif",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/1/10/A_Thousand_Splendid_Suns.gif?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/A_Thousand_Splendid_Suns"
+  },
+  "books-to-live": {
+    "description": "To Live is a novel written by Chinese novelist Yu Hua in 1993. It follows the life of Xu Fugui as he transforms from the selfish idling son of a wealthy landowner to a solitary peasant during the Chinese Communist Revolution.",
+    "source": "https://en.wikipedia.org/wiki/To_Live_(novel)",
+    "descriptionTitle": "To Live (novel)",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/books-to-live.jpg",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/commons/f/f5/%E6%B4%BB%E7%9D%80%E6%97%A7%E5%B0%81%E9%9D%A2.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/To_Live_(novel)"
+  },
+  "books-tristan-and-iseult": {
+    "description": "Tristan and Iseult, also known as Tristan and Isolde and other names, is a medieval legend told in numerous variations since the 12th century. Of disputed source, usually assumed to be primarily Celtic, the tale is a tragedy about the illicit love between the Cornish knight Tristan and the Irish princess Iseult in the days of King Arthur.",
+    "source": "https://en.wikipedia.org/wiki/Tristan_and_Iseult",
+    "descriptionTitle": "Tristan and Iseult",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/books-tristan-and-iseult.jpg",
+    "artworkSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/61/Herbert_James_Draper_-_Tristan_%26_Isolde.jpg/330px-Herbert_James_Draper_-_Tristan_%26_Isolde.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Tristan_and_Iseult"
+  },
+  "books-kinder-und-hausmarchen": {
+    "description": "Grimms' Fairy Tales, originally known as the Children's and Household Tales, is a German collection of fairy tales by the Brothers Grimm, Jacob and Wilhelm, first published on 20 December 1812. Vol. 1 of the first edition contained 86 stories, which were followed by 70 more tales, numbered consecutively, in the 1st edition, Vol. 2, in 1815.",
+    "source": "https://en.wikipedia.org/wiki/Grimms'_Fairy_Tales",
+    "descriptionTitle": "Grimms' Fairy Tales",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/books-kinder-und-hausmarchen.jpg",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/commons/8/8c/Grimm%27s_Kinder-_und_Hausm%C3%A4rchen%2C_Erster_Theil_%281812%29.cover.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Grimms'_Fairy_Tales"
+  },
+  "music-bohemian-rhapsody": {
+    "description": "\"Bohemian Rhapsody\" is the penultimate song from British rock band Queen's fourth studio album, A Night at the Opera. It is a suite composed of five main elements: an introduction, a ballad, an opera, a hard rock segment, and a reflective coda.",
+    "source": "https://en.wikipedia.org/wiki/Bohemian_Rhapsody",
+    "descriptionTitle": "Bohemian Rhapsody",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/music-bohemian-rhapsody.png",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/9/9f/Bohemian_Rhapsody.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Bohemian_Rhapsody"
+  },
+  "music-we-are-the-champions": {
+    "description": "\"We Are the Champions\" is a song by the British rock band Queen, released from the band's sixth album News of the World (1977). Written by lead singer Freddie Mercury, it remains one of rock's most recognisable anthems.",
+    "source": "https://en.wikipedia.org/wiki/We_Are_the_Champions",
+    "descriptionTitle": "We Are the Champions",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/music-we-are-the-champions.jpg",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/5/5a/Wearethechampions.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/We_Are_the_Champions"
+  },
+  "music-lemon": {
+    "description": "\"Lemon\" is a song by Japanese singer-songwriter Kenshi Yonezu, released as a single through Sony Music Entertainment Japan on March 14, 2018. It is the theme song for the TV series Unnatural.",
+    "source": "https://en.wikipedia.org/wiki/Lemon_(Kenshi_Yonezu_song)",
+    "descriptionTitle": "Lemon (Kenshi Yonezu song)",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/music-lemon.png",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/1/12/Kenshi_Yonezu_-_Lemon.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Lemon_(Kenshi_Yonezu_song)"
+  },
+  "group-queen": {
+    "description": "Queen are a British rock band formed in London in 1970 by Freddie Mercury, Brian May, and Roger Taylor, and later joined by John Deacon (bass). Their earliest works were influenced by progressive rock, hard rock and heavy metal, but the band gradually ventured into more conventional and radio-friendly works by incorporating further styles, such as arena rock and pop rock.",
+    "source": "https://en.wikipedia.org/wiki/Queen_(band)",
+    "descriptionTitle": "Queen (band)",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/group-queen.jpg",
+    "artworkSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ec/Queen_A_Night_At_The_Opera_%281975_Elektra_publicity_photo_02%29.jpg/330px-Queen_A_Night_At_The_Opera_%281975_Elektra_publicity_photo_02%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Queen_(band)"
+  },
+  "person-kenshi-yonezu": {
+    "description": "Kenshi Yonezu  is a Japanese singer-songwriter, musician, producer, and illustrator. He started releasing Vocaloid music under the stage name Hachi (ハチ) in 2009.",
+    "source": "https://en.wikipedia.org/wiki/Kenshi_Yonezu",
+    "descriptionTitle": "Kenshi Yonezu",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "book-howls-moving-castle": {
+    "description": "Howl's Moving Castle is a fantasy novel by British author Diana Wynne Jones, first published in 1986 by Greenwillow Books of New York. It was a runner-up for the annual Boston Globe–Horn Book Award, and won the Phoenix Award twenty years later.",
+    "source": "https://en.wikipedia.org/wiki/Howl's_Moving_Castle_(novel)",
+    "descriptionTitle": "Howl's Moving Castle (novel)",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/book-howls-moving-castle.jpg",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/a/a4/Howl%27s_Moving_Castle_%28Book_Cover%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Howl's_Moving_Castle_(novel)"
+  },
+  "person-diana-wynne-jones": {
+    "description": "Diana Wynne Jones was a British novelist, poet, academic, literary critic, and short story writer. She principally wrote speculative fiction novels for children and young adults.",
+    "source": "https://en.wikipedia.org/wiki/Diana_Wynne_Jones",
+    "descriptionTitle": "Diana Wynne Jones",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/person-diana-wynne-jones.jpg",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/8/89/Diana_Wynne_Jones.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Diana_Wynne_Jones"
+  },
+  "studio-ghibli": {
+    "description": "Studio Ghibli Inc.  is a Japanese animation studio based in Koganei, Tokyo. It was founded on June 15, 1985, by directors Hayao Miyazaki and Isao Takahata and producer Toshio Suzuki, after acquiring Topcraft's assets.",
+    "source": "https://en.wikipedia.org/wiki/Studio_Ghibli",
+    "descriptionTitle": "Studio Ghibli",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/studio-ghibli.png",
+    "artworkSource": "https://thumb.wikimedia.org/wikipedia/en/thumb/c/ca/Studio_Ghibli_logo.svg/330px-Studio_Ghibli_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Studio_Ghibli"
+  },
+  "studio-pixar": {
+    "description": "Pixar, doing business as Pixar Animation Studios, is an American animation studio based in Emeryville, California, known for its critically and commercially successful computer-animated feature films. Pixar is a subsidiary of Walt Disney Studios, a division of the Disney Entertainment segment of the Walt Disney Company.",
+    "source": "https://en.wikipedia.org/wiki/Pixar",
+    "descriptionTitle": "Pixar",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/studio-pixar.jpg",
+    "artworkSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/21/Pixaranimationstudios.jpg/330px-Pixaranimationstudios.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Pixar"
+  }
+}

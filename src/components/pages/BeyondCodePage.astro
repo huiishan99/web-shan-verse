@@ -1,0 +1,317 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Icon from '../Icon.astro';
+import { categories, nodes, edges, resolveLocalized } from '../../data/beyond-code';
+import media from '../../data/beyond-code-media.json';
+import { localizePath, type Locale } from '../../i18n/config';
+
+interface Props { lang?: Locale }
+const { lang = 'en' } = Astro.props;
+const copy = {
+  en: {
+    eyebrow: 'A PERSONAL CONSTELLATION', title: 'Beyond Code',
+    subtitle: 'Stories, sounds, and little worlds I keep coming back to.',
+    all: 'All', search: 'Find something…', constellation: 'Constellation', index: 'Index',
+    hint: 'Drag to wander · Select to explore', reset: 'Return to the whole constellation',
+    zoomIn: 'Zoom in', zoomOut: 'Zoom out', motion: 'Gentle motion', close: 'Close introduction',
+    related: 'Connected worlds', nearby: 'In this constellation', source: 'Explore further',
+    noResults: 'No matching worlds.', back: 'Back to About', collection: 'From my collection',
+    context: 'Related creator or source', playing: 'Pause preview', play: 'Play preview',
+  },
+  zh: {
+    eyebrow: '我的兴趣星群', title: '代码之外', subtitle: '那些总让我想要再次走近的故事、声音与小小世界。',
+    all: '全部', search: '寻找一颗星…', constellation: '星群', index: '索引',
+    hint: '拖动漫游 · 点选探索', reset: '回到完整星群', zoomIn: '放大', zoomOut: '缩小',
+    motion: '轻柔漂浮', close: '关闭介绍', related: '相连的世界', nearby: '同一片星群',
+    source: '继续了解', noResults: '没有找到相关内容。', back: '返回关于我',
+    collection: '我的收藏', context: '相关创作者或原作', playing: '暂停试听', play: '试听',
+  },
+  ja: {
+    eyebrow: '私の小さな星座', title: 'コードを超えて', subtitle: '何度でも戻りたくなる物語、音楽、小さな世界。',
+    all: 'すべて', search: '星を探す…', constellation: '星座', index: '一覧',
+    hint: 'ドラッグで散策 · 選んで探索', reset: '星座全体に戻る', zoomIn: '拡大', zoomOut: '縮小',
+    motion: '穏やかな動き', close: '紹介を閉じる', related: 'つながる世界', nearby: '同じ星座から',
+    source: 'もっと知る', noResults: '見つかりませんでした。', back: 'About に戻る',
+    collection: '私のコレクション', context: '関連する作り手・原作', playing: '試聴を止める', play: '試聴',
+  },
+}[lang];
+
+type MediaEntry = { artwork?: string; description?: string; source?: string };
+const nodeMedia = media as Record<string, MediaEntry>;
+const localizedCategories = categories.map((category) => ({ ...category, title: resolveLocalized(category.title, lang) }));
+const graphNodes = nodes.map((node) => ({
+  ...node,
+  title: resolveLocalized(node.title, lang),
+  subtitle: resolveLocalized(node.subtitle, lang),
+  searchText: [resolveLocalized(node.title, 'en'), resolveLocalized(node.title, 'zh'), resolveLocalized(node.title, 'ja')].join(' '),
+  artwork: nodeMedia[node.id]?.artwork || node.artwork || '',
+  description: nodeMedia[node.id]?.description || '',
+  externalUrl: node.externalUrl || nodeMedia[node.id]?.source || '',
+}));
+const graphData = JSON.stringify({
+  categories: localizedCategories, nodes: graphNodes,
+  edges: edges.map((edge) => ({ ...edge, label: resolveLocalized(edge.label, lang) })),
+  copy, lang,
+}).replace(/</g, '\\u003c');
+---
+
+<BaseLayout title={copy.title} lang={lang}>
+  <section class="beyond" data-beyond>
+    <div class="beyond-heading">
+      <div>
+        <a class="beyond-back" href={`${localizePath('/about', lang)}#beyond-code`}>
+          <Icon name="chevronLeft" size={13} /> {copy.back}
+        </a>
+        <p class="beyond-eyebrow">{copy.eyebrow}</p>
+        <h1>{copy.title}</h1>
+        <p class="beyond-subtitle">{copy.subtitle}</p>
+      </div>
+      <div class="beyond-tools">
+        <label class="beyond-search">
+          <Icon name="search" size={17} />
+          <input type="search" placeholder={copy.search} aria-label={copy.search} data-beyond-search autocomplete="off" />
+        </label>
+        <div class="beyond-view" role="group" aria-label={lang === 'zh' ? '浏览方式' : 'View'}>
+          <button type="button" aria-pressed="true" data-beyond-view="graph"><Icon name="sparkle" size={15} /> {copy.constellation}</button>
+          <button type="button" aria-pressed="false" data-beyond-view="index"><Icon name="layers" size={15} /> {copy.index}</button>
+        </div>
+      </div>
+    </div>
+
+    <nav class="beyond-categories" aria-label={lang === 'zh' ? '兴趣分类' : 'Interest categories'}>
+      <button type="button" class="is-active" aria-pressed="true" data-beyond-category="all">{copy.all}</button>
+      {localizedCategories.map((category) => (
+        <button type="button" aria-pressed="false" data-beyond-category={category.id}>
+          <Icon name={category.icon} size={15} />{category.title}
+        </button>
+      ))}
+    </nav>
+
+    <div class="beyond-stage" data-beyond-stage>
+      <div class="beyond-atmosphere" aria-hidden="true"></div>
+      <div class="beyond-graph" data-beyond-graph role="group" aria-label={copy.constellation}>
+        <canvas class="beyond-links" data-beyond-canvas aria-hidden="true"></canvas>
+        <div class="beyond-clusters">
+          {localizedCategories.map((category) => (
+            <button type="button" class="beyond-cluster" data-cluster={category.id} aria-label={category.title}>
+              <span>{category.title}</span><Icon name="arrowRight" size={13} />
+            </button>
+          ))}
+        </div>
+        <div class="beyond-nodes">
+          {graphNodes.map((node) => {
+            const category = localizedCategories.find((category) => category.id === node.category)!;
+            return (
+              <button type="button" class:list={['beyond-node', `beyond-node--${node.type}`, { 'has-artwork': !!node.artwork }]}
+                data-node={node.id} aria-label={`${node.title} · ${category.title}`} aria-pressed="false">
+                <span class="beyond-node-orbit" aria-hidden="true"></span>
+                <span class="beyond-node-art">
+                  {node.artwork ? <img src={node.artwork} alt="" loading="eager" decoding="async" draggable="false" /> : <Icon name={category.icon} size={21} />}
+                </span>
+                <span class="beyond-node-label">{node.title}</span>
+                {node.subtitle && <span class="beyond-node-subtitle">{node.subtitle}</span>}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div class="beyond-index" data-beyond-index hidden>
+        {localizedCategories.map((category) => (
+          <section class="beyond-index-category" data-index-category={category.id}>
+            <h2><Icon name={category.icon} size={17} />{category.title}</h2>
+            <div class="beyond-index-works">
+              {graphNodes.filter((node) => node.category === category.id && !node.isContext).map((node) => (
+                <button class="beyond-index-item" type="button" data-index-node={node.id}>
+                  <span class="beyond-index-cover">
+                    {node.artwork ? <img src={node.artwork} alt="" loading="lazy" decoding="async" /> : <Icon name={category.icon} size={21} />}
+                  </span>
+                  <span>{node.title}{node.subtitle && <small>{node.subtitle}</small>}</span>
+                  <Icon name="arrowRight" size={15} />
+                </button>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+
+      <p class="beyond-no-results" data-beyond-empty hidden>{copy.noResults}</p>
+      <div class="beyond-bottom" data-beyond-bottom>
+        <p>{copy.hint}</p>
+        <div class="beyond-navigation" role="group" aria-label={copy.constellation}>
+          <button type="button" data-beyond-motion aria-label={copy.motion} aria-pressed="true" title={copy.motion}><Icon name="sparkle" size={17} /></button>
+          <span class="beyond-control-divider"></span>
+          <button type="button" data-beyond-zoom="out" aria-label={copy.zoomOut} title={copy.zoomOut}><Icon name="minus" size={17} /></button>
+          <button type="button" data-beyond-zoom="in" aria-label={copy.zoomIn} title={copy.zoomIn}><Icon name="plus" size={17} /></button>
+          <button type="button" data-beyond-reset aria-label={copy.reset} title={copy.reset}><Icon name="rotateCcw" size={16} /></button>
+        </div>
+      </div>
+
+      <aside class="beyond-detail" data-beyond-detail aria-labelledby="beyond-detail-title" hidden>
+        <button type="button" class="beyond-detail-close" data-beyond-close aria-label={copy.close}><Icon name="x" size={20} /></button>
+        <div class="beyond-detail-image" data-detail-image></div>
+        <div class="beyond-detail-copy">
+          <p class="beyond-detail-category" data-detail-category></p>
+          <h2 id="beyond-detail-title" tabindex="-1" data-detail-title></h2>
+          <p class="beyond-detail-subtitle" data-detail-subtitle></p>
+          <p class="beyond-detail-description" data-detail-description></p>
+          <div class="beyond-detail-links" data-detail-links></div>
+          <a class="beyond-detail-source" data-detail-source target="_blank" rel="noopener noreferrer">{copy.source}<Icon name="arrowRight" size={15} /></a>
+        </div>
+      </aside>
+    </div>
+    <script type="application/json" data-beyond-data set:html={graphData}></script>
+  </section>
+</BaseLayout>
+
+<script>
+  import '../../scripts/beyond-code';
+</script>
+
+<style>
+  :global(body:has([data-beyond]) .main-content) { padding: 0; }
+  :global(body:has([data-beyond]) .site-footer) { padding-top: 0; }
+  .beyond { --beyond-ink: #e3dccb; max-width: 1660px; margin: 0 auto; padding: 22px 48px 0; }
+  .beyond-heading { display:flex; justify-content:space-between; align-items:flex-end; gap:32px; padding:0 12px 19px; }
+  .beyond-back { display:inline-flex; align-items:center; gap:3px; font-size:12px; color:var(--color-text-muted); text-decoration:none; margin-bottom:9px; }
+  .beyond-back:hover { color:var(--color-brass-light); }
+  .beyond-eyebrow { font-family:var(--font-mono); font-size:10px; color:#a69770; letter-spacing:.22em; }
+  h1 { font:400 clamp(2.1rem,3.3vw,3rem)/1.2 var(--font-display); color:#f0e9d9; margin:5px 0 3px; letter-spacing:.015em; }
+  .beyond-subtitle { font-family:var(--font-page-subtitle); color:#aaa49a; font-size:16px; font-style:italic; }
+  .beyond-tools { display:flex; flex-direction:column; align-items:flex-end; gap:21px; padding-bottom:5px; }
+  .beyond-search { width:215px; display:flex; align-items:center; gap:9px; padding:7px 0; border-bottom:1px solid rgba(201,162,39,.22); }
+  .beyond-search input { appearance:none; width:100%; background:transparent; color:var(--color-text-primary); border:0; outline:0; font:16px var(--font-body); }
+  .beyond-search:focus-within { border-color:var(--color-brass); }
+  .beyond-search input::placeholder { color:#8d8982; }
+  .beyond-view { display:flex; gap:3px; }
+  .beyond button { font-family:var(--font-about-copy); cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  .beyond-view button { display:flex; align-items:center; gap:7px; padding:6px 13px; color:#9b978e; background:transparent; border:1px solid transparent; border-radius:3px; font-size:14px; }
+  .beyond-view button[aria-pressed='true'] { color:#d6be80; border-color:rgba(201,162,39,.2); background:rgba(201,162,39,.05); }
+  .beyond-categories { display:flex; flex-wrap:wrap; gap:8px 22px; align-items:center; border-top:1px solid rgba(201,162,39,.12); padding:15px 12px 13px; }
+  .beyond-categories button { display:flex; align-items:center; gap:7px; border:0; border-bottom:1px solid transparent; color:#99958d; background:transparent; padding:3px 1px 7px; font-size:15px; white-space:nowrap; transition:color .2s,border-color .2s; }
+  .beyond-categories button :global(svg) { opacity:.5; }
+  .beyond-categories button.is-active { border-color:var(--color-brass); color:#e1c579; }
+  .beyond-categories button.is-active :global(svg) { opacity:1; }
+  .beyond-categories button:hover { color:#ddd3be; }
+  .beyond-stage { position:relative; min-height:500px; height:calc(100svh - 270px); max-height:1000px; isolation:isolate; border-top:1px solid rgba(255,255,255,.045); }
+  .beyond-atmosphere { position:absolute; inset:0; pointer-events:none; z-index:-1; background:radial-gradient(ellipse at 24% 40%,rgba(115,93,40,.05),transparent 43%),radial-gradient(ellipse at 73% 56%,rgba(99,112,128,.035),transparent 43%); }
+  .beyond-graph { position:absolute; inset:0; overflow:hidden; touch-action:pan-y; cursor:grab; }
+  .beyond-graph.is-dragging { cursor:grabbing; }
+  .beyond-links { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+  .beyond-node { position:absolute; left:0; top:0; display:flex; align-items:center; justify-content:center; width:max(44px,var(--node-size,52px)); height:max(44px,var(--node-size,52px)); min-height:44px; padding:0; background:transparent; border:0; color:var(--beyond-ink); user-select:none; will-change:transform; transition:opacity .4s; touch-action:none; }
+  .beyond-node-art { position:relative; display:grid; place-items:center; width:var(--node-size,52px); height:var(--node-size,52px); border-radius:50%; overflow:hidden; background:rgba(21,21,27,.9); border:1px solid rgba(186,163,104,.28); box-shadow:0 0 15px rgba(201,162,39,.04); transition:border-color .3s,box-shadow .3s; }
+  .beyond-node-art img { width:100%; height:100%; object-fit:cover; opacity:.84; pointer-events:none; transition:opacity .3s; }
+  .beyond-node--work[data-category='books'] .beyond-node-art img { object-position:50% 25%; }
+  .beyond-node--person .beyond-node-art,.beyond-node--group .beyond-node-art,.beyond-node--studio .beyond-node-art { border-style:dashed; }
+  .beyond-node[data-node='studio-ghibli'] .beyond-node-art { background:#c9c3b5; }
+  .beyond-node[data-node='studio-ghibli'] .beyond-node-art img { object-fit:contain; padding:5px; }
+  .beyond-node--topic .beyond-node-art { width:20px; height:20px; background:rgba(201,162,39,.06); border-color:rgba(201,162,39,.4); }
+  .beyond-node--topic .beyond-node-art :global(svg) { width:11px;height:11px;opacity:.8; }
+  .beyond-node-orbit { position:absolute; width:calc(var(--node-size,52px) + 12px); height:calc(var(--node-size,52px) + 12px); border:1px solid rgba(201,162,39,.08); border-radius:50%; pointer-events:none; transition:border-color .3s; }
+  .beyond-node--topic .beyond-node-orbit { display:none; }
+  .beyond-node-label { position:absolute; display:block; font-size:14px; line-height:1.2; margin:0; width:125px; left:50%; top:50%; max-width:125px; text-wrap:balance; text-shadow:0 1px 8px #08080d,0 0 6px #08080d; pointer-events:auto; }
+  .beyond-node-subtitle { display:none; }
+  .beyond-node.is-minor .beyond-node-art { filter:saturate(.8); }
+  .beyond-node.is-minor .beyond-node-label,.beyond-node.is-minor .beyond-node-subtitle { opacity:0; pointer-events:none; }
+  .beyond-node.is-minor:hover .beyond-node-label,.beyond-node.is-minor:focus-visible .beyond-node-label,.beyond-node.is-minor.is-selected .beyond-node-label { opacity:1; }
+  .beyond-node:hover,.beyond-node:focus-visible,.beyond-node.is-selected { z-index:5; outline:none; }
+  .beyond-node:hover .beyond-node-art,.beyond-node:focus-visible .beyond-node-art,.beyond-node.is-selected .beyond-node-art { border-color:#d3b666; box-shadow:0 0 24px rgba(201,162,39,.17); }
+  .beyond-node:hover img,.beyond-node.is-selected img { opacity:1; }
+  .beyond-node.is-selected .beyond-node-orbit { border-color:rgba(201,162,39,.5); }
+  .beyond-node.is-muted { opacity:.12; }
+  .beyond-node.is-muted .beyond-node-label { visibility:hidden; }
+  .beyond-node.is-neighbor .beyond-node-label,.beyond-node.is-selected .beyond-node-label { opacity:1; }
+  .beyond-node.is-neighbor { color:#e4d5b2; opacity:1; }
+  .beyond-cluster { position:absolute; top:0; left:0; display:flex; gap:12px; align-items:center; color:#baa777; font-family:var(--font-display)!important; font-size:15px; letter-spacing:.09em; white-space:nowrap; border:0; border-bottom:1px solid rgba(201,162,39,.19); background:transparent; padding:0 0 8px; z-index:2; transition:opacity .3s; }
+  .beyond-cluster :global(svg) { opacity:.5; }
+  .beyond-cluster.is-muted { opacity:.15; }
+  .beyond-bottom { position:absolute; bottom:17px; left:18px; right:18px; display:flex; align-items:center; justify-content:space-between; pointer-events:none; z-index:7; }
+  .beyond-bottom p { color:#7d786e; font-family:var(--font-body); font-style:italic; font-size:13px; }
+  .beyond-navigation { display:flex; align-items:center; gap:2px; pointer-events:auto; padding:4px; border:1px solid rgba(201,162,39,.15); border-radius:4px; background:rgba(10,10,15,.85); backdrop-filter:blur(8px); }
+  .beyond-navigation button { width:34px; height:34px; display:grid; place-items:center; padding:0; border:0; background:transparent; border-radius:2px; }
+  .beyond-navigation button:hover { background:rgba(201,162,39,.09); }
+  .beyond-navigation button[aria-pressed='false'] :global(svg) { opacity:.35; }
+  .beyond-control-divider { height:16px; width:1px; background:rgba(201,162,39,.18); margin:0 6px; }
+  .beyond-index { padding:32px 20px 80px; }
+  .beyond-stage:has(.beyond-index:not([hidden])) { height:auto; max-height:none; }
+  .beyond-index-category { margin-bottom:35px; }
+  .beyond-index-category h2 { font:400 20px var(--font-display); display:flex; align-items:center; gap:10px; color:#c8b681; padding-bottom:13px; border-bottom:1px solid rgba(201,162,39,.12); }
+  .beyond-index-works { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0 32px; }
+  .beyond-index-item { display:flex; width:100%; align-items:center; gap:13px; text-align:left; border:0; border-bottom:1px solid rgba(255,255,255,.055); background:transparent; color:#d2cbbc; padding:16px 0; font-size:16px; }
+  .beyond-index-item>span:nth-child(2) { flex:1; }
+  .beyond-index-item> :global(svg) { opacity:0; transition:opacity .2s; }
+  .beyond-index-item:hover> :global(svg) { opacity:1; }
+  .beyond-index-item small { display:block; color:#969080; font-size:13px; }
+  .beyond-index-cover { display:grid; place-items:center; width:38px; height:48px; flex:0 0 38px; }
+  .beyond-index-cover img { width:100%; height:100%; object-fit:cover; border-radius:2px; }
+  .beyond-no-results { position:absolute; top:40%; left:0; right:0; text-align:center; color:#aaa294; }
+  .beyond-detail { position:absolute; z-index:10; top:0; right:0; width:340px; bottom:0; overflow-y:auto; overscroll-behavior:contain; background:linear-gradient(100deg,rgba(13,13,19,.95),rgba(13,13,19,.99)); border-left:1px solid rgba(201,162,39,.18); scrollbar-width:thin; scrollbar-color:#5a4c2a transparent; box-shadow:-24px 0 50px rgba(0,0,0,.15); }
+  .beyond-detail-close { display:grid; place-items:center; position:absolute; right:14px; top:14px; width:34px; height:34px; background:rgba(10,10,15,.85); border:1px solid rgba(201,162,39,.2); border-radius:50%; z-index:2; }
+  .beyond-detail-image { width:100%; height:215px; background:rgba(201,162,39,.025); overflow:hidden; }
+  .beyond-detail-image :global(img) { width:100%; height:100%; object-fit:contain; padding:20px; }
+  .beyond-detail-image[hidden] { display:none; }
+  .beyond-detail-copy { padding:23px 27px 32px; }
+  .beyond-detail-category { color:#bfa568; font-size:11px; letter-spacing:.14em; text-transform:uppercase; font-family:var(--font-mono); }
+  .beyond-detail h2 { font:400 30px/1.22 var(--font-editorial); color:#f0e6cf; margin:9px 0 8px; }
+  .beyond-detail-subtitle { color:#a39780; font-size:15px; margin-bottom:12px; }
+  .beyond-detail-description { color:#b1aca1; font-size:15px; line-height:1.65; margin:15px 0 22px; }
+  .beyond-detail-links :global(h3) { font:400 12px var(--font-mono); letter-spacing:.08em; text-transform:uppercase; color:#9b8a62; margin-bottom:7px; }
+  .beyond-detail-links :global(button) { width:100%; display:flex; gap:12px; align-items:center; padding:13px 0; background:transparent; text-align:left; border:0; border-bottom:1px solid rgba(201,162,39,.11); color:#d5c9b0; }
+  .beyond-detail-links :global(img) { width:30px; height:38px; object-fit:cover; border-radius:2px; }
+  .beyond-detail-links :global(strong) { display:block; font:400 16px/1.3 var(--font-body); }
+  .beyond-detail-links :global(small) { display:block; font:12px var(--font-body); color:#928775; margin-top:3px; }
+  .beyond-detail-source { display:inline-flex; gap:9px; align-items:center; color:#b8a471; font-size:14px; margin-top:25px; text-decoration:none; }
+  .beyond button:focus-visible { outline:1px solid var(--color-brass-light); outline-offset:5px; }
+  .beyond [hidden] { display:none!important; }
+  .beyond.is-detail-open .beyond-bottom { right:358px; }
+  .beyond.is-detail-open .beyond-bottom p { opacity:0; }
+  .beyond.is-index .beyond-bottom { display:none; }
+  .beyond:not(.is-ready) .beyond-graph { visibility:hidden; }
+  @media (min-width:1600px) { .beyond-stage { min-height:650px; } }
+  @media (max-width:1050px) {
+    .beyond { padding:25px 24px 0; }
+    .beyond-categories { column-gap:17px; }
+    .beyond-categories button { font-size:14px; }
+    .beyond-detail { width:310px; }
+    .beyond.is-detail-open .beyond-bottom { right:328px; }
+    .beyond-index-works { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  }
+  @media (max-width:640px) {
+    .beyond { padding:19px 0 0; }
+    .beyond-heading { display:block; padding:0 22px 18px; }
+    .beyond-back { margin-bottom:12px; }
+    h1 { font-size:32px; }
+    .beyond-subtitle { font-size:15px; margin-top:4px; }
+    .beyond-tools { flex-direction:row; align-items:center; justify-content:space-between; margin-top:23px; gap:14px; }
+    .beyond-search { width:45%; }
+    .beyond-search input { font-size:16px; }
+    .beyond-view { gap:0; }
+    .beyond-view button { font-size:12px; padding:7px 8px; gap:4px; }
+    .beyond-view button :global(svg) { width:12px; }
+    .beyond-categories { flex-wrap:nowrap; overflow-x:auto; gap:20px; padding:11px 22px 6px; scrollbar-width:none; }
+    .beyond-categories::-webkit-scrollbar { display:none; }
+    .beyond-categories button { font-size:14px; }
+    .beyond-stage { min-height:580px; height:calc(100svh - 290px); border-top:0; scroll-margin-top:90px; }
+    .beyond-node-label { font-size:13px; max-width:130px; }
+    .beyond-cluster { font-size:13px; }
+    .beyond-bottom { bottom:14px; left:20px; right:20px; gap:12px; }
+    .beyond-bottom p { font-size:12px; max-width:110px; }
+    .beyond-navigation button { width:32px; height:34px; }
+    .beyond-detail { top:auto; height:43%; min-height:260px; max-height:450px; width:100%; border-left:0; border-top:1px solid rgba(201,162,39,.3); display:grid; grid-template-columns:95px minmax(0,1fr); padding-top:23px; box-shadow:0 -20px 40px rgba(0,0,0,.3); }
+    .beyond-detail-image { height:120px; margin-top:12px; background:none; }
+    .beyond-detail-image :global(img) { padding:10px 0 0 15px; }
+    .beyond-detail-copy { padding:13px 24px 24px 18px; }
+    .beyond-detail h2 { font-size:25px; padding-right:17px; }
+    .beyond-detail-category { font-size:9px; }
+    .beyond-detail-description { font-size:14px; margin:12px 0 17px; }
+    .beyond-detail-close { width:28px; height:28px; top:10px; right:12px; }
+    .beyond-detail:has(.beyond-detail-image[hidden]) { display:block; }
+    .beyond-detail:has(.beyond-detail-image[hidden]) .beyond-detail-copy { padding:8px 24px 24px; }
+    .beyond.is-detail-open .beyond-bottom { left:20px; right:20px; bottom:calc(43% + 16px); }
+    .beyond.is-detail-open .beyond-bottom p { visibility:hidden; }
+    .beyond-index { padding:24px 22px 60px; }
+    .beyond-index-works { grid-template-columns:1fr; }
+    .beyond-index-item { font-size:16px; }
+  }
+  @media (prefers-reduced-motion:reduce) { .beyond *, .beyond *::before { transition:none!important; } }
+</style>
