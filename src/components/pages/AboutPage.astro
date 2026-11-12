@@ -12,10 +12,8 @@ import {
   awards,
   skills,
   languages,
-  interests,
-  type InterestItem,
 } from '../../data/about';
-import { defaultLocale, localizeString, type Locale, type LocalizedString } from '../../i18n/config';
+import { defaultLocale, localizeString, localizePath, type Locale, type LocalizedString } from '../../i18n/config';
 import { useTranslations } from '../../i18n/ui';
 import { asTrustedInlineHtml } from '../../utils/html';
 
@@ -31,83 +29,8 @@ const pageSections = [
   { id: 'awards', label: t.about.awards },
   { id: 'skills', label: t.about.skills },
   { id: 'languages', label: t.about.languages },
-  { id: 'beyond-code', label: t.about.beyondCode },
+  { id: 'beyond-code', label: t.about.myWorld },
 ];
-
-const wikipediaPreviewCopy = {
-  en: {
-    prompt: 'Hover to load a cover preview.',
-    loading: 'Loading Wikipedia preview...',
-    details: 'Open Wikipedia for more details.',
-    unavailable: 'Preview unavailable. Open Wikipedia for details.',
-  },
-  zh: {
-    prompt: '悬停以加载封面预览。',
-    loading: '正在加载维基百科预览…',
-    details: '在维基百科查看更多信息。',
-    unavailable: '暂时无法加载预览，请打开维基百科查看详情。',
-  },
-  ja: {
-    prompt: 'ホバーするとカバープレビューを読み込みます。',
-    loading: 'Wikipediaのプレビューを読み込んでいます…',
-    details: 'Wikipediaで詳細を見る。',
-    unavailable: 'プレビューを読み込めません。Wikipediaで詳細をご覧ください。',
-  },
-}[lang];
-
-type RichInterestItem = Extract<InterestItem, { title: unknown }>;
-
-function hasInterestTitle(item: InterestItem): item is RichInterestItem {
-  return typeof item === 'object' && item !== null && 'title' in item;
-}
-
-function isWikiInterestItem(item: InterestItem): item is RichInterestItem & { wikiPage: string } {
-  return typeof item === 'object' && item !== null && 'wikiPage' in item && typeof item.wikiPage === 'string';
-}
-
-function isAudioInterestItem(item: InterestItem): item is RichInterestItem & ({ audioSrc: string } | { previewProvider: 'itunes' }) {
-  return (
-    typeof item === 'object' &&
-    item !== null &&
-    (
-      ('audioSrc' in item && typeof item.audioSrc === 'string') ||
-      ('previewProvider' in item && item.previewProvider === 'itunes')
-    )
-  );
-}
-
-function getInterestTitle(item: InterestItem) {
-  return hasInterestTitle(item) ? localizeString(item.title, lang) : localizeString(item, lang);
-}
-
-function getWikipediaTarget(page: string) {
-  return {
-    language: 'en' as const,
-    page,
-  };
-}
-
-function getWikipediaUrl(page: string, language: Locale) {
-  return `https://${language}.wikipedia.org/wiki/${encodeURIComponent(page).replace(/%20/g, '_')}`;
-}
-
-function getWikipediaAriaLabel(title: string) {
-  if (lang === 'zh') return `在维基百科查看${title}`;
-  if (lang === 'ja') return `Wikipediaで${title}を見る`;
-  return `${title} on Wikipedia`;
-}
-
-function getItunesSearchUrl(term: string, country = 'JP') {
-  const params = new URLSearchParams({
-    term,
-    country,
-    media: 'music',
-    entity: 'song',
-    limit: '1',
-  });
-
-  return `https://itunes.apple.com/search?${params.toString()}`;
-}
 
 const institutionMonograms: Record<string, string> = {
   'ABK College': 'ABK',
@@ -317,100 +240,22 @@ function getInstitutionMonogram(name: LocalizedString) {
           </div>
         </div>
         
-        <!-- Interests / Beyond Code -->
-        <div class="section">
+        <!-- Invitation to the personal constellation -->
+        <div class="section world-entry">
           <h2 id="beyond-code" tabindex="-1">
             <Icon name="heart" size={22} />
-            {t.about.beyondCode}
+            {t.about.worldTitle}
           </h2>
-          
-          <div class="interests-grid">
-            {interests.map((category) => (
-              <div class="interest-category">
-                <h3>
-                  <Icon name={category.icon} size={18} />
-                  {localizeString(category.name, lang)}
-                </h3>
-                <div class="interest-items">
-                  {category.items.map((item) => {
-                    const title = getInterestTitle(item);
-                    const artist = hasInterestTitle(item) && item.artist ? localizeString(item.artist, lang) : '';
-                    const itunesTerm = hasInterestTitle(item) && item.itunesTerm
-                      ? localizeString(item.itunesTerm, lang)
-                      : [title, artist].filter(Boolean).join(' ');
-                    const itunesCountry = hasInterestTitle(item) ? item.itunesCountry ?? 'JP' : 'JP';
-                    const wikipediaTarget = isWikiInterestItem(item) ? getWikipediaTarget(item.wikiPage) : undefined;
-
-                    return isAudioInterestItem(item) ? (
-                      <a
-                        href={getItunesSearchUrl(itunesTerm, itunesCountry)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        role="button"
-                        class="interest-tag interest-tag--work interest-tag--audio"
-                        data-interest-audio
-                        data-audio-src={item.audioSrc}
-                        data-audio-title={title}
-                        data-audio-artist={artist}
-                        data-itunes-preview={item.previewProvider === 'itunes' ? true : undefined}
-                        data-itunes-term={itunesTerm}
-                        data-itunes-country={itunesCountry}
-                        data-wiki-page={wikipediaTarget?.page}
-                        data-wiki-language={wikipediaTarget?.language}
-                        aria-label={`Play ${title}`}
-                        aria-pressed="false"
-                      >
-                        <span>{title}</span>
-                        <span class="interest-preview interest-preview--album" aria-hidden="true">
-                          <span class="interest-preview-media interest-preview-media--album" data-wiki-media>
-                            {item.previewProvider === 'itunes' ? (
-                              <span class="interest-preview-placeholder">♪</span>
-                            ) : (
-                              <span class="interest-preview-placeholder">A</span>
-                            )}
-                          </span>
-                          <span class="interest-preview-body">
-                            <span class="interest-preview-kicker" data-preview-kicker>{item.previewProvider === 'itunes' ? 'iTunes Preview' : 'Album'}</span>
-                            <strong data-wiki-title>{artist ? `${title} — ${artist}` : title}</strong>
-                            <span data-wiki-extract>Hover to load an album preview.</span>
-                          </span>
-                        </span>
-                      </a>
-                    ) : wikipediaTarget ? (
-                      <a
-                        class="interest-tag interest-tag--work"
-                        href={getWikipediaUrl(wikipediaTarget.page, wikipediaTarget.language)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        data-wiki-preview
-                        data-wiki-page={wikipediaTarget.page}
-                        data-wiki-language={wikipediaTarget.language}
-                        data-wiki-loading={wikipediaPreviewCopy.loading}
-                        data-wiki-details={wikipediaPreviewCopy.details}
-                        data-wiki-unavailable={wikipediaPreviewCopy.unavailable}
-                        aria-label={getWikipediaAriaLabel(title)}
-                      >
-                        <span>{title}</span>
-                        <span class="interest-preview" aria-hidden="true">
-                          <span class="interest-preview-media" data-wiki-media>
-                            <span class="interest-preview-placeholder">W</span>
-                          </span>
-                          <span class="interest-preview-body">
-                            <span class="interest-preview-kicker">Wikipedia</span>
-                            <strong data-wiki-title>{title}</strong>
-                            <span data-wiki-extract>{wikipediaPreviewCopy.prompt}</span>
-                          </span>
-                        </span>
-                      </a>
-                    ) : (
-                      <span class="interest-tag">{title}</span>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
-          <audio class="interest-audio-player" preload="metadata" data-interest-audio-player></audio>
+          <p id="world-entry-description" class="world-entry-description">{t.about.worldDescription}</p>
+          <a
+            href={localizePath('/beyond-code', lang)}
+            class="world-entry-link"
+            aria-describedby="world-entry-description"
+            data-world-entry
+          >
+            <span>{t.about.worldCta}</span>
+            <span class="world-entry-arrow" aria-hidden="true"><Icon name="arrowRight" size={17} /></span>
+          </a>
         </div>
       </section>
       
@@ -442,10 +287,6 @@ function getInstitutionMonogram(name: LocalizedString) {
   </div>
 </BaseLayout>
 
-<script>
-  import '../../scripts/client/about-previews.js';
-  import '../../scripts/client/about-audio.js';
-</script>
 
 
 
@@ -773,193 +614,61 @@ function getInstitutionMonogram(name: LocalizedString) {
     font-family: var(--font-about-copy);
   }
   
-  /* Interests / Beyond Code */
-  .interests-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-lg);
-  }
-  
-  .interest-category h3 {
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
-    font-size: 1rem;
+  /* A quiet invitation into the personal constellation. */
+  .world-entry-description {
+    max-width: 34rem;
     color: var(--color-text-secondary);
-    margin-bottom: var(--space-sm);
-  }
-  
-  .interest-items {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-xs);
     font-family: var(--font-about-copy);
+    font-size: 1.05rem;
+    line-height: 1.7;
   }
-  
-  .interest-tag {
-    position: relative;
+
+  .world-entry-link {
     display: inline-flex;
     align-items: center;
-    padding: 4px 10px;
-    background: rgba(255, 255, 255, 0.035);
-    border: 1px solid rgba(255, 255, 255, 0.075);
-    border-radius: 4px;
-    font-size: 0.9rem;
-    color: var(--color-text-secondary);
-    transition: all 0.2s ease;
-  }
-
-  a.interest-tag {
-    text-decoration: none;
-  }
-
-  button.interest-tag {
-    appearance: none;
-    -webkit-appearance: none;
-    font-family: inherit;
-    font-size: 0.9rem;
-    line-height: inherit;
-    cursor: pointer;
-  }
-  
-  .interest-tag:hover,
-  .interest-tag:focus-visible {
-    border-color: var(--color-brass);
-    color: var(--color-brass-light);
-  }
-
-  .interest-tag--work {
-    cursor: pointer;
-  }
-
-  .interest-tag--audio.is-playing {
-    border-color: var(--color-brass);
-    color: var(--color-brass-light);
-    background: rgba(201, 162, 39, 0.08);
-  }
-
-  .interest-tag--audio.is-loading {
-    border-color: rgba(201, 162, 39, 0.45);
-    color: var(--color-brass-light);
-  }
-
-  .interest-tag--audio.has-error {
-    border-color: rgba(208, 139, 115, 0.58);
-    color: #d08b73;
-  }
-
-  .interest-audio-player {
-    display: none;
-  }
-
-  .interest-preview {
-    position: absolute;
-    left: 0;
-    bottom: calc(100% + 0.65rem);
-    z-index: 40;
-    display: grid;
-    grid-template-columns: 4.2rem minmax(0, 1fr);
-    gap: 0.65rem;
-    width: min(16rem, calc(100vw - 2rem));
-    min-height: 5.65rem;
-    padding: 0.6rem;
-    border: 1px solid rgba(201, 162, 39, 0.26);
-    border-radius: 6px;
-    background:
-      linear-gradient(180deg, rgba(201, 162, 39, 0.09), rgba(255, 255, 255, 0.025)),
-      rgba(10, 10, 15, 0.94);
-    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.38), 0 0 18px rgba(201, 162, 39, 0.08);
-    color: var(--color-text-secondary);
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(0.35rem) scale(0.98);
-    transform-origin: 1.25rem 100%;
-    transition:
-      opacity 0.16s ease,
-      transform 0.16s ease;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-  }
-
-  .interest-preview::after {
-    content: '';
-    position: absolute;
-    left: 1.1rem;
-    bottom: -0.38rem;
-    width: 0.7rem;
-    height: 0.7rem;
-    border-right: 1px solid rgba(201, 162, 39, 0.22);
-    border-bottom: 1px solid rgba(201, 162, 39, 0.22);
-    background: rgba(10, 10, 15, 0.94);
-    transform: rotate(45deg);
-  }
-
-  .interest-tag--work:hover .interest-preview,
-  .interest-tag--work:focus-visible .interest-preview,
-  .interest-tag--work:focus-within .interest-preview {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-
-  .interest-preview-media {
-    display: grid;
-    place-items: center;
-    width: 4.2rem;
-    aspect-ratio: 2 / 3;
-    overflow: hidden;
-    border-radius: 4px;
-    background:
-      radial-gradient(circle at 50% 42%, rgba(201, 162, 39, 0.08), transparent 62%),
-      rgba(255, 255, 255, 0.035);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-  }
-
-  .interest-preview-media--album {
-    aspect-ratio: 1;
-  }
-
-  :global(.interest-preview-media img) {
-    display: block;
-    width: 100%;
-    height: 100%;
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-  }
-
-  .interest-preview-placeholder {
-    color: rgba(201, 162, 39, 0.62);
-    font-family: var(--font-display);
-    font-size: 1.15rem;
-  }
-
-  .interest-preview-body {
-    display: grid;
-    align-content: center;
-    gap: 0.22rem;
-    min-width: 0;
-  }
-
-  .interest-preview-kicker {
-    color: var(--color-text-muted);
-    font-family: var(--font-mono);
-    font-size: 0.62rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-
-  .interest-preview-body strong {
+    gap: 1.2rem;
+    min-height: 50px;
+    margin-top: 0.8rem;
+    padding: 0.35rem 0;
+    border-bottom: 1px solid rgba(201, 162, 39, 0.48);
     color: var(--color-text-primary);
-    font-size: 0.88rem;
-    line-height: 1.25;
+    font-family: var(--font-about-copy);
+    font-size: 1.15rem;
+    font-weight: 500;
+    line-height: 1.4;
+    text-decoration: none;
+    transition: border-color 180ms ease, color 180ms ease;
   }
 
-  .interest-preview-body span:last-child {
-    color: var(--color-text-muted);
-    font-size: 0.72rem;
-    line-height: 1.35;
+  .world-entry-arrow {
+    display: inline-flex;
+    align-items: center;
+    opacity: 0.8;
+    transition: opacity 180ms ease, transform 180ms ease;
   }
-  
+
+  .world-entry-link:hover {
+    border-color: var(--color-brass-light);
+    color: #ead5a1;
+  }
+
+  .world-entry-link:hover .world-entry-arrow,
+  .world-entry-link:focus-visible .world-entry-arrow {
+    opacity: 1;
+    transform: translateX(3px);
+  }
+
+  .world-entry-link:focus-visible {
+    outline: 2px solid var(--color-brass-light);
+    outline-offset: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .world-entry-link, .world-entry-arrow { transition: none; }
+    .world-entry-link:hover .world-entry-arrow,
+    .world-entry-link:focus-visible .world-entry-arrow { transform: none; }
+  }
+
   /* Sidebar */
   .profile-card {
     padding: var(--space-lg);
@@ -1060,9 +769,6 @@ function getInstitutionMonogram(name: LocalizedString) {
       grid-template-columns: 1fr;
     }
     
-    .interests-grid {
-      grid-template-columns: 1fr;
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -1071,11 +777,6 @@ function getInstitutionMonogram(name: LocalizedString) {
     }
   }
 
-  @media (hover: none) {
-    .interest-preview {
-      display: none;
-    }
-  }
 
   @media (max-width: 768px) {
     .page-header {

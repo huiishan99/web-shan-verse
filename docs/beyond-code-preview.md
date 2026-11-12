@@ -6,10 +6,10 @@ Explore personal interests through a lively constellation: recognizable works,
 clear categories, and meaningful connections between works and creators. Selecting
 a node should bring it into focus and open its introduction and related items.
 
-This is a reversible, local preview. Do not commit, push, deploy, or replace the
-existing About section without the user's subsequent instruction. Reuse the
-site's near-black background, brass accents, serif typography, and existing
-interest content. No new runtime dependency or backend is required.
+The user approved the constellation and revised About entry for commit and push
+on 2026-11-12. The constellation checkpoint is `7045510`. Reuse the site's
+near-black background, brass accents, serif typography, and existing interest
+content. No new runtime dependency or backend is required.
 
 ## Acceptance criteria and invariants
 
@@ -54,11 +54,10 @@ filtering, late image/detail responses showing the wrong selection, and duplicat
 animation loops after Astro navigation. Real artwork may depend on source
 availability; missing media must preserve names and navigation.
 
-The first review decision is whether the classification, relationship exploration,
-and movement feel coherent. A successful visual experiment does not authorize
-publishing or expanding the graph automatically.
+The owner accepted the visual direction and authorized publishing this version.
+Further graph expansion is outside the release scope.
 
-## Preview review packet
+## Constellation checkpoint review packet
 
 | Item | Observed result / boundary |
 | --- | --- |
@@ -71,4 +70,26 @@ publishing or expanding the graph automatically.
 | Browser evidence | Desktop category focus, movie → novel → author traversal, close/focus recovery, paused mode, empty search, index search, and Astro About/back recovery operated in the in-app browser. A real node drag did not open details. At 390×844, category selection, bottom details and index → search → selection worked without horizontal document overflow. |
 | Regression surface | A new localized route registration; existing navigation and About rendering were inspected. No existing page content or backend was changed. |
 | Known risks | Automatic reduced-motion behavior has source review, not OS preference testing. Caption placement remains heuristic; this first pass needs the owner's judgment on motion and visual density. Media attribution and final copy need review before publication. |
-| Counterexamples / decision | Unknown search, cross-category hidden-focus recovery, paused-layout reset, and drag/click distinction checked. Continue by reviewing the local visual experiment; no commit, push, or deployment performed. |
+| Counterexamples / decision | Unknown search, cross-category hidden-focus recovery, paused-layout reset, and drag/click distinction checked. Saved as local commit `7045510` after user approval; no push or deployment performed. |
+
+## Approved About entry
+
+The user requested replacing the About interest grid with a harmonious invitation
+into the constellation. The existing `#beyond-code` anchor remains stable. The
+new section uses localized personal copy and a text link with a subtle brass
+underline and arrow. Its destination follows the current locale. Following the
+owner's feedback, the globe icon, boxed button styling and “Step into my world”
+wording were replaced with “Explore my favorites” and equivalent Chinese/Japanese
+labels; the link retains a 50px click target and visible keyboard focus.
+Interest data stays in the existing About collection and remains accessible in
+the constellation and its index. The graph itself is unchanged from its accepted
+checkpoint. The owner approved this revised entry for commit and push.
+
+Entry verification: Astro reports 0 errors/warnings/hints; targeted ESLint and
+the static build pass, and all 297 generated pages validate. In-app browser
+checks confirmed English, Chinese and Japanese entry links open their matching
+constellation routes; the graph-to-About return preserves the section anchor.
+The latest text-link visual pass checked the English desktop entry and the Chinese
+entry at 390×844: the link remains 50px high with no horizontal document overflow.
+The browser was restored to its normal viewport and left on
+the English About invitation for review.
