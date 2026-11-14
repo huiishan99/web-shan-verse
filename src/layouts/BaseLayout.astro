@@ -7,7 +7,8 @@ import ShanCli from '../components/ShanCli.astro';
 import SiteStats from '../components/SiteStats.astro';
 import ExploreNavigation from '../components/navigation/ExploreNavigation.astro';
 import fonts from '../data/google-fonts.json';
-import { defaultLocale, localeNames, localeShortNames, locales, localizePath, type Locale } from '../i18n/config';
+import { unlistedPagePaths } from '../data/site-navigation';
+import { defaultLocale, localeNames, localeShortNames, locales, localizePath, normalizePath, type Locale } from '../i18n/config';
 import { useTranslations } from '../i18n/ui';
 
 export interface Props {
@@ -31,6 +32,7 @@ const pageTitle = title === 'SHAN-VERSE' ? title : `${title} | SHAN-VERSE`;
 const canonicalUrl = new URL(localizePath(Astro.url.pathname, lang), siteUrl).toString();
 const previewImage = new URL('/images/header_galaxy.jpg', siteUrl).toString();
 const currentPath = Astro.url.pathname;
+const isUnlistedPage = unlistedPagePaths.some((path) => path === normalizePath(currentPath));
 const availableAlternateLocales = alternateLocales.length > 0 ? alternateLocales : [lang];
 const alternateUrls = availableAlternateLocales.map((locale) => ({
   locale,
@@ -51,6 +53,7 @@ const defaultAlternateUrl = new URL(
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content={metaDescription}>
+  {isUnlistedPage && <meta name="robots" content="noindex, follow">}
   <link rel="canonical" href={canonicalUrl}>
   {alternateUrls.map(({ locale, href }) => (
     <link rel="alternate" hreflang={locale} href={href}>

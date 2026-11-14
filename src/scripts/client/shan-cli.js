@@ -13,12 +13,11 @@
     homeCommand: 'return to the landing page',
     aboutCommand: 'open the about page',
     projectsCommand: 'browse project work',
-    timelineCommand: 'view the personal timeline',
     blogCommand: 'open blog posts',
     archiveHeading: 'archive',
     latestCommand: 'show the latest blog posts',
     randomCommand: 'surface a random blog post',
-    searchCommand: 'search posts, projects, and timeline',
+    searchCommand: 'search posts and projects',
     statusCommand: 'show the current site signal',
     musicCommand: 'toggle the background music',
     githubCommand: 'open GitHub',
@@ -30,7 +29,6 @@
     openingHome: 'opening home...',
     openingAbout: 'opening about...',
     openingProjects: 'opening projects...',
-    openingTimeline: 'opening timeline...',
     openingBlog: 'opening blog...',
     latestHeading: 'latest posts:',
     randomHeading: 'random signal:',
@@ -40,7 +38,6 @@
     indexUnavailable: 'CLI index unavailable.',
     typePost: 'post',
     typeProject: 'project',
-    typeTimeline: 'timeline',
     currentSignal: 'current signal:',
     online: 'online',
     siteStatsHint: 'site stats live in the footer.',
@@ -59,7 +56,7 @@
       archiveHeading: '档案',
       latestCommand: '显示最新博客文章',
       randomCommand: '随机浮现一篇博客',
-      searchCommand: '搜索文章、项目和时间线',
+      searchCommand: '搜索文章和项目',
       latestHeading: '最新文章：',
       randomHeading: '随机信号：',
       searchHeading: '搜索结果：',
@@ -68,13 +65,12 @@
       indexUnavailable: 'CLI 索引暂时不可用。',
       typePost: '文章',
       typeProject: '项目',
-      typeTimeline: '时间线',
     },
     ja: {
       archiveHeading: 'アーカイブ',
       latestCommand: '最新のブログ記事を表示',
       randomCommand: 'ランダムにブログ記事を表示',
-      searchCommand: '記事、プロジェクト、タイムラインを検索',
+      searchCommand: '記事とプロジェクトを検索',
       latestHeading: '最新記事:',
       randomHeading: 'ランダムシグナル:',
       searchHeading: '検索結果:',
@@ -83,7 +79,6 @@
       indexUnavailable: 'CLI インデックスを利用できません。',
       typePost: '記事',
       typeProject: 'プロジェクト',
-      typeTimeline: 'タイムライン',
     },
   };
 
@@ -137,7 +132,6 @@
       home: root.dataset.homePath || '/',
       about: root.dataset.aboutPath || '/about/',
       projects: root.dataset.projectsPath || '/projects/',
-      timeline: root.dataset.timelinePath || '/timeline/',
       blog: root.dataset.blogPath || '/blog/',
     };
     const lang = root.dataset.lang || 'en';
@@ -180,7 +174,6 @@
         `<span class="cli-command">home</span> - ${escapeHtml(labels.homeCommand)}`,
         `<span class="cli-command">about</span> - ${escapeHtml(labels.aboutCommand)}`,
         `<span class="cli-command">projects</span> - ${escapeHtml(labels.projectsCommand)}`,
-        `<span class="cli-command">timeline</span> - ${escapeHtml(labels.timelineCommand)}`,
         `<span class="cli-command">blog</span> or <span class="cli-command">blog latest</span> - ${escapeHtml(labels.blogCommand)}`,
         `<span class="cli-help-heading">${escapeHtml(labels.archiveHeading)}</span>`,
         `<span class="cli-command">latest</span> - ${escapeHtml(labels.latestCommand)}`,
@@ -231,14 +224,16 @@
 
       const payload = await cliIndexPromise;
       const entries = payload?.locales?.[lang] || payload?.locales?.en || [];
-      return Array.isArray(entries) ? entries : [];
+      // A previously cached index may still contain the removed Timeline records.
+      return Array.isArray(entries)
+        ? entries.filter((entry) => entry && (entry.type === 'post' || entry.type === 'project'))
+        : [];
     }
 
     function getEntryTypeLabel(type) {
       const typeLabels = {
         post: labels.typePost,
         project: labels.typeProject,
-        timeline: labels.typeTimeline,
       };
 
       return typeLabels[type] || type;
@@ -390,13 +385,6 @@
         run: () => {
           print(escapeHtml(labels.openingProjects));
           navigateTo(paths.projects);
-        },
-      },
-      {
-        matches: (command) => command === 'timeline',
-        run: () => {
-          print(escapeHtml(labels.openingTimeline));
-          navigateTo(paths.timeline);
         },
       },
       {

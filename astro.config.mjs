@@ -3,10 +3,14 @@ import { unified } from '@astrojs/markdown-remark';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import rehypeBlogImages from './src/utils/rehype-blog-images.mjs';
+import { unlistedPagePaths } from './src/data/site-navigation.ts';
+import { normalizePath } from './src/i18n/config.ts';
 
 export default defineConfig({
   site: 'https://shan-verse.com',
-  integrations: [mdx(), sitemap()],
+  integrations: [mdx(), sitemap({
+    filter: (page) => !unlistedPagePaths.some((path) => path === normalizePath(new URL(page).pathname)),
+  })],
   vite: {
     build: {
       // Three is lazy-loaded by the Journey page and isolated as its own vendor chunk.

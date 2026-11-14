@@ -4,9 +4,9 @@ import test from 'node:test';
 import { exploreDestinations, exploreLabels } from '../src/data/site-navigation.ts';
 import { locales, localizePath, normalizePath } from '../src/i18n/config.ts';
 
-test('Explore registers only the three existing secondary destinations, with native canonical locale links', () => {
+test('Explore lists the two public secondary destinations and leaves Timeline hidden', () => {
   assert.deepEqual(exploreDestinations.map(({ id, path }) => [id, path]), [
-    ['beyond-code', '/beyond-code'], ['atlas', '/journey'], ['timeline', '/timeline'],
+    ['beyond-code', '/beyond-code'], ['atlas', '/journey'],
   ]);
   assert.equal(new Set(exploreDestinations.map(({ path }) => path)).size, exploreDestinations.length);
   for (const destination of exploreDestinations) {

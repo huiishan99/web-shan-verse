@@ -1,7 +1,6 @@
 import type { APIRoute } from 'astro';
 import { projectCategories } from '../data/projects';
-import { timelineData } from '../data/timeline';
-import { locales, localizePath, localizeString, type Locale } from '../i18n/config';
+import { locales, localizeString, type Locale } from '../i18n/config';
 import {
   getBlogPostDisplayTitle,
   getBlogPostKind,
@@ -17,7 +16,7 @@ import { getProjectPath, getProjectRecord, getProjectStatus } from '../utils/pro
 
 export const prerender = true;
 
-type CliIndexEntryType = 'post' | 'project' | 'timeline';
+type CliIndexEntryType = 'post' | 'project';
 
 interface CliIndexEntry {
   id: string;
@@ -70,28 +69,6 @@ function getProjectEntries(locale: Locale): CliIndexEntry[] {
   });
 }
 
-function getTimelineEntries(locale: Locale): CliIndexEntry[] {
-  return [...timelineData]
-    .sort((firstYear, secondYear) => secondYear.year - firstYear.year)
-    .flatMap((yearData) => yearData.events.map((event, index) => {
-      const tags = compactStrings([
-        String(yearData.year),
-        event.category,
-        event.weight || 'standard',
-      ]);
-
-      return {
-        id: `timeline:${yearData.year}:${index}`,
-        type: 'timeline',
-        title: localizeString(event.title, locale),
-        description: localizeString(event.description, locale),
-        url: `${localizePath('/timeline', locale)}#year-${yearData.year}`,
-        tags,
-        source: String(yearData.year),
-      };
-    }));
-}
-
 async function getPostEntries(locale: Locale): Promise<CliIndexEntry[]> {
   const posts = sortBlogPosts(getBlogPostsForLocale(await getBlogPosts(), locale));
 
@@ -125,7 +102,6 @@ async function buildLocaleEntries(locale: Locale): Promise<CliIndexEntry[]> {
   const entries = [
     ...(await getPostEntries(locale)),
     ...getProjectEntries(locale),
-    ...getTimelineEntries(locale),
   ];
 
   return entries.sort(compareEntries);

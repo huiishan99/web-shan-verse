@@ -188,13 +188,13 @@ for (const locale of [
     const explore = page.locator('[data-site-explore]');
     await explore.locator('[data-site-explore-toggle]').click();
     const panel = explore.locator('[data-site-explore-panel]');
-    await expect(panel.locator('a')).toHaveCount(3);
+    await expect(panel.locator('a')).toHaveCount(2);
     const current = panel.locator('[data-site-area="beyond-code"]');
     await expect(current).toHaveAttribute('href', `${locale.prefix}/beyond-code/`);
     await expect(current).toHaveAttribute('aria-current', 'page');
     await expect(current).toHaveText(locale.current);
     await expect(panel.locator('[data-site-area="atlas"]')).toHaveAttribute('href', `${locale.prefix}/journey/`);
-    await expect(panel.locator('[data-site-area="timeline"]')).toHaveAttribute('href', `${locale.prefix}/timeline/`);
+    await expect(panel.locator('[data-site-area="timeline"]')).toHaveCount(0);
     await expect(panel.locator('[data-journey-preload]')).toHaveCount(0);
     await expect(root.locator('[data-beyond-surprise]')).toHaveAccessibleName(locale.discovery);
   });
@@ -341,7 +341,7 @@ for (const width of [320, 390]) {
     const box = (await panel.boundingBox())!;
     expect(box.x).toBeGreaterThanOrEqual(0);
     expect(box.x + box.width).toBeLessThanOrEqual(width + 0.5);
-    for (const area of ['beyond-code', 'atlas', 'timeline']) await expect(panel.locator(`[data-site-area="${area}"]`)).toBeVisible();
+    for (const area of ['beyond-code', 'atlas']) await expect(panel.locator(`[data-site-area="${area}"]`)).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await toggle.press('Escape');
     await expect(panel).toBeHidden();

@@ -11,7 +11,8 @@ on 2026-11-12. The constellation checkpoint is `7045510`. Reuse the site's
 near-black background, brass accents, serif typography, and existing interest
 content. No new runtime dependency or backend is required.
 
-Current owner requirements are in [Connected exploration](#connected-exploration-2026-11-14),
+Current owner requirements are in [Timeline visibility](#timeline-visibility-2026-11-15),
+[Connected exploration](#connected-exploration-2026-11-14),
 [Controls and game additions](#controls-and-game-additions-2026-11-14)
 and [Category legibility](#category-legibility-2026-11-14),
 which refines the [second approved expansion](#approved-expansion-2026-11-14-second-batch)
@@ -21,6 +22,41 @@ The current cover delivery and mount lifecycle are refined by
 below describe their historical checkpoints.
 The motion prototype and older publication checkpoints below record the design
 and evidence at those stages; their removed category hubs are historical.
+
+## Timeline visibility (2026-11-15)
+
+Owner clarification: hide standalone Timeline from site entry points and search,
+retain its source and existing URLs, and preserve the Atlas timeline panel. This
+supersedes the previous three-item Explore directory. The top-level Explore UX
+is still under discussion; do not replace it with another navigation design yet.
+
+Remove the standalone destination from Explore and CLI navigation/help/search
+records. Home activity links open the existing Atlas timeline panel using
+`/journey/?view=timeline` (localized); the query selects the initial mode only,
+and the current mode buttons still work. Exclude the standalone routes from the
+sitemap and mark their rendered pages `noindex, follow`; old links still render.
+Keep timeline data, the homepage activity display, Atlas content and route files.
+No access-control or immediate search-engine-removal claim is made.
+Keep crawler access so it can read `noindex`; do not add a robots.txt block.
+This follows [Google's noindex guidance](https://developers.google.com/search/docs/crawling-indexing/block-indexing)
+and the sitemap integration's [URL filter](https://docs.astro.build/en/guides/integrations-guide/sitemap/#filter).
+
+Acceptance: EN/ZH/JA public navigation, CLI output/index and sitemap contain no
+standalone Timeline entry; old URLs still return their pages with noindex. Home
+activity reaches the Atlas panel, whose buttons continue to switch modes. Existing
+Beyond/Atlas entry and graph behavior remain unchanged. No new dependency, scene,
+animation, speculative route or global state is required.
+
+### Timeline visibility review packet
+
+| Item | Result / evidence boundary |
+| --- | --- |
+| Goal / behavior | Standalone Timeline is absent from Explore, CLI help/commands/search and sitemap. Old URLs render with noindex; Home activity opens the retained Atlas timeline panel. Explore's broader replacement remains a proposal. |
+| Architecture / invariants | One unlisted-path policy drives robots metadata and sitemap. The Atlas query is an initial-view hint, guarded by its existing per-DOM setup. All three route files, timeline data, locale switching and graph behavior remain. No new dependency, asset, scene or ongoing animation. |
+| Assumptions / unresolved | The owner explicitly chose discoverability hiding while retaining old links and Atlas chronology. The design of the future three-item header is unresolved and is not implemented here. |
+| Evidence | Full verify passes: 143 checked files with no diagnostics, lint, 206 unit tests plus one existing Windows symlink EPERM skip, 294 HTML pages and 97 Chromium E2E. Nine new cases exercise real built outputs, all locales, SPA metadata removal, native Home-to-Atlas links and stale-index exclusion. Manual browser checks confirm the same old-link/panel/menu behavior. |
+| Regression / counterexamples | Shared robots metadata must never leak to indexed destinations; tested Timeline→Beyond in each locale. Sitemap/index must retain Atlas, posts and projects. An older five-minute CLI payload cannot restore hidden or unknown entry types. Mode buttons remain usable after a query-selected entry. |
+| Risks / trajectory | External search removal depends on crawler recrawling and is not immediate. Home chronology clicks now use the existing on-demand Atlas bundle; its scene is not added to Home startup. These checks do not certify touch devices or external index state. Continue with the static route/discovery model; source restoration is reversible. |
 
 ## Connected exploration (2026-11-14)
 

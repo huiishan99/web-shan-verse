@@ -223,7 +223,7 @@ export function buildHomepageActivityModel({
         datetime: monthAnchor.toISOString().slice(0, 7),
         displayDate: formatTimelineMonth(event, yearData.year, lang),
         dateSource: 'timeline month' as const,
-        href: localizePath('/timeline', lang),
+        href: `${localizePath('/journey', lang)}?view=timeline`,
         title: localizeString(event.title, lang),
         type: event.weight === 'major' ? 'milestone' as const : 'activity' as const,
       };

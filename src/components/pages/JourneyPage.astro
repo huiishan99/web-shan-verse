@@ -216,6 +216,10 @@ const timelineYears = [...timelineData]
       });
     };
 
+    // Activity links open the existing chronology without a standalone page.
+    // This is an initial-view hint; mode buttons retain their local behavior.
+    setMode(new URLSearchParams(location.search).get('view') === 'timeline' ? 'timeline' : 'atlas');
+
     buttons.forEach((button) => {
       button.addEventListener('click', () => {
         setMode(button.dataset.journeyMode === 'timeline' ? 'timeline' : 'atlas');
