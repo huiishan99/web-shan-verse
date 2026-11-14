@@ -25,7 +25,7 @@ extend coverage from the pinned source, or explicitly review an unavailable
 glyph, instead of silently accepting another mixture. This is bounded to current
 About copy, not a claim of universal Unicode coverage.
 
-Implemented coverage: 18 added glyphs / 7,260 bytes, covering the 394 unique Han
+Implemented coverage: 18 added glyphs / 7,260 bytes, covering the 384 unique Han
 characters in the current affected Chinese copy together with the base subset.
 All added outlines and horizontal metrics match the pinned source; repeated
 subsetting produces identical bytes. Local checks pass: 131 Astro files with

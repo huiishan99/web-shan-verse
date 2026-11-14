@@ -50,7 +50,7 @@
       "U+97F3"
     ],
     "unicodeRange": "U+53CA, U+5411, U+559C, U+5916, U+5C5E, U+5E02, U+6309, U+63A8, U+6545, U+6B22, U+6D89, U+7167, U+7EC4, U+85CF, U+8BC1, U+8F7D, U+96B6, U+97F3",
-    "requiredHanCount": 394,
+    "requiredHanCount": 384,
     "fields": [
       "intro[].zh",
       "education[].location.zh",
