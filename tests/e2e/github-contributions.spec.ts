@@ -71,7 +71,7 @@ async function pauseAfterLoad(page: Page) {
 }
 async function leaveAndReturn(page: Page) {
   await page.clock.resume();
-  await page.locator('.nav-links a[href="/about"]').click();
+  await page.locator('.nav-links a[href="/about/"]').click();
   await expect(page).toHaveURL(/\/about\/?$/);
   await page.locator('.site-header a.logo').click();
   await expect(page).toHaveURL(/\/$/);

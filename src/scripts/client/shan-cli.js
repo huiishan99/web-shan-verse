@@ -106,9 +106,9 @@
   function localizeCurrentPath(locale) {
     const basePath = normalizePath(window.location.pathname);
 
-    if (!localizedRoutes.has(basePath)) return locale === 'en' ? '/blog' : `/${locale}/blog`;
-    if (locale === 'en') return basePath;
-    return basePath === '/' ? `/${locale}` : `/${locale}${basePath}`;
+    if (!localizedRoutes.has(basePath)) return locale === 'en' ? '/blog/' : `/${locale}/blog/`;
+    if (locale === 'en') return basePath === '/' ? '/' : `${basePath}/`;
+    return basePath === '/' ? `/${locale}/` : `/${locale}${basePath}/`;
   }
 
   function setupCli() {
@@ -135,10 +135,10 @@
 
     const paths = {
       home: root.dataset.homePath || '/',
-      about: root.dataset.aboutPath || '/about',
-      projects: root.dataset.projectsPath || '/projects',
-      timeline: root.dataset.timelinePath || '/timeline',
-      blog: root.dataset.blogPath || '/blog',
+      about: root.dataset.aboutPath || '/about/',
+      projects: root.dataset.projectsPath || '/projects/',
+      timeline: root.dataset.timelinePath || '/timeline/',
+      blog: root.dataset.blogPath || '/blog/',
     };
     const lang = root.dataset.lang || 'en';
     const labels = {

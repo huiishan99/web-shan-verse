@@ -11,7 +11,7 @@ import { baseNodeDiameter, screenNodeDiameter } from '../utils/beyond-code-sizin
 
 interface GraphNode {
   id: string; category: string; type: string; title: string; subtitle: string;
-  searchText: string; artwork: string; description: string; externalUrl: string; isContext: boolean;
+  searchText: string; artwork: string; thumbnail: string; description: string; externalUrl: string; isContext: boolean;
   sizeBoost?: 0 | 1 | 2 | 3;
 }
 interface GraphEdge { id: string; source: string; target: string; relationship: string; label: string }
@@ -29,7 +29,7 @@ interface LayoutNode {
   targetX: number; targetY: number; element: HTMLButtonElement;
 }
 interface GraphData { nodes: GraphNode[]; edges: GraphEdge[]; categories: GraphCategory[]; copy: Record<string,string>; lang: string }
-interface GraphState { cleanup?: () => void; bootstrapped?: boolean }
+interface GraphState { cleanup?: () => void; bootstrapped?: boolean; root?: HTMLElement }
 interface ViewSnapshot {
   category: string; query: string; mode: string; selected: string | null;
   camera: Camera; userOffsets: [string, Point][]; positions: [string, Point][];
@@ -44,8 +44,10 @@ const globalWindow = window as typeof window & { __shanBeyondCode?: GraphState }
 const state = globalWindow.__shanBeyondCode ??= {};
 
 function setupBeyondCode() {
-  state.cleanup?.();
   const root = document.querySelector<HTMLElement>('[data-beyond]');
+  // Modules and Astro's first page-load both run on entry. Keep live gestures/history.
+  if (root && state.root === root) return;
+  state.cleanup?.();
   if (!root) return;
   const graph = root.querySelector<HTMLElement>('[data-beyond-graph]')!;
   const stage = root.querySelector<HTMLElement>('[data-beyond-stage]')!;
@@ -355,7 +357,7 @@ function setupBeyondCode() {
     button.dataset.relatedNode = node.id;
     if (node.artwork) {
       const image = document.createElement('img');
-      image.src = node.artwork; image.alt = ''; image.loading = 'lazy';
+      image.src = node.thumbnail; image.alt = ''; image.loading = 'lazy';
       button.append(image);
     }
     const text = document.createElement('span');
@@ -764,7 +766,9 @@ function setupBeyondCode() {
   state.cleanup=()=>{
     alive=false; resetTransientGesture(); cancelAnimationFrame(frame); controller.abort();
     resizeObserver.disconnect(); intersection.disconnect();
+    state.root=undefined; state.cleanup=undefined;
   };
+  state.root=root;
 }
 
 if (!state.bootstrapped) {

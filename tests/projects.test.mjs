@@ -129,9 +129,9 @@ test('project detail slugs are explicit, unique, and localized into stable route
 
   const mathBridge = projectRecords.find(({ slug }) => slug === 'vr-math-bridge');
   assert.ok(mathBridge);
-  assert.equal(getProjectPath(mathBridge, 'en'), '/projects/vr-math-bridge');
-  assert.equal(getProjectPath(mathBridge, 'zh'), '/zh/projects/vr-math-bridge');
-  assert.equal(getProjectPath(mathBridge, 'ja'), '/ja/projects/vr-math-bridge');
+  assert.equal(getProjectPath(mathBridge, 'en'), '/projects/vr-math-bridge/');
+  assert.equal(getProjectPath(mathBridge, 'zh'), '/zh/projects/vr-math-bridge/');
+  assert.equal(getProjectPath(mathBridge, 'ja'), '/ja/projects/vr-math-bridge/');
 });
 
 test('preview-first display preserves source order and canonical detail identities', () => {
@@ -147,7 +147,7 @@ test('preview-first display preserves source order and canonical detail identiti
   for (const record of display) {
     assert.equal(record, getProjectRecord('unity', record.projectIndex));
     assert.equal(record.project, unity.items[record.projectIndex]);
-    assert.equal(getProjectPath(record, 'en'), `/projects/${record.project.slug}`);
+    assert.equal(getProjectPath(record, 'en'), `/projects/${record.project.slug}/`);
   }
 });
 
@@ -177,7 +177,7 @@ test('research archive corrects the website identity while preserving its stable
     assert.ok(item.details[locale]);
     assert.ok(item.detailImages[0].alt[locale]);
     assert.ok(item.detailImages[0].caption[locale]);
-    assert.equal(getProjectPath(record, locale), `${locale === 'en' ? '' : `/${locale}`}/projects/hexo-page`);
+    assert.equal(getProjectPath(record, locale), `${locale === 'en' ? '' : `/${locale}`}/projects/hexo-page/`);
   }
 });
 

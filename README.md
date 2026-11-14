@@ -52,6 +52,8 @@ making a temporary external outage block a site deployment.
 
 Blog authoring conventions live in `docs/blog-authoring.md`. Development
 workarounds and known Astro cache behavior live in `docs/dev-notes.md`.
+Loading/navigation decisions, measurements and remaining performance debt live in
+`docs/performance.md`.
 
 ## Site statistics
 

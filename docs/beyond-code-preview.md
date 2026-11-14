@@ -15,6 +15,9 @@ Current owner requirements are in [Controls and game additions](#controls-and-ga
 and [Category legibility](#category-legibility-2026-11-14),
 which refines the [second approved expansion](#approved-expansion-2026-11-14-second-batch)
 and [the first approved expansion](#approved-expansion-2026-11-14).
+The current cover delivery and mount lifecycle are refined by
+[Loading and navigation performance](performance.md); older media/load notes
+below describe their historical checkpoints.
 The motion prototype and older publication checkpoints below record the design
 and evidence at those stages; their removed category hubs are historical.
 

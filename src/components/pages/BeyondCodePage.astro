@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../Icon.astro';
 import { categories, nodes, edges, resolveLocalized } from '../../data/beyond-code';
 import media from '../../data/beyond-code-media.json';
+import thumbnails from '../../data/beyond-code-thumbnails.json';
 import { localizePath, type Locale } from '../../i18n/config';
 
 interface Props { lang?: Locale }
@@ -41,6 +42,13 @@ const copy = {
 
 type MediaEntry = { artwork?: string; description?: string; source?: string };
 const nodeMedia = media as Record<string, MediaEntry>;
+const thumbnailImages = thumbnails.images as Record<string, { thumbnail: string }>;
+function thumbnailFor(artwork: string) {
+  if (!artwork) return '';
+  const entry = thumbnailImages[artwork];
+  if (!entry) throw new Error(`Missing collection thumbnail for ${artwork}; run npm run generate:beyond-thumbnails`);
+  return entry.thumbnail;
+}
 const localizedCategories = categories.map((category) => ({ ...category, title: resolveLocalized(category.title, lang) }));
 const graphNodes = nodes.map((node) => ({
   ...node,
@@ -48,6 +56,7 @@ const graphNodes = nodes.map((node) => ({
   subtitle: resolveLocalized(node.subtitle, lang),
   searchText: [resolveLocalized(node.title, 'en'), resolveLocalized(node.title, 'zh'), resolveLocalized(node.title, 'ja')].join(' '),
   artwork: nodeMedia[node.id]?.artwork || node.artwork || '',
+  thumbnail: thumbnailFor(nodeMedia[node.id]?.artwork || node.artwork || ''),
   description: nodeMedia[node.id]?.description || '',
   externalUrl: node.externalUrl || nodeMedia[node.id]?.source || '',
 }));
@@ -112,7 +121,7 @@ const graphData = JSON.stringify({
                 data-node={node.id} aria-label={`${node.title} · ${category.title}`} aria-pressed="false">
                 <span class="beyond-node-orbit" aria-hidden="true"></span>
                 <span class="beyond-node-art">
-                  {node.artwork ? <img src={node.artwork} alt="" loading="eager" decoding="async" draggable="false" /> : <Icon name={category.icon} size={21} />}
+                  {node.artwork ? <img src={node.thumbnail} alt="" loading="eager" decoding="async" draggable="false" /> : <Icon name={category.icon} size={21} />}
                 </span>
                 <span class="beyond-node-label"><span data-node-label-title>{node.title}</span><small>{category.title}</small></span>
                 {node.subtitle && <span class="beyond-node-subtitle">{node.subtitle}</span>}

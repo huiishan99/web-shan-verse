@@ -50,19 +50,25 @@ export function normalizePath(pathname: string): string {
 }
 
 export function localizePath(pathname: string, locale: Locale): string {
-  const basePath = normalizePath(pathname);
+  // Page links use the host's directory URLs directly, avoiding its extra 308.
+  // Keep route identity in normalizePath; queries/fragments and non-pages are opaque.
+  if (!pathname.startsWith('/') || pathname.startsWith('//')) return pathname;
+  const suffixIndex = pathname.search(/[?#]/);
+  const route = suffixIndex < 0 ? pathname : pathname.slice(0, suffixIndex);
+  const suffix = suffixIndex < 0 ? '' : pathname.slice(suffixIndex);
+  const basePath = normalizePath(route);
   const isBlogSubpath = basePath.startsWith('/blog/');
   const isProjectSubpath = basePath.startsWith('/projects/');
 
-  if (!localizedRoutes.has(basePath) && !isBlogSubpath && !isProjectSubpath) {
-    return basePath;
+  if ((!localizedRoutes.has(basePath) && !isBlogSubpath && !isProjectSubpath)
+      || /\.[a-z\d]+$/i.test(basePath)) {
+    return pathname;
   }
 
-  if (locale === defaultLocale) {
-    return basePath;
-  }
-
-  return basePath === '/' ? `/${locale}` : `/${locale}${basePath}`;
+  const localizedPath = locale === defaultLocale
+    ? basePath
+    : basePath === '/' ? `/${locale}` : `/${locale}${basePath}`;
+  return `${localizedPath === '/' ? '/' : `${localizedPath}/`}${suffix}`;
 }
 
 export function localizeString(value: LocalizedString | undefined, locale: Locale): string {

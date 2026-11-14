@@ -8,6 +8,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "update:github": "node scripts/update-github-contributions.mjs",
+    "generate:beyond-thumbnails": "node --experimental-strip-types scripts/generate-beyond-code-thumbnails.mjs",
     "check": "astro check",
     "lint": "eslint . --max-warnings=0",
     "test": "node --experimental-strip-types --test tests/*.test.mjs",
@@ -52,6 +53,7 @@
     "eslint-plugin-astro": "^3.2.1",
     "globals": "^17.7.0",
     "parse5": "7.3.0",
+    "sharp": "0.35.5",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.65.0"
   },

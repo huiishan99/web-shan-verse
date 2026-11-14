@@ -1,5 +1,5 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
-import { defaultLocale, localeNames, translatedLocales, type Locale } from '../i18n/config';
+import { defaultLocale, localeNames, localizePath, translatedLocales, type Locale } from '../i18n/config';
 import {
   getBlogPostAlternateLocales,
   resolveBlogPostSlug,
@@ -144,7 +144,7 @@ export function getInformativeBlogTags(post: BlogPost): string[] {
 
 export function getBlogPostPath(post: BlogPost, locale: Locale): string {
   const path = `/blog/${getPostSlug(post)}`;
-  return locale === defaultLocale ? path : `/${locale}${path}`;
+  return localizePath(path, locale);
 }
 
 export function getBlogIndexPagePath(
@@ -158,7 +158,7 @@ export function getBlogIndexPagePath(
       ? `/blog/kind/${blogKindSlugs[kind]}`
       : `/blog/kind/${blogKindSlugs[kind]}/page/${page}`;
 
-  return locale === defaultLocale ? path : `/${locale}${path}`;
+  return localizePath(path, locale);
 }
 
 export function getBlogPostsForIndexKind(posts: BlogPost[], kind: BlogIndexKind): BlogPost[] {
@@ -319,12 +319,12 @@ export function getTaxonomySlug(value: string): string {
 
 export function getBlogCategoryPath(category: string, locale: Locale): string {
   const path = `/blog/category/${getTaxonomySlug(category)}`;
-  return locale === defaultLocale ? path : `/${locale}${path}`;
+  return localizePath(path, locale);
 }
 
 export function getBlogTagPath(tag: string, locale: Locale): string {
   const path = `/blog/tag/${getTaxonomySlug(tag)}`;
-  return locale === defaultLocale ? path : `/${locale}${path}`;
+  return localizePath(path, locale);
 }
 
 export function getPostLanguageLabel(post: BlogPost): string | undefined {

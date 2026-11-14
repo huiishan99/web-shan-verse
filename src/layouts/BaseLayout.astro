@@ -26,7 +26,7 @@ const t = useTranslations(lang);
 const metaDescription = description ?? t.meta.description;
 const siteUrl = Astro.site ?? new URL(Astro.url.origin);
 const pageTitle = title === 'SHAN-VERSE' ? title : `${title} | SHAN-VERSE`;
-const canonicalUrl = new URL(Astro.url.pathname, siteUrl).toString();
+const canonicalUrl = new URL(localizePath(Astro.url.pathname, lang), siteUrl).toString();
 const previewImage = new URL('/images/header_galaxy.jpg', siteUrl).toString();
 const currentPath = Astro.url.pathname;
 const availableAlternateLocales = alternateLocales.length > 0 ? alternateLocales : [lang];
@@ -73,6 +73,11 @@ const defaultAlternateUrl = new URL(
   
   <title>{pageTitle}</title>
   <ClientRouter fallback="swap" />
+  <script>
+    if (import.meta.env.DEV && new URLSearchParams(location.search).has('site-profile')) {
+      import('../scripts/client/site-profile.js').then(({ setupSiteProfile }) => setupSiteProfile());
+    }
+  </script>
 </head>
 <body>
   <!-- 互动式星空背景 -->

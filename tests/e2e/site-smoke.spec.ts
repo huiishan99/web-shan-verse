@@ -91,9 +91,26 @@ test('home page loads its core landmarks without uncaught errors', async ({ page
   await expect(page.locator('main h1')).toHaveCount(1);
   await expect(page.locator('main h1')).toBeVisible();
   const publicationsFeature = page.locator('.featured-grid .featured-card').first();
-  await expect(publicationsFeature).toHaveAttribute('href', '/projects#publications');
+  await expect(publicationsFeature).toHaveAttribute('href', '/projects/#publications');
   await expect(publicationsFeature.locator('h3')).toHaveText('Publications');
   expect(pageErrors).toEqual([]);
+});
+
+test('primary navigation and locale URLs directly address the canonical directory pages', async ({ page }) => {
+  for (const prefix of ['', '/zh', '/ja']) {
+    await page.goto(`${prefix}/`);
+    for (const path of ['about', 'projects', 'blog']) {
+      await expect(page.locator(`.nav-links a[href="${prefix}/${path}/"]`)).toHaveCount(1);
+    }
+    await expect(page.locator('.featured-card').first()).toHaveAttribute('href', `${prefix}/projects/#publications`);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://shan-verse.com${prefix}/`);
+    for (const locale of ['en', 'zh', 'ja']) {
+      const localizedRoot = locale === 'en' ? '/' : `/${locale}/`;
+      await expect(page.locator(`link[rel="alternate"][hreflang="${locale}"]`))
+        .toHaveAttribute('href', `https://shan-verse.com${localizedRoot}`);
+      await expect(page.locator(`.language-link[lang="${locale}"]`)).toHaveAttribute('href', localizedRoot);
+    }
+  }
 });
 
 test('GitHub activity keeps the designed calendar while contribution data loads', async ({ page }) => {
@@ -295,7 +312,7 @@ test('music player can play, survive a client-side navigation, and pause', async
   await expect(toggle).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('[data-music-audio]')).toHaveJSProperty('paused', false);
 
-  await page.locator('.nav-links a[href="/about"]').click();
+  await page.locator('.nav-links a[href="/about/"]').click();
   await expect(page).toHaveURL(/\/about\/?$/);
   await expect(page.locator('[data-music-audio]')).toHaveJSProperty('paused', false);
 
@@ -400,7 +417,7 @@ test('project cards keep one lazy detail dialog while preserving the existing in
 
   const vrCard = page.locator('.project-card').filter({ hasText: 'Digital Cabin HMI Prototype' });
   const vrTrigger = vrCard.getByRole('link', { name: 'View Details' });
-  await expect(vrTrigger).toHaveAttribute('href', '/projects/vr-car-scene-prototype');
+  await expect(vrTrigger).toHaveAttribute('href', '/projects/vr-car-scene-prototype/');
 
   await vrTrigger.click();
   await expect(dialog).toBeVisible();
@@ -448,7 +465,7 @@ test('project cards keep one lazy detail dialog while preserving the existing in
   const mathBridgeTrigger = mathBridgeCard.getByRole('link', { name: 'View Details' });
   const mathBridgeAwardLink = mathBridgeCard.getByRole('link', { name: 'View Award' });
 
-  await expect(mathBridgeTrigger).toHaveAttribute('href', '/projects/vr-math-bridge');
+  await expect(mathBridgeTrigger).toHaveAttribute('href', '/projects/vr-math-bridge/');
   await expect(mathBridgeCard.getByRole('link', { name: 'View Project Page' })).toHaveAttribute(
     'href',
     'https://web-publications.vercel.app/publications/vr-math-bridge/'
@@ -596,14 +613,14 @@ for (const locale of ['', '/zh', '/ja']) {
       await expect(page.locator('#school .project-card')).toHaveCount(10);
       await page.locator('.category-routes').screenshot({ path: testInfo.outputPath(`categories-${viewport.width}.png`) });
       await page.locator('.category-route-item[href="#unity"]').click();
-      const cabinCard = page.locator('#unity .project-card').filter({ has: page.locator(`a.project-detail-trigger[href="${locale}/projects/vr-car-scene-prototype"]`) });
+      const cabinCard = page.locator('#unity .project-card').filter({ has: page.locator(`a.project-detail-trigger[href="${locale}/projects/vr-car-scene-prototype/"]`) });
       await expect(cabinCard.locator('.project-image img')).toHaveCSS('object-fit', 'cover');
       await cabinCard.screenshot({ path: testInfo.outputPath(`cabin-card-${viewport.width}.png`) });
       await expect(page).toHaveURL(/#unity$/);
       await expect(page.locator('#unity')).toBeInViewport();
       await page.locator('.category-route-item[href="#school"]').click();
       await expect(page).toHaveURL(/#school$/);
-      const detailLink = page.locator(`a.project-detail-trigger[href="${locale}/projects/numerical-modeling-and-simulations"]`);
+      const detailLink = page.locator(`a.project-detail-trigger[href="${locale}/projects/numerical-modeling-and-simulations/"]`);
       await detailLink.click();
       const dialog = page.locator('[data-project-detail-dialog]');
       await expect(dialog).toBeVisible();
@@ -669,7 +686,7 @@ for (const locale of ['', '/zh', '/ja']) {
         if (layout.imageBottom !== undefined) expect(layout.markerTop).toBeGreaterThanOrEqual(layout.imageBottom - 1);
         expect(layout.contentTop).toBeGreaterThanOrEqual(layout.markerBottom - 1);
       }
-      const cabinCard = selectedCards.filter({ has: page.locator(`a[href="${locale}/projects/vr-car-scene-prototype"]`) });
+      const cabinCard = selectedCards.filter({ has: page.locator(`a[href="${locale}/projects/vr-car-scene-prototype/"]`) });
       const image = cabinCard.locator('.project-image img');
       await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth === 1460 && element.naturalHeight === 973)).toBe(true);
       await expect(image).toHaveCSS('object-fit', 'cover');

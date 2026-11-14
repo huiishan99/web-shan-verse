@@ -168,7 +168,7 @@ for (const delayedStatus of [200, 503]) {
         heldRead = route;
         return;
       }
-      await respondWithStats(route, payload?.path === '/about' ? 3 : 1);
+      await respondWithStats(route, payload?.path === '/about/' ? 3 : 1);
     });
 
     try {
@@ -180,7 +180,7 @@ for (const delayedStatus of [200, 503]) {
 
       // Real Astro navigation issues a newer POST while the earlier GET is pending.
       await page.clock.resume();
-      await page.locator('.nav-links a[href="/about"]').click();
+      await page.locator('.nav-links a[href="/about/"]').click();
       await expect(page).toHaveURL(/\/about\/?$/);
       await expectOnline(page, '3', 1);
       await pauseAfterLoad(page);
@@ -196,7 +196,7 @@ for (const delayedStatus of [200, 503]) {
 
       await expectOnline(page, '3', 1);
       await expect(page.locator('[data-site-stats]')).not.toHaveClass(/is-unavailable/);
-      expect(requests.some(({ method, path }) => method === 'POST' && path === '/about')).toBe(true);
+      expect(requests.some(({ method, path }) => method === 'POST' && path === '/about/')).toBe(true);
     } finally {
       if (heldRead && !released) await heldRead.abort().catch(() => {});
     }
@@ -227,7 +227,7 @@ test('Astro navigation restores cached counts while a fresh pageview is pending 
     await page.evaluate(() => Reflect.set(window, 'siteStatsNavigationMarker', 'same-document'));
 
     await page.clock.resume();
-    await page.locator('.nav-links a[href="/about"]').click();
+    await page.locator('.nav-links a[href="/about/"]').click();
     await expect(page).toHaveURL(/\/about\/?$/);
     await expectOnline(page, '2', 1);
     await pauseAfterLoad(page);
@@ -249,7 +249,7 @@ test('Astro navigation restores cached counts while a fresh pageview is pending 
     await page.clock.fastForward(15_000);
     await expect.poll(() => requests.filter(({ method }) => method === 'GET').length).toBe(readsBeforeTick + 1);
     await expectOnline(page, '3');
-    expect(requests.filter(({ event }) => event === 'pageview').map(({ path }) => path)).toEqual(['/', '/about', '/']);
+    expect(requests.filter(({ event }) => event === 'pageview').map(({ path }) => path)).toEqual(['/', '/about/', '/']);
   } finally {
     if (heldReturn && !released) await heldReturn.abort().catch(() => {});
   }
