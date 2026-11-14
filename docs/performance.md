@@ -88,6 +88,18 @@ Astro's page-load plus two animation frames, not all images or completed GPU pai
 
 ## Remaining debt, ordered by evidence
 
+- Dependency maintenance is a separate actionable debt. The 2026-11-14 lockfile
+  audit reports 14 affected package entries (2 high, 12 moderate), not 14 distinct
+  advisories. `--omit=dev` reports Astro 7.3.8, Undici 8.11.2 and Zod 4.6.5; their
+  patched versions 7.4.7 / 8.12.2 / 4.6.6 are available within existing ranges.
+  These packages belong to the static build/toolchain here, not a deployed Astro
+  Node server or Worker imports. That bounds exposure but does not establish
+  non-exploitability. No evidence connects the advisories to the loading issue.
+  Plan a separate verified lockfile refresh; `audit fix --force` also proposes
+  downgrading parts of the lint chain, so do not apply it blindly. Primary reports:
+  [Astro](https://github.com/advisories/GHSA-r3h5-4585-7x3w),
+  [Undici](https://github.com/advisories/GHSA-2m5v-pch6-74hx),
+  [Zod](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5).
 - First-load fonts depend on one external render-blocking stylesheet with six
   families. Used glyphs determine actual font requests. Font delivery deserves
   isolated cold-cache measurement and visual verification before changing it.
