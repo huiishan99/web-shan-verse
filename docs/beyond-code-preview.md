@@ -11,7 +11,8 @@ on 2026-11-12. The constellation checkpoint is `7045510`. Reuse the site's
 near-black background, brass accents, serif typography, and existing interest
 content. No new runtime dependency or backend is required.
 
-Current owner requirements are in [Timeline visibility](#timeline-visibility-2026-11-15),
+Current owner requirements are in [Link contact](#link-contact-2026-11-15),
+[Timeline visibility](#timeline-visibility-2026-11-15),
 [Connected exploration](#connected-exploration-2026-11-14),
 [Controls and game additions](#controls-and-game-additions-2026-11-14)
 and [Category legibility](#category-legibility-2026-11-14),
@@ -22,6 +23,36 @@ The current cover delivery and mount lifecycle are refined by
 below describe their historical checkpoints.
 The motion prototype and older publication checkpoints below record the design
 and evidence at those stages; their removed category hubs are historical.
+
+## Link contact (2026-11-15)
+
+Owner outcome: retain undirected lines and make them touch the visible bubbles.
+The previous orbit removal left a rendering defect: line clipping still used
+image radius +6px and another 3px gap, so each endpoint floated 9px from the rim.
+The removed decoration and the physical collision clearance are different concerns.
+
+Render endpoints at `nodeSize / 2`, with an explicit zero extra gap. The existing
+0.9px round cap meets the artwork's outer 1px border; the DOM image remains above
+the canvas. Keep physics radius +6px, contact padding, hit targets, caption spacing,
+forces, size bounds, colors/opacities, data and media unchanged. No arrows or new
+people/topics are added. The generic clipping helper's optional gap stays intact.
+
+Acceptance: actual canvas endpoints meet actual artwork circles within subpixel
+rounding at desktop/mobile and selected/zoomed states. Regression evidence must
+exercise the renderer's call, not just the helper in isolation; the old build
+should fail the contact check. Existing overlap/zero-length segment suppression
+and collision/layout tests must still pass.
+
+### Link contact review packet
+
+| Item | Result / evidence boundary |
+| --- | --- |
+| Goal / behavior | Straight undirected lines now meet the visible cover rim instead of stopping at a deleted orbit. No content, relationship direction or artwork change. |
+| Architecture / invariants | Paint clipping uses image radius and zero gap; physical/caption clearance and the generic helper's optional gap are independent. Existing forces, 106 nodes/49 edges, image bounds, styles, media and lifecycle remain unchanged. No dependency, asset or RAF added. |
+| Evidence | Actual-canvas regression fails against the old build at 9.005px desktop and 9.002px mobile. The fixed build passes both cases through filtering, selection and zoom, including artwork smaller than its 44px hit target. DPR1/2 transforms are measured against actual DOM artwork border boxes. Desktop/mobile screenshots independently confirm visible contact. |
+| Validation / regression | 144 files checked without diagnostics; lint passes; 206 unit tests pass with the existing Windows symlink EPERM skip; 294 pages build and pass HTML checks; 15 focused browser cases pass. Existing 40/35px physical layout gates and overlapping/invalid/zero-length clipping checks remain intact. |
+| Assumptions / limits | The artwork border box defines the circle, including the Ghibli logo's internal padding. Canvas centerline tolerance is under 1 CSS pixel; screenshot review covers antialiasing/round-cap appearance on this workstation, not every GPU. |
+| Counterexamples / trajectory | Under-44px images, unequal selected sizes, compact DPR2 and static zoom are covered. Click-target or collision radii must not replace visual radii. No unresolved blocker; continue the existing renderer. Evidence is in `2026/11/15/beyond-link-contact/`. |
 
 ## Timeline visibility (2026-11-15)
 

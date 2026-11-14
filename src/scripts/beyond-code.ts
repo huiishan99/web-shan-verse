@@ -586,13 +586,13 @@ function setupBeyondCode() {
       }
     }
 
-    // One visual grammar: quiet straight threads, always outside image rings.
+    // Clip to the visible artwork rim; collision/caption padding is independent.
     const emphasis = drag?.node ?? hovered ?? keyboardFocus ?? selected;
     const drawLink = (edge: {source:string;target:string}) => {
       const from = screenPoints.get(edge.source); const to = screenPoints.get(edge.target);
       if (!from || !to) return;
-      const radius = (id: string) => nodeSize({id}) / 2 + 6;
-      const segment = segmentBetweenCircles(from, to, radius(edge.source), radius(edge.target), 3);
+      const imageRadius = (id: string) => nodeSize({id}) / 2;
+      const segment = segmentBetweenCircles(from, to, imageRadius(edge.source), imageRadius(edge.target), 0);
       if (!segment) return;
       const active = emphasis === edge.source || emphasis === edge.target;
       const crossCategory = nodeById.get(edge.source)!.category !== nodeById.get(edge.target)!.category;

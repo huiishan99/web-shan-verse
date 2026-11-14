@@ -1,7 +1,7 @@
 /** @typedef {{x:number,y:number}} LinkPoint */
 
 /**
- * A screen-space straight segment outside two visible circular orbits.
+ * A screen-space straight segment clipped to the supplied circle boundaries.
  * Gap is clearance beyond each radius. Suppress overlapping/zero-length or
  * invalid geometry rather than drawing a reversed segment through the bubbles.
  * @param {LinkPoint} from
