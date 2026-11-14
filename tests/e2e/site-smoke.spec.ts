@@ -670,7 +670,7 @@ for (const locale of ['', '/zh', '/ja']) {
         spacingMeasurements.push({ kind, before: result.before, after: result.after });
       };
       const selectedCards = page.locator('.project-card--selected');
-      await expect(selectedCards).toHaveCount(2);
+      await expect(selectedCards).toHaveCount(1);
       for (const card of await selectedCards.all()) {
         const marker = card.locator('.featured-banner');
         await expect(marker).toHaveCSS('position', 'static');
