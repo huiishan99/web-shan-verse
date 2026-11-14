@@ -1,6 +1,33 @@
 import { expect, test, type Page } from '@playwright/test';
 
 type FontProbe = { family: string; weight: number; style?: string; text: string };
+
+test('Chinese About copy renders Han glyphs without a second CJK typeface', async ({ page }) => {
+  await page.goto('/zh/about/');
+  await page.evaluate(() => document.fonts.ready.then(() => undefined));
+  const session = await page.context().newCDPSession(page);
+  await session.send('DOM.enable');
+  await session.send('CSS.enable');
+  try {
+    const { root } = await session.send('DOM.getDocument');
+    const selector = '.intro-text, .intro-text .highlight, .timeline-location, .timeline-desc, .language-level, .world-entry-description, .world-entry-link';
+    const { nodeIds } = await session.send('DOM.querySelectorAll', { nodeId: root.nodeId, selector });
+    expect(nodeIds.length).toBeGreaterThan(10);
+    for (const nodeId of nodeIds) {
+      const { fonts } = await session.send('CSS.getPlatformFontsForNode', { nodeId });
+      expect(fonts.length).toBeGreaterThan(0);
+      // A computed family list cannot reveal per-character fallback. Inspect
+      // Chromium's actual glyph providers, retaining the original Latin face.
+      for (const font of fonts) {
+        expect(font.isCustomFont, JSON.stringify(font)).toBe(true);
+        expect(font.postScriptName, JSON.stringify(font)).toMatch(/^(ZhuqueFangsong|Crimson-?Pro)/);
+      }
+    }
+  } finally {
+    await session.detach();
+  }
+});
+
 const latinProbes: FontProbe[] = [
   { family: 'Cinzel', weight: 400, text: 'BEYOND CODE' },
   { family: 'Cinzel', weight: 600, text: 'Signal Map' },
@@ -127,13 +154,14 @@ test('local fonts and multilingual stacks survive SPA locale changes and unfamil
   await page.locator('.nav-links a[href="/zh/about/"]').click();
   await expect(page).toHaveURL(/\/zh\/about\/$/);
   expect(await page.locator('.intro-text').first().evaluate((element) => getComputedStyle(element).fontFamily))
-    .toContain('Zhuque Fangsong About');
+    .toContain('Zhuque Fangsong About Supplement');
   await page.evaluate(() => document.fonts.ready.then(() => undefined));
   await page.locator('.language-link[lang="ja"]').click();
   await expect(page).toHaveURL(/\/ja\/about\/$/);
   const japaneseAbout = await page.locator('.intro-text').first().evaluate((element) => getComputedStyle(element).fontFamily);
   expect(japaneseAbout).toContain('Zhuque Fangsong About');
   expect(japaneseAbout).toContain('Shippori Mincho');
+  expect(japaneseAbout).not.toContain('Zhuque Fangsong About Supplement');
   await page.evaluate(() => document.fonts.ready.then(() => undefined));
   await page.locator('a[href="/ja/beyond-code/"]').click();
   await expect(page).toHaveURL(/\/ja\/beyond-code\/$/);

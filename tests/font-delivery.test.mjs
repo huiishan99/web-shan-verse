@@ -134,3 +134,23 @@ test('the five existing Zhuque subsets stay byte-for-byte unchanged', async () =
     assert.equal(hash(await readFile(path.join(publicDirectory, 'fonts', file))), expectedHash);
   }
 });
+
+test('the Chinese About glyph supplement is bounded and matches its declared coverage', async () => {
+  const supplement = JSON.parse(await readFile(new URL('../src/data/about-font-supplement.json', import.meta.url), 'utf8'));
+  const aboutPage = await readFile(new URL('../src/components/pages/AboutPage.astro', import.meta.url), 'utf8');
+  assert.match(supplement.font.href, /^\/fonts\/ZhuqueFangsong-About-Supplement\.[a-f0-9]{16}\.woff2$/);
+  const bytes = await readFile(path.join(publicDirectory, supplement.font.href.slice(1)));
+  assert.equal(bytes.subarray(0, 4).toString('ascii'), 'wOF2');
+  assert.equal(hash(bytes), supplement.font.sha256);
+  assert.ok(supplement.font.href.includes(hash(bytes).slice(0, 16)));
+  assert.equal(bytes.byteLength, supplement.font.bytes);
+  assert.ok(bytes.byteLength < 12 * 1024, 'A complementary subset should not become a full font download');
+  assert.deepEqual([...supplement.coverage.characters].map(character => `U+${character.codePointAt(0).toString(16).toUpperCase()}`), supplement.coverage.unicodes);
+  const face = fontFaces(aboutPage).find(entry => entry['font-family'] === `'${supplement.family}'`);
+  assert.ok(face);
+  assert.equal(sourceURL(face), supplement.font.href);
+  assert.equal(face['unicode-range'], supplement.coverage.unicodeRange);
+  assert.equal(face['font-style'], supplement.style);
+  assert.equal(face['font-weight'], String(supplement.weight));
+  assert.equal(face['font-display'], 'swap');
+});

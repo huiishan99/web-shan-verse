@@ -291,6 +291,19 @@ function getInstitutionMonogram(name: LocalizedString) {
 
 
 <style>
+  @font-face {
+    font-family: 'Zhuque Fangsong About Supplement';
+    src: url('/fonts/ZhuqueFangsong-About-Supplement.939f0e01716fffb7.woff2') format('woff2');
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    unicode-range: U+53CA, U+5411, U+559C, U+5916, U+5C5E, U+5E02, U+6309, U+63A8, U+6545, U+6B22, U+6D89, U+7167, U+7EC4, U+85CF, U+8BC1, U+8F7D, U+96B6, U+97F3;
+  }
+
+  :global(html[lang='zh']) .about-layout {
+    --font-about-copy: 'Crimson Pro', 'Zhuque Fangsong About', 'Zhuque Fangsong About Supplement', 'Noto Serif SC', 'Songti SC', SimSun;
+  }
+
   .page-header {
     text-align: center;
     margin-bottom: var(--space-xl);

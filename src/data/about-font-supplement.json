@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "family": "Zhuque Fangsong About Supplement",
+  "style": "normal",
+  "weight": 400,
+  "source": {
+    "releaseUrl": "https://github.com/TrionesType/zhuque/releases/tag/v0.212",
+    "archiveUrl": "https://github.com/TrionesType/zhuque/releases/download/v0.212/ZhuqueFangsong-v0.212.zip",
+    "archiveSha256": "bb8b661a7643d2296a72d9d10530a00949419c4e527fb61783f73c2ba1a8c062",
+    "archiveBytes": 5743932,
+    "ttfFile": "ZhuqueFangsong-Regular.ttf",
+    "ttfSha256": "558c62730844fe54ba220146ed62f859d4e2880188d92d985f8921c6e3743bc4",
+    "ttfBytes": 8824084,
+    "version": "Version 0.212",
+    "licenseHref": "/fonts/ZhuqueFangsong-OFL.txt"
+  },
+  "base": {
+    "href": "/fonts/ZhuqueFangsong-About.woff2",
+    "sha256": "fe0732100d0cf3e7c1a48bf290aebd456cf18a4f65d9c245d26425d9f85ec54c",
+    "bytes": 222536
+  },
+  "font": {
+    "href": "/fonts/ZhuqueFangsong-About-Supplement.939f0e01716fffb7.woff2",
+    "sha256": "939f0e01716fffb700b6ecda2cca8656ff6a86280cbfbefd2e723f526150ca60",
+    "bytes": 7260,
+    "internalFamily": "Zhuque Fangsong (technical preview)",
+    "postScriptName": "ZhuqueFangsong-Regular",
+    "version": "Version 0.212"
+  },
+  "coverage": {
+    "characters": "及向喜外属市按推故欢涉照组藏证载隶音",
+    "unicodes": [
+      "U+53CA",
+      "U+5411",
+      "U+559C",
+      "U+5916",
+      "U+5C5E",
+      "U+5E02",
+      "U+6309",
+      "U+63A8",
+      "U+6545",
+      "U+6B22",
+      "U+6D89",
+      "U+7167",
+      "U+7EC4",
+      "U+85CF",
+      "U+8BC1",
+      "U+8F7D",
+      "U+96B6",
+      "U+97F3"
+    ],
+    "unicodeRange": "U+53CA, U+5411, U+559C, U+5916, U+5C5E, U+5E02, U+6309, U+63A8, U+6545, U+6B22, U+6D89, U+7167, U+7EC4, U+85CF, U+8BC1, U+8F7D, U+96B6, U+97F3",
+    "requiredHanCount": 394,
+    "fields": [
+      "intro[].zh",
+      "education[].location.zh",
+      "education[].description.zh",
+      "experience[].description.zh",
+      "awards[].description.zh",
+      "languages[].level.zh",
+      "ui.zh.about.worldDescription",
+      "ui.zh.about.worldCta"
+    ]
+  },
+  "build": {
+    "fontToolsVersion": "4.62.1",
+    "brotliVersion": "1.2.0",
+    "options": [
+      "--unicodes=U+53CA,U+5411,U+559C,U+5916,U+5C5E,U+5E02,U+6309,U+63A8,U+6545,U+6B22,U+6D89,U+7167,U+7EC4,U+85CF,U+8BC1,U+8F7D,U+96B6,U+97F3",
+      "--flavor=woff2",
+      "--layout-features=*",
+      "--no-recalc-timestamp"
+    ],
+    "command": "python -m fontTools.subset ZhuqueFangsong-Regular.ttf --unicodes=U+53CA,U+5411,U+559C,U+5916,U+5C5E,U+5E02,U+6309,U+63A8,U+6545,U+6B22,U+6D89,U+7167,U+7EC4,U+85CF,U+8BC1,U+8F7D,U+96B6,U+97F3 --flavor=woff2 --layout-features=* --no-recalc-timestamp --output-file=ZhuqueFangsong-About-Supplement.939f0e01716fffb7.woff2"
+  }
+}

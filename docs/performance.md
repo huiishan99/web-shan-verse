@@ -1,5 +1,43 @@
 # Loading and navigation performance
 
+## Chinese About copy glyph coverage (active, 2026-11-14)
+
+New ALPS work-experience text exposed missing Han glyphs in the existing
+740-character Zhuque About subset. Those characters fell through to Noto Serif
+SC inside otherwise Fangsong words. This is a coverage issue, independent of
+the successful same-origin font-delivery migration below.
+
+Keep the five existing subsets byte-identical. Add a small complementary subset
+from the exact same Zhuque v0.212 source, with unchanged outlines and metrics.
+Only the Chinese About layout inserts its distinct family alias between the
+original About face and Noto. This narrowly supersedes the stack-parity invariant
+below for that layout; English, Japanese, other pages and all Google faces retain
+their existing stacks. The source hashes, included characters, tool options and
+output identity live in `src/data/about-font-supplement.json`; the adjacent
+existing OFL remains applicable. Regeneration uses the pinned release and the
+manifest's standard `pyftsubset` options, without a new build/runtime dependency.
+
+Verification must inspect Chromium's actual glyph providers for rendered Chinese
+About copy, rather than just its computed family list or `document.fonts.check`.
+The regression fails before the fix because Noto renders missing characters.
+Future About additions outside the base and supplement should fail this check:
+extend coverage from the pinned source, or explicitly review an unavailable
+glyph, instead of silently accepting another mixture. This is bounded to current
+About copy, not a claim of universal Unicode coverage.
+
+Implemented coverage: 18 added glyphs / 7,260 bytes, covering the 394 unique Han
+characters in the current affected Chinese copy together with the base subset.
+All added outlines and horizontal metrics match the pinned source; repeated
+subsetting produces identical bytes. Local checks pass: 131 Astro files with
+zero diagnostics, ESLint, seven targeted unit tests, 294-page build/HTML validation
+and three browser cases including actual glyph providers, SPA locale switching
+and the responsive resume layout. The pre-fix counterexample reports 13 glyphs
+rendered by Noto in one paragraph; the same check passes after coverage is added.
+Screenshots and the failing log are retained in
+`2026/11/14/about-font-consistency/`. Independent scope/coverage review found no
+blocker. Rollback removes the additional face and local stack override without
+rewriting any original font.
+
 ## Font delivery and security follow-up (active, 2026-11-14)
 
 Owner outcome: optimize font loading and apply dependency security patches while
