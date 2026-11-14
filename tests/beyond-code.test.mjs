@@ -36,6 +36,8 @@ test('the constellation preserves each existing interest once without adding inf
       assert.equal(node.previewProvider, item.previewProvider);
       assert.equal(node.itunesCountry, item.itunesCountry);
       assert.equal(node.audioSrc, item.audioSrc);
+      assert.equal(node.type, item.kind ?? 'work');
+      if (item.id) assert.equal(node.id, item.id);
     }
   }
   assert.deepEqual([...seen].sort(), [...expected.keys()].sort());
@@ -45,7 +47,7 @@ test('categories and nodes have unique identities, explicit roles and readable l
   assert.equal(categoryById.size, categories.length, 'Duplicate category ID');
   assert.equal(nodeById.size, nodes.length, 'Duplicate node ID');
   assert.equal(categories.length, interests.length);
-  const roles = new Set(['work', 'person', 'group', 'studio', 'topic']);
+  const roles = new Set(['work', 'person', 'group', 'studio', 'topic', 'series']);
 
   for (const category of categories) {
     assert.match(category.id, /^[a-z][a-z0-9-]*$/);
@@ -59,7 +61,6 @@ test('categories and nodes have unique identities, explicit roles and readable l
     assert.ok(roles.has(node.type), `Unrecognized node role: ${node.id}`);
     assert.equal(typeof node.isContext, 'boolean', `Unspecified collection/context role: ${node.id}`);
     for (const locale of locales) assert.ok(resolveLocalized(node.title, locale).trim());
-    if (['person', 'group', 'studio'].includes(node.type)) assert.equal(node.isContext, true);
     if (node.externalUrl) {
       const url = new URL(node.externalUrl);
       assert.equal(url.protocol, 'https:');
@@ -69,8 +70,52 @@ test('categories and nodes have unique identities, explicit roles and readable l
   }
 });
 
+test('only existing favorites and the exact user-approved expansion enter the collection', () => {
+  const existing = [
+    'games-the-legend-of-zelda-breath-of-the-wild', 'games-baldurs-gate-3',
+    'games-stardew-valley', 'games-persona-5', 'games-crusader-kings-iii',
+    'games-cyberpunk-2077', 'games-disco-elysium-the-final-cut',
+    'games-uncharted-waters-new-horizons', 'games-resident-evil-4',
+    'games-the-legend-of-sword-and-fairy-4',
+    'movies-coco', 'movies-ratatouille', 'movies-flipped', 'movies-howls-moving-castle',
+    'movies-the-truman-show', 'movies-interstellar', 'movies-the-lord-of-the-rings',
+    'movies-the-reluctant-fundamentalist', 'movies-maharaja',
+    'drama-love-death-robots', 'drama-cyberpunk-edgerunners', 'drama-the-queens-gambit',
+    'drama-gin-tama', 'drama-doraemon', 'books-les-miserables',
+    'books-a-thousand-splendid-suns', 'books-to-live', 'books-tristan-and-iseult',
+    'books-kinder-und-hausmarchen', 'music-bohemian-rhapsody',
+    'music-we-are-the-champions', 'music-lemon', 'foods-ramen', 'foods-sushi',
+    'foods-hot-pot', 'hobbies-traveling', 'hobbies-reading', 'hobbies-gaming',
+    'hobbies-board-gaming', 'topics-analytical-psychology', 'topics-existentialism',
+    'topics-cosmology', 'topics-socionics',
+  ];
+  const approved = [
+    'music-fujii-kaze', 'music-matsuri', 'music-kirari', 'topics-carl-jung',
+    'music-another-one-bites-the-dust', 'movies-disney', 'movies-spider-man-2002',
+    'movies-ben-hur-1959', 'foods-jiro-ramen', 'foods-otoro', 'foods-yakiniku',
+    'foods-wagyu', 'foods-beef-tongue', 'movies-the-fellowship-of-the-ring',
+    'movies-the-two-towers', 'movies-the-return-of-the-king',
+  ];
+  assert.deepEqual(nodes.filter((node) => !node.isContext).map((node) => node.id).sort(),
+    [...existing, ...approved].sort());
+  assert.deepEqual(nodes.filter((node) => node.isContext).map((node) => node.id).sort(),
+    ['group-queen', 'person-kenshi-yonezu', 'studio-ghibli', 'studio-pixar']);
+  assert.equal(nodeById.has('book-howls-moving-castle'), false);
+  assert.equal(nodeById.has('person-diana-wynne-jones'), false);
+  for (const [id, type] of [
+    ['music-fujii-kaze', 'person'], ['topics-carl-jung', 'person'],
+    ['movies-disney', 'studio'], ['movies-the-lord-of-the-rings', 'series'],
+  ]) {
+    assert.equal(nodeById.get(id).type, type);
+    assert.equal(nodeById.get(id).isContext, false);
+  }
+  assert.equal(nodeById.get('movies-spider-man-2002').wikiPage, 'Spider-Man (2002 film)');
+  assert.equal(nodeById.get('movies-ben-hur-1959').wikiPage, 'Ben-Hur (1959 film)');
+});
+
 test('graph edges have valid endpoints, semantic relations and traceable provenance', () => {
-  const relations = new Set(['performed-by', 'written-by', 'adapted-from', 'produced-by', 'shared-universe']);
+  const relations = new Set(['performed-by', 'written-by', 'adapted-from', 'produced-by',
+    'shared-universe', 'associated-with', 'part-of', 'style-of', 'ingredient-of']);
   const edgeIds = new Set();
   const edgeFacts = new Set();
 
@@ -87,48 +132,73 @@ test('graph edges have valid endpoints, semantic relations and traceable provena
     assert.equal(edgeFacts.has(fact), false, `Duplicate relation: ${edge.id}`);
     edgeFacts.add(fact);
     for (const locale of locales) assert.ok(resolveLocalized(edge.label, locale).trim());
-    assert.ok(['existing-metadata', 'official-source'].includes(edge.provenance.kind));
+    assert.ok(['existing-metadata', 'official-source', 'user-confirmed'].includes(edge.provenance.kind));
     assert.ok(edge.provenance.source.trim());
     if (edge.provenance.kind === 'official-source') {
       const url = new URL(edge.provenance.source);
       assert.equal(url.protocol, 'https:');
       assert.equal(url.username, '');
       assert.equal(url.password, '');
-    } else {
+    } else if (edge.provenance.kind === 'existing-metadata') {
       assert.match(edge.provenance.source, /^src\/data\/about\.ts#/);
       assert.equal(edge.relationship, 'performed-by');
+    } else {
+      assert.equal(edge.provenance.source, 'docs/beyond-code-preview.md#approved-expansion-2026-11-14');
+      assert.ok(['style-of', 'ingredient-of'].includes(edge.relationship));
+      assert.equal(nodeById.get(edge.source).category, 'foods');
+      assert.equal(nodeById.get(edge.target).category, 'foods');
     }
   }
 });
 
-test('relationship direction preserves creator, adaptation and studio meanings', () => {
+test('relationship direction preserves creators, studios, series and explicit food meanings', () => {
   for (const edge of edges) {
     const source = nodeById.get(edge.source);
     const target = nodeById.get(edge.target);
-    assert.equal(source.type, 'work', `Relations originate from a work: ${edge.id}`);
     switch (edge.relationship) {
       case 'performed-by':
+        assert.equal(source.type, 'work');
         assert.equal(source.category, 'music');
         assert.ok(['person', 'group'].includes(target.type));
-        assert.equal(target.isContext, true);
         break;
       case 'written-by':
+        assert.equal(source.type, 'work');
         assert.equal(source.category, 'books');
         assert.equal(target.type, 'person');
-        assert.equal(target.isContext, true);
         break;
       case 'adapted-from':
+        assert.equal(source.type, 'work');
         assert.ok(['movies', 'drama'].includes(source.category));
         assert.equal(target.type, 'work');
         assert.equal(target.category, 'books');
         break;
       case 'produced-by':
+        assert.equal(source.type, 'work');
         assert.ok(['movies', 'drama'].includes(source.category));
         assert.equal(target.type, 'studio');
-        assert.equal(target.isContext, true);
         break;
       case 'shared-universe':
+        assert.equal(source.type, 'work');
         assert.equal(target.type, 'work');
+        break;
+      case 'associated-with':
+        assert.ok((source.category === 'movies' && source.type === 'work'
+          && target.category === 'movies' && target.type === 'studio')
+          || (source.category === 'topics' && source.type === 'topic'
+            && target.category === 'topics' && target.type === 'person'));
+        break;
+      case 'part-of':
+        assert.equal(source.type, 'work');
+        assert.equal(source.category, 'movies');
+        assert.equal(target.type, 'series');
+        assert.equal(target.category, 'movies');
+        break;
+      case 'style-of':
+      case 'ingredient-of':
+        assert.equal(source.type, 'topic');
+        assert.equal(target.type, 'topic');
+        assert.equal(source.category, 'foods');
+        assert.equal(target.category, 'foods');
         break;
     }
   }
@@ -136,6 +206,30 @@ test('relationship direction preserves creator, adaptation and studio meanings',
     assert.ok(edges.some((edge) => edge.source === context.id || edge.target === context.id),
       `Context node must explain a real relation: ${context.id}`);
   }
+});
+
+test('approved branches have exact endpoints without introducing unrelated works or authors', () => {
+  const facts = (relationship) => edges.filter((edge) => edge.relationship === relationship)
+    .map((edge) => `${edge.source}->${edge.target}`).sort();
+  assert.deepEqual(facts('part-of'), [
+    'movies-the-fellowship-of-the-ring->movies-the-lord-of-the-rings',
+    'movies-the-return-of-the-king->movies-the-lord-of-the-rings',
+    'movies-the-two-towers->movies-the-lord-of-the-rings',
+  ]);
+  assert.deepEqual(facts('style-of'), ['foods-jiro-ramen->foods-ramen']);
+  assert.deepEqual(facts('ingredient-of'), [
+    'foods-beef-tongue->foods-yakiniku', 'foods-otoro->foods-sushi',
+    'foods-wagyu->foods-yakiniku',
+  ]);
+  assert.deepEqual(facts('associated-with'), [
+    'movies-coco->movies-disney', 'movies-ratatouille->movies-disney',
+    'topics-analytical-psychology->topics-carl-jung',
+  ]);
+  assert.equal(edges.some((edge) => edge.source.includes('diana-wynne-jones')
+    || edge.target.includes('diana-wynne-jones') || edge.source === 'book-howls-moving-castle'
+    || edge.target === 'book-howls-moving-castle'), false);
+  assert.equal(edges.some((edge) => edge.relationship === 'produced-by'
+    && edge.target === 'movies-disney'), false, 'Disney is not mislabeled as the Pixar production studio');
 });
 
 test('performer relations exactly reflect artist metadata without suggesting other favorites', () => {

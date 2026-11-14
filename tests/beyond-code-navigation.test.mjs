@@ -6,6 +6,7 @@ const view = (extra = {}) => ({
   category: 'all', query: '', mode: 'graph', selected: null,
   camera: { x: 800, y: 600, scale: 0.5 },
   userOffsets: [['song', { x: 12, y: -9 }]],
+  positions: [['song', { x: 132, y: 91 }]],
   ...extra,
 });
 
@@ -33,6 +34,8 @@ test('return points own independent camera and placement snapshots', () => {
   original.camera.x = -999;
   original.userOffsets[0][1].x = 400;
   original.userOffsets.push(['artist', { x: 10, y: 20 }]);
+  original.positions[0][1].y = 999;
+  original.positions.push(['artist', { x: 25, y: 60 }]);
   assert.deepEqual(history.back(), expected);
 });
 

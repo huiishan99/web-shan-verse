@@ -346,6 +346,9 @@ export interface InterestCategory {
 }
 
 export type InterestItem = LocalizedString | {
+  /** Stable identity when the display title or collection role changes. */
+  id?: string;
+  kind?: 'work' | 'person' | 'group' | 'studio' | 'topic' | 'series';
   title: LocalizedString;
   artist?: LocalizedString;
   wikiPage?: string;
@@ -378,11 +381,17 @@ export const interests: InterestCategory[] = [
     items: [
       { title: { en: "Coco", zh: "寻梦环游记", ja: "リメンバー・ミー" }, wikiPage: "Coco (2017 film)" },
       { title: { en: "Ratatouille", zh: "料理鼠王", ja: "レミーのおいしいレストラン" }, wikiPage: "Ratatouille (film)" },
+      { id: "movies-disney", kind: "studio", title: { en: "Disney", zh: "迪士尼", ja: "ディズニー" }, wikiPage: "The Walt Disney Company" },
       { title: { en: "Flipped", zh: "怦然心动", ja: "Flipped" }, wikiPage: "Flipped (2010 film)" },
       { title: { en: "Howl's Moving Castle", zh: "哈尔的移动城堡", ja: "ハウルの動く城" }, wikiPage: "Howl's Moving Castle (film)" },
       { title: { en: "The Truman Show", zh: "楚门的世界", ja: "トゥルーマン・ショー" }, wikiPage: "The Truman Show" },
       { title: { en: "Interstellar", zh: "星际穿越", ja: "インターステラー" }, wikiPage: "Interstellar (film)" },
-      { title: { en: "The Lord of the Rings", zh: "指环王", ja: "ロード・オブ・ザ・リング" }, wikiPage: "The Lord of the Rings (film series)" },
+      { id: "movies-the-lord-of-the-rings", kind: "series", title: { en: "The Lord of the Rings series", zh: "指环王系列", ja: "ロード・オブ・ザ・リング シリーズ" }, wikiPage: "The Lord of the Rings (film series)" },
+      { id: "movies-the-fellowship-of-the-ring", title: { en: "The Lord of the Rings: The Fellowship of the Ring (2001)", zh: "指环王：护戒使者（2001）", ja: "ロード・オブ・ザ・リング（2001）" }, wikiPage: "The Lord of the Rings: The Fellowship of the Ring" },
+      { id: "movies-the-two-towers", title: { en: "The Lord of the Rings: The Two Towers (2002)", zh: "指环王：双塔奇兵（2002）", ja: "ロード・オブ・ザ・リング／二つの塔（2002）" }, wikiPage: "The Lord of the Rings: The Two Towers" },
+      { id: "movies-the-return-of-the-king", title: { en: "The Lord of the Rings: The Return of the King (2003)", zh: "指环王：王者归来（2003）", ja: "ロード・オブ・ザ・リング／王の帰還（2003）" }, wikiPage: "The Lord of the Rings: The Return of the King" },
+      { id: "movies-spider-man-2002", title: { en: "Spider-Man (2002)", zh: "蜘蛛侠（2002）", ja: "スパイダーマン（2002）" }, wikiPage: "Spider-Man (2002 film)" },
+      { id: "movies-ben-hur-1959", title: { en: "Ben-Hur (1959)", zh: "宾虚（1959）", ja: "ベン・ハー（1959）" }, wikiPage: "Ben-Hur (1959 film)" },
       { title: { en: "The Reluctant Fundamentalist", zh: "拉合尔茶馆的陌生人", ja: "ミッシング・ポイント" }, wikiPage: "The Reluctant Fundamentalist (film)" },
       { title: { en: "Maharaja", zh: "因果报应", ja: "Maharaja" }, wikiPage: "Maharaja (2024 film)" }
     ]
@@ -415,6 +424,10 @@ export const interests: InterestCategory[] = [
     items: [
       { title: { en: "Bohemian Rhapsody", zh: "波西米亚狂想曲", ja: "ボヘミアン・ラプソディ" }, artist: "Queen", wikiPage: "Bohemian Rhapsody", previewProvider: "itunes", itunesCountry: "JP", itunesTerm: "Bohemian Rhapsody Queen" },
       { title: { en: "We Are the Champions", zh: "我们是冠军", ja: "伝説のチャンピオン" }, artist: "Queen", wikiPage: "We Are the Champions", previewProvider: "itunes", itunesCountry: "JP", itunesTerm: "We Are the Champions Queen" },
+      { id: "music-another-one-bites-the-dust", title: "Another One Bites the Dust", artist: "Queen", wikiPage: "Another One Bites the Dust", previewProvider: "itunes", itunesCountry: "JP", itunesTerm: "Another One Bites the Dust Queen" },
+      { id: "music-fujii-kaze", kind: "person", title: { en: "Fujii Kaze", zh: "藤井风", ja: "藤井風" }, wikiPage: "Fujii Kaze" },
+      { id: "music-matsuri", title: { en: "Matsuri", zh: "まつり", ja: "まつり" }, artist: "Fujii Kaze", wikiPage: "Matsuri (song)", previewProvider: "itunes", itunesCountry: "JP", itunesTerm: "まつり 藤井風" },
+      { id: "music-kirari", title: { en: "Kirari", zh: "きらり", ja: "きらり" }, artist: "Fujii Kaze", wikiPage: "Kirari (Fujii Kaze song)", previewProvider: "itunes", itunesCountry: "JP", itunesTerm: "きらり 藤井風" },
       { title: "Lemon", artist: "Kenshi Yonezu", wikiPage: "Lemon (Kenshi Yonezu song)", previewProvider: "itunes", itunesCountry: "JP" }
     ]
   },
@@ -424,7 +437,12 @@ export const interests: InterestCategory[] = [
     items: [
       { en: "Ramen", zh: "拉面", ja: "ラーメン" },
       { en: "Sushi", zh: "寿司", ja: "寿司" },
-      { en: "Hot pot", zh: "火锅", ja: "火鍋" }
+      { en: "Hot pot", zh: "火锅", ja: "火鍋" },
+      { id: "foods-jiro-ramen", kind: "topic", title: { en: "Jiro-style ramen", zh: "二郎系拉面", ja: "二郎系ラーメン" }, wikiPage: "Ramen Jiro" },
+      { id: "foods-otoro", kind: "topic", title: { en: "Otoro", zh: "金枪鱼大腹", ja: "大トロ" }, wikiPage: "Toro (sushi)" },
+      { id: "foods-yakiniku", kind: "topic", title: { en: "Yakiniku", zh: "烧肉", ja: "焼肉" }, wikiPage: "Yakiniku" },
+      { id: "foods-wagyu", kind: "topic", title: { en: "Wagyu", zh: "和牛", ja: "和牛" }, wikiPage: "Wagyu" },
+      { id: "foods-beef-tongue", kind: "topic", title: { en: "Beef tongue", zh: "牛舌", ja: "牛タン" }, wikiPage: "Beef tongue" }
     ]
   },
   {
@@ -442,6 +460,7 @@ export const interests: InterestCategory[] = [
     icon: "lightbulb",
     items: [
       { en: "Analytical psychology", zh: "分析心理学", ja: "分析心理学" },
+      { id: "topics-carl-jung", kind: "person", title: { en: "Carl Jung", zh: "卡尔·荣格", ja: "カール・ユング" }, wikiPage: "Carl Jung" },
       { en: "Existentialism", zh: "存在主义", ja: "実存主義" },
       { en: "Cosmology", zh: "宇宙学", ja: "宇宙論" },
       { en: "Socionics", zh: "社会人格学", ja: "ソシオニクス" }

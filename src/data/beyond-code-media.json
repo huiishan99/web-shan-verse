@@ -135,15 +135,17 @@
     "artworkUsageSource": "https://en.wikipedia.org/wiki/Interstellar_(film)"
   },
   "movies-the-lord-of-the-rings": {
-    "description": "The Lord of the Rings is a trilogy of epic fantasy films directed by Peter Jackson. The films are based on the novel by J.",
+    "description": "Peter Jackson's film trilogy adapts Tolkien's Middle-earth story across The Fellowship of the Ring (2001), The Two Towers (2002) and The Return of the King (2003). It follows the struggle to destroy the One Ring.",
     "source": "https://en.wikipedia.org/wiki/The_Lord_of_the_Rings_(film_series)",
-    "descriptionTitle": "The Lord of the Rings (film series)",
-    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
-    "artworkRole": "representative-work-in-series",
-    "artworkNote": "The Fellowship of the Ring poster represents the film trilogy.",
-    "artwork": "/images/beyond-code/movies-the-lord-of-the-rings.jpg",
-    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/f/fb/Lord_Rings_Fellowship_Ring.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
-    "artworkUsageSource": "https://en.wikipedia.org/wiki/The_Lord_of_the_Rings%3A_The_Fellowship_of_the_Ring"
+    "descriptionTitle": "The Lord of the Rings film trilogy",
+    "descriptionOrigin": "original-paraphrase",
+    "artworkLicense": "Fair use",
+    "artworkMetadataSource": "https://en.wikipedia.org/w/api.php?action=query&prop=imageinfo&titles=File%3AThe+Lord+of+the+Rings+film+trilogy+logo.svg&iiprop=url%7Cextmetadata&iiurlwidth=440&format=json",
+    "artwork": "/images/beyond-code/movies-the-lord-of-the-rings-series.png",
+    "artworkSource": "https://thumb.wikimedia.org/wikipedia/en/thumb/8/8a/The_Lord_of_the_Rings_film_trilogy_logo.svg/500px-The_Lord_of_the_Rings_film_trilogy_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/File:The_Lord_of_the_Rings_film_trilogy_logo.svg",
+    "artworkRole": "franchise-logo",
+    "artworkNote": "The original New Line Cinema film-trilogy wordmark distinguishes the series from its three film posters."
   },
   "movies-the-reluctant-fundamentalist": {
     "description": "The Reluctant Fundamentalist is a 2013 American political thriller drama film directed by Mira Nair and starring Riz Ahmed, Kate Hudson, and Liev Schreiber. It is based on the 2007 novel of the same name by Mohsin Hamid.",
@@ -299,24 +301,6 @@
     "artworkSource": "https://s3-reissue.s3.ap-northeast-1.amazonaws.com/rr/wp-content/uploads/c3d5d2d00f87ccde8ce16cc44d04bd9d-225x300.jpg",
     "artworkUsageSource": "https://reissuerecords.net/profile/"
   },
-  "book-howls-moving-castle": {
-    "description": "Howl's Moving Castle is a fantasy novel by British author Diana Wynne Jones, first published in 1986 by Greenwillow Books of New York. It was a runner-up for the annual Boston Globe–Horn Book Award, and won the Phoenix Award twenty years later.",
-    "source": "https://en.wikipedia.org/wiki/Howl's_Moving_Castle_(novel)",
-    "descriptionTitle": "Howl's Moving Castle (novel)",
-    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
-    "artwork": "/images/beyond-code/book-howls-moving-castle.jpg",
-    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/a/a4/Howl%27s_Moving_Castle_%28Book_Cover%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
-    "artworkUsageSource": "https://en.wikipedia.org/wiki/Howl's_Moving_Castle_(novel)"
-  },
-  "person-diana-wynne-jones": {
-    "description": "Diana Wynne Jones was a British novelist, poet, academic, literary critic, and short story writer. She principally wrote speculative fiction novels for children and young adults.",
-    "source": "https://en.wikipedia.org/wiki/Diana_Wynne_Jones",
-    "descriptionTitle": "Diana Wynne Jones",
-    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
-    "artwork": "/images/beyond-code/person-diana-wynne-jones.jpg",
-    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/8/89/Diana_Wynne_Jones.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
-    "artworkUsageSource": "https://en.wikipedia.org/wiki/Diana_Wynne_Jones"
-  },
   "studio-ghibli": {
     "description": "Studio Ghibli Inc.  is a Japanese animation studio based in Koganei, Tokyo. It was founded on June 15, 1985, by directors Hayao Miyazaki and Isao Takahata and producer Toshio Suzuki, after acquiring Topcraft's assets.",
     "source": "https://en.wikipedia.org/wiki/Studio_Ghibli",
@@ -464,5 +448,174 @@
     "artwork": "/images/beyond-code/topics-socionics.jpg",
     "artworkSource": "https://upload.wikimedia.org/wikipedia/commons/a/a8/Aushra-photo.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
     "artworkUsageSource": "https://en.wikipedia.org/wiki/Au%C5%A1ra_Augustinavi%C4%8Di%C5%ABt%C4%97"
+  },
+  "music-fujii-kaze": {
+    "description": "Fujii Kaze is a Japanese singer-songwriter and pianist. He began sharing piano covers online as a child before releasing his debut album HELP EVER HURT NEVER in 2020.",
+    "source": "https://fujiikaze.com/profile/",
+    "descriptionTitle": "Fujii Kaze",
+    "descriptionOrigin": "original-paraphrase",
+    "artwork": "/images/beyond-code/music-fujii-kaze.jpg",
+    "artworkSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6a/Fujii_Kaze_performing_during_Best_Of_Fujii_Kaze_2020-2024_Asia_Tour_in_Axiata_Arena_Kuala_Lumpur_%28cropped%29_%282%29.jpg/330px-Fujii_Kaze_performing_during_Best_Of_Fujii_Kaze_2020-2024_Asia_Tour_in_Axiata_Arena_Kuala_Lumpur_%28cropped%29_%282%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Fujii_Kaze"
+  },
+  "music-matsuri": {
+    "description": "Matsuri is a Fujii Kaze song from LOVE ALL SERVE ALL (2022). Kaze wrote the song, with production by Yaffle.",
+    "source": "https://fujiikaze.com/music/love_all_serve_all_vinyl/",
+    "descriptionTitle": "Matsuri — Fujii Kaze",
+    "descriptionOrigin": "original-paraphrase",
+    "artwork": "/images/beyond-code/music-matsuri.jpg",
+    "artworkSource": "https://fujiikaze.com/wp-content/uploads/sites/2865/2025/05/artwork-440x440-26-compressed.jpg",
+    "artworkUsageSource": "https://fujiikaze.com/music/love_all_serve_all_vinyl/",
+    "artworkRole": "album-artwork",
+    "artworkNote": "The LOVE ALL SERVE ALL album artwork represents its song Matsuri; this does not add another album to the collection."
+  },
+  "music-kirari": {
+    "description": "Kirari is a 2021 single by Fujii Kaze. It also opens his second album, LOVE ALL SERVE ALL.",
+    "source": "https://fujiikaze.com/music/kirari/",
+    "descriptionTitle": "Kirari — Fujii Kaze",
+    "descriptionOrigin": "original-paraphrase",
+    "artwork": "/images/beyond-code/music-kirari.jpg",
+    "artworkSource": "https://fujiikaze.com/wp-content/uploads/sites/2865/2025/05/artwork-440x440-19-compressed.jpg",
+    "artworkUsageSource": "https://fujiikaze.com/music/kirari/"
+  },
+  "topics-carl-jung": {
+    "description": "Carl Gustav Jung was a Swiss psychiatrist and the founder of analytical psychology. His writing explored archetypes, the collective unconscious, and psychological types.",
+    "source": "https://en.wikipedia.org/wiki/Carl_Jung",
+    "descriptionTitle": "Carl Jung",
+    "descriptionOrigin": "original-paraphrase",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/topics-analytical-psychology.jpg",
+    "artworkSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5b/ETH-BIB-Jung%2C_Carl_Gustav_%281875-1961%29-Portrait-Portr_14163_%28cropped%29.tif/lossy-page1-330px-ETH-BIB-Jung%2C_Carl_Gustav_%281875-1961%29-Portrait-Portr_14163_%28cropped%29.tif.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Carl_Jung"
+  },
+  "music-another-one-bites-the-dust": {
+    "description": "Another One Bites the Dust is a Queen song written by bassist John Deacon. It appears on the band's 1980 album The Game and is built around Deacon's prominent bass line.",
+    "source": "https://www.queenonline.com/john_deacon",
+    "descriptionTitle": "Another One Bites the Dust — Queen",
+    "descriptionOrigin": "original-paraphrase",
+    "artwork": "/images/beyond-code/music-another-one-bites-the-dust.jpg",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/4/4d/Another_one_bites_the_dust.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Another_One_Bites_the_Dust"
+  },
+  "movies-disney": {
+    "description": "Disney spans animated films, live-action storytelling, characters and theme parks. Its history began with Walt and Roy Disney's animation studio in 1923.",
+    "source": "https://d23.com/disney-history/",
+    "descriptionTitle": "Disney",
+    "descriptionOrigin": "original-paraphrase",
+    "artwork": "/images/beyond-code/movies-disney.png",
+    "artworkSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bd/Sleeping_Beauty_Castle_-_February_2024.png/330px-Sleeping_Beauty_Castle_-_February_2024.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Sleeping_Beauty_Castle",
+    "artworkRole": "representative-brand-symbol",
+    "artworkNote": "Sleeping Beauty Castle represents the Disney brand; this is not a personal travel photograph or an additional favorite film."
+  },
+  "movies-spider-man-2002": {
+    "description": "Sam Raimi's 2002 film stars Tobey Maguire as Peter Parker, a young man who becomes Spider-Man after a spider bite. Willem Dafoe plays the Green Goblin.",
+    "source": "https://www.sonypictures.com/movies/spiderman",
+    "descriptionTitle": "Spider-Man (2002)",
+    "descriptionOrigin": "original-paraphrase",
+    "artwork": "/images/beyond-code/movies-spider-man-2002.jpg",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/6/6c/Spider-Man_%282002_film%29_poster.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Spider-Man_(2002_film)"
+  },
+  "movies-ben-hur-1959": {
+    "description": "William Wyler's 1959 epic follows Judah Ben-Hur, played by Charlton Heston, through betrayal, enslavement and a quest for justice. Its story includes a climactic chariot race.",
+    "source": "https://catalog.afi.com/Film/52827-BEN-HUR",
+    "descriptionTitle": "Ben-Hur (1959)",
+    "descriptionOrigin": "original-paraphrase",
+    "artwork": "/images/beyond-code/movies-ben-hur-1959.jpg",
+    "artworkSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/Ben_Hur_1959_film_Poster.jpg/250px-Ben_Hur_1959_film_Poster.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Ben-Hur_(1959_film)"
+  },
+  "foods-jiro-ramen": {
+    "description": "Ramen Jiro is a Tokyo-born ramen chain associated with generous portions, thick noodles and a rich broth. Its distinctive bowls are the origin of the broader Jiro-style ramen family.",
+    "source": "https://en.wikipedia.org/wiki/Ramen_Jiro",
+    "descriptionTitle": "Jiro ramen",
+    "descriptionOrigin": "original-paraphrase",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/foods-jiro-ramen.jpg",
+    "artworkSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/00/Ramen_jiro%27s_small_ramen.jpg/330px-Ramen_jiro%27s_small_ramen.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "artworkUsageSource": "https://commons.wikimedia.org/wiki/File:Ramen_jiro%27s_small_ramen.jpg",
+    "artworkRole": "representative-food",
+    "artworkNote": "A publicly sourced Ramen Jiro bowl illustrates the brand and style; not a personal meal photograph.",
+    "artworkMetadataSource": "https://commons.wikimedia.org/w/api.php?action=query&prop=imageinfo&titles=File%3ARamen+jiro%27s+small+ramen.jpg&iiprop=url%7Cextmetadata&iiurlwidth=330&iiurlheight=330&format=json",
+    "artworkLicense": "CC BY-SA 4.0",
+    "artworkLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  "foods-otoro": {
+    "description": "Otoro is the highly fatty belly cut of tuna, often served as sushi or sashimi. Its marbling gives it a rich, soft texture.",
+    "source": "https://www.kikkoman.com/en/cookbook/glossary/sashimimaguro.html",
+    "descriptionTitle": "Otoro",
+    "descriptionOrigin": "original-paraphrase",
+    "artwork": "/images/beyond-code/foods-otoro.jpg",
+    "artworkSource": "https://sushiuniversity.jp/dir/365_1588990951-1.jpg",
+    "artworkUsageSource": "https://sushiuniversity.jp/visual-dictionary/very-fatty-tuna-otoro/",
+    "artworkRole": "representative-food",
+    "artworkNote": "A source-labelled otoro nigiri photograph illustrates the tuna cut; not a personal meal photograph."
+  },
+  "foods-yakiniku": {
+    "description": "Yakiniku is a Japanese style of barbecue in which small pieces of meat are grilled and eaten a few at a time. A tabletop grill is a familiar part of the experience.",
+    "source": "https://en.wikipedia.org/wiki/Yakiniku",
+    "descriptionTitle": "Yakiniku",
+    "descriptionOrigin": "original-paraphrase",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/foods-yakiniku.jpg",
+    "artworkSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b7/Yakiniku_002.jpg/330px-Yakiniku_002.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Yakiniku",
+    "artworkRole": "representative-food",
+    "artworkNote": "A public yakiniku photograph represents the food; not a personal meal photograph."
+  },
+  "foods-wagyu": {
+    "description": "Wagyu refers to Japanese cattle breeds and the beef produced from them. Rich intramuscular marbling is a distinctive feature of many wagyu cuts.",
+    "source": "https://en.wikipedia.org/wiki/Wagyu",
+    "descriptionTitle": "Wagyu",
+    "descriptionOrigin": "original-paraphrase",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/foods-wagyu.jpg",
+    "artworkSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d6/4_Kobe_Beef%2C_Kobe_Japan.jpg/330px-4_Kobe_Beef%2C_Kobe_Japan.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Kobe_beef",
+    "artworkRole": "representative-food",
+    "artworkNote": "Kobe beef, a regional type of wagyu, illustrates marbled Japanese beef; not a personal meal or brand preference claim."
+  },
+  "foods-beef-tongue": {
+    "description": "Beef tongue is a cut used in many cuisines. In Japanese yakiniku it is commonly sliced and grilled; grilled gyutan is also closely associated with Sendai.",
+    "source": "https://en.wikipedia.org/wiki/Gy%C5%ABtan",
+    "descriptionTitle": "Beef tongue",
+    "descriptionOrigin": "original-paraphrase",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/foods-beef-tongue.jpg",
+    "artworkSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/64/Gyutan_teishoku.JPG/330px-Gyutan_teishoku.JPG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Gy%C5%ABtan",
+    "artworkRole": "representative-food",
+    "artworkNote": "A public grilled gyutan dish illustrates beef tongue; not a personal meal photograph."
+  },
+  "movies-the-fellowship-of-the-ring": {
+    "description": "The 2001 opening film follows Frodo Baggins and a fellowship formed to take the One Ring toward Mordor. Peter Jackson directs the beginning of the trilogy's journey.",
+    "source": "https://en.wikipedia.org/wiki/The_Lord_of_the_Rings%3A_The_Fellowship_of_the_Ring",
+    "descriptionTitle": "The Fellowship of the Ring (2001)",
+    "descriptionOrigin": "original-paraphrase",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/movies-the-lord-of-the-rings.jpg",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/f/fb/Lord_Rings_Fellowship_Ring.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/The_Lord_of_the_Rings%3A_The_Fellowship_of_the_Ring"
+  },
+  "movies-the-two-towers": {
+    "description": "The 2002 middle chapter follows a divided fellowship, Frodo and Sam's uneasy alliance with Gollum, and the defense of Rohan. Peter Jackson returns as director.",
+    "source": "https://en.wikipedia.org/wiki/The_Lord_of_the_Rings%3A_The_Two_Towers",
+    "descriptionTitle": "The Two Towers (2002)",
+    "descriptionOrigin": "original-paraphrase",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/movies-the-two-towers.jpg",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/a/a1/Lord_Rings_Two_Towers.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/The_Lord_of_the_Rings%3A_The_Two_Towers"
+  },
+  "movies-the-return-of-the-king": {
+    "description": "The 2003 conclusion follows the last battles for Middle-earth while Frodo and Sam try to reach Mount Doom. Peter Jackson brings the trilogy's parallel journeys to their ending.",
+    "source": "https://en.wikipedia.org/wiki/The_Lord_of_the_Rings%3A_The_Return_of_the_King",
+    "descriptionTitle": "The Return of the King (2003)",
+    "descriptionOrigin": "original-paraphrase",
+    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "artwork": "/images/beyond-code/movies-the-return-of-the-king.jpg",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/4/48/Lord_Rings_Return_King.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/The_Lord_of_the_Rings%3A_The_Return_of_the_King"
   }
 }

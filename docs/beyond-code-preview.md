@@ -11,6 +11,116 @@ on 2026-11-12. The constellation checkpoint is `7045510`. Reuse the site's
 near-black background, brass accents, serif typography, and existing interest
 content. No new runtime dependency or backend is required.
 
+Current owner requirements are in [Approved expansion](#approved-expansion-2026-11-14).
+The motion prototype and older publication checkpoints below record the design
+and evidence at those stages; their removed category hubs are historical.
+
+## Motion implementation review (2026-11-14; category hubs superseded)
+
+Authority: owner feedback after published `237af22` requests smoother motion,
+small-to-large as well as large-to-small pulling, and connection-dependent
+inertia. This initially superseded the earlier one-way membership-force rule
+and full-component release translation. The subsequent expansion removes category
+hubs entirely and authorizes publishing the completed combined revision.
+
+Framing: the scene renders at a deliberate 30Hz cap, sometimes skipping an extra
+RAF interval; membership links are excluded when dragging a content node. All
+unpinned bodies currently have equal mass. Release then applies the source's
+entire displacement to its factual component, replacing elastic deformation with
+a rigid target shift. These are implementation choices, not missing source data.
+
+Design: preserve the 49 content nodes, eight hubs, eight sourced factual links,
+current straight-line style, stable browsing anchors and page-local Back. All
+visible membership and factual connections participate in reciprocal physics.
+Compute bounded inertia from the active, unique connection degree; hidden bodies
+neither push nor make visible bodies artificially heavy. Store actual placements
+after a completed gesture rather than translating an entire connected component
+by the dragged node's delta. Cancel/lost capture must not commit placement.
+
+Use every RAF with elapsed-time camera easing and bounded physics substeps;
+cache DOM references and avoid rewriting unchanged presentation on every frame.
+First measure the current JS solver, render work and real browser frame cadence.
+Keep diagnostics development-only, bounded and outside visible product UI.
+
+Alternatives: raising spring strength alone cannot repair missing reciprocal
+edges or a frame cap. Replacing DOM/canvas and the entire solver with a library
+would add migration risk before evidence of a CPU bottleneck. The current
+57-body solver's Node benchmark p95 is about 0.66ms at 60Hz including all 57
+layout links (not a browser/paint measurement), so first fix scheduling, cached
+rendering and reciprocal weighted forces in the existing small architecture.
+
+Source boundary: [Obsidian's official release repository](https://github.com/obsidianmd/obsidian-releases#about-this-repo)
+explicitly says the application is not open source. [D3's public link implementation](https://github.com/d3/d3-force/blob/main/src/link.js)
+provides a mature reference for degree-based strength and endpoint bias. Reuse
+those principles with attribution, not a claim to use Obsidian's private engine.
+
+Acceptance: measure comparable baseline/optimized cadence; leaf drags move hubs,
+hub drags move leaves, and higher-degree hubs respond more slowly without being
+fixed. Preserve attenuated multi-hop response and stable release. Verify cancel,
+pause/reduced-motion source behavior, hidden-node exclusion, search/detail/hub
+visibility, Back and Astro teardown. Do not trade away circle separation or data
+semantics to claim smoother motion. Real touch/OS motion preferences remain
+separate evidence boundaries unless exercised.
+
+## Approved expansion (2026-11-14)
+
+The owner subsequently authorized autonomous commit/push for completed changes,
+removed all eight synthetic category bubbles, and supplied an explicit expansion
+list. This supersedes the synthetic-hub/membership portions of the motion plan:
+retain top category filters and grouped Index, but physics/rendering use only
+confirmed content relationships. Keep the reciprocal, degree-weighted motion,
+stable spring references and uncapped elapsed-time rendering improvements.
+
+Confirmed additions: Fujii Kaze with Matsuri and Kirari; Carl Jung; Queen's
+Another One Bites the Dust; Disney as an explicitly liked brand; Spider-Man
+(the first Sony/Tobey Maguire film, verified as 2002 after the owner's tentative
+1999 recollection); Ben-Hur (1959); Jiro ramen linked to ramen; otoro linked to
+sushi; yakiniku linked to wagyu and beef tongue. The existing Lord of the Rings
+entry becomes the explicitly requested series parent with its three film entries
+(2001, 2002, 2003). No Hobbit films, Tolkien novels, additional artists, actors,
+directors, or unlisted works are authorized by this list.
+
+Remove the Howl source novel and Diana Wynne Jones nodes and all incident edges:
+the owner has not read that book and requires confirmation for new personal
+content. The existing Howl film remains. Existing other context creators/studios
+remain clearly contextual rather than silently becoming personal favorites.
+Do not infer that a related source work has been consumed or liked.
+
+Small data extension: an interest may explicitly name its entity kind, including
+person, studio and series. Personal/context status remains independent of that
+kind. Source data in About continues to own confirmed interests. Food/series
+relationships can cite this approval; production/brand/artist facts retain
+traceable public sources. A series is a real approved entity, not a category hub.
+
+Rendering uses full-graph degree for consistent visual hierarchy with a modest
+series emphasis; current active unique edges determine physical inertia. All
+content remains available on mobile without a first-three-per-category cut.
+Do not use category membership as an invisible replacement spring.
+
+Performance trajectory: a Beyond-only glow-sprite cache was prototyped but did
+not establish a gain in this preview environment (pre-cache steady sample
+45.79fps vs post-cache 42.56fps, star JS p95 about 1.8ms in both). Reject that
+extra allocation/complexity and retain the original star renderer. Development
+sampling remains opt-in; no visible status or production diagnostics are added.
+
+### Combined release review packet
+
+| Item | Result / evidence boundary |
+| --- | --- |
+| Goal | Smooth reciprocal motion with only owner-confirmed content and relationships. |
+| Behavior delta | Removed generic category bubbles and membership springs; retained filters/Index. Added 16 approved entries, removed the unread novel/author and their images. LOTR is a larger real series node with three films. All 63 content nodes have local images and remain reachable on mobile. |
+| Architecture delta | Visible unique factual links determine bounded mass (`1 + 0.18 * degree`). Inverse mass applies to springs and contacts. Canonical spring references stay separate from soft placement targets; completed drags save each body's actual displacement. Every RAF renders with elapsed-time camera easing and cached presentation references. No new dependency/backend. |
+| Invariants | 59 confirmed personal entries and 4 explicitly contextual entities, 20 valid sourced/approved relations; no unseen books, unlisted people or hidden category forces. Current data lives in About and the normalized graph. Ordinary labels remain hover/focus/selection-only; the requested series title remains visible. |
+| Assumptions | The bounded elastic network preserves base relative directions; it is inspired by public graph-force principles, not Obsidian's private engine. Only an explicit entity addition confirms a new personal interest. |
+| Automated evidence | 151 unit tests pass (30 physics, 7 visible-network tests); prior thresholds retained. Astro checks 118 files with zero diagnostics and ESLint passes. Images cover 63/63 nodes, decode at <=500px, 62 unique used files total 3.99MB. The 297-page build and generated HTML validation pass; production bundles exclude opt-in development profiling and both removed images. CI gates publishing. |
+| Performance evidence | In this in-app browser, the old 57-body scene sampled 23.85/24.90fps; the final expanded 63-node scene sampled 48.63/51.12fps across two 180-frame windows. Final JS p95: physics 0.9–1.0ms, render 0.4–0.5ms. These are local observational samples, not hardware-independent FPS or compositor benchmarks. |
+| Browser evidence | Film drag 114.1px moved its series parent 43.3px and sibling 17.2px while unconnected sushi moved 0.3px, without selecting details. Series/three-film traversal, Fujii/two-song traversal, Jung association and yakiniku ingredients operated correctly. Paused drift measured zero. Mobile 390x844 showed all 63 nodes without horizontal document overflow, correct sushi/otoro detail and search/Index. About/back re-entry reset cleanly. |
+| Counterexamples / regression surface | Hidden endpoints cannot add mass; duplicate edges cannot multiply springs. Cancel/lost capture do not retain placements. Back stores deformed positions separately and rejects geometry from an old responsive-layout epoch. Tested desktop-to-mobile Back. Detail navigation resets its scroll to the top. Matsuri/Otoro broken external titles were corrected and Kirari verified. |
+| Known risks / trajectory | Actual touch hardware and OS reduced-motion settings remain untested; graph and star rendering share device/browser limits. Straight links can cross third nodes; no crossing-free optimum is claimed. Sprite caching was rejected without evidence of benefit. Continue with this bounded renderer and the owner's explicit authorization to commit/push after final verification. |
+
+Runtime/browser evidence is retained outside the repository in
+`2026/11/14/beyond-motion/` (profiles, geometry and screenshots).
+
 ## Approved refinement: coherent connections (2026-11-13)
 
 Authority: owner feedback after published `e61fb81` requests more consistent,

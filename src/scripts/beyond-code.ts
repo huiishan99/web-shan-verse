@@ -5,6 +5,8 @@ import {
 import { solveStatic, stepPhysics } from '../utils/beyond-code-physics.js';
 import { createViewHistory } from '../utils/beyond-code-navigation.js';
 import { segmentBetweenCircles } from '../utils/beyond-code-links.js';
+import { createFrameProfile } from '../utils/beyond-code-profile.js';
+import { createPhysicsNetwork } from '../utils/beyond-code-network.js';
 
 interface GraphNode {
   id: string; category: string; type: string; title: string; subtitle: string;
@@ -17,7 +19,7 @@ interface Point { x: number; y: number }
 interface GraphDrag {
   pointerId: number; start: Point; last: Point; node: string | null;
   moved: boolean; touch: boolean; world: Point | null;
-  origin: Point | null; pointerOffset: Point;
+  placements: Map<string, Point>; pointerOffset: Point;
 }
 interface LayoutNode {
   id: string; x: number; y: number; anchorX: number; anchorY: number;
@@ -28,7 +30,12 @@ interface GraphData { nodes: GraphNode[]; edges: GraphEdge[]; categories: GraphC
 interface GraphState { cleanup?: () => void; bootstrapped?: boolean }
 interface ViewSnapshot {
   category: string; query: string; mode: string; selected: string | null;
-  camera: Camera; userOffsets: [string, Point][];
+  camera: Camera; userOffsets: [string, Point][]; positions: [string, Point][];
+  layoutEpoch: number;
+}
+interface NodeView {
+  label: HTMLElement | null; text: string; size?: number; minor?: boolean;
+  labelVisible?: boolean; font?: string; labelHeight?: number;
 }
 
 const globalWindow = window as typeof window & { __shanBeyondCode?: GraphState };
@@ -45,6 +52,8 @@ function setupBeyondCode() {
   const payload = root.querySelector('[data-beyond-data]');
   if (!ctx || !payload?.textContent) return;
   const data: GraphData = JSON.parse(payload.textContent);
+  const profileLabel = import.meta.env.DEV ? new URLSearchParams(location.search).get('graph-profile') : null;
+  const profile = profileLabel ? createFrameProfile(profileLabel) : null;
   const detail = root.querySelector<HTMLElement>('[data-beyond-detail]')!;
   const indexView = root.querySelector<HTMLElement>('[data-beyond-index]')!;
   const search = root.querySelector<HTMLInputElement>('[data-beyond-search]')!;
@@ -60,27 +69,29 @@ function setupBeyondCode() {
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const mobileQuery = window.matchMedia('(max-width: 640px)');
   const nodeById = new Map(data.nodes.map((node) => [node.id, node]));
-  const primaryIds = new Set(data.categories.flatMap((entry) =>
-    data.nodes.filter((node) => node.category === entry.id && !node.isContext).slice(0, 2).map((node) => node.id),
-  ));
+  const seriesNodes = data.nodes.filter((node) => node.type === 'series');
   const contentLayout: LayoutNode[] = createGraphLayout(data.nodes, data.edges).map((node: Omit<LayoutNode, 'vx' | 'vy' | 'targetX' | 'targetY' | 'element'>) => ({
     ...node, vx: 0, vy: 0, targetX: node.x, targetY: node.y,
     element: root.querySelector<HTMLButtonElement>(`[data-node="${node.id}"]`)!,
   }));
-  // Category hubs are navigation/layout bodies, never favorites or factual relations.
-  const hubs = data.categories.map((entry, index) => {
-    const center = clusterCenters[entry.id as keyof typeof clusterCenters];
-    return { id: `category-hub-${entry.id}`, category: entry.id,
-      x: center.x, y: center.y - 205, anchorX: center.x, anchorY: center.y - 205,
-      targetX: center.x, targetY: center.y - 205, vx: 0, vy: 0,
-      major: true, radius: 28, phase: index * 1.7,
-      element: root.querySelector<HTMLButtonElement>(`[data-category-hub="${entry.id}"]`)!,
-    };
-  });
-  const hubById = new Map(hubs.map((hub) => [hub.id, hub]));
-  const layout: LayoutNode[] = [...contentLayout, ...hubs];
-  const membershipEdges = data.nodes.map((node) => ({ source: `category-hub-${node.category}`, target: node.id }));
+  // Categories remain filters. Only owner-approved content relationships have bodies/forces.
+  const layout: LayoutNode[] = contentLayout;
+  const fullNetwork = createPhysicsNetwork(layout, data.edges);
+  const connectionCounts = new Map(layout.map((node) => [node.id, 0]));
+  for (const edge of fullNetwork.links) {
+    connectionCounts.set(edge.source, connectionCounts.get(edge.source)! + 1);
+    connectionCounts.set(edge.target, connectionCounts.get(edge.target)! + 1);
+  }
   const positions = new Map(layout.map((node) => [node.id, node]));
+  const views = new Map<string, NodeView>(layout.map((node) => {
+    const entry = nodeById.get(node.id);
+    const duplicateName = entry && data.nodes.some((other) => other.id !== entry.id && other.title === entry.title);
+    const text = entry ? duplicateName ? `${entry.title} · ${data.categories.find((item) => item.id === entry.category)?.title ?? ''}` : entry.title : '';
+    const label = node.element.querySelector<HTMLElement>('.beyond-node-label');
+    if (entry) node.element.dataset.category = entry.category;
+    if (label) label.textContent = text;
+    return [node.id, {label, text}];
+  }));
   const history = createViewHistory();
   let restoringView = false;
   let editingSearch = false;
@@ -91,10 +102,12 @@ function setupBeyondCode() {
   let hovered: string | null = null;
   let keyboardFocus: string | null = null;
   let visibleIds = new Set(data.nodes.map((node) => node.id));
+  let physicsNetwork = createPhysicsNetwork(layout, data.edges, visibleIds);
   let neighbors = new Set<string>();
   let mode = 'graph';
   let width = 1000;
   let height = 650;
+  let detailWidth = 340;
   let camera: Camera = { x: 800, y: 600, scale: 0.5 };
   let targetCamera: Camera = { ...camera };
   let frame = 0;
@@ -109,6 +122,7 @@ function setupBeyondCode() {
   let initialized = false;
   let horizontalStretch = 1;
   let anchorModeMobile = mobileQuery.matches;
+  let layoutEpoch = 0;
   const originalAnchors = new Map(layout.map((node) => [node.id, { x: node.anchorX, y: node.anchorY }]));
   const mobileCenters: Record<string, Point> = {
     games:{x:180,y:180},movies:{x:740,y:180},
@@ -123,28 +137,26 @@ function setupBeyondCode() {
   }
 
   function isMajor(id: string) {
-    return primaryIds.has(id) || category !== 'all' || !!query || neighbors.has(id);
+    return (connectionCounts.get(id) ?? 0) >= 2 || nodeById.get(id)!.type === 'series' || neighbors.has(id);
   }
 
   function nodeSize(node: { id: string }) {
-    if (hubById.has(node.id)) return clamp(45 * Math.sqrt(camera.scale), 44, 54);
     const entry = nodeById.get(node.id)!;
     if (entry.type === 'topic' && !entry.artwork) return 20;
-    return clamp((isMajor(node.id) ? 59 : 32) * Math.sqrt(camera.scale), 23, 82);
+    const degree = Math.min(connectionCounts.get(node.id) ?? 0, 4);
+    const base = entry.type === 'series' ? 70 : 34 + degree * 8;
+    return clamp((base + (selected === node.id ? 6 : 0)) * Math.sqrt(camera.scale), 24, 82);
   }
 
   function categoryOf(id: string) {
-    return hubById.get(id)?.category ?? nodeById.get(id)!.category;
+    return nodeById.get(id)!.category;
   }
 
   function physicsLinks() {
-    // Membership is activated for a hub gesture only. A work drag cannot pull
-    // every sibling through its category's star-shaped navigation links.
-    return drag?.node && hubById.has(drag.node)
-      ? [...data.edges, ...membershipEdges.filter((edge) => edge.source === drag!.node)] : data.edges;
+    return physicsNetwork.links;
   }
 
-  function physicsOptions(dt = 1 / 30, idleTime?: number) {
+  function physicsOptions(dt = 1 / 60, idleTime?: number) {
     const dragging = !!drag?.node && drag.moved;
     const fixed = keyboardFocus ?? hovered;
     return {
@@ -152,10 +164,13 @@ function setupBeyondCode() {
       draggedId: dragging ? drag!.node : null,
       dragPoint: dragging ? drag!.world : null,
       fixedIds: new Set(!dragging && fixed ? [fixed] : []),
-      categoryFor: (node: { id: string }) => categoryOf(node.id),
-      // Hubs also reserve the compact caption below their orbit. Work circles
-      // share their exact screen-space image size and add the 6px outer ring.
-      radiusFor: (node: { id: string }) => nodeSize(node) / 2 + (hubById.has(node.id) ? 26 : 6),
+      massFor: (node: { id: string }) => physicsNetwork.masses.get(node.id) ?? 1,
+      linkAnchorFor: (node: { id: string }) => {
+        const body = positions.get(node.id)!;
+        return {x:body.anchorX,y:body.anchorY};
+      },
+      anchorStrength: 1.2, categoryStrength: 0,
+      radiusFor: (node: { id: string }) => nodeSize(node) / 2 + 6,
       padding: 4,
       anchorOffsetFor: idleTime === undefined ? undefined : (node: { id: string }) => {
         const phase = positions.get(node.id)!.phase;
@@ -164,23 +179,10 @@ function setupBeyondCode() {
     };
   }
 
-  function linkedComponent(id: string) {
-    const hub = hubById.get(id);
-    if (hub) return new Set([id, ...data.nodes.filter((node) => node.category === hub.category).map((node) => node.id)]);
-    const component = new Set([id]);
-    const queue = [id];
-    while (queue.length) {
-      const current = queue.shift()!;
-      for (const next of connectedIds(current, data.edges)) {
-        if (!component.has(next)) { component.add(next); queue.push(next); }
-      }
-    }
-    return component;
-  }
-
   function snapshot(): ViewSnapshot {
     return { category, query: searchText, mode, selected, camera: { ...targetCamera },
-      userOffsets: [...userOffsets].map(([id, point]) => [id, { ...point }]) };
+      userOffsets: [...userOffsets].map(([id, point]) => [id, { ...point }]),
+      positions: layout.map((node) => [node.id, {x:node.x,y:node.y}]), layoutEpoch };
   }
 
   function rememberView() {
@@ -199,10 +201,20 @@ function setupBeyondCode() {
     query = previous.query.trim().toLocaleLowerCase();
     chooseCategory(previous.category);
     setView(previous.mode);
-    for (const [id, point] of previous.userOffsets) userOffsets.set(id, { ...point });
+    const sameCoordinates = previous.layoutEpoch === layoutEpoch;
+    if (sameCoordinates) for (const [id, point] of previous.userOffsets) userOffsets.set(id, { ...point });
     if (previous.selected) selectNode(previous.selected);
     else { updateTargets(); applyVisibility(false); }
-    setCamera(previous.camera);
+    // Soft placement preferences and the currently deformed network are distinct.
+    if (sameCoordinates) {
+      for (const [id, point] of previous.positions) {
+        const node = positions.get(id);
+        if (node) { node.x=point.x; node.y=point.y; node.vx=0; node.vy=0; }
+      }
+      setCamera(previous.camera);
+    } else if (!previous.selected) {
+      fitVisible();
+    }
     restoringView = false;
     backButton.disabled = !history.canGoBack();
     if (previous.selected) title.focus({ preventScroll: true });
@@ -242,7 +254,7 @@ function setupBeyondCode() {
   function viewport() {
     if (!selected) return { width, height: height - 65 };
     if (mobileQuery.matches) return { width, height: Math.max(180, height - Math.max(260, height * 0.43) - 45) };
-    return { width: Math.max(260, width - detail.getBoundingClientRect().width), height: height - 65 };
+    return { width: Math.max(260, width - detailWidth), height: height - 65 };
   }
 
   function setCamera(next: Camera) {
@@ -269,17 +281,7 @@ function setupBeyondCode() {
       for (const id of connectedIds(node.id, data.edges)) visibleIds.add(id);
     }
     if (selected) for (const id of connectedIds(selected, data.edges)) visibleIds.add(id);
-    if (mobileQuery.matches && category==='all' && !query && !selected && mode==='graph') {
-      visibleIds=new Set(data.categories.flatMap((entry)=>
-        data.nodes.filter((node)=>node.category===entry.id&&!node.isContext).slice(0,3).map((node)=>node.id),
-      ));
-    }
-    if (!selected && !query && mode === 'graph') {
-      for (const hub of hubs) {
-        if ((category === 'all' || category === hub.category)
-          && data.nodes.some((node) => node.category === hub.category && visibleIds.has(node.id))) visibleIds.add(hub.id);
-      }
-    }
+    physicsNetwork = createPhysicsNetwork(layout, data.edges, visibleIds);
     updateTargets();
     for (const node of layout) {
       const visible = visibleIds.has(node.id);
@@ -304,16 +306,28 @@ function setupBeyondCode() {
         'performed-by': ['Performed by', 'Performs'], 'written-by': ['Written by', 'Written work'],
         'adapted-from': ['Based on', 'Adapted into'], 'produced-by': ['Produced by', 'Production'],
         'shared-universe': ['Shared universe', 'Shared universe'],
+        'associated-with': ['Associated with', 'Associated with'],
+        'part-of': ['Part of', 'Film in series'],
+        'style-of': ['Style of', 'Style'],
+        'ingredient-of': ['Ingredient for', 'Ingredient'],
       },
       zh: {
         'performed-by': ['演唱', '演唱的歌曲'], 'written-by': ['作者', '创作的作品'],
         'adapted-from': ['改编自', '改编作品'], 'produced-by': ['制作', '制作的作品'],
         'shared-universe': ['同一世界观', '同一世界观'],
+        'associated-with': ['关联', '关联'],
+        'part-of': ['所属系列', '系列作品'],
+        'style-of': ['所属风格', '风格'],
+        'ingredient-of': ['用于', '食材'],
       },
       ja: {
         'performed-by': ['アーティスト', '楽曲'], 'written-by': ['著者', '著作'],
         'adapted-from': ['原作', '映像化作品'], 'produced-by': ['制作', '制作作品'],
         'shared-universe': ['共通の世界観', '共通の世界観'],
+        'associated-with': ['関連', '関連'],
+        'part-of': ['シリーズ', 'シリーズ作品'],
+        'style-of': ['スタイル', 'スタイル'],
+        'ingredient-of': ['使う料理', '食材'],
       },
     };
     return labels[data.lang]?.[edge.relationship]?.[forward ? 0 : 1] ?? edge.label;
@@ -357,6 +371,7 @@ function setupBeyondCode() {
     selected = id;
     neighbors = connectedIds(id, data.edges);
     detail.hidden = false;
+    detailWidth = detail.getBoundingClientRect().width;
     root!.classList.add('is-detail-open');
     title.textContent = node.title;
     root!.querySelector<HTMLElement>('[data-detail-category]')!.textContent = data.categories.find((entry) => entry.id === node.category)?.title ?? '';
@@ -397,6 +412,7 @@ function setupBeyondCode() {
       item.element.classList.toggle('is-neighbor', neighbors.has(item.id) && item.id !== selected);
       item.element.classList.toggle('is-muted', !neighbors.has(item.id));
     }
+    detail.scrollTop = 0;
     title.focus({ preventScroll: true });
     if (mobileQuery.matches) stage.scrollIntoView({ block: 'start', behavior: reducedMotion.matches ? 'instant' : 'smooth' });
     wake();
@@ -453,12 +469,14 @@ function setupBeyondCode() {
 
   function resize() {
     width = stage.clientWidth; height = stage.clientHeight;
+    if (selected) detailWidth = detail.getBoundingClientRect().width;
     const nextStretch = mobileQuery.matches ? 1 : Math.max(1, width / Math.max(300,height-65) / 1.55);
-    if (Math.abs(nextStretch-horizontalStretch)>.01 || !initialized || mobileQuery.matches || anchorModeMobile!==mobileQuery.matches) {
+    if (Math.abs(nextStretch-horizontalStretch)>.01 || !initialized || anchorModeMobile!==mobileQuery.matches) {
       resetTransientGesture();
       userOffsets.clear();
       horizontalStretch=nextStretch;
       anchorModeMobile=mobileQuery.matches;
+      layoutEpoch++;
       for (const node of layout) {
         const anchor=originalAnchors.get(node.id)!;
         const nodeCategory=categoryOf(node.id);
@@ -489,58 +507,58 @@ function setupBeyondCode() {
     const screenPoints = new Map<string, Point>();
     const labelCandidates: { node: LayoutNode; point: Point; size: number }[] = [];
     const occupied: { x:number; y:number; w:number; h:number }[] = [];
+    const needsCaptions = nodeById.has(hovered ?? '') || nodeById.has(keyboardFocus ?? '') || !!selected
+      || seriesNodes.some((node) => visibleIds.has(node.id));
     for (const node of layout) {
       if (!visibleIds.has(node.id)) continue;
       const position = worldToScreen(node, camera, view);
       screenPoints.set(node.id, position);
       const size = nodeSize(node);
+      const presentation = views.get(node.id)!;
       node.element.style.transform = `translate(${position.x}px, ${position.y}px) translate(-50%, -50%)`;
-      occupied.push({x:position.x-size/2-4,y:position.y-size/2-4,w:size+8,h:size+8});
-      if (hubById.has(node.id)) {
-        node.element.style.setProperty('--hub-size', `${size}px`);
-        node.element.setAttribute('aria-pressed', String(category === categoryOf(node.id)));
-        occupied.push({x:position.x-65,y:position.y+size/2+6,w:130,h:32});
-        continue;
-      }
-      node.element.style.setProperty('--node-size', `${size}px`);
-      node.element.classList.toggle('is-minor', !isMajor(node.id));
-      node.element.dataset.category = categoryOf(node.id);
-      const showLabel = hovered === node.id || keyboardFocus === node.id || selected === node.id;
-      const label = node.element.querySelector<HTMLElement>('.beyond-node-label')!;
-      label.style.visibility = showLabel ? 'visible' : 'hidden';
+      if (needsCaptions) occupied.push({x:position.x-size/2-4,y:position.y-size/2-4,w:size+8,h:size+8});
+      if (presentation.size !== size) node.element.style.setProperty('--node-size', `${size}px`);
+      presentation.size = size;
+      const minor = !isMajor(node.id);
+      if (presentation.minor !== minor) node.element.classList.toggle('is-minor', minor);
+      presentation.minor = minor;
+      const showLabel = nodeById.get(node.id)!.type === 'series'
+        || hovered === node.id || keyboardFocus === node.id || selected === node.id;
+      if (presentation.labelVisible !== showLabel) presentation.label!.style.visibility = showLabel ? 'visible' : 'hidden';
+      presentation.labelVisible = showLabel;
       if (showLabel) labelCandidates.push({node,point:position,size});
     }
 
     // One visual grammar: quiet straight threads, always outside image rings.
-    // Membership remains separate data and never appears as a factual relation.
     const emphasis = drag?.node ?? hovered ?? keyboardFocus ?? selected;
-    const drawLink = (edge: {source:string;target:string}, membership: boolean) => {
+    const drawLink = (edge: {source:string;target:string}) => {
       const from = screenPoints.get(edge.source); const to = screenPoints.get(edge.target);
       if (!from || !to) return;
-      const radius = (id: string) => nodeSize({id}) / 2 + (hubById.has(id) ? 5 : 6);
+      const radius = (id: string) => nodeSize({id}) / 2 + 6;
       const segment = segmentBetweenCircles(from, to, radius(edge.source), radius(edge.target), 3);
       if (!segment) return;
       const active = emphasis === edge.source || emphasis === edge.target;
-      const opacity = active ? .65 : emphasis ? .065 : membership ? .15 : .28;
+      const opacity = active ? .65 : emphasis ? .065 : .28;
       ctx!.strokeStyle = `rgba(183,172,145,${opacity})`;
       ctx!.beginPath(); ctx!.moveTo(segment.from.x, segment.from.y);
       ctx!.lineTo(segment.to.x, segment.to.y); ctx!.stroke();
     };
     ctx!.save(); ctx!.lineWidth = .9; ctx!.lineCap = 'round'; ctx!.setLineDash([]);
-    for (const edge of membershipEdges) drawLink(edge, true);
-    for (const edge of data.edges) drawLink(edge, false);
+    for (const edge of data.edges) drawLink(edge);
     ctx!.restore();
 
     // Place readable captions around the image, rather than letting long names collide.
     for (const {node,point,size} of labelCandidates) {
-      const label=node.element.querySelector<HTMLElement>('.beyond-node-label')!;
-      const entry=nodeById.get(node.id)!;
-      const sameName=data.nodes.filter((item)=>item.title===entry.title).length>1;
-      const text=sameName?`${entry.title} · ${data.categories.find((item)=>item.id===entry.category)?.title??''}`:entry.title;
-      if(label.textContent!==text)label.textContent=text;
+      const presentation=views.get(node.id)!;
+      const label=presentation.label!;
       const labelWidth=125;
-      ctx!.font=`${mobileQuery.matches?13:14}px "Crimson Pro", Georgia, serif`;
-      const labelHeight=Math.min(4,Math.ceil(ctx!.measureText(text).width/labelWidth))*17;
+      const font=`${mobileQuery.matches?13:14}px "Crimson Pro", Georgia, serif`;
+      if (presentation.font !== font) {
+        ctx!.font=font;
+        presentation.labelHeight=Math.min(4,Math.ceil(ctx!.measureText(presentation.text).width/labelWidth))*17;
+        presentation.font=font;
+      }
+      const labelHeight=presentation.labelHeight!;
       const distance=size/2+12;
       const offsets=[
         {x:-labelWidth/2,y:distance}, {x:-labelWidth/2,y:-distance-labelHeight},
@@ -561,10 +579,8 @@ function setupBeyondCode() {
         if(box.x<8||box.x+box.w>view.width-8||box.y<8||box.y+box.h>view.height-8)score+=10000;
         if(score<bestScore){bestScore=score;best=offset;}
       }
-      const canShow=bestScore<90||node.id===hovered||node.id===keyboardFocus||neighbors.has(node.id);
-      label.style.visibility=canShow?'':'hidden';
       label.style.transform=`translate(${best.x}px,${best.y}px)`;
-      if(canShow)occupied.push({x:point.x+best.x-4,y:point.y+best.y-3,w:labelWidth+8,h:labelHeight+6});
+      occupied.push({x:point.x+best.x-4,y:point.y+best.y-3,w:labelWidth+8,h:labelHeight+6});
     }
 
   }
@@ -572,19 +588,22 @@ function setupBeyondCode() {
   function tick(now: number) {
     frame = 0;
     if (!alive || document.hidden || !inView || mode !== 'graph') return;
-    if (now - lastTime < 1000 / 30) { frame = requestAnimationFrame(tick); return; }
-    const dt = lastTime ? Math.min((now - lastTime) / 1000, .05) : 1 / 30;
+    const dt = lastTime ? Math.min((now - lastTime) / 1000, .05) : 1 / 60;
     lastTime = now;
     const animate = motion && !reducedMotion.matches;
-    const cameraEase = animate ? .12 : 1;
+    const directDrag = !!(drag?.node && drag.moved);
+    const cameraEase = animate ? 1 - Math.pow(1 - .12, dt * 30) : 1;
     camera.x += (targetCamera.x-camera.x)*cameraEase;
     camera.y += (targetCamera.y-camera.y)*cameraEase;
     camera.scale += (targetCamera.scale-camera.scale)*cameraEase;
-    if (animate) {
-      stepPhysics(layout, physicsLinks(), physicsOptions(dt, now));
+    const physicsStarted = profile ? performance.now() : 0;
+    if (animate || directDrag) {
+      stepPhysics(layout, physicsLinks(), physicsOptions(dt, animate ? now : undefined));
     } else solveStatic(layout, physicsLinks(), physicsOptions());
+    const renderStarted = profile ? performance.now() : 0;
     render();
-    if (animate) frame = requestAnimationFrame(tick);
+    profile?.record(now, renderStarted - physicsStarted, performance.now() - renderStarted, visibleIds.size);
+    if (animate || directDrag) frame = requestAnimationFrame(tick);
   }
 
   function wake() {
@@ -599,17 +618,18 @@ function setupBeyondCode() {
 
   graph.addEventListener('pointerdown', (event) => {
     if (event.button !== 0 || event.isPrimary === false) return;
-    const target = (event.target as Element).closest<HTMLButtonElement>('[data-node],[data-category-hub]');
+    const target = (event.target as Element).closest<HTMLButtonElement>('[data-node]');
     const point = pointerPoint(event);
-    const nodeId = target?.dataset.node ?? (target?.dataset.categoryHub ? `category-hub-${target.dataset.categoryHub}` : null);
+    const nodeId = target?.dataset.node ?? null;
     const node = nodeId ? positions.get(nodeId)! : null;
     const world = screenToWorld(point, camera, viewport());
     targetCamera = { ...camera };
+    lastTime = 0;
     drag = {
       pointerId:event.pointerId, start:point, last:point, node:node?.id ?? null,
       moved:false, touch:event.pointerType==='touch',
       world:node ? { x:node.x, y:node.y } : null,
-      origin:node ? { x:node.x, y:node.y } : null,
+      placements:new Map(layout.filter((body) => visibleIds.has(body.id)).map((body) => [body.id, {x:body.x,y:body.y}])),
       pointerOffset:node ? { x:world.x-node.x, y:world.y-node.y } : { x:0, y:0 },
     };
     (target || graph).setPointerCapture(event.pointerId);
@@ -618,7 +638,7 @@ function setupBeyondCode() {
   graph.addEventListener('pointermove', (event) => {
     if (!drag || event.pointerId !== drag.pointerId) return;
     const point = pointerPoint(event);
-    if (Math.hypot(point.x-drag.start.x,point.y-drag.start.y)>6) drag.moved = true;
+    if (!drag.moved && Math.hypot(point.x-drag.start.x,point.y-drag.start.y)>6) { drag.moved = true; lastTime = 0; }
     if (!drag.moved) return;
     graph.classList.add('is-dragging');
     if (drag.node) {
@@ -626,10 +646,6 @@ function setupBeyondCode() {
       const world = screenToWorld(point, camera, viewport());
       drag.world={x:world.x-drag.pointerOffset.x,y:world.y-drag.pointerOffset.y};
       node.x=drag.world.x; node.y=drag.world.y; node.vx=0; node.vy=0;
-      if (!motion || reducedMotion.matches) {
-        // User-driven updates still propagate; no timer continues the motion afterward.
-        stepPhysics(layout, physicsLinks(), physicsOptions());
-      }
     } else {
       const dx=(point.x-drag.last.x)/camera.scale;
       const dy=drag.touch ? 0 : (point.y-drag.last.y)/camera.scale;
@@ -643,10 +659,12 @@ function setupBeyondCode() {
     if (event.type !== 'pointerup') { resetTransientGesture(); wake(); return; }
     if (drag.moved) {
       lastDrag=performance.now();
-      if (drag.node && drag.world && drag.origin) {
-        const delta={x:drag.world.x-drag.origin.x,y:drag.world.y-drag.origin.y};
-        for (const id of linkedComponent(drag.node)) {
+      if (drag.node) {
+        for (const [id, start] of drag.placements) {
           if (!visibleIds.has(id)) continue;
+          const node=positions.get(id)!;
+          const delta={x:node.x-start.x,y:node.y-start.y};
+          if (Math.hypot(delta.x,delta.y)*camera.scale < .5) continue;
           const previous=userOffsets.get(id) ?? {x:0,y:0};
           userOffsets.set(id,{x:previous.x+delta.x,y:previous.y+delta.y});
         }
@@ -672,8 +690,8 @@ function setupBeyondCode() {
     if (related) { selectNode(related.dataset.relatedNode!); return; }
     const item=target.closest<HTMLElement>('[data-index-node]');
     if (item) { navigate(() => { setView('graph'); selectNode(item.dataset.indexNode!); }); return; }
-    const categoryButton=target.closest<HTMLElement>('[data-beyond-category],[data-category-hub]');
-    if (categoryButton) { if (!categoryButton.dataset.categoryHub || intentionalClick) chooseCategory(categoryButton.dataset.beyondCategory ?? categoryButton.dataset.categoryHub!); return; }
+    const categoryButton=target.closest<HTMLElement>('[data-beyond-category]');
+    if (categoryButton) { chooseCategory(categoryButton.dataset.beyondCategory!); return; }
     const viewButton=target.closest<HTMLElement>('[data-beyond-view]');
     if (viewButton) { setView(viewButton.dataset.beyondView!); return; }
     if (target.closest('[data-beyond-close]')) { closeDetail(true, true, true); return; }
@@ -688,22 +706,22 @@ function setupBeyondCode() {
   },{signal});
 
   graph.addEventListener('pointerover',(event)=>{
-    const node=(event.target as Element).closest<HTMLElement>('[data-node],[data-category-hub]');
-    hovered=node?.dataset.node ?? (node?.dataset.categoryHub ? `category-hub-${node.dataset.categoryHub}` : null); wake();
+    const node=(event.target as Element).closest<HTMLElement>('[data-node]');
+    hovered=node?.dataset.node ?? null; wake();
   },{signal});
   graph.addEventListener('pointerleave',()=>{hovered=null;wake();},{signal});
-  graph.addEventListener('focusin',(event)=>{ const node=(event.target as HTMLElement).closest<HTMLElement>('[data-node],[data-category-hub]'); keyboardFocus=node?.dataset.node ?? (node?.dataset.categoryHub ? `category-hub-${node.dataset.categoryHub}` : null); wake(); },{signal});
+  graph.addEventListener('focusin',(event)=>{ keyboardFocus=(event.target as HTMLElement).closest<HTMLElement>('[data-node]')?.dataset.node ?? null; wake(); },{signal});
   graph.addEventListener('focusout',()=>{keyboardFocus=null;wake();},{signal});
   search.addEventListener('input',()=>{ if (!editingSearch) rememberView(); editingSearch=true; userOffsets.clear(); searchText=search.value; query=searchText.trim().toLocaleLowerCase(); closeDetail(false,false); applyVisibility(); },{signal});
   search.addEventListener('blur',()=>{editingSearch=false;},{signal});
   document.addEventListener('keydown',(event)=>{if(event.key==='Escape'&&selected)closeDetail(true,true,true);},{signal});
-  document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(frame);frame=0;}else wake();},{signal});
+  document.addEventListener('visibilitychange',()=>{lastTime=0;if(document.hidden){cancelAnimationFrame(frame);frame=0;}else wake();},{signal});
   reducedMotion.addEventListener('change',()=>{motion=!reducedMotion.matches;updateMotionControl();camera={...targetCamera};updateTargets();wake();},{signal});
   mobileQuery.addEventListener('change',resize,{signal});
   const resizeObserver=new ResizeObserver(resize); resizeObserver.observe(stage);
   const intersection=new IntersectionObserver(([entry])=>{
     inView=entry.isIntersecting;
-    if(!inView){cancelAnimationFrame(frame);frame=0;}else wake();
+    if(!inView){cancelAnimationFrame(frame);frame=0;lastTime=0;}else wake();
   }); intersection.observe(stage);
   updateMotionControl();
   resize(); root.classList.add('is-ready');

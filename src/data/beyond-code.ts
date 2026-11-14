@@ -14,7 +14,7 @@ export interface BeyondCodeCategory {
 export interface BeyondCodeNode {
   id: string;
   category: BeyondCodeCategoryId;
-  type: 'work' | 'person' | 'group' | 'studio' | 'topic';
+  type: 'work' | 'person' | 'group' | 'studio' | 'topic' | 'series';
   title: LocalizedString;
   subtitle?: LocalizedString;
   wikiPage?: string;
@@ -30,7 +30,8 @@ export interface BeyondCodeNode {
 
 export type BeyondCodeRelationship =
   | 'performed-by' | 'written-by' | 'adapted-from'
-  | 'produced-by' | 'shared-universe';
+  | 'produced-by' | 'shared-universe' | 'associated-with'
+  | 'part-of' | 'style-of' | 'ingredient-of';
 
 export interface BeyondCodeEdge {
   id: string;
@@ -39,7 +40,7 @@ export interface BeyondCodeEdge {
   relationship: BeyondCodeRelationship;
   label: LocalizedString;
   provenance: {
-    kind: 'existing-metadata' | 'official-source';
+    kind: 'existing-metadata' | 'official-source' | 'user-confirmed';
     source: string;
   };
 }
@@ -71,29 +72,29 @@ function slug(value: string): string {
     .replace(/^-|-$/g, '');
 }
 
-type WorkInterest = Extract<InterestItem, { title: LocalizedString }>;
+type DetailedInterest = Extract<InterestItem, { title: LocalizedString }>;
 
-function isWork(item: InterestItem): item is WorkInterest {
+function hasInterestTitle(item: InterestItem): item is DetailedInterest {
   return typeof item === 'object' && 'title' in item;
 }
 
 function collectionNode(item: InterestItem, category: BeyondCodeCategoryId): BeyondCodeNode {
-  const work = isWork(item) ? item : undefined;
-  const title = work ? work.title : item as LocalizedString;
+  const detail = hasInterestTitle(item) ? item : undefined;
+  const title = detail ? detail.title : item as LocalizedString;
   return {
-    id: `${category}-${slug(resolveLocalized(title))}`,
+    id: detail?.id ?? `${category}-${slug(resolveLocalized(title))}`,
     category,
-    type: work ? 'work' : 'topic',
+    type: detail ? detail.kind ?? 'work' : 'topic',
     title,
-    subtitle: work?.artist,
-    wikiPage: work?.wikiPage,
-    externalUrl: work?.wikiPage
-      ? `https://en.wikipedia.org/wiki/${encodeURIComponent(work.wikiPage.replaceAll(' ', '_'))}`
+    subtitle: detail?.artist,
+    wikiPage: detail?.wikiPage,
+    externalUrl: detail?.wikiPage
+      ? `https://en.wikipedia.org/wiki/${encodeURIComponent(detail.wikiPage.replaceAll(' ', '_'))}`
       : undefined,
-    previewProvider: work?.previewProvider,
-    itunesCountry: work?.itunesCountry,
-    itunesTerm: work?.itunesTerm,
-    audioSrc: work?.audioSrc,
+    previewProvider: detail?.previewProvider,
+    itunesCountry: detail?.itunesCountry,
+    itunesTerm: detail?.itunesTerm,
+    audioSrc: detail?.audioSrc,
     isContext: false,
   };
 }
@@ -119,18 +120,6 @@ const contextNodes: BeyondCodeNode[] = [
     subtitle: { en: 'Artist', zh: '音乐人', ja: 'アーティスト' }, isContext: true,
   },
   {
-    id: 'book-howls-moving-castle', category: 'books', type: 'work',
-    title: { en: "Howl's Moving Castle", zh: '哈尔的移动城堡', ja: '魔法使いハウルと火の悪魔' },
-    subtitle: { en: 'Source novel · Diana Wynne Jones', zh: '原作小说 · Diana Wynne Jones', ja: '原作小説 · ダイアナ・ウィン・ジョーンズ' },
-    externalUrl: 'https://www.waltdisneystudios.jp/studio/ghibli/0601', isContext: true,
-  },
-  {
-    id: 'person-diana-wynne-jones', category: 'books', type: 'person',
-    title: { en: 'Diana Wynne Jones', ja: 'ダイアナ・ウィン・ジョーンズ' },
-    subtitle: { en: 'Author', zh: '作家', ja: '作家' },
-    externalUrl: 'https://www.ghibli.jp/works/howl/', isContext: true,
-  },
-  {
     id: 'studio-ghibli', category: 'movies', type: 'studio',
     title: { en: 'Studio Ghibli', zh: '吉卜力工作室', ja: 'スタジオジブリ' },
     externalUrl: 'https://www.ghibli.jp/works/howl/', isContext: true,
@@ -150,6 +139,10 @@ const labels: Record<BeyondCodeRelationship, LocalizedString> = {
   'adapted-from': { en: 'Adapted from', zh: '改编自', ja: '原作' },
   'produced-by': { en: 'Produced by', zh: '制作', ja: '制作' },
   'shared-universe': { en: 'Shared universe', zh: '共同世界观', ja: '共通の世界観' },
+  'associated-with': { en: 'Associated with', zh: '相关联', ja: '関連' },
+  'part-of': { en: 'Part of series', zh: '属于系列', ja: 'シリーズ作品' },
+  'style-of': { en: 'Style of', zh: '风格分支', ja: '系統' },
+  'ingredient-of': { en: 'Ingredient for', zh: '食材', ja: '食材' },
 };
 
 function edge(
@@ -160,31 +153,71 @@ function edge(
     label: labels[relationship], provenance };
 }
 
-const artistContextIds: Record<string, string> = {
+const artistNodeIds: Record<string, string> = {
   Queen: 'group-queen',
   'Kenshi Yonezu': 'person-kenshi-yonezu',
+  'Fujii Kaze': 'music-fujii-kaze',
 };
 
-// Only existing artist metadata creates music links; category membership is not an edge.
+const artistSources: Record<string, BeyondCodeEdge['provenance']> = {
+  'music-another-one-bites-the-dust': {
+    kind: 'official-source', source: 'https://www.queenonline.com/news/the-game-44-years-on',
+  },
+  'music-matsuri': {
+    kind: 'official-source', source: 'https://fujiikaze.com/gallery/matsuri_mv_bts/',
+  },
+  'music-kirari': {
+    kind: 'official-source', source: 'https://fujiikaze.com/music/kirari/',
+  },
+};
+
+// Only explicit artist metadata creates music links; a favorite artist is not inferred.
 const artistEdges = interests.flatMap((category) => category.items.flatMap((item) => {
-  if (!isWork(item) || !item.artist) return [];
+  if (!hasInterestTitle(item) || !item.artist) return [];
   const artist = resolveLocalized(item.artist);
-  const target = artistContextIds[artist];
+  const target = artistNodeIds[artist];
   if (!target) throw new Error(`Missing Beyond Code artist context: ${artist}`);
-  return [edge(`${categoryId(category.name)}-${slug(resolveLocalized(item.title))}`, target,
-    'performed-by', { kind: 'existing-metadata', source: 'src/data/about.ts#interests/Music/artist' })];
+  const source = collectionNode(item, categoryId(category.name)).id;
+  return [edge(source, target, 'performed-by', artistSources[source]
+    ?? { kind: 'existing-metadata', source: 'src/data/about.ts#interests/Music/artist' })];
 }));
 
-const howlSource = { kind: 'official-source' as const, source: 'https://www.waltdisneystudios.jp/studio/ghibli/0601' };
+const approvedExpansion = {
+  kind: 'user-confirmed' as const,
+  source: 'docs/beyond-code-preview.md#approved-expansion-2026-11-14',
+};
+const trilogySource = {
+  kind: 'official-source' as const,
+  source: 'https://www.fathomentertainment.com/series/the-lord-of-the-rings-trilogy/',
+};
 
 export const edges: BeyondCodeEdge[] = [
   ...artistEdges,
-  edge('movies-howls-moving-castle', 'book-howls-moving-castle', 'adapted-from', howlSource),
-  edge('book-howls-moving-castle', 'person-diana-wynne-jones', 'written-by', howlSource),
-  edge('movies-howls-moving-castle', 'studio-ghibli', 'produced-by', howlSource),
+  edge('movies-howls-moving-castle', 'studio-ghibli', 'produced-by', {
+    kind: 'official-source', source: 'https://www.ghibli.jp/works/howl/',
+  }),
   edge('movies-coco', 'studio-pixar', 'produced-by', {
     kind: 'official-source', source: 'https://www.pixar.com/coco',
   }),
+  edge('movies-ratatouille', 'studio-pixar', 'produced-by', {
+    kind: 'official-source', source: 'https://www.pixar.com/ratatouille',
+  }),
+  edge('movies-coco', 'movies-disney', 'associated-with', {
+    kind: 'official-source', source: 'https://movies.disney.com/coco',
+  }),
+  edge('movies-ratatouille', 'movies-disney', 'associated-with', {
+    kind: 'official-source', source: 'https://movies.disney.com/ratatouille',
+  }),
+  edge('topics-analytical-psychology', 'topics-carl-jung', 'associated-with', {
+    kind: 'official-source', source: 'https://iaap.org/jung-analytical-psychology/carl-gustav-jung/',
+  }),
+  edge('movies-the-fellowship-of-the-ring', 'movies-the-lord-of-the-rings', 'part-of', trilogySource),
+  edge('movies-the-two-towers', 'movies-the-lord-of-the-rings', 'part-of', trilogySource),
+  edge('movies-the-return-of-the-king', 'movies-the-lord-of-the-rings', 'part-of', trilogySource),
+  edge('foods-jiro-ramen', 'foods-ramen', 'style-of', approvedExpansion),
+  edge('foods-otoro', 'foods-sushi', 'ingredient-of', approvedExpansion),
+  edge('foods-wagyu', 'foods-yakiniku', 'ingredient-of', approvedExpansion),
+  edge('foods-beef-tongue', 'foods-yakiniku', 'ingredient-of', approvedExpansion),
   edge('games-cyberpunk-2077', 'drama-cyberpunk-edgerunners', 'shared-universe', {
     kind: 'official-source',
     source: 'https://www.cyberpunk.net/en/news/35512/announcing-an-original-anime-series-cyberpunk-edgerunners',

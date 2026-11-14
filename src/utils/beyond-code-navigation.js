@@ -9,7 +9,7 @@
 /** @typedef {{
  * category:string, query:string, mode:string, selected:string|null,
  * camera:{x:number,y:number,scale:number},
- * userOffsets:Array<[string,ViewPoint]>
+ * userOffsets:Array<[string,ViewPoint]>, positions?:Array<[string,ViewPoint]>, layoutEpoch?:number
  * }} ViewSnapshot */
 
 /** @param {ViewSnapshot} first @param {ViewSnapshot} second */

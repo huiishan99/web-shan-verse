@@ -7,6 +7,7 @@
 </div>
 
 <script>
+  import { createFrameProfile } from '../utils/beyond-code-profile.js';
   interface Star {
     x: number;
     y: number;
@@ -40,6 +41,8 @@
 
     const canvas = canvasElement;
     const ctx = drawingContext;
+    const profileLabel = import.meta.env.DEV ? new URLSearchParams(location.search).get('graph-profile') : null;
+    const profile = profileLabel ? createFrameProfile(`starfield-${profileLabel}`) : null;
 
     let active = true;
     let width = window.innerWidth;
@@ -207,6 +210,7 @@
       }
 
       lastDrawTime = timestamp;
+      const drawStarted = profile ? performance.now() : 0;
 
       ctx.clearRect(0, 0, width, height);
 
@@ -229,6 +233,8 @@
 
         drawStar(star.x, star.y, star.size, currentOpacity, star.color, star.glowColor);
       });
+
+      profile?.record(timestamp, 0, performance.now() - drawStarted, stars.length);
 
       state.frameId = requestAnimationFrame(animate);
     }

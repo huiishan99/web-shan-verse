@@ -99,15 +99,6 @@ const graphData = JSON.stringify({
       <div class="beyond-atmosphere" aria-hidden="true"></div>
       <div class="beyond-graph" data-beyond-graph role="group" aria-label={copy.constellation}>
         <canvas class="beyond-links" data-beyond-canvas aria-hidden="true"></canvas>
-        <div class="beyond-hubs">
-          {localizedCategories.map((category) => (
-            <button type="button" class="beyond-hub" data-category-hub={category.id} aria-label={category.title} aria-pressed="false">
-              <span class="beyond-hub-orbit" aria-hidden="true"></span>
-              <span class="beyond-hub-icon" aria-hidden="true"><Icon name={category.icon} size={21} /></span>
-              <span class="beyond-hub-label">{category.title}</span>
-            </button>
-          ))}
-        </div>
         <div class="beyond-nodes">
           {graphNodes.map((node) => {
             const category = localizedCategories.find((category) => category.id === node.category)!;
@@ -229,6 +220,9 @@ const graphData = JSON.stringify({
   .beyond-node-subtitle { display:none; }
   .beyond-node.is-minor .beyond-node-art { filter:saturate(.8); }
   .beyond-node:hover .beyond-node-label,.beyond-node:focus-visible .beyond-node-label,.beyond-node.is-selected .beyond-node-label { opacity:1; }
+  .beyond-node--series .beyond-node-label { opacity:1; color:#d8c797; }
+  .beyond-node--series .beyond-node-art img { object-fit:contain; padding:5px; }
+  .beyond-node--series .beyond-node-orbit { border-color:rgba(201,162,39,.3); }
   .beyond-node:hover,.beyond-node:focus-visible,.beyond-node.is-selected { z-index:5; outline:none; }
   .beyond-node:hover .beyond-node-art,.beyond-node:focus-visible .beyond-node-art,.beyond-node.is-selected .beyond-node-art { border-color:#d3b666; box-shadow:0 0 24px rgba(201,162,39,.17); }
   .beyond-node:hover img,.beyond-node.is-selected img { opacity:1; }
@@ -236,14 +230,6 @@ const graphData = JSON.stringify({
   .beyond-node.is-muted { opacity:.12; }
   .beyond-node.is-muted:hover,.beyond-node.is-muted:focus-visible { opacity:1; }
   .beyond-node.is-neighbor { color:#e4d5b2; opacity:1; }
-  .beyond-hubs { position:absolute; inset:0; pointer-events:none; }
-  .beyond-hub { position:absolute; top:0; left:0; display:grid; place-items:center; width:var(--hub-size,46px); height:var(--hub-size,46px); padding:0; border:1px solid rgba(201,162,39,.48); border-radius:50%; background:radial-gradient(circle,rgba(55,43,17,.65),rgba(12,12,17,.95)); color:#c7aa61; pointer-events:auto; touch-action:none; user-select:none; z-index:2; transition:border-color .2s,box-shadow .2s,opacity .3s; }
-  .beyond-hub-orbit { position:absolute; inset:-5px; border:1px solid rgba(201,162,39,.13); border-radius:50%; pointer-events:none; }
-  .beyond-hub-icon { display:grid; place-items:center; pointer-events:none; }
-  .beyond-hub-label { position:absolute; top:calc(100% + 9px); left:50%; width:max-content; max-width:130px; transform:translateX(-50%); padding:2px 4px; border-radius:3px; background:rgba(10,10,15,.82); font:400 13px/1.15 var(--font-display); letter-spacing:.025em; color:#c9b887; text-align:center; text-shadow:0 1px 8px #08080d,0 0 6px #08080d; pointer-events:none; }
-  .beyond-hub:hover,.beyond-hub:focus-visible,.beyond-hub[aria-pressed='true'] { border-color:#d7ba6e; box-shadow:0 0 24px rgba(201,162,39,.15); color:#e0c681; }
-  .beyond-hub.is-muted { opacity:.12; }
-  .beyond-hub[hidden] { display:none; }
   .beyond-bottom { position:absolute; bottom:17px; left:18px; right:18px; display:flex; align-items:center; justify-content:flex-end; pointer-events:none; z-index:7; }
   .beyond-navigation { display:flex; align-items:center; gap:2px; pointer-events:auto; padding:4px; border:1px solid rgba(201,162,39,.15); border-radius:4px; background:rgba(10,10,15,.85); backdrop-filter:blur(8px); }
   .beyond-navigation button { width:34px; height:34px; display:grid; place-items:center; padding:0; border:0; background:transparent; border-radius:2px; }
@@ -313,7 +299,6 @@ const graphData = JSON.stringify({
     .beyond-breadcrumb { padding:0 22px 5px; }
     .beyond-stage { min-height:580px; height:calc(100svh - 339px); border-top:0; scroll-margin-top:90px; }
     .beyond-node-label { font-size:13px; max-width:130px; }
-    .beyond-hub-label { font-size:12px; max-width:110px; }
     .beyond-bottom { bottom:14px; left:20px; right:20px; gap:12px; }
     .beyond-navigation button { width:44px; height:44px; }
     .beyond-detail { top:auto; height:43%; min-height:260px; max-height:450px; width:100%; border-left:0; border-top:1px solid rgba(201,162,39,.3); display:grid; grid-template-columns:95px minmax(0,1fr); padding-top:23px; box-shadow:0 -20px 40px rgba(0,0,0,.3); }

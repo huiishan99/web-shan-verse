@@ -3,10 +3,13 @@
  * seconds; radii/padding are screen pixels. This is damped graph physics, not a
  * fluid simulation. It owns no timer, DOM, random seed, or persistent state.
  *
- * Links preserve the relative vector between target anchors. A normal
+ * Links preserve the relative vector between canonical link anchors (or target
+ * anchors when no separate reference is supplied). A normal
  * length-only spring barely responds to sideways dragging of a long link;
  * displacement springs let connected works follow that gesture immediately.
  * Category cohesion is a separate, weaker layout force, never a semantic edge.
+ * Optional dimensionless masses affect inertia and contact response equally;
+ * a pinned body always has zero inverse mass regardless of its supplied mass.
  */
 
 /** @typedef {{id:string,x:number,y:number,vx:number,vy:number,targetX?:number,targetY?:number,radius?:number,screenRadius?:number,category?:string}} PhysicsNode */
@@ -16,6 +19,8 @@
  * draggedId?:string|null, dragPoint?:{x:number,y:number}|null,
  * fixedIds?:ReadonlySet<string>, categoryFor?:(node:PhysicsNode)=>string|undefined,
  * radiusFor?:(node:PhysicsNode)=>number, padding?:number,
+ * massFor?:(node:PhysicsNode)=>number,
+ * linkAnchorFor?:(node:PhysicsNode)=>{x:number,y:number}|undefined,
  * anchorOffsetFor?:(node:PhysicsNode)=>{x:number,y:number}|undefined,
  * anchorStrength?:number, linkStrength?:number, categoryStrength?:number,
  * repulsionStrength?:number, repulsionRange?:number, damping?:number,
@@ -61,11 +66,16 @@ function prepare(nodes, options) {
       node.vy = finite(node.vy, 0);
       const defaultRadius = finite(node.screenRadius, finite(node.radius, 20) * Math.sqrt(scale));
       const radius = clamp(finite(options.radiusFor?.(node), defaultRadius), 0.5, 300) / scale;
+      const mass = clamp(finite(options.massFor?.(node), 1), 0.25, 16);
+      const fixed = node.id === options.draggedId || !!options.fixedIds?.has(node.id);
+      const targetX = finite(node.targetX, node.x); const targetY = finite(node.targetY, node.y);
+      const linkAnchor = options.linkAnchorFor?.(node);
       return {
-        node, radius,
-        targetX: finite(node.targetX, node.x), targetY: finite(node.targetY, node.y),
+        node, radius, inverseMass: fixed ? 0 : 1 / mass,
+        targetX, targetY,
+        linkX: finite(linkAnchor?.x, targetX), linkY: finite(linkAnchor?.y, targetY),
         category: options.categoryFor?.(node) ?? node.category,
-        fixed: node.id === options.draggedId || !!options.fixedIds?.has(node.id),
+        fixed,
       };
     });
   const byId = new Map(entries.map((entry) => [entry.node.id, entry]));
@@ -107,8 +117,8 @@ function projectCollisions(entries, padding, iterations) {
     for (let first = 0; first < entries.length; first++) {
       for (let second = first + 1; second < entries.length; second++) {
         const a = entries[first]; const b = entries[second];
-        const aWeight = a.fixed ? 0 : 1;
-        const bWeight = b.fixed ? 0 : 1;
+        const aWeight = a.inverseMass;
+        const bWeight = b.inverseMass;
         const weight = aWeight + bWeight;
         if (!weight) continue;
         const { distance, minimum, normal } = separation(a, b, padding);
@@ -145,6 +155,9 @@ function diagnostics(entries, padding) {
 /**
  * Mutates only x/y/vx/vy of active input nodes; target anchors stay untouched.
  * dt is seconds. Long gaps are clamped, not caught up after a hidden tab resumes.
+ * massFor defaults to one and is bounded to 0.25..16; it adds no node fields.
+ * linkAnchorFor optionally separates canonical spring rest vectors from soft
+ * placement targets, so persisting a drag does not silently erase link tension.
  * maxSpeed/maxAcceleration/repulsionRange are screen units per second/per second²/pixels.
  * @param {PhysicsNode[]} nodes
  * @param {PhysicsLink[]} links
@@ -200,8 +213,8 @@ export function stepPhysics(nodes, links, options = {}) {
 
     for (const { source, target } of pairs) {
       const a = source.node; const b = target.node;
-      const x = ((b.x - target.targetX) - (a.x - source.targetX)) * linkStrength;
-      const y = ((b.y - target.targetY) - (a.y - source.targetY)) * linkStrength;
+      const x = ((b.x - target.linkX) - (a.x - source.linkX)) * linkStrength;
+      const y = ((b.y - target.linkY) - (a.y - source.linkY)) * linkStrength;
       forces.get(a.id).x += x; forces.get(a.id).y += y;
       forces.get(b.id).x -= x; forces.get(b.id).y -= y;
     }
@@ -225,7 +238,8 @@ export function stepPhysics(nodes, links, options = {}) {
     for (const entry of entries) {
       if (entry.fixed) continue;
       const { node } = entry;
-      const acceleration = limit(forces.get(node.id), maximumAcceleration);
+      const force = forces.get(node.id);
+      const acceleration = limit({ x: force.x * entry.inverseMass, y: force.y * entry.inverseMass }, maximumAcceleration);
       const velocity = limit({ x: (node.vx + acceleration.x * dt) * damping,
         y: (node.vy + acceleration.y * dt) * damping }, maximumSpeed);
       node.vx = velocity.x; node.vy = velocity.y;

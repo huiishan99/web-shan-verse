@@ -27,7 +27,9 @@ test('every actual cross-category relation is materially shorter and Cyberpunk n
   const related = byId(createGraphLayout(nodes, edges));
   const dataById = new Map(nodes.map((node) => [node.id, node]));
   const cross = edges.filter((edge) => dataById.get(edge.source).category !== dataById.get(edge.target).category);
-  assert.ok(cross.length >= 2);
+  assert.deepEqual(cross.map((edge) => [edge.source, edge.target]),
+    [['games-cyberpunk-2077', 'drama-cyberpunk-edgerunners']],
+    'Removing the unread Howl novel leaves only the approved Cyberpunk cross-category branch');
   for (const edge of cross) {
     const before = distance(original.get(edge.source), original.get(edge.target));
     const after = distance(related.get(edge.source), related.get(edge.target));
