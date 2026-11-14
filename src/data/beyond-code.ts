@@ -255,6 +255,9 @@ export const edges: BeyondCodeEdge[] = [
   edge('topics-analytical-psychology', 'topics-carl-jung', 'associated-with', {
     kind: 'official-source', source: 'https://iaap.org/jung-analytical-psychology/carl-gustav-jung/',
   }),
+  edge('topics-socionics', 'topics-carl-jung', 'associated-with', {
+    kind: 'user-confirmed', source: 'docs/beyond-code-preview.md#category-legibility-2026-11-14',
+  }),
   edge('movies-the-fellowship-of-the-ring', 'movies-the-lord-of-the-rings', 'part-of', trilogySource),
   edge('movies-the-two-towers', 'movies-the-lord-of-the-rings', 'part-of', trilogySource),
   edge('movies-the-return-of-the-king', 'movies-the-lord-of-the-rings', 'part-of', trilogySource),

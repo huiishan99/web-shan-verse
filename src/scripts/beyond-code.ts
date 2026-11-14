@@ -1,5 +1,5 @@
 import {
-  clamp, clusterCenters, connectedIds, createGraphLayout,
+  clamp, categoryRegions, connectedIds, createGraphLayout, minCameraScale,
   fitCamera, screenToWorld, worldToScreen, zoomAt,
 } from '../utils/beyond-code-graph.js';
 import { solveStatic, stepPhysics } from '../utils/beyond-code-physics.js';
@@ -36,7 +36,7 @@ interface ViewSnapshot {
   layoutEpoch: number;
 }
 interface NodeView {
-  label: HTMLElement | null; text: string; size?: number; minor?: boolean;
+  label: HTMLElement | null; text: string; size?: number;
   labelVisible?: boolean; font?: string; labelHeight?: number;
 }
 
@@ -70,8 +70,9 @@ function setupBeyondCode() {
   const signal = controller.signal;
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const mobileQuery = window.matchMedia('(max-width: 640px)');
+  const compactLayoutQuery = window.matchMedia('(max-width: 1050px)');
   const nodeById = new Map(data.nodes.map((node) => [node.id, node]));
-  const contentLayout: LayoutNode[] = createGraphLayout(data.nodes, data.edges).map((node: Omit<LayoutNode, 'vx' | 'vy' | 'targetX' | 'targetY' | 'element'>) => ({
+  const contentLayout: LayoutNode[] = createGraphLayout(data.nodes, data.edges, {mobile:compactLayoutQuery.matches}).map((node: Omit<LayoutNode, 'vx' | 'vy' | 'targetX' | 'targetY' | 'element'>) => ({
     ...node, vx: 0, vy: 0, targetX: node.x, targetY: node.y,
     element: root.querySelector<HTMLButtonElement>(`[data-node="${node.id}"]`)!,
   }));
@@ -86,13 +87,16 @@ function setupBeyondCode() {
   const baseSizes = new Map(data.nodes.map((node) => [node.id,
     baseNodeDiameter(connectionCounts.get(node.id) ?? 0, node.sizeBoost)]));
   const positions = new Map(layout.map((node) => [node.id, node]));
+  let regions = categoryRegions(layout, data.nodes);
+  const regionLabels = new Map([...root.querySelectorAll<HTMLElement>('[data-region-label]')]
+    .map((element) => [element.dataset.regionLabel!, element]));
   const views = new Map<string, NodeView>(layout.map((node) => {
     const entry = nodeById.get(node.id);
-    const duplicateName = entry && data.nodes.some((other) => other.id !== entry.id && other.title === entry.title);
-    const text = entry ? duplicateName ? `${entry.title} · ${data.categories.find((item) => item.id === entry.category)?.title ?? ''}` : entry.title : '';
+    const text = entry?.title ?? '';
     const label = node.element.querySelector<HTMLElement>('.beyond-node-label');
     if (entry) node.element.dataset.category = entry.category;
-    if (label) label.textContent = text;
+    const labelTitle=label?.querySelector<HTMLElement>('[data-node-label-title]');
+    if (labelTitle) labelTitle.textContent = text;
     return [node.id, {label, text}];
   }));
   const history = createViewHistory();
@@ -124,33 +128,13 @@ function setupBeyondCode() {
   const userOffsets = new Map<string, Point>();
   let initialized = false;
   let horizontalStretch = 1;
-  let anchorModeMobile = mobileQuery.matches;
+  let anchorModeCompact = compactLayoutQuery.matches;
   let layoutEpoch = 0;
-  const originalAnchors = new Map(layout.map((node) => [node.id, { x: node.anchorX, y: node.anchorY }]));
-  const mobileCenters: Record<string, Point> = {
-    games:{x:180,y:180},movies:{x:740,y:180},
-    books:{x:180,y:620},drama:{x:740,y:620},
-    music:{x:180,y:1060},topics:{x:740,y:1060},
-    hobbies:{x:180,y:1500},foods:{x:740,y:1500},
-  };
-  function categoryCenter(id: string) {
-    if (mobileQuery.matches) return mobileCenters[id];
-    const center=clusterCenters[id as keyof typeof clusterCenters];
-    return {x:center.x*horizontalStretch,y:center.y};
-  }
-
-  function isMajor(id: string) {
-    return (connectionCounts.get(id) ?? 0) >= 2 || neighbors.has(id);
-  }
 
   function nodeSize(node: { id: string }) {
     const entry = nodeById.get(node.id)!;
     if (entry.type === 'topic' && !entry.artwork) return 20;
     return screenNodeDiameter(baseSizes.get(node.id)!, camera.scale, selected === node.id);
-  }
-
-  function categoryOf(id: string) {
-    return nodeById.get(id)!.category;
   }
 
   function physicsLinks() {
@@ -259,15 +243,27 @@ function setupBeyondCode() {
   }
 
   function setCamera(next: Camera) {
-    targetCamera = { ...next, scale: clamp(next.scale, 0.22, 2.4) };
+    targetCamera = { ...next, scale: clamp(next.scale, minCameraScale, 2.4) };
     if (reducedMotion.matches || !motion) camera = { ...targetCamera };
     wake();
   }
 
   function fitVisible() {
     const points = layout.filter((node) => visibleIds.has(node.id)).map((node)=>({x:node.targetX,y:node.targetY}));
-    const padding = mobileQuery.matches ? 42 : 85;
+    if (category === 'all' && !query && !selected) {
+      for (const region of regions) points.push({x:region.minX,y:region.minY},{x:region.maxX,y:region.maxY});
+    }
+    const overview=category==='all'&&!query&&!selected;
+    const padding = overview ? 28 : mobileQuery.matches ? 42 : 85;
     const fitted = fitCamera(points, viewport(), padding);
+    if (overview && compactLayoutQuery.matches && regions.length) {
+      const left=Math.min(...regions.map((region)=>region.minX));
+      const right=Math.max(...regions.map((region)=>region.maxX));
+      if ((right-left)*fitted.scale>viewport().width-padding*2) {
+        fitted.x=left+(viewport().width/2-padding)/fitted.scale;
+      }
+      fitted.y-=12/fitted.scale;
+    }
     setCamera(fitted);
   }
 
@@ -471,22 +467,22 @@ function setupBeyondCode() {
   function resize() {
     width = stage.clientWidth; height = stage.clientHeight;
     if (selected) detailWidth = detail.getBoundingClientRect().width;
-    const nextStretch = mobileQuery.matches ? 1 : Math.max(1, width / Math.max(300,height-65) / 1.55);
-    if (Math.abs(nextStretch-horizontalStretch)>.01 || !initialized || anchorModeMobile!==mobileQuery.matches) {
+    const nextStretch = compactLayoutQuery.matches ? 1 : Math.max(1, width / Math.max(300,height-65) / 1.55);
+    if (Math.abs(nextStretch-horizontalStretch)>.01 || !initialized || anchorModeCompact!==compactLayoutQuery.matches) {
       resetTransientGesture();
       userOffsets.clear();
       horizontalStretch=nextStretch;
-      anchorModeMobile=mobileQuery.matches;
+      anchorModeCompact=compactLayoutQuery.matches;
       layoutEpoch++;
+      const anchors = new Map(createGraphLayout(data.nodes, data.edges, {mobile:compactLayoutQuery.matches})
+        .map((node: Omit<LayoutNode, 'vx' | 'vy' | 'targetX' | 'targetY' | 'element'>) => [node.id,node]));
       for (const node of layout) {
-        const anchor=originalAnchors.get(node.id)!;
-        const nodeCategory=categoryOf(node.id);
-        const originalCenter=clusterCenters[nodeCategory as keyof typeof clusterCenters];
-        const center=categoryCenter(nodeCategory);
-        node.anchorX=mobileQuery.matches?center.x+(anchor.x-originalCenter.x)*.85:anchor.x*horizontalStretch;
-        node.anchorY=mobileQuery.matches?center.y+(anchor.y-originalCenter.y)*.85:anchor.y;
+        const anchor=anchors.get(node.id)!;
+        node.anchorX=anchor.anchorX*horizontalStretch;
+        node.anchorY=anchor.anchorY;
         node.x=node.anchorX; node.y=node.anchorY;
       }
+      regions=categoryRegions(layout,data.nodes);
       updateTargets();
     }
     applyVisibility(false);
@@ -506,6 +502,7 @@ function setupBeyondCode() {
     ctx!.clearRect(0, 0, width, height);
     const view = viewport();
     const screenPoints = new Map<string, Point>();
+    const categoryOrbitTops = new Map<string,number>();
     const labelCandidates: { node: LayoutNode; point: Point; size: number }[] = [];
     const occupied: { x:number; y:number; w:number; h:number }[] = [];
     const needsCaptions = nodeById.has(hovered ?? '') || nodeById.has(keyboardFocus ?? '') || !!selected;
@@ -514,18 +511,28 @@ function setupBeyondCode() {
       const position = worldToScreen(node, camera, view);
       screenPoints.set(node.id, position);
       const size = nodeSize(node);
+      const categoryId=nodeById.get(node.id)!.category;
+      categoryOrbitTops.set(categoryId,Math.min(categoryOrbitTops.get(categoryId)??Infinity,position.y-size/2-6));
       const presentation = views.get(node.id)!;
       node.element.style.transform = `translate(${position.x}px, ${position.y}px) translate(-50%, -50%)`;
       if (needsCaptions) occupied.push({x:position.x-size/2-4,y:position.y-size/2-4,w:size+8,h:size+8});
       if (presentation.size !== size) node.element.style.setProperty('--node-size', `${size}px`);
       presentation.size = size;
-      const minor = !isMajor(node.id);
-      if (presentation.minor !== minor) node.element.classList.toggle('is-minor', minor);
-      presentation.minor = minor;
       const showLabel = hovered === node.id || keyboardFocus === node.id || selected === node.id;
       if (presentation.labelVisible !== showLabel) presentation.label!.style.visibility = showLabel ? 'visible' : 'hidden';
       presentation.labelVisible = showLabel;
       if (showLabel) labelCandidates.push({node,point:position,size});
+    }
+
+    for (const region of regions) {
+      const label = regionLabels.get(region.id)!;
+      label.hidden = category !== 'all' || !!query || !!selected;
+      if (!label.hidden) {
+        const point = worldToScreen({x:region.labelX,y:region.labelY},camera,view);
+        const labelY=Math.min(point.y-8,(categoryOrbitTops.get(region.id)??Infinity)-18);
+        label.style.transform = `translate(${point.x}px, ${labelY}px) translate(-50%, -50%)`;
+        if(needsCaptions) occupied.push({x:point.x-80,y:labelY-10,w:160,h:20});
+      }
     }
 
     // One visual grammar: quiet straight threads, always outside image rings.
@@ -554,7 +561,7 @@ function setupBeyondCode() {
       const font=`${mobileQuery.matches?13:14}px "Crimson Pro", Georgia, serif`;
       if (presentation.font !== font) {
         ctx!.font=font;
-        presentation.labelHeight=Math.min(4,Math.ceil(ctx!.measureText(presentation.text).width/labelWidth))*17;
+        presentation.labelHeight=Math.max(1,Math.ceil(ctx!.measureText(presentation.text).width/labelWidth))*17+15;
         presentation.font=font;
       }
       const labelHeight=presentation.labelHeight!;

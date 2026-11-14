@@ -1,5 +1,8 @@
 /** Camera geometry is shared by mouse, touch, keyboard, and category navigation. */
 export const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+// Presentation range for the larger classified overview; force units/limits
+// remain owned by the independent physics helper.
+export const minCameraScale = 0.16;
 
 export function worldToScreen(point, camera, viewport) {
   return {
@@ -29,7 +32,7 @@ export function fitCamera(points, viewport, padding = 85) {
     scale: clamp(Math.min(
       Math.max(60, viewport.width - padding * 2) / Math.max(240, maxX - minX),
       Math.max(60, viewport.height - padding * 2) / Math.max(240, maxY - minY),
-    ), 0.22, 1.5),
+    ), minCameraScale, 1.5),
   };
 }
 
@@ -44,7 +47,7 @@ export function connectedIds(id, edges) {
 
 export function zoomAt(camera, point, scale, viewport) {
   const world = screenToWorld(point, camera, viewport);
-  const nextScale = clamp(scale, 0.22, 2.4);
+  const nextScale = clamp(scale, minCameraScale, 2.4);
   return {
     x: world.x - (point.x - viewport.width / 2) / nextScale,
     y: world.y - (point.y - viewport.height / 2) / nextScale,
@@ -52,7 +55,8 @@ export function zoomAt(camera, point, scale, viewport) {
   };
 }
 
-// Category regions stay stable while related works may meet between regions.
+// Legacy category coordinates remain available to callers that use the camera
+// helpers. The current layout packs measured category regions independently.
 export const clusterCenters = {
   games: { x: 365, y: 270 },
   movies: { x: 960, y: 260 },
@@ -64,115 +68,204 @@ export const clusterCenters = {
   topics: { x: 1510, y: 200 },
 };
 
-function boundedPosition(point, original, maximum) {
-  const dx = point.x - original.x; const dy = point.y - original.y;
-  const distance = Math.hypot(dx, dy);
-  if (distance > maximum) {
-    point.x = original.x + dx / distance * maximum;
-    point.y = original.y + dy / distance * maximum;
-  }
-}
+const nodeSpacing = 220;
+const moduleGap = 40;
+const regionMargin = 140;
+const captionHeight = 90;
+const categoryGap = 220;
+const mobileCategoryGap = 640;
+const categoryOrder = Object.keys(clusterCenters);
+const compareIds = (first, second) => first < second ? -1 : first > second ? 1 : 0;
 
-function pairDirection(first, second) {
-  const dx = second.x - first.x; const dy = second.y - first.y;
-  const distance = Math.hypot(dx, dy);
-  if (distance > 1e-8) return { x: dx / distance, y: dy / distance, distance };
-  // No randomness or timer: coincident fixtures always choose the same normal.
-  const key = [first.id, second.id].sort().join('\u0000');
+function phaseFor(id) {
   let hash = 2166136261;
-  for (let index = 0; index < key.length; index++) hash = Math.imul(hash ^ key.charCodeAt(index), 16777619);
-  const angle = (hash >>> 0) / 4294967296 * Math.PI * 2;
-  const direction = first.id < second.id ? 1 : -1;
-  return { x: Math.cos(angle) * direction, y: Math.sin(angle) * direction, distance: 0 };
+  for (let index = 0; index < id.length; index++) hash = Math.imul(hash ^ id.charCodeAt(index), 16777619);
+  return (hash >>> 0) / 4294967296 * Math.PI * 2;
 }
 
-/**
- * This bounded, one-time relaxation sets base anchors, not animation state.
- * Only supplied semantic edges attract. Unrelated nodes can yield to prevent
- * piles, but weak original-anchor restoration preserves category geography.
- * Context entities have less anchor resistance than collection items.
- */
-function relateBaseAnchors(layout, nodes, edges) {
-  const byId = new Map(layout.map((node, index) => [node.id, index]));
-  const distinct = new Map();
+function validLinks(nodes, edges) {
+  const ids = new Set(nodes.map((node) => node.id));
+  const pairs = new Map();
   for (const edge of Array.isArray(edges) ? edges : []) {
-    const source = byId.get(edge?.source); const target = byId.get(edge?.target);
-    if (source === undefined || target === undefined || source === target) continue;
-    const key = [edge.source, edge.target].sort().join('\u0000');
-    if (!distinct.has(key)) distinct.set(key, { source: Math.min(source, target), target: Math.max(source, target) });
+    if (!ids.has(edge?.source) || !ids.has(edge?.target) || edge.source === edge.target) continue;
+    const pair = [edge.source, edge.target].sort(compareIds);
+    pairs.set(JSON.stringify(pair), { source: pair[0], target: pair[1] });
   }
-  const links = [...distinct].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0)
-    .map(([, link]) => ({ ...link,
-      ideal: clamp(Math.hypot(layout[link.source].x - layout[link.target].x,
-        layout[link.source].y - layout[link.target].y), 180, 240),
-    }));
-  if (!links.length) return layout;
-
-  const originals = layout.map((node) => ({ x: node.x, y: node.y }));
-  const maximumDisplacement = 520;
-  const minimumSeparation = 100;
-  const constrain = (index) => boundedPosition(layout[index], originals[index], maximumDisplacement);
-
-  function separate(iterations) {
-    for (let iteration = 0; iteration < iterations; iteration++) {
-      let maximumOverlap = 0;
-      for (let first = 0; first < layout.length; first++) {
-        for (let second = first + 1; second < layout.length; second++) {
-          const a = layout[first]; const b = layout[second];
-          const normal = pairDirection(a, b);
-          const overlap = minimumSeparation - normal.distance;
-          if (overlap <= 0) continue;
-          maximumOverlap = Math.max(maximumOverlap, overlap);
-          const aWeight = nodes[first].isContext ? 1 : 0.65;
-          const bWeight = nodes[second].isContext ? 1 : 0.65;
-          const correction = (overlap + 1e-5) / (aWeight + bWeight);
-          a.x -= normal.x * correction * aWeight; a.y -= normal.y * correction * aWeight;
-          b.x += normal.x * correction * bWeight; b.y += normal.y * correction * bWeight;
-          constrain(first); constrain(second);
-        }
-      }
-      if (maximumOverlap < 1e-4) break;
-    }
-  }
-
-  for (let iteration = 0; iteration < 420; iteration++) {
-    const forces = layout.map((node, index) => {
-      const strength = nodes[index].isContext ? 0.025 : 0.055;
-      return { x: (originals[index].x - node.x) * strength, y: (originals[index].y - node.y) * strength };
-    });
-    for (const { source, target, ideal } of links) {
-      const normal = pairDirection(layout[source], layout[target]);
-      const strength = (normal.distance - ideal) * 0.24;
-      forces[source].x += normal.x * strength; forces[source].y += normal.y * strength;
-      forces[target].x -= normal.x * strength; forces[target].y -= normal.y * strength;
-    }
-    for (let index = 0; index < layout.length; index++) {
-      const force = forces[index];
-      const length = Math.hypot(force.x, force.y);
-      const amount = length > 18 ? 18 / length : 1;
-      layout[index].x += force.x * amount * 0.65;
-      layout[index].y += force.y * amount * 0.65;
-      constrain(index);
-    }
-    separate(2);
-  }
-  separate(180);
-  for (const node of layout) { node.anchorX = node.x; node.anchorY = node.y; }
-  return layout;
+  return [...pairs].sort(([first], [second]) => compareIds(first, second)).map(([, edge]) => edge);
 }
 
-export function createGraphLayout(nodes, edges = []) {
-  const counts = new Map();
-  const layout = nodes.map((node) => {
-    const index = counts.get(node.category) ?? 0;
-    counts.set(node.category, index + 1);
-    const center = clusterCenters[node.category] ?? { x: 800, y: 600 };
-    const major = index < 3 || node.type === 'group' || node.type === 'person';
-    const angle = index * 2.39996323 - Math.PI / 2;
-    const distance = index === 0 ? 35 : 110 + Math.sqrt(index) * 42;
-    const x = center.x + Math.cos(angle) * distance * 1.28;
-    const y = center.y + Math.sin(angle) * distance * 0.87;
-    return { id: node.id, x, y, anchorX: x, anchorY: y, major, phase: index * 1.7, radius: major ? 34 : 19 };
+function boundsOf(points) {
+  return { minX: Math.min(...points.map((point) => point.x)), maxX: Math.max(...points.map((point) => point.x)),
+    minY: Math.min(...points.map((point) => point.y)), maxY: Math.max(...points.map((point) => point.y)) };
+}
+
+function overlaps(first, second, gap) {
+  return first.x < second.x + second.width + gap && first.x + first.width + gap > second.x
+    && first.y < second.y + second.height + gap && first.y + first.height + gap > second.y;
+}
+
+// Bottom-left packing tries only corners of already placed rectangles.
+function packRectangles(items, width, gap) {
+  const placed = [];
+  for (const item of items) {
+    const xs = [...new Set([0, ...placed.map((other) => other.x + other.width + gap)])].sort((a, b) => a - b);
+    const ys = [...new Set([0, ...placed.map((other) => other.y + other.height + gap)])].sort((a, b) => a - b);
+    let position;
+    for (const y of ys) {
+      for (const x of xs) {
+        const candidate = { ...item, x, y };
+        if (x + item.width > width + 1e-7 || placed.some((other) => overlaps(candidate, other, gap))) continue;
+        position = candidate; break;
+      }
+      if (position) break;
+    }
+    placed.push(position ?? { ...item, x: 0,
+      y: Math.max(0, ...placed.map((other) => other.y + other.height + gap)) });
+  }
+  return { placed, width: Math.max(0, ...placed.map((item) => item.x + item.width)),
+    height: Math.max(0, ...placed.map((item) => item.y + item.height)) };
+}
+
+function compactPacking(items, aspect, gap) {
+  // Geometry determines packing efficiency; stable identity breaks ties. This
+  // sorting owns no personal-content order or preference metadata.
+  const ordered = [...items].sort((first, second) => second.height - first.height
+    || second.width - first.width || compareIds(first.id, second.id));
+  const widest = Math.max(...items.map((item) => item.width));
+  const area = items.reduce((sum, item) => sum + (item.width + gap) * (item.height + gap), 0);
+  let best;
+  let score = Infinity;
+  for (const factor of [.8, .9, 1, 1.1, 1.2, 1.3, 1.4]) {
+    const packing = packRectangles(ordered, Math.max(widest, Math.sqrt(area * aspect) * factor), gap);
+    const candidateScore = Math.max(packing.width / aspect, packing.height)
+      + Math.sqrt(packing.width * packing.height) * .01;
+    if (candidateScore < score) { best = packing; score = candidateScore; }
+  }
+  return best;
+}
+
+function componentModule(ids, byId, adjacency) {
+  const members = ids.map((id) => byId.get(id));
+  const series = members.filter((node) => node.type === 'series');
+  const degrees = ids.map((id) => adjacency.get(id).size);
+  const maximum = Math.max(...degrees);
+  const centers = ids.filter((id) => adjacency.get(id).size === maximum);
+  // Only an explicit series parent or unique graph junction receives a central
+  // structural position. Tied works form a ring around empty space.
+  const center = series.length === 1 ? series[0].id : centers.length === 1 && maximum > 1 ? centers[0] : null;
+  const ring = ids.filter((id) => id !== center);
+  const count = ring.length;
+  const radius = count === 1 ? center ? nodeSpacing : 0
+    : count > 1 ? Math.max(center ? nodeSpacing : 0, nodeSpacing / (2 * Math.sin(Math.PI / count))) : 0;
+  const rotation = (phaseFor(ids[0]) - Math.PI) * .18;
+  const points = ids.map((id) => {
+    if (id === center || (!center && count === 1)) return { id, x: 0, y: 0 };
+    const angle = -Math.PI / 2 + rotation + ring.indexOf(id) / count * Math.PI * 2;
+    return { id, x: Math.cos(angle) * radius, y: Math.sin(angle) * radius };
   });
-  return relateBaseAnchors(layout, nodes, edges);
+  const bounds = boundsOf(points);
+  return { id: ids[0], width: bounds.maxX - bounds.minX + nodeSpacing,
+    height: bounds.maxY - bounds.minY + nodeSpacing,
+    points: points.map((point) => ({ ...point, x: point.x - bounds.minX + nodeSpacing / 2,
+      y: point.y - bounds.minY + nodeSpacing / 2 })) };
+}
+
+/** Derived category bounds include circular artwork clearance and a caption band.
+ * Prefer canonical anchors: explicit gestures may temporarily cross a region.
+ * @param {Array<{id:string,x:number,y:number,anchorX?:number,anchorY?:number}>} layout
+ * @param {Array<{id:string,category:string}>} nodes
+ */
+export function categoryRegions(layout, nodes) {
+  const positions = new Map(layout.map((node) => [node.id, node]));
+  const groups = new Map();
+  for (const node of nodes) {
+    const point = positions.get(node.id);
+    if (!point) continue;
+    const points = groups.get(node.category) ?? [];
+    points.push({ x: Number.isFinite(point.anchorX) ? point.anchorX : point.x,
+      y: Number.isFinite(point.anchorY) ? point.anchorY : point.y });
+    groups.set(node.category, points);
+  }
+  return [...groups].sort(([first], [second]) => {
+    const a = categoryOrder.indexOf(first), b = categoryOrder.indexOf(second);
+    return (a < 0 ? categoryOrder.length : a) - (b < 0 ? categoryOrder.length : b) || compareIds(first, second);
+  }).map(([id, points]) => {
+    const raw = boundsOf(points);
+    const minX = raw.minX - regionMargin, maxX = raw.maxX + regionMargin;
+    const minY = raw.minY - regionMargin - captionHeight, maxY = raw.maxY + regionMargin;
+    return { id, minX, minY, maxX, maxY, labelX: (minX + maxX) / 2, labelY: minY + captionHeight / 2 };
+  });
+}
+
+/** Two levels preserve classification without a synthetic category body/force.
+ * Same-category components pack locally; cross-category facts do not merge regions.
+ * Positions depend on stable IDs and graph structure, never metadata array rank.
+ * @param {Array<{id:string,category:string,type?:string,isContext?:boolean}>} nodes
+ * @param {Array<{source:string,target:string}>} [edges]
+ * @param {{mobile?:boolean}} [options]
+ */
+export function createGraphLayout(nodes, edges = [], options = {}) {
+  if (!nodes.length) return [];
+  const ordered = [...nodes].sort((first, second) => compareIds(first.id, second.id));
+  const byId = new Map(ordered.map((node) => [node.id, node]));
+  const links = validLinks(nodes, edges);
+  const adjacency = new Map(ordered.map((node) => [node.id, new Set()]));
+  const degrees = new Map(ordered.map((node) => [node.id, 0]));
+  for (const { source, target } of links) {
+    degrees.set(source, degrees.get(source) + 1); degrees.set(target, degrees.get(target) + 1);
+    if (byId.get(source).category !== byId.get(target).category) continue;
+    adjacency.get(source).add(target); adjacency.get(target).add(source);
+  }
+  const seen = new Set();
+  const categories = new Map();
+  for (const node of ordered) {
+    if (seen.has(node.id)) continue;
+    const ids = [], queue = [node.id]; seen.add(node.id);
+    while (queue.length) {
+      const id = queue.shift(); ids.push(id);
+      for (const next of [...adjacency.get(id)].sort(compareIds)) {
+        if (!seen.has(next)) { seen.add(next); queue.push(next); }
+      }
+    }
+    ids.sort(compareIds);
+    const modules = categories.get(node.category) ?? [];
+    modules.push(componentModule(ids, byId, adjacency)); categories.set(node.category, modules);
+  }
+  const localPoints = [];
+  for (const [category, modules] of categories) {
+    const packing = compactPacking(modules, options.mobile ? .8 : 1.45, moduleGap);
+    for (const item of packing.placed) {
+      const jitterX = Math.sin(phaseFor(`${item.id}:module-x`)) * 15;
+      const jitterY = Math.sin(phaseFor(`${item.id}:module-y`)) * 15;
+      for (const point of item.points) localPoints.push({ id: point.id, category,
+        x: point.x + item.x + jitterX, y: point.y + item.y + jitterY });
+    }
+  }
+  const regions = categoryRegions(localPoints, ordered);
+  const boxes = regions.map((region) => ({ id: region.id,
+    width: region.maxX - region.minX, height: region.maxY - region.minY }));
+  const macro = options.mobile ? { placed: [], width: 0, height: Math.max(...boxes.map((box) => box.height)) }
+    : compactPacking(boxes, 1.55, categoryGap);
+  if (options.mobile) {
+    for (const box of boxes) {
+      macro.placed.push({ ...box, x: macro.width, y: 0 });
+      macro.width += box.width + mobileCategoryGap;
+    }
+    macro.width -= mobileCategoryGap;
+  }
+  const translations = new Map(macro.placed.map((box) => {
+    const region = regions.find((region) => region.id === box.id);
+    return [box.id, { x: box.x - region.minX - macro.width / 2,
+      y: box.y - region.minY - macro.height / 2 }];
+  }));
+  const finalPositions = new Map(localPoints.map((point) => {
+    const shift = translations.get(point.category);
+    return [point.id, { x: point.x + shift.x, y: point.y + shift.y }];
+  }));
+  return nodes.map((node) => {
+    const point = finalPositions.get(node.id);
+    const major = degrees.get(node.id) >= 2;
+    return { id: node.id, x: point.x, y: point.y, anchorX: point.x, anchorY: point.y,
+      major, phase: phaseFor(node.id), radius: major ? 34 : 19 };
+  });
 }

@@ -11,10 +11,121 @@ on 2026-11-12. The constellation checkpoint is `7045510`. Reuse the site's
 near-black background, brass accents, serif typography, and existing interest
 content. No new runtime dependency or backend is required.
 
-Current owner requirements are in [Second approved expansion](#approved-expansion-2026-11-14-second-batch),
-which extends [the first approved expansion](#approved-expansion-2026-11-14).
+Current owner requirements are in [Category legibility](#category-legibility-2026-11-14),
+which refines the [second approved expansion](#approved-expansion-2026-11-14-second-batch)
+and [the first approved expansion](#approved-expansion-2026-11-14).
 The motion prototype and older publication checkpoints below record the design
 and evidence at those stages; their removed category hubs are historical.
+
+## Category legibility (2026-11-14)
+
+Owner outcome: All must distinguish books, movies, games and other categories;
+unknown favorites must not be silently ranked by the layout. Remove year suffixes
+from work display names and connect Socionics with Carl Jung. The 105 approved
+entities, clarified editions and artwork remain; the extra association makes 46
+relations. Descriptions/source metadata can retain dates. This approval does not
+identify any favorite for preference boosts or a central showcase.
+
+Observed problem: the current All screenshot (`01-before-all.png`) shows one
+unlabeled cloud. Source geometry allocates fixed centers for the older collection,
+despite Movies now containing 53 nodes versus Games 16 and Hobbies four. Category
+footprints overlap. Input-order spiral positions the first entries near category
+centers, and cross-category relaxation further mixes geography. This is layout
+order/physics, not evidence of the owner's preference. Search, category controls,
+Index, real covers and reciprocal dragging already work and remain active.
+
+Design: two-level, deterministic base anchors. Within each category, pack genuine
+connected components as compact units and treat isolated works as equal units.
+Use stable IDs rather than input order, degree or inferred popularity to choose
+component placement. Series parents can center their own small component because
+that communicates structure. Pack content-sized category footprints with gutters;
+desktop uses a wide arrangement, mobile a horizontal strip of compact category
+groups. Across-category edges
+remain visible and physical but cannot collapse initial category regions.
+Add small passive category names above actual regions in All, without a bubble,
+click target, tab stop or force body. Hover/focus titles also identify category.
+Keep the existing palette, artwork, quiet idle work names and degree-based sizes;
+size still means connection count, never a claim about preference.
+Remove the default desaturation of low-degree works so isolated favorites are
+not visually treated as less important. Work captions use the category on a
+separate small line; no extra explanatory copy is added to the canvas.
+
+Source/alternatives: [D3 position forces](https://d3js.org/d3-force/position) and
+[link forces](https://d3js.org/d3-force/link) document positional targets and link
+springs separately. Apply that separation in the existing renderer without adding
+D3. Fully mixed forces cannot communicate category; rigid cards or walls would
+discard the requested floating, yielding interaction. Initial regions are soft
+targets, not hard constraints on a user's deliberate drag.
+
+Authority change: this owner feedback supersedes older *presentation* expectations
+of cross-category distance <=550 / <65% of the old spiral, <=520 displacement
+from that spiral, fixed-center centroid bounds and first-entry placement. Replace
+them with non-overlapping content-sized regions, category gutters and compact
+same-category components. Existing physics/collision thresholds, full entity
+coverage, canonical spring references, filter/selection/Back semantics and cleanup
+contracts remain active. This is a reversible base-layout change, with no new
+runtime dependency, backend, persistence, favorite semantics or relationship type.
+
+Responsive/camera decision: the larger map outgrows the old 0.22 minimum camera
+scale, which would clip otherwise valid category footprints. Allow 0.16 minimum
+zoom with one shared helper/client limit; keep the 24–82px image-size bounds and
+all contact tolerances. All uses the region's own margin plus 28px viewport
+padding. At widths <=1050px, use the compact horizontal arrangement, center it
+with category tops aligned and start at Games on the left. Offset this compact
+overview down by 12 screen pixels to keep dynamic captions inside its top edge;
+horizontal dragging reaches later groups. Keep the existing `pan-y` touch-action
+and horizontal-only touch canvas pan so vertical page scrolling stays available.
+A vertical category strip was rejected because those existing gestures would not
+reach its lower groups. Real touch remains a separate hardware evidence boundary.
+
+Counterexample before freezing: a wide 2.2-aspect macro arrangement fit at about
+0.16, where 220-world-unit neighbors project to 35px but need at least 40px for
+circles/orbits/contact clearance. Collision solving then pushed works across
+caption bands and clipped circles. Use a 1.55-aspect desktop macro arrangement,
+matching the client's aspect adaptation, and verify settled bodies at the actual
+camera scale; merely loosening camera bounds or counting anchors is insufficient.
+Place each category caption above its actual current outermost orbit, with an
+eight-pixel screen gap, so settled circles cannot pass through anchor-based text.
+Compact groups receive a larger horizontal gutter to absorb the 24px image floor
+at overview zoom. Disable text selection only within the graph to keep label text
+from starting an accidental text-drag; retain vertical page scrolling.
+The final compact gutter is 640 world units; desktop uses 220. The desktop stage
+has a 780px minimum, providing a 715px unobscured graph viewport. The default
+1028x715 regression gate requires at least 40px between category outer-orbit
+envelopes; compact requires 35px. At other noncompact widths, require distinct
+envelopes, visible circles and non-overlapping captions rather than claiming the
+default pixel gap universally. Captions stay at least 8px above actual orbits.
+
+Acceptance: initial/reset All separates real category bounds including image rings
+and captions; array/edge reordering does not change placements; duplicate, invalid
+and cross-category links cannot inflate or merge categories. Preserve all stable
+IDs, exact source editions and approved relationships, with no assigned boost.
+Socionics–Jung means association, not a claim that Jung founded Socionics. Verify
+desktop/mobile category recognition, long-series traversal, pause/drag, Index and
+search, Back across responsive changes, and leaving/re-entering the page. Observe
+actual settled frames, not only initial anchor boxes. Stop/revise if collisions
+erase gutters, labels obscure covers, reciprocal dragging regresses, or an unknown
+favorite must be guessed to make the result work. Mobile All is an overview; direct
+category and Index access remain necessary at high content counts.
+
+### Category legibility review packet
+
+| Item | Result / evidence boundary |
+| --- | --- |
+| Goal / behavior | All now has eight labeled, separated category groups. Same-category series/creator components stay compact; cross-category links remain. Forty-one work names lose year suffixes in all three languages. Socionics links to Jung. No favorites are ranked or added. |
+| Architecture | Deterministic, ID-stable two-level anchor packing replaces the old overlapping fixed-center relaxation. Compact screens use a horizontal strip. Passive DOM category captions follow actual orbit tops; runtime still has only real content bodies and semantic springs. No dependency/backend/persistence change. |
+| Invariants | 105 nodes: 101 personal and four contextual; 46 relationships, exactly one new association. Stable identities, original edition metadata and covers retained. All preference boosts remain unset. Physics/network/sizing helpers are unchanged. |
+| Assumptions | Series/junction centers describe graph structure. Category area follows content volume, not personal importance. Identifying the owner's strongest favorites still requires explicit input; no automatic central showcase is inferred. |
+| Automated evidence | 167 unit tests, ESLint and Astro checks pass (120 files, zero diagnostics). Layout tests include real region-corner camera inputs and 1,800 physics frames. Existing solver/contact tolerances are retained. |
+| Independent geometry | At the 1028x715 reference view, the minimum category outer-orbit gap is 43.60px (40px gate); compact 39.03px (35px gate). The separate independent run also checked actual-stage dimensions, the 1051/1050 breakpoint and 320/390 compact views. Captions stay at least 8px from all category orbits, including foreign groups; no vertical circle/caption clipping or label-label overlap. Other noncompact widths require non-overlap rather than the reference pixel gap. |
+| Browser evidence | Fresh 1124x1039 capture loaded all 105 images, eight category names and no clipped image. Native horizontal drag moved the mobile map by about 220px. Operated Movies browsing, Books filtering/detail/Back and returning from compact to wide All (105 bodies, eight labels, no stale selection). Socionics -> Jung -> Back works. A paused 70px RE2 drag moved its parent about 2.46px and unconnected Stardew 0px, without opening details. |
+| Counterexamples closed | Fixed-size category overlap; input-order central placement; series with one child initially coincident; static caption/orbit collision after settling; compact category gutters erased by minimum image size; caption top clipping; native graph drag selecting label text; responsive Back geometry mismatch. Corrected an early test fixture's label-center camera to actual region-corner inputs before accepting its result. |
+| Regression / known limits | Real hardware touch and OS reduced-motion are untested. Compact All intentionally pans horizontally; some artworks can cross the viewport's horizontal edge during browsing, while direct category/Index access remains. Cross-category lines can be long or cross other regions. Preview FPS samples are environment-dependent and are not a general smoothness guarantee. |
+| Trajectory | Continue with the current renderer and explicit preference metadata only. The denser taxonomy requires responsive packing, not more force bodies or inferred favorite works. Owner's standing authorization covers verified commit/push. |
+
+Current screenshots/DOM geometry are retained in
+`2026/11/14/beyond-category-legibility/`; the exact-client model is in
+`2026/11/14/beyond-category-layout/exact-client-geometry-final.json`.
 
 ## Approved expansion (2026-11-14 second batch)
 

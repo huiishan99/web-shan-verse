@@ -99,6 +99,11 @@ const graphData = JSON.stringify({
       <div class="beyond-atmosphere" aria-hidden="true"></div>
       <div class="beyond-graph" data-beyond-graph role="group" aria-label={copy.constellation}>
         <canvas class="beyond-links" data-beyond-canvas aria-hidden="true"></canvas>
+        <div class="beyond-regions" aria-hidden="true">
+          {localizedCategories.map((category) => (
+            <span class="beyond-region-label" data-region-label={category.id} hidden>{category.title}</span>
+          ))}
+        </div>
         <div class="beyond-nodes">
           {graphNodes.map((node) => {
             const category = localizedCategories.find((category) => category.id === node.category)!;
@@ -109,7 +114,7 @@ const graphData = JSON.stringify({
                 <span class="beyond-node-art">
                   {node.artwork ? <img src={node.artwork} alt="" loading="eager" decoding="async" draggable="false" /> : <Icon name={category.icon} size={21} />}
                 </span>
-                <span class="beyond-node-label">{node.title}</span>
+                <span class="beyond-node-label"><span data-node-label-title>{node.title}</span><small>{category.title}</small></span>
                 {node.subtitle && <span class="beyond-node-subtitle">{node.subtitle}</span>}
               </button>
             );
@@ -200,11 +205,13 @@ const graphData = JSON.stringify({
   .beyond-breadcrumb button { display:inline-flex; align-items:center; gap:4px; min-height:44px; padding:0 10px 0 0; border:0; background:transparent; color:#c8b174; font-size:13px; }
   .beyond-breadcrumb button:hover:not(:disabled) { color:#ead79e; }
   .beyond-breadcrumb button:disabled { color:#666258; cursor:default; }
-  .beyond-stage { position:relative; min-height:720px; height:calc(100svh - 319px); max-height:1000px; isolation:isolate; border-top:1px solid rgba(255,255,255,.045); }
+  .beyond-stage { position:relative; min-height:780px; height:calc(100svh - 319px); max-height:1000px; isolation:isolate; border-top:1px solid rgba(255,255,255,.045); }
   .beyond-atmosphere { position:absolute; inset:0; pointer-events:none; z-index:-1; background:radial-gradient(ellipse at 24% 40%,rgba(115,93,40,.05),transparent 43%),radial-gradient(ellipse at 73% 56%,rgba(99,112,128,.035),transparent 43%); }
-  .beyond-graph { position:absolute; inset:0; overflow:hidden; touch-action:pan-y; cursor:grab; }
+  .beyond-graph { position:absolute; inset:0; overflow:hidden; touch-action:pan-y; cursor:grab; user-select:none; }
   .beyond-graph.is-dragging { cursor:grabbing; }
   .beyond-links { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+  .beyond-regions { position:absolute; inset:0; pointer-events:none; }
+  .beyond-region-label { position:absolute; top:0; left:0; color:#bdb19a; font:400 14px/20px var(--font-display); letter-spacing:.11em; white-space:nowrap; text-shadow:0 2px 8px #08080d; pointer-events:none; }
   .beyond-node { position:absolute; left:0; top:0; display:flex; align-items:center; justify-content:center; width:max(44px,var(--node-size,52px)); height:max(44px,var(--node-size,52px)); min-height:44px; padding:0; background:transparent; border:0; color:var(--beyond-ink); user-select:none; will-change:transform; transition:opacity .4s; touch-action:none; }
   .beyond-node-art { position:relative; display:grid; place-items:center; flex:0 0 var(--node-size,52px); width:var(--node-size,52px); height:var(--node-size,52px); aspect-ratio:1; border-radius:50%; overflow:hidden; background:rgba(21,21,27,.9); border:1px solid rgba(186,163,104,.28); box-shadow:0 0 15px rgba(201,162,39,.04); transition:border-color .3s,box-shadow .3s; }
   .beyond-node-art img { width:100%; height:100%; object-fit:cover; opacity:.84; pointer-events:none; transition:opacity .3s; }
@@ -218,7 +225,7 @@ const graphData = JSON.stringify({
   .beyond-node--topic:not(.has-artwork) .beyond-node-orbit { display:none; }
   .beyond-node-label { position:absolute; display:block; font-size:14px; line-height:1.2; margin:0; width:125px; left:50%; top:50%; max-width:125px; text-wrap:balance; text-shadow:0 1px 8px #08080d,0 0 6px #08080d; opacity:0; pointer-events:none; transition:opacity .15s; }
   .beyond-node-subtitle { display:none; }
-  .beyond-node.is-minor .beyond-node-art { filter:saturate(.8); }
+  .beyond-node-label small { display:block; margin-top:3px; color:#b8aa8d; font:10px/12px var(--font-body); letter-spacing:.04em; }
   .beyond-node:hover .beyond-node-label,.beyond-node:focus-visible .beyond-node-label,.beyond-node.is-selected .beyond-node-label { opacity:1; }
   .beyond-node:hover,.beyond-node:focus-visible,.beyond-node.is-selected { z-index:5; outline:none; }
   .beyond-node:hover .beyond-node-art,.beyond-node:focus-visible .beyond-node-art,.beyond-node.is-selected .beyond-node-art { border-color:#d3b666; box-shadow:0 0 24px rgba(201,162,39,.17); }

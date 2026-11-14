@@ -3,7 +3,7 @@ import test from 'node:test';
 import { interests } from '../src/data/about.ts';
 import { categories, nodes, edges, resolveLocalized } from '../src/data/beyond-code.ts';
 import {
-  connectedIds, createGraphLayout, fitCamera, screenToWorld, worldToScreen, zoomAt,
+  connectedIds, createGraphLayout, fitCamera, minCameraScale, screenToWorld, worldToScreen, zoomAt,
 } from '../src/utils/beyond-code-graph.js';
 
 const locales = ['en', 'zh', 'ja'];
@@ -167,12 +167,12 @@ test('only existing favorites and the exact user-approved expansion enter the co
 
 test('the second batch preserves clarified editions, films and exact series scope', () => {
   for (const [id, wikiPage, title] of [
-    ['games-resident-evil-2-1998', 'Resident Evil 2', 'Resident Evil 2 (1998)'],
-    ['games-resident-evil-village', 'Resident Evil Village', 'Resident Evil Village (2021)'],
-    ['games-resident-evil-requiem', 'Resident Evil Requiem', 'Resident Evil Requiem (2026)'],
-    ['games-taiko-risshiden-v', 'Taikou Risshiden V', 'Taikō Risshiden V (2004)'],
-    ['movies-how-to-train-your-dragon-2010', 'How to Train Your Dragon (2010 film)', 'How to Train Your Dragon (2010)'],
-    ['movies-project-hail-mary-2026', 'Project Hail Mary (film)', 'Project Hail Mary (2026)'],
+    ['games-resident-evil-2-1998', 'Resident Evil 2', 'Resident Evil 2'],
+    ['games-resident-evil-village', 'Resident Evil Village', 'Resident Evil Village'],
+    ['games-resident-evil-requiem', 'Resident Evil Requiem', 'Resident Evil Requiem'],
+    ['games-taiko-risshiden-v', 'Taikou Risshiden V', 'Taikō Risshiden V'],
+    ['movies-how-to-train-your-dragon-2010', 'How to Train Your Dragon (2010 film)', 'How to Train Your Dragon'],
+    ['movies-project-hail-mary-2026', 'Project Hail Mary (film)', 'Project Hail Mary'],
   ]) {
     const node = nodeById.get(id);
     assert.equal(node.type, 'work');
@@ -196,6 +196,30 @@ test('the second batch preserves clarified editions, films and exact series scop
     'movies-the-mummy-2017', 'movies-terminator-dark-fate-2019',
     'movies-fantastic-beasts-and-where-to-find-them-2016',
   ]) assert.equal(nodeById.has(excluded), false, `Unapproved expansion: ${excluded}`);
+});
+
+test('display titles omit release-year suffixes without losing sequel names or version identities', () => {
+  assert.equal(nodes.length, 105);
+  for (const node of nodes) {
+    for (const locale of locales) {
+      assert.doesNotMatch(resolveLocalized(node.title, locale), /\s*[（(]\d{4}[）)]$/u,
+        `Visible release-year suffix: ${node.id}/${locale}`);
+    }
+  }
+  for (const [id, wikiPage, title] of [
+    ['movies-spider-man-2002', 'Spider-Man (2002 film)', 'Spider-Man'],
+    ['movies-ben-hur-1959', 'Ben-Hur (1959 film)', 'Ben-Hur'],
+    ['movies-titanic-1997', 'Titanic (1997 film)', 'Titanic'],
+    ['movies-terminator-2-judgment-day-1991', 'Terminator 2: Judgment Day', 'Terminator 2: Judgment Day'],
+    ['movies-harry-potter-and-the-deathly-hallows-part-1-2010', 'Harry Potter and the Deathly Hallows – Part 1', 'Harry Potter and the Deathly Hallows – Part 1'],
+    ['movies-harry-potter-and-the-deathly-hallows-part-2-2011', 'Harry Potter and the Deathly Hallows – Part 2', 'Harry Potter and the Deathly Hallows – Part 2'],
+  ]) {
+    assert.equal(nodeById.get(id).wikiPage, wikiPage);
+    assert.equal(resolveLocalized(nodeById.get(id).title), title);
+  }
+  assert.equal(resolveLocalized(nodeById.get('games-cyberpunk-2077').title), 'Cyberpunk 2077');
+  assert.equal(resolveLocalized(nodeById.get('movies-harry-potter-and-the-deathly-hallows-part-1-2010').title, 'zh'),
+    '哈利·波特与死亡圣器（上）');
 });
 
 test('no owner preference boost is inferred from series membership or popularity', () => {
@@ -242,11 +266,16 @@ test('graph edges have valid endpoints, semantic relations and traceable provena
       assert.ok(['style-of', 'ingredient-of'].includes(edge.relationship));
       assert.equal(nodeById.get(edge.source).category, 'foods');
       assert.equal(nodeById.get(edge.target).category, 'foods');
-    } else {
+    } else if (edge.provenance.source === 'docs/beyond-code-preview.md#approved-expansion-2026-11-14-second-batch') {
       assert.equal(edge.provenance.source, 'docs/beyond-code-preview.md#approved-expansion-2026-11-14-second-batch');
       assert.equal(edge.relationship, 'part-of');
       assert.ok(Object.hasOwn(secondBatchSeries, edge.target));
       assert.ok(secondBatchSeries[edge.target].includes(edge.source));
+    } else {
+      assert.equal(edge.provenance.source, 'docs/beyond-code-preview.md#category-legibility-2026-11-14');
+      assert.equal(edge.relationship, 'associated-with');
+      assert.equal(edge.source, 'topics-socionics');
+      assert.equal(edge.target, 'topics-carl-jung');
     }
   }
 });
@@ -326,7 +355,9 @@ test('approved branches have exact endpoints without introducing unrelated works
   assert.deepEqual(facts('associated-with'), [
     'movies-coco->movies-disney', 'movies-ratatouille->movies-disney',
     'topics-analytical-psychology->topics-carl-jung',
+    'topics-socionics->topics-carl-jung',
   ]);
+  assert.equal(edges.length, 46, 'Only the requested Socionics association is added');
   assert.equal(edges.some((edge) => edge.source.includes('diana-wynne-jones')
     || edge.target.includes('diana-wynne-jones') || edge.source === 'book-howls-moving-castle'
     || edge.target === 'book-howls-moving-castle'), false);
@@ -372,6 +403,7 @@ const closeTo = (actual, expected, message) => {
 test('camera projection round-trips points across viewport sizes and zoom limits', () => {
   const viewports = [{ width: 390, height: 580 }, { width: 1440, height: 900 }, { width: 1, height: 1 }];
   const cameras = [
+    { x: 0, y: 0, scale: 0.16 },
     { x: 0, y: 0, scale: 0.22 },
     { x: -1000, y: 2600, scale: 0.8 },
     { x: 2100, y: -500, scale: 2.4 },
@@ -393,20 +425,21 @@ test('camera projection round-trips points across viewport sizes and zoom limits
 });
 
 test('zoom preserves the world under the pointer even when scale clamps', () => {
+  assert.equal(minCameraScale, 0.16, 'The category overview has an explicit presentation zoom floor');
   const viewport = Object.freeze({ width: 950, height: 680 });
   const camera = Object.freeze({ x: 800, y: 520, scale: 0.67 });
   const points = [{ x: 0, y: 0 }, { x: 475, y: 340 }, { x: 910, y: 600 }, { x: -20, y: 720 }];
   for (const point of points) {
     const anchor = screenToWorld(point, camera, viewport);
-    for (const requestedScale of [0.0001, 0.22, 0.67, 1.25, 2.4, 1000]) {
+    for (const requestedScale of [0.0001, 0.16, 0.22, 0.67, 1.25, 2.4, 1000]) {
       const next = zoomAt(camera, point, requestedScale, viewport);
-      assert.ok(next.scale >= 0.22 && next.scale <= 2.4);
+      assert.ok(next.scale >= 0.16 && next.scale <= 2.4);
       const projected = worldToScreen(anchor, next, viewport);
       closeTo(projected.x, point.x, 'Zoom x anchor remains under pointer');
       closeTo(projected.y, point.y, 'Zoom y anchor remains under pointer');
     }
   }
-  assert.equal(zoomAt(camera, points[0], 0.001, viewport).scale, 0.22);
+  assert.equal(zoomAt(camera, points[0], 0.001, viewport).scale, 0.16);
   assert.equal(zoomAt(camera, points[0], 100, viewport).scale, 2.4);
   assert.deepEqual(camera, { x: 800, y: 520, scale: 0.67 });
 });
@@ -433,6 +466,19 @@ test('fitting keeps a feasible cloud inside the viewport and is translation inva
   });
 });
 
+test('a wide category overview fits inside a desktop stage below the former zoom floor', () => {
+  const points = [{ x: -1200, y: -200 }, { x: 4272, y: 2200 }];
+  const viewport = { width: 1028, height: 750 };
+  const padding = 28;
+  const camera = fitCamera(points, viewport, padding);
+  assert.ok(camera.scale >= 0.16 && camera.scale < 0.22);
+  for (const point of points) {
+    const projected = worldToScreen(point, camera, viewport);
+    assert.ok(projected.x >= padding - 1e-8 && projected.x <= viewport.width - padding + 1e-8);
+    assert.ok(projected.y >= padding - 1e-8 && projected.y <= viewport.height - padding + 1e-8);
+  }
+});
+
 test('empty, single-point and tiny-viewport fits remain finite and bounded', () => {
   for (const viewport of [{ width: 0, height: 0 }, { width: 1, height: 1 }, { width: 390, height: 200 }]) {
     for (const points of [[], [{ x: -1e6, y: 1e6 }], [{ x: -2000, y: 0 }, { x: 2000, y: 3000 }]]) {
@@ -440,7 +486,7 @@ test('empty, single-point and tiny-viewport fits remain finite and bounded', () 
       assert.ok(Number.isFinite(camera.x));
       assert.ok(Number.isFinite(camera.y));
       assert.ok(Number.isFinite(camera.scale));
-      assert.ok(camera.scale >= 0.22 && camera.scale <= 1.5);
+      assert.ok(camera.scale >= 0.16 && camera.scale <= 1.5);
       for (const point of points) {
         const projected = worldToScreen(point, camera, viewport);
         assert.ok(Number.isFinite(projected.x));
