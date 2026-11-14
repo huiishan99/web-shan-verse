@@ -202,6 +202,12 @@ function setupBeyondCode() {
     }
     restoringView = false;
     backButton.disabled = !history.canGoBack();
+    camera = { ...targetCamera };
+    lastTime = 0;
+    if (mode === 'graph') {
+      solveStatic(layout, physicsLinks(), physicsOptions());
+      render();
+    }
     if (previous.selected) title.focus({ preventScroll: true });
     else if (previous.query) search.focus({ preventScroll: true });
     else root!.querySelector<HTMLButtonElement>(`[data-beyond-category="${previous.category}"]`)?.focus({ preventScroll: true });
@@ -304,7 +310,7 @@ function setupBeyondCode() {
         'adapted-from': ['Based on', 'Adapted into'], 'produced-by': ['Produced by', 'Production'],
         'shared-universe': ['Shared universe', 'Shared universe'],
         'associated-with': ['Associated with', 'Associated with'],
-        'part-of': ['Part of', 'Film in series'],
+        'part-of': ['Part of', 'Series entry'],
         'style-of': ['Style of', 'Style'],
         'ingredient-of': ['Ingredient for', 'Ingredient'],
       },
@@ -462,6 +468,31 @@ function setupBeyondCode() {
       button.setAttribute('aria-pressed', String(active)); button.classList.toggle('is-active', active);
     }
     applyVisibility();
+  }
+
+  function resetOverview() {
+    const changesView = category !== 'all' || !!searchText || !!selected || mode !== 'graph';
+    const reset = () => {
+      editingSearch = false;
+      resetTransientGesture();
+      keyboardFocus = null;
+      search.value = ''; searchText = ''; query = '';
+      if (mode !== 'graph') setView('graph');
+      chooseCategory('all');
+      // An explicit reset restores the actual scene now, rather than waiting for
+      // damped springs and camera easing to approach their new targets.
+      camera = { ...targetCamera };
+      for (const node of layout) {
+        node.x = node.anchorX; node.y = node.anchorY;
+        node.vx = 0; node.vy = 0;
+      }
+      lastTime = 0;
+      solveStatic(layout, physicsLinks(), physicsOptions());
+      render();
+      wake();
+    };
+    if (changesView) navigate(reset);
+    else reset();
   }
 
   function resize() {
@@ -703,8 +734,7 @@ function setupBeyondCode() {
     if (target.closest('[data-beyond-close]')) { closeDetail(true, true, true); return; }
     if (target.closest('[data-beyond-back]')) { stepBack(); return; }
     if (target.closest('[data-beyond-reset]')) {
-      if (category === 'all' && !searchText && !selected && mode === 'graph') { chooseCategory('all'); return; }
-      navigate(() => { search.value=''; searchText=''; query=''; chooseCategory('all'); }); return;
+      resetOverview(); return;
     }
     const zoom=target.closest<HTMLElement>('[data-beyond-zoom]');
     if (zoom) { const view=viewport(); setCamera(zoomAt(camera,{x:view.width/2,y:view.height/2},camera.scale*(zoom.dataset.beyondZoom==='in'?1.3:1/1.3),view)); return; }

@@ -361,50 +361,6 @@
     "artworkSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/91/Hot_Pot.jpg/330px-Hot_Pot.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
     "artworkUsageSource": "https://en.wikipedia.org/wiki/Hot_pot"
   },
-  "hobbies-traveling": {
-    "description": "Travel is the movement of people between distant geographical locations. Travel can be done by foot, bicycle, automobile, train, boat, bus, airplane, ship or other means; with or without luggage; and can be one way or round trip.",
-    "source": "https://en.wikipedia.org/wiki/Travel",
-    "descriptionTitle": "Travel",
-    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
-    "artworkRole": "illustrative-topic",
-    "artworkNote": "Representative travel scene in Bagan, Myanmar; not a personal travel photograph.",
-    "artwork": "/images/beyond-code/hobbies-traveling.jpg",
-    "artworkSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/05/Hot_air_balloon_over_a_pagoda_in_Bagan.jpg/330px-Hot_air_balloon_over_a_pagoda_in_Bagan.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "artworkUsageSource": "https://en.wikipedia.org/wiki/Travel_photography"
-  },
-  "hobbies-reading": {
-    "description": "Reading is the process of taking in the sense or meaning of the symbols of written language, by means of sight . The ability to read is called literacy.",
-    "source": "https://en.wikipedia.org/wiki/Reading",
-    "descriptionTitle": "Reading",
-    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
-    "artworkRole": "illustrative-topic",
-    "artworkNote": "A book illustrates the activity of reading; it is not an assertion about a particular favorite book.",
-    "artwork": "/images/beyond-code/hobbies-reading.jpg",
-    "artworkSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b6/Gutenberg_Bible%2C_Lenox_Copy%2C_New_York_Public_Library%2C_2009._Pic_01.jpg/330px-Gutenberg_Bible%2C_Lenox_Copy%2C_New_York_Public_Library%2C_2009._Pic_01.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "artworkUsageSource": "https://en.wikipedia.org/wiki/Book"
-  },
-  "hobbies-gaming": {
-    "description": "A video game or computer game, is an electronic game that involves interaction with a user interface or input device to generate visual feedback from a display device, most commonly shown in a video format on a television set, computer monitor, flat-panel display or touchscreen on handheld devices, or a virtual reality headset. Most modern video games are audiovisual, with audio complement delivered through speakers or headphones, and…",
-    "source": "https://en.wikipedia.org/wiki/Video_game",
-    "descriptionTitle": "Video game",
-    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
-    "artworkRole": "illustrative-topic",
-    "artworkNote": "A game controller illustrates gaming; it does not imply a preferred console.",
-    "artwork": "/images/beyond-code/hobbies-gaming.png",
-    "artworkSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a5/GameCube_controller.png/330px-GameCube_controller.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "artworkUsageSource": "https://en.wikipedia.org/wiki/Game_controller"
-  },
-  "hobbies-board-gaming": {
-    "description": "The board game is a type of tabletop game that involves small objects that are placed and moved in particular ways on a specially designed patterned game board, potentially including other components, e.g. dice. The earliest known uses of the term \"board game\" are between the 1840s and 1850s.",
-    "source": "https://en.wikipedia.org/wiki/Board_game",
-    "descriptionTitle": "Board game",
-    "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/",
-    "artworkRole": "illustrative-topic",
-    "artworkNote": "People playing a board game illustrate the hobby; this is not a photograph of the site owner.",
-    "artwork": "/images/beyond-code/hobbies-board-gaming.jpg",
-    "artworkSource": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/97/US_Navy_110713-N-NT881-124_Personnel_Specialist_2nd_Class_James_Vail%2C_left%2C_and_Boatswain%27s_Mate_2nd_Class_Nathaniel_Eaton_play_board_games_with_ch.jpg/330px-US_Navy_110713-N-NT881-124_Personnel_Specialist_2nd_Class_James_Vail%2C_left%2C_and_Boatswain%27s_Mate_2nd_Class_Nathaniel_Eaton_play_board_games_with_ch.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "artworkUsageSource": "https://en.wikipedia.org/wiki/Board_game"
-  },
   "topics-analytical-psychology": {
     "description": "Analytical psychology is a term referring to the psychological practices of Carl Jung. It was designed to distinguish it from Freud's psychoanalytic theories as their seven-year collaboration on psychoanalysis was drawing to an end between 1912 and 1913.",
     "source": "https://en.wikipedia.org/wiki/Analytical_psychology",
@@ -1128,5 +1084,64 @@
     "assetTransform": "Faithful proportional thumbnail, max edge 480px, WebP quality 82; no content edits.",
     "sourceImageDimensions": "220x330",
     "descriptionLicense": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "games-assassins-creed-series": {
+    "description": "II, Brotherhood and Revelations form Ezio Auditore's connected adventures within Assassin's Creed. His story moves from Renaissance Italy to Rome and then to Constantinople.",
+    "source": "https://www.ubisoft.com/en-gb/game/assassins-creed/the-ezio-collection",
+    "descriptionTitle": "Assassin's Creed series",
+    "descriptionOrigin": "original-paraphrase",
+    "artworkRole": "official-compilation-cover",
+    "representativeArtwork": "The official Ezio Collection cover represents Assassin's Creed II, Brotherhood and Revelations; it does not expand the selected games to the full franchise.",
+    "artworkUsageSource": "https://www.xbox.com/en-US/games/store/assassins-creed-the-ezio-collection/BQ9S8ZKCT3Q7",
+    "artwork": "/images/beyond-code/games-assassins-creed-series.webp",
+    "artworkSource": "https://store-images.s-microsoft.com/image/apps.38337.69011092827716296.e9190db7-6f4c-478c-8555-3edad4336a39.c312dbb9-bd59-403b-9161-3d058274b782?h=720&q=90&w=480",
+    "assetTransform": "Faithful proportional thumbnail, max edge 480px, WebP quality 82; no content edits.",
+    "sourceImageDimensions": "480x720"
+  },
+  "games-assassins-creed-ii": {
+    "description": "Assassin's Creed II begins Ezio Auditore's journey in Renaissance Italy. Its open-world story follows his search for revenge after his family is betrayed.",
+    "source": "https://www.ubisoft.com/en-gb/game/assassins-creed/the-ezio-collection",
+    "descriptionTitle": "Assassin's Creed II",
+    "descriptionOrigin": "original-paraphrase",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Assassin's_Creed_II",
+    "artwork": "/images/beyond-code/games-assassins-creed-ii.webp",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/7/77/Assassins_Creed_2_Box_Art.JPG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "assetTransform": "Faithful proportional thumbnail, max edge 480px, WebP quality 82; no content edits.",
+    "sourceImageDimensions": "276x361"
+  },
+  "games-assassins-creed-brotherhood": {
+    "description": "Assassin's Creed Brotherhood takes Ezio's story to Rome, where he confronts the Templar order. He recruits and leads a brotherhood of Assassins against the city's entrenched rulers.",
+    "source": "https://www.ubisoft.com/en-gb/game/assassins-creed/brotherhood",
+    "descriptionTitle": "Assassin's Creed Brotherhood",
+    "descriptionOrigin": "original-paraphrase",
+    "artworkUsageSource": "https://store.steampowered.com/app/48190/Assassins_Creed_Brotherhood/",
+    "artworkRole": "official-original-game-cover",
+    "artwork": "/images/beyond-code/games-assassins-creed-brotherhood.webp",
+    "artworkSource": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/48190/library_600x900.jpg",
+    "assetTransform": "Faithful proportional thumbnail, max edge 480px, WebP quality 82; no content edits.",
+    "sourceImageDimensions": "300x450"
+  },
+  "games-assassins-creed-revelations": {
+    "description": "Assassin's Creed Revelations follows Ezio to Constantinople, where he investigates the legacy of Altaïr. The adventure links their stories while introducing tools such as the hookblade.",
+    "source": "https://www.ubisoft.com/en-gb/game/assassins-creed/revelations",
+    "descriptionTitle": "Assassin's Creed Revelations",
+    "descriptionOrigin": "original-paraphrase",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Assassin's_Creed_Revelations",
+    "artwork": "/images/beyond-code/games-assassins-creed-revelations.webp",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/d/d9/Assassins_Creed_Revelations_Cover.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "assetTransform": "Faithful proportional thumbnail, max edge 480px, WebP quality 82; no content edits.",
+    "sourceImageDimensions": "276x361"
+  },
+  "games-yakuza-0": {
+    "description": "Yakuza 0 follows Kazuma Kiryu and Goro Majima in Japan during the economic boom of 1988. Its story connects a murder accusation in Kamurocho with the struggle over a valuable vacant lot, alongside Majima's life in Sotenbori.",
+    "source": "https://games.sega.com/yakuza0/story.html",
+    "descriptionTitle": "Yakuza 0 (original game)",
+    "descriptionOrigin": "original-paraphrase",
+    "artworkUsageSource": "https://en.wikipedia.org/wiki/Yakuza_0",
+    "artworkNote": "Original Yakuza 0 PlayStation 4 cover, not Yakuza 0: Director's Cut.",
+    "artwork": "/images/beyond-code/games-yakuza-0.webp",
+    "artworkSource": "https://upload.wikimedia.org/wikipedia/en/b/ba/Yakuza0.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "assetTransform": "Faithful proportional thumbnail, max edge 480px, WebP quality 82; no content edits.",
+    "sourceImageDimensions": "256x320"
   }
 }

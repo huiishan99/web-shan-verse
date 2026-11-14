@@ -11,11 +11,68 @@ on 2026-11-12. The constellation checkpoint is `7045510`. Reuse the site's
 near-black background, brass accents, serif typography, and existing interest
 content. No new runtime dependency or backend is required.
 
-Current owner requirements are in [Category legibility](#category-legibility-2026-11-14),
+Current owner requirements are in [Controls and game additions](#controls-and-game-additions-2026-11-14)
+and [Category legibility](#category-legibility-2026-11-14),
 which refines the [second approved expansion](#approved-expansion-2026-11-14-second-batch)
 and [the first approved expansion](#approved-expansion-2026-11-14).
 The motion prototype and older publication checkpoints below record the design
 and evidence at those stages; their removed category hubs are historical.
+
+## Controls and game additions (2026-11-14)
+
+Owner requests: fix the pause button display and make returning to a default view
+quick; verify English book names; add Assassin's Creed series with exactly II,
+Brotherhood and Revelations, plus standalone Yakuza 0. Subsequent steering removes
+Hobbies and its four generic Traveling/Reading/Gaming/Board gaming entities. This
+supersedes historical Hobbies retention: the resulting collection has 106 nodes
+(102 personal and four contextual), seven categories and 49 relations. No other
+Assassin's Creed works, Ezio person node, Yakuza series or Director's Cut entity
+is authorized. Preserve genuine original-game covers and neutral preference data.
+
+Name evidence: English editions retain [Les Misérables](https://www.penguinrandomhouse.com/books/84269/les-miserables-by-victor-hugo/9780679643333/).
+Replace the English display of the German Kinder- und Hausmärchen with
+[Grimms' Fairy Tales](https://www.penguinrandomhouse.com/books/354653/grimms-fairy-tales-by-brothers-grimm/),
+while retaining the existing stable ID, source page and artwork. Publisher/source
+names do not authorize adding any new book, author or edition.
+
+Control findings: the pause/play SVGs use `currentColor`, but their native button
+had computed black text/stroke, unlike adjacent brass Icon components. Set the
+navigation buttons' color explicitly; keep one visible glyph and matching action
+label in each state. Reset previously changed targets only; live circles and the
+camera still eased back slowly. An explicit reset now clears gesture, search and
+temporary placements, restores graph/All, sets actual circles to canonical anchors
+with zero velocity, snaps the camera and resolves contacts before painting. It
+preserves running/paused preference. Back restores its existing snapshot and snaps
+the actual camera, without clearing history or changing anchor semantics. Entering
+nodes and ordinary category browsing can retain their existing smooth camera.
+
+Verification: inspect actual SVG colors/visibility in both motion states. Verify
+one-click reset from large pan/zoom, displaced bodies, paused/running state,
+selection, empty search and Index. Repeating reset must not grow history; Back
+must still restore the prior logical state. Keep all physics/image-size gates.
+The new game component makes the former 715px desktop graph viewport fail its
+40px category-orbit gate (35.98px), while compact also falls below 35px (33.48px).
+Increase desktop stage minimum by 40px to 820 (755px graph viewport), and compact
+category gutter from 640 to 680 world units. This presentation adjustment retains
+the 40/35px gates, image minimum and force equations. The old 715px condition is
+not claimed to pass for the expanded collection.
+
+### Controls/content review packet
+
+| Item | Result / evidence boundary |
+| --- | --- |
+| Goal / behavior | Pause/play icons now inherit brass instead of native black. Reset restores view and body placement immediately; Back snaps to the prior view. Added the requested five game entities and three AC series relations; removed Hobbies and four generic entries. English Grimm title is now Grimms' Fairy Tales. |
+| Architecture | One local reset action restores actual positions/camera before painting. Back performs static contact projection before its immediate paint, including an interrupted-zoom edge case. Existing history snapshots and raw offsets are retained. No new dependency/backend/persistence. |
+| Invariants | 106 nodes, 102 personal/four context, seven categories, 49 relations; exact AC II/Brotherhood/Revelations children and standalone original Yakuza 0. No extra works, Director's Cut, series or preference boosts. Physics equations and 40/35px layout gates remain unchanged. |
+| Automated evidence | 169 unit tests and ESLint pass. Data tests preserve stable book/game identities, clarified editions and exact additions/deletions. Layout checks run 1,800 frames with actual camera inputs; default desktop outer-orbit gap is 47.34px, compact 39.88px, with no vertical clipping or caption overlap. |
+| Browser evidence | Confirmed black-before / brass-after SVG stroke and exactly one visible pause/play glyph with matching action labels. Running drag + two zoom steps + pan + one Reset returns camera diameters within 0.00002px of baseline; moving bodies are within 2.37px while idle drift continues. Paused repeated Reset gives zero positional difference. Back restores Games. Empty-search Graph Reset restores all 106; Back retraces empty Graph then Index query. AC detail shows exactly its three game entries. |
+| Independent state evidence | Eight real-client-code cases with lightweight DOM/RAF stubs cover running/paused/reduced-motion, gesture, selection, query, Index, repeated Reset and Back. These are state/geometry tests, not actual browser or hardware evidence. An interrupted zoom's instant Back contact residual was reduced from 5.231px to 0.0000103px by pre-paint contact solving; history/offset semantics stay intact. |
+| Assumptions / regression | Explicit Reset intentionally discards transient placements and query but preserves motion preference; Back remains navigation history. The existing Index hides graph controls, so actual UI testing switches to Graph before Reset, then verifies both Back steps. New game media represent original works, with the Ezio Collection cover used only as the series' representative image. |
+| Known limits / trajectory | Real touch and OS reduced-motion remain untested. Compact is still a horizontally pannable map. Dynamic idle drift resumes after a running Reset. Continue with the bounded renderer; no force retuning or graph-library migration is justified. Owner's standing authorization covers verified commit/push. |
+
+Current control screenshots/measurements and independent model/media reports are
+retained in `2026/11/14/beyond-controls-games/`. The expanded-collection geometry
+report is `2026/11/14/beyond-category-layout/106-node-geometry-final.json`.
 
 ## Category legibility (2026-11-14)
 

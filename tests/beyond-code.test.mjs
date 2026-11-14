@@ -58,6 +58,13 @@ const approvedSecondBatchIds = [
   ...Object.values(secondBatchSeries).flat().filter((id) => id !== 'games-resident-evil-4'),
   ...secondBatchStandaloneIds,
 ];
+const approvedGameIds = [
+  'games-assassins-creed-series', 'games-assassins-creed-ii',
+  'games-assassins-creed-brotherhood', 'games-assassins-creed-revelations',
+  'games-yakuza-0',
+];
+const approvedAssassinCreedWorks = approvedGameIds.filter((id) =>
+  id !== 'games-assassins-creed-series' && id !== 'games-yakuza-0');
 
 test('the constellation preserves each existing interest once without adding inferred favorites', () => {
   const expected = new Map(interests.flatMap((category) => category.items.map((item) => [
@@ -98,6 +105,9 @@ test('categories and nodes have unique identities, explicit roles and readable l
   assert.equal(categoryById.size, categories.length, 'Duplicate category ID');
   assert.equal(nodeById.size, nodes.length, 'Duplicate node ID');
   assert.equal(categories.length, interests.length);
+  assert.equal(categories.length, 7);
+  assert.equal(categoryById.has('hobbies'), false);
+  assert.equal(nodes.some((node) => node.category === 'hobbies'), false);
   const roles = new Set(['work', 'person', 'group', 'studio', 'topic', 'series']);
 
   for (const category of categories) {
@@ -136,8 +146,7 @@ test('only existing favorites and the exact user-approved expansion enter the co
     'books-a-thousand-splendid-suns', 'books-to-live', 'books-tristan-and-iseult',
     'books-kinder-und-hausmarchen', 'music-bohemian-rhapsody',
     'music-we-are-the-champions', 'music-lemon', 'foods-ramen', 'foods-sushi',
-    'foods-hot-pot', 'hobbies-traveling', 'hobbies-reading', 'hobbies-gaming',
-    'hobbies-board-gaming', 'topics-analytical-psychology', 'topics-existentialism',
+    'foods-hot-pot', 'topics-analytical-psychology', 'topics-existentialism',
     'topics-cosmology', 'topics-socionics',
   ];
   const approved = [
@@ -148,12 +157,14 @@ test('only existing favorites and the exact user-approved expansion enter the co
     'movies-the-two-towers', 'movies-the-return-of-the-king',
   ];
   assert.deepEqual(nodes.filter((node) => !node.isContext).map((node) => node.id).sort(),
-    [...existing, ...approved, ...approvedSecondBatchIds].sort());
+    [...existing, ...approved, ...approvedSecondBatchIds, ...approvedGameIds].sort());
   assert.equal(approvedSecondBatchIds.length, 42);
   assert.deepEqual(nodes.filter((node) => node.isContext).map((node) => node.id).sort(),
     ['group-queen', 'person-kenshi-yonezu', 'studio-ghibli', 'studio-pixar']);
   assert.equal(nodeById.has('book-howls-moving-castle'), false);
   assert.equal(nodeById.has('person-diana-wynne-jones'), false);
+  for (const excluded of ['hobbies-traveling', 'hobbies-reading', 'hobbies-gaming',
+    'hobbies-board-gaming']) assert.equal(nodeById.has(excluded), false);
   for (const [id, type] of [
     ['music-fujii-kaze', 'person'], ['topics-carl-jung', 'person'],
     ['movies-disney', 'studio'], ['movies-the-lord-of-the-rings', 'series'],
@@ -163,6 +174,42 @@ test('only existing favorites and the exact user-approved expansion enter the co
   }
   assert.equal(nodeById.get('movies-spider-man-2002').wikiPage, 'Spider-Man (2002 film)');
   assert.equal(nodeById.get('movies-ben-hur-1959').wikiPage, 'Ben-Hur (1959 film)');
+});
+
+test('the approved game additions preserve the three AC originals and standalone Yakuza 0', () => {
+  assert.equal(nodeById.get('games-assassins-creed-series').type, 'series');
+  assert.equal(nodeById.get('games-assassins-creed-series').isContext, false);
+  for (const [id, title] of [
+    ['games-assassins-creed-ii', "Assassin's Creed II"],
+    ['games-assassins-creed-brotherhood', "Assassin's Creed: Brotherhood"],
+    ['games-assassins-creed-revelations', "Assassin's Creed: Revelations"],
+    ['games-yakuza-0', 'Yakuza 0'],
+  ]) {
+    const node = nodeById.get(id);
+    assert.equal(node.type, 'work');
+    assert.equal(node.isContext, false);
+    assert.equal(node.wikiPage, title);
+    assert.equal(resolveLocalized(node.title), title);
+  }
+  assert.deepEqual(edges.filter((edge) => edge.target === 'games-assassins-creed-series')
+    .map((edge) => edge.source).sort(), [...approvedAssassinCreedWorks].sort());
+  assert.equal(edges.some((edge) => edge.source === 'games-yakuza-0'
+    || edge.target === 'games-yakuza-0'), false);
+  for (const excluded of ['games-yakuza-series', 'games-yakuza-0-directors-cut',
+    'person-ezio-auditore', 'games-assassins-creed']) assert.equal(nodeById.has(excluded), false);
+});
+
+test('English book labels use familiar publication titles while retaining stable identities', () => {
+  const hugo = nodeById.get('books-les-miserables');
+  assert.equal(resolveLocalized(hugo.title), 'Les Misérables');
+  assert.equal(hugo.wikiPage, 'Les Misérables');
+  const grimm = nodeById.get('books-kinder-und-hausmarchen');
+  assert.equal(resolveLocalized(grimm.title), "Grimms' Fairy Tales");
+  assert.equal(resolveLocalized(grimm.title, 'zh'), '格林童话');
+  assert.equal(resolveLocalized(grimm.title, 'ja'), 'グリム童話');
+  assert.equal(grimm.wikiPage, "Grimms' Fairy Tales");
+  assert.equal(grimm.type, 'work');
+  assert.equal(grimm.isContext, false);
 });
 
 test('the second batch preserves clarified editions, films and exact series scope', () => {
@@ -199,7 +246,7 @@ test('the second batch preserves clarified editions, films and exact series scop
 });
 
 test('display titles omit release-year suffixes without losing sequel names or version identities', () => {
-  assert.equal(nodes.length, 105);
+  assert.equal(nodes.length, 106);
   for (const node of nodes) {
     for (const locale of locales) {
       assert.doesNotMatch(resolveLocalized(node.title, locale), /\s*[（(]\d{4}[）)]$/u,
@@ -271,6 +318,10 @@ test('graph edges have valid endpoints, semantic relations and traceable provena
       assert.equal(edge.relationship, 'part-of');
       assert.ok(Object.hasOwn(secondBatchSeries, edge.target));
       assert.ok(secondBatchSeries[edge.target].includes(edge.source));
+    } else if (edge.provenance.source === 'docs/beyond-code-preview.md#controls-and-game-additions-2026-11-14') {
+      assert.equal(edge.relationship, 'part-of');
+      assert.equal(edge.target, 'games-assassins-creed-series');
+      assert.ok(approvedAssassinCreedWorks.includes(edge.source));
     } else {
       assert.equal(edge.provenance.source, 'docs/beyond-code-preview.md#category-legibility-2026-11-14');
       assert.equal(edge.relationship, 'associated-with');
@@ -346,6 +397,7 @@ test('approved branches have exact endpoints without introducing unrelated works
     'movies-the-two-towers->movies-the-lord-of-the-rings',
     ...Object.entries(secondBatchSeries).flatMap(([parent, children]) =>
       children.map((child) => `${child}->${parent}`)),
+    ...approvedAssassinCreedWorks.map((work) => `${work}->games-assassins-creed-series`),
   ].sort());
   assert.deepEqual(facts('style-of'), ['foods-jiro-ramen->foods-ramen']);
   assert.deepEqual(facts('ingredient-of'), [
@@ -357,7 +409,7 @@ test('approved branches have exact endpoints without introducing unrelated works
     'topics-analytical-psychology->topics-carl-jung',
     'topics-socionics->topics-carl-jung',
   ]);
-  assert.equal(edges.length, 46, 'Only the requested Socionics association is added');
+  assert.equal(edges.length, 49, 'Only the requested associations and series links are added');
   assert.equal(edges.some((edge) => edge.source.includes('diana-wynne-jones')
     || edge.target.includes('diana-wynne-jones') || edge.source === 'book-howls-moving-castle'
     || edge.target === 'book-howls-moving-castle'), false);

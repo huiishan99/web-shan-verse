@@ -381,6 +381,11 @@ export const interests: InterestCategory[] = [
       { id: "games-resident-evil-requiem", title: { en: "Resident Evil Requiem", zh: "生化危机：安魂曲", ja: "バイオハザード レクイエム" }, wikiPage: "Resident Evil Requiem" },
       { id: "games-nobunagas-ambition-sphere-of-influence", title: { en: "Nobunaga's Ambition: Sphere of Influence (XIV)", zh: "信长之野望14：创造", ja: "信長の野望・創造" }, externalUrl: "https://store.steampowered.com/app/392470/" },
       { id: "games-taiko-risshiden-v", title: { en: "Taikō Risshiden V", zh: "太阁立志传V", ja: "太閤立志伝V" }, wikiPage: "Taikou Risshiden V" },
+      { id: "games-assassins-creed-series", kind: "series", title: { en: "Assassin's Creed series", zh: "刺客信条系列", ja: "アサシン クリード シリーズ" }, wikiPage: "Assassin's Creed" },
+      { id: "games-assassins-creed-ii", title: { en: "Assassin's Creed II", zh: "刺客信条II", ja: "アサシン クリード II" }, wikiPage: "Assassin's Creed II" },
+      { id: "games-assassins-creed-brotherhood", title: { en: "Assassin's Creed: Brotherhood", zh: "刺客信条：兄弟会", ja: "アサシン クリード ブラザーフッド" }, wikiPage: "Assassin's Creed: Brotherhood" },
+      { id: "games-assassins-creed-revelations", title: { en: "Assassin's Creed: Revelations", zh: "刺客信条：启示录", ja: "アサシン クリード リベレーション" }, wikiPage: "Assassin's Creed: Revelations" },
+      { id: "games-yakuza-0", title: { en: "Yakuza 0", zh: "如龙0", ja: "龍が如く0 誓いの場所" }, wikiPage: "Yakuza 0" },
       { title: { en: "The Legend of Sword and Fairy 4", zh: "仙剑奇侠传四", ja: "仙剣奇侠伝四" }, wikiPage: "The Legend of Sword and Fairy 4" }
     ]
   },
@@ -460,7 +465,7 @@ export const interests: InterestCategory[] = [
       { title: { en: "A Thousand Splendid Suns", zh: "灿烂千阳", ja: "千の輝く太陽" }, wikiPage: "A Thousand Splendid Suns" },
       { title: { en: "To Live", zh: "活着", ja: "活きる" }, wikiPage: "To Live (novel)" },
       { title: { en: "Tristan and Iseult", zh: "特里斯坦与伊索尔德", ja: "トリスタンとイゾルデ" }, wikiPage: "Tristan and Iseult" },
-      { title: { en: "Kinder- und Hausmärchen", zh: "格林童话", ja: "グリム童話" }, wikiPage: "Grimms' Fairy Tales" }
+      { id: "books-kinder-und-hausmarchen", title: { en: "Grimms' Fairy Tales", zh: "格林童话", ja: "グリム童話" }, wikiPage: "Grimms' Fairy Tales" }
     ]
   },
   {
@@ -488,16 +493,6 @@ export const interests: InterestCategory[] = [
       { id: "foods-yakiniku", kind: "topic", title: { en: "Yakiniku", zh: "烧肉", ja: "焼肉" }, wikiPage: "Yakiniku" },
       { id: "foods-wagyu", kind: "topic", title: { en: "Wagyu", zh: "和牛", ja: "和牛" }, wikiPage: "Wagyu" },
       { id: "foods-beef-tongue", kind: "topic", title: { en: "Beef tongue", zh: "牛舌", ja: "牛タン" }, wikiPage: "Beef tongue" }
-    ]
-  },
-  {
-    name: { en: "Hobbies", zh: "爱好", ja: "趣味" },
-    icon: "sparkle",
-    items: [
-      { en: "Traveling", zh: "旅行", ja: "旅行" },
-      { en: "Reading", zh: "阅读", ja: "読書" },
-      { en: "Gaming", zh: "游戏", ja: "ゲーム" },
-      { en: "Board gaming", zh: "桌游", ja: "ボードゲーム" }
     ]
   },
   {

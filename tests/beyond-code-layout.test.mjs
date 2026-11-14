@@ -27,7 +27,7 @@ for (const mobile of [false, true]) {
     const layout = createGraphLayout(nodes, edges, { mobile });
     const regions = categoryRegions(layout, nodes);
     assert.equal(regions.length, new Set(nodes.map((node) => node.category)).size);
-    assertRegionsSeparate(regions, mobile ? 640 : 220);
+    assertRegionsSeparate(regions, mobile ? 680 : 220);
     const points = byId(layout);
     for (const region of regions) {
       const members = nodes.filter((node) => node.category === region.id).map((node) => points.get(node.id));
@@ -99,7 +99,7 @@ test('cross-category facts retain endpoints without pulling category regions int
     const baseline = createGraphLayout(nodes, local, { mobile });
     const related = createGraphLayout(nodes, edges, { mobile });
     assert.deepEqual(related.map(({ id, x, y }) => ({ id, x, y })), baseline.map(({ id, x, y }) => ({ id, x, y })));
-    assertRegionsSeparate(categoryRegions(related, nodes), mobile ? 640 : 220);
+    assertRegionsSeparate(categoryRegions(related, nodes), mobile ? 680 : 220);
   }
 });
 
@@ -127,7 +127,7 @@ test('mobile categories form a horizontal strip reachable by the existing horizo
   const mobile = categoryRegions(createGraphLayout(nodes, edges, { mobile: true }), nodes);
   assert.deepEqual(mobile.map((region) => region.id), desktop.map((region) => region.id));
   for (let index = 1; index < mobile.length; index++) {
-    assert.ok(mobile[index].minX - mobile[index - 1].maxX >= 640 - 1e-7);
+    assert.ok(mobile[index].minX - mobile[index - 1].maxX >= 680 - 1e-7);
   }
   for (const region of mobile) assert.ok(Math.abs(region.minY - mobile[0].minY) < 1e-7);
   const movieRegion = mobile.find((region) => region.id === 'movies');
@@ -167,9 +167,9 @@ test('invalid edge endpoints cannot perturb valid components and frozen source d
 });
 
 for (const mobile of [false, true]) test(`${mobile ? 'compact' : 'desktop'} overview preserves outer-orbit gutters and captions through thirty seconds of real physics`, () => {
-  // Match the actual overview camera: the 780/580px stages reserve 65px,
+  // Match the actual overview camera: the 820/580px stages reserve 65px,
   // fit category corners, and align the pannable compact strip at its left edge.
-  const viewport = { width: mobile ? 390 : 1028, height: mobile ? 515 : 715 };
+  const viewport = { width: mobile ? 390 : 1028, height: mobile ? 515 : 755 };
   const stretch = mobile ? 1 : Math.max(1, viewport.width / viewport.height / 1.55);
   const layout = createGraphLayout(nodes, edges, { mobile }).map((node) => ({ ...node,
     x: node.x * stretch, anchorX: node.anchorX * stretch,

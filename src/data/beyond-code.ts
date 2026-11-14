@@ -3,7 +3,7 @@ import { localizeString, type LocalizedString } from '../i18n/config.ts';
 
 export type BeyondCodeCategoryId =
   | 'games' | 'movies' | 'drama' | 'books'
-  | 'music' | 'foods' | 'hobbies' | 'topics';
+  | 'music' | 'foods' | 'topics';
 
 export interface BeyondCodeCategory {
   id: BeyondCodeCategoryId;
@@ -58,7 +58,6 @@ const categoryIds: Record<string, BeyondCodeCategoryId> = {
   Books: 'books',
   Music: 'music',
   Foods: 'foods',
-  Hobbies: 'hobbies',
   'Interests Topics': 'topics',
 };
 
@@ -199,6 +198,11 @@ const approvedSecondBatch = {
   source: 'docs/beyond-code-preview.md#approved-expansion-2026-11-14-second-batch',
 };
 
+const approvedGameAdditions = {
+  kind: 'user-confirmed' as const,
+  source: 'docs/beyond-code-preview.md#controls-and-game-additions-2026-11-14',
+};
+
 // These are the exact entries the owner selected, not an inferred franchise filmography.
 const approvedSeries: [string, string[]][] = [
   ['games-resident-evil-series', [
@@ -237,6 +241,9 @@ export const edges: BeyondCodeEdge[] = [
   ...artistEdges,
   ...approvedSeries.flatMap(([series, works]) =>
     works.map((work) => edge(work, series, 'part-of', approvedSecondBatch))),
+  ...['games-assassins-creed-ii', 'games-assassins-creed-brotherhood',
+    'games-assassins-creed-revelations'].map((work) =>
+    edge(work, 'games-assassins-creed-series', 'part-of', approvedGameAdditions)),
   edge('movies-howls-moving-castle', 'studio-ghibli', 'produced-by', {
     kind: 'official-source', source: 'https://www.ghibli.jp/works/howl/',
   }),

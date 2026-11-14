@@ -73,7 +73,7 @@ const moduleGap = 40;
 const regionMargin = 140;
 const captionHeight = 90;
 const categoryGap = 220;
-const mobileCategoryGap = 640;
+const mobileCategoryGap = 680;
 const categoryOrder = Object.keys(clusterCenters);
 const compareIds = (first, second) => first < second ? -1 : first > second ? 1 : 0;
 

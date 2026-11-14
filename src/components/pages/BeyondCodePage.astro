@@ -10,9 +10,9 @@ const { lang = 'en' } = Astro.props;
 const copy = {
   en: {
     eyebrow: 'A PERSONAL CONSTELLATION', title: 'Beyond Code',
-    subtitle: "What I've watched, read, played, and listened to, plus the food, hobbies, and ideas I enjoy.",
+    subtitle: "What I've watched, read, played, and listened to, plus the food and ideas I enjoy.",
     all: 'All', search: 'Find something…', constellation: 'Constellation', index: 'Index',
-    reset: 'Return to the whole constellation', stepBack: 'Back',
+    reset: 'Reset constellation', stepBack: 'Back',
     zoomIn: 'Zoom in', zoomOut: 'Zoom out', pauseMotion: 'Pause floating motion', resumeMotion: 'Resume floating motion',
     reducedMotion: 'Motion is off to follow your system preference', close: 'Close introduction',
     related: 'Connected worlds', nearby: 'In this constellation', source: 'Explore further',
@@ -20,18 +20,18 @@ const copy = {
     context: 'Related creator or source', playing: 'Pause preview', play: 'Play preview',
   },
   zh: {
-    eyebrow: '我的兴趣星群', title: '代码之外', subtitle: '记录我看过、读过、玩过、听过的作品，以及喜欢的食物、爱好和想法。',
+    eyebrow: '我的兴趣星群', title: '代码之外', subtitle: '记录我看过、读过、玩过、听过的作品，以及喜欢的食物和想法。',
     all: '全部', search: '寻找一颗星…', constellation: '星群', index: '索引',
-    reset: '回到完整星群', stepBack: '返回上一步', zoomIn: '放大', zoomOut: '缩小',
+    reset: '重置星群', stepBack: '返回上一步', zoomIn: '放大', zoomOut: '缩小',
     pauseMotion: '暂停气泡漂浮', resumeMotion: '恢复气泡漂浮', reducedMotion: '已根据系统偏好关闭动态效果',
     close: '关闭介绍', related: '相连的世界', nearby: '同一片星群',
     source: '继续了解', noResults: '没有找到相关内容。', back: '返回关于我',
     collection: '我的收藏', context: '相关创作者或原作', playing: '暂停试听', play: '试听',
   },
   ja: {
-    eyebrow: '私の小さな星座', title: 'コードを超えて', subtitle: '観たもの、読んだもの、遊んだもの、聴いたもの。好きな食べ物や趣味、関心のあることも。',
+    eyebrow: '私の小さな星座', title: 'コードを超えて', subtitle: '観たもの、読んだもの、遊んだもの、聴いたもの。好きな食べ物や関心のあることも。',
     all: 'すべて', search: '星を探す…', constellation: '星座', index: '一覧',
-    reset: '星座全体に戻る', stepBack: 'ひとつ戻る', zoomIn: '拡大', zoomOut: '縮小',
+    reset: '星座をリセット', stepBack: 'ひとつ戻る', zoomIn: '拡大', zoomOut: '縮小',
     pauseMotion: '浮遊する動きを止める', resumeMotion: '浮遊する動きを再開する', reducedMotion: 'システム設定に従って動きを停止しています',
     close: '紹介を閉じる', related: 'つながる世界', nearby: '同じ星座から',
     source: 'もっと知る', noResults: '見つかりませんでした。', back: 'About に戻る',
@@ -205,7 +205,7 @@ const graphData = JSON.stringify({
   .beyond-breadcrumb button { display:inline-flex; align-items:center; gap:4px; min-height:44px; padding:0 10px 0 0; border:0; background:transparent; color:#c8b174; font-size:13px; }
   .beyond-breadcrumb button:hover:not(:disabled) { color:#ead79e; }
   .beyond-breadcrumb button:disabled { color:#666258; cursor:default; }
-  .beyond-stage { position:relative; min-height:780px; height:calc(100svh - 319px); max-height:1000px; isolation:isolate; border-top:1px solid rgba(255,255,255,.045); }
+  .beyond-stage { position:relative; min-height:820px; height:calc(100svh - 319px); max-height:1000px; isolation:isolate; border-top:1px solid rgba(255,255,255,.045); }
   .beyond-atmosphere { position:absolute; inset:0; pointer-events:none; z-index:-1; background:radial-gradient(ellipse at 24% 40%,rgba(115,93,40,.05),transparent 43%),radial-gradient(ellipse at 73% 56%,rgba(99,112,128,.035),transparent 43%); }
   .beyond-graph { position:absolute; inset:0; overflow:hidden; touch-action:pan-y; cursor:grab; user-select:none; }
   .beyond-graph.is-dragging { cursor:grabbing; }
@@ -236,7 +236,7 @@ const graphData = JSON.stringify({
   .beyond-node.is-neighbor { color:#e4d5b2; opacity:1; }
   .beyond-bottom { position:absolute; bottom:17px; left:18px; right:18px; display:flex; align-items:center; justify-content:flex-end; pointer-events:none; z-index:7; }
   .beyond-navigation { display:flex; align-items:center; gap:2px; pointer-events:auto; padding:4px; border:1px solid rgba(201,162,39,.15); border-radius:4px; background:rgba(10,10,15,.85); backdrop-filter:blur(8px); }
-  .beyond-navigation button { width:34px; height:34px; display:grid; place-items:center; padding:0; border:0; background:transparent; border-radius:2px; }
+  .beyond-navigation button { width:34px; height:34px; display:grid; place-items:center; padding:0; border:0; background:transparent; border-radius:2px; color:var(--color-brass); }
   .beyond-navigation button:hover { background:rgba(201,162,39,.09); }
   .beyond-navigation button:disabled { cursor:default; opacity:.35; }
   .beyond-motion-pause,.beyond-motion-play { display:grid; place-items:center; }
