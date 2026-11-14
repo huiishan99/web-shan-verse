@@ -47,17 +47,17 @@
     "unified": "^11.0.5"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.9",
+    "@astrojs/check": "^0.9.12",
     "@eslint/js": "^10.0.1",
-    "@playwright/test": "^1.62.1",
+    "@playwright/test": "^1.65.0",
     "@types/three": "^0.186.0",
     "eslint": "^10.15.0",
     "eslint-plugin-astro": "^3.2.1",
-    "globals": "^17.7.0",
+    "globals": "^17.14.0",
     "parse5": "7.3.0",
     "sharp": "0.35.5",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.65.0"
+    "typescript-eslint": "^8.72.2"
   },
   "overrides": {
     "@typescript-eslint/typescript-estree": {
