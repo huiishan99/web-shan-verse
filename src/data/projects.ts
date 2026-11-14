@@ -775,6 +775,7 @@ export const projectCategories: ProjectCategory[] = [
                 },
                 github: "https://github.com/huiishan99/game-cpp-tetris",
                 image: "/images/projects/tetris-gameplay.webp",
+                imagePosition: "top",
                 detailImages: [
                     {
                         src: "/images/projects/tetris-gameplay.webp",
@@ -816,6 +817,13 @@ export const projectCategories: ProjectCategory[] = [
                     "ja": "C++、OpenGL、GLFW のグラフィックス練習。ウィンドウ、バッファー、シェーダー、テクスチャー、基本的な 3D 描画を扱います。"
                 },
                 github: "https://github.com/huiishan99/opengl-vector-graphic",
+                image: "/images/projects/opengl-practice-preview.webp",
+                detailImageAlt: {
+                    en: "OpenGL rendering of a wood-textured plane with specular lighting and a white light-source cube",
+                    zh: "OpenGL 渲染画面，展示木纹平面、镜面光照与白色光源立方体",
+                    ja: "木目の平面、鏡面反射、白い光源キューブを表示した OpenGL の描画画面"
+                },
+                detailImageFit: "contain",
                 tags: ["C++", "OpenGL", "GLFW"]
             },
             {
