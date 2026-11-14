@@ -22,10 +22,14 @@ const categoryOrder = new Map([
   ['publications', 0],
   ['theses', 1],
   ['research', 2],
+  ['unity', 3],
+  ['web', 4],
+  ['other', 5],
+  ['school', 6],
 ]);
 const academicCategoryIds = new Set(['publications', 'theses', 'research']);
 const orderedProjectCategories = [...projectCategories].sort((first, second) =>
-  (categoryOrder.get(first.id) ?? 3) - (categoryOrder.get(second.id) ?? 3)
+  (categoryOrder.get(first.id) ?? categoryOrder.size) - (categoryOrder.get(second.id) ?? categoryOrder.size)
 );
 
 const categoryRoutes = orderedProjectCategories.map((category) => ({

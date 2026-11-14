@@ -610,7 +610,9 @@ for (const locale of ['', '/zh', '/ja']) {
       await expect(page.locator('.category-route-item')).toHaveCount(7);
       await expect(page.locator('.category-route-item[href="#vr"], #vr')).toHaveCount(0);
       await expect(page.locator('#unity .project-card')).toHaveCount(7);
-      await expect(page.locator('#school .project-card')).toHaveCount(10);
+      await expect(page.locator('#school .project-card')).toHaveCount(9);
+      expect(await page.locator('.project-section').evaluateAll(sections => sections.map(section => section.id))).toEqual(['publications', 'theses', 'research', 'unity', 'web', 'other', 'school']);
+      expect(await page.locator('.category-route-item').evaluateAll(items => items.map(item => item.getAttribute('href')))).toEqual(['#publications', '#theses', '#research', '#unity', '#web', '#other', '#school']);
       await page.locator('.category-routes').screenshot({ path: testInfo.outputPath(`categories-${viewport.width}.png`) });
       await page.locator('.category-route-item[href="#unity"]').click();
       const cabinCard = page.locator('#unity .project-card').filter({ has: page.locator(`a.project-detail-trigger[href="${locale}/projects/vr-car-scene-prototype/"]`) });

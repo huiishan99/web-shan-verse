@@ -687,18 +687,6 @@ export const projectCategories: ProjectCategory[] = [
                 "status": "coursework"
             },
             {
-                slug: "embodied-avatars-generative-ai-vr-classroom-coursework",
-                title: "The Role of Embodied Avatars and Generative AI in Self Learning VR Classroom",
-                description: {
-                    en: "Unity 2022.3 master's thesis project with VR classroom scenes, Convai avatar components, speech services, and a Python backend.",
-                    zh: "基于 Unity 2022.3 的硕士论文项目，包含 VR 教室场景、Convai 头像组件、语音服务和 Python 后端。",
-                    ja: "Unity 2022.3 を用いた修士論文プロジェクト。VR 教室シーン、Convai アバターコンポーネント、音声サービス、Python バックエンドを含みます。"
-                },
-                featured: true,
-                github: "https://github.com/huiishan99/uoa-master-research-unity",
-                tags: ["Master's Thesis", "Unity", "C#", "Python", "VR"]
-            },
-            {
                 slug: "human-activity-pattern-processing",
                 title: "Human Activity Pattern Processing",
                 description: {

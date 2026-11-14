@@ -43,6 +43,7 @@ test('master and bachelor theses are kept in their own category after publicatio
   assert.equal(publications.items.some(({ title }) => title === masterThesisTitle), false);
   assert.equal(theses.items.some(({ title }) => title === masterThesisTitle), true);
   assert.equal(theses.items.some(({ title }) => title.en === bachelorThesisTitle), true);
+  assert.equal(schoolProjects.items.some(({ title }) => title === masterThesisTitle), false);
   assert.equal(schoolProjects.items.some(({ title }) => title === 'NWPU Undergraduate Thesis'), false);
 });
 
@@ -250,8 +251,8 @@ test('Unity keeps its VR entries while omitting the removed Master Project', () 
 
 test('four additional course overviews have localized copy without private source links', () => {
   const school = projectCategories.find(({ id }) => id === 'school');
-  assert.equal(school.items.length, 10);
-  assert.equal(projectRecords.length, 52);
+  assert.equal(school.items.length, 9);
+  assert.equal(projectRecords.length, 51);
   for (const slug of ['wireless-and-mobile-networks', 'mathematics-and-post-quantum-cryptography', 'numerical-modeling-and-simulations', 'research-paper-writing-seminar']) {
     const item = school.items.find((project) => project.slug === slug);
     assert.ok(item);
