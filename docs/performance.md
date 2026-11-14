@@ -1,6 +1,98 @@
 # Loading and navigation performance
 
-## Active scope (2026-11-14)
+## Font delivery and security follow-up (active, 2026-11-14)
+
+Owner outcome: optimize font loading and apply dependency security patches while
+preserving the original website style. This supersedes the earlier deferral of
+these two items below; other loading decisions remain active.
+
+Design review: keep the existing six Google families and all five local Zhuque
+subsets. Mirror the exact upstream WOFF2 bytes and CSS face declarations onto the
+same origin. Preserve family names, face order, discrete weights, styles,
+`font-display: swap`, Unicode ranges and all existing CSS stacks. A shared hashed
+stylesheet URL persists across Astro locale/page navigation. Preload only the
+primary Cinzel and Crimson Pro normal Latin files, not all CJK partitions.
+Font files remain browser-demand-loaded. Preserve full upstream glyph partitions
+for future content/comments; do not subset to today's text or add missing weights.
+
+Alternatives considered: Astro's Fonts API is mature, but its default subset,
+family/fallback generation and provider refresh need extra migration work for
+exact existing-face parity. Async external CSS retains third-party availability
+and swap behavior. Pinned same-origin assets preserve today's font matching,
+support offline builds and avoid runtime Google font requests. Regeneration is
+explicit against a pinned snapshot, with source/file hashes and upstream OFL
+licenses. No source font is re-encoded. New font binaries and versions require
+a deliberate refresh and visual review. This adds vendored assets to the repo;
+on-demand browser loading and hash identity bound runtime/cache costs.
+
+Dependency design: stay within current major versions, apply patched upstream
+Astro/ESLint/transitive versions and retain exact Sharp 0.35.5 for derivative
+reproducibility. A narrow `typescript-estree` minimatch override is necessary while
+upstream still requests the vulnerable old major; retain its existing glob API,
+verify compatibility and remove the override when upstream supports the fixed
+major. No `audit fix --force`, lint downgrade or Worker redeployment is needed.
+
+Acceptance: original face descriptors/coverage and five Zhuque hashes remain
+identical; real same-origin font loads pass with Google blocked, including
+Crimson italic, missing-weight matching and CJK fallback outside Zhuque subsets.
+Compare font-ready text metrics/screenshots for EN/ZH/JA and SPA locale changes.
+Keep colors, spacing, content, graph forces and existing UI unchanged. Require
+full/omit-dev audit zero, a valid installed dependency graph, glob compatibility,
+the full repository quality gate, production exclusion of diagnostics and an
+independent review. Browser timings are device/cache observations, not a general
+speed guarantee. Rollback is a normal Git revert; no persistent data is migrated.
+
+Sources: [Astro fonts](https://docs.astro.build/en/guides/fonts/),
+[Google CSS API](https://developers.google.com/fonts/docs/css2),
+[Google browser-specific delivery](https://developers.google.com/fonts/docs/technical_considerations).
+Current implementation/evidence is recorded after verification below.
+
+### Font/security implementation and review packet
+
+`src/data/google-fonts-upstream.css` is the reviewed provider snapshot; the
+generated `google-fonts.json` records provenance, faces, local file hashes and
+licenses. It is build-only data, not a browser payload. The shared stylesheet
+keeps all 940 face declarations; 608 original WOFF2 files total 21,476,900 bytes
+across the full catalog, with Unicode-driven on-demand loading. Only two Latin
+files (25,904 and 48,200 bytes) are preloaded. The five existing Zhuque files and
+their license remain byte-identical.
+
+Maintenance: `npm run check:fonts` verifies pins offline without writing or
+fetching; `npm run vendor:fonts` restores missing files from pinned sources with
+hash checks. Neither runs network requests during build. Reinitializing/replacing
+the provider snapshot requires a reviewed source hash/inventory change; there is
+no automatic latest-font refresh. Pre-existing directory/file links and Windows
+junctions are rejected before reads or writes, including manifest and snapshot
+paths. These local checks do not claim atomic protection from a hostile concurrent
+process. Content-hashed files are not overwritten or automatically pruned.
+
+Dependencies: Astro 7.4.12 and ESLint 10.15.0 retain the existing major versions.
+Patched transitive dependencies include Undici 8.12.4, Zod 4.6.7, fast-uri 3.1.9
+and minimatch 11.0.8. Sharp stays exactly 0.35.5. The narrow
+`@typescript-eslint/typescript-estree` override replaces its vulnerable minimatch
+10 range while retaining the named function / `dot:true` API. A 608-case old/new
+glob comparison, actual lint, type checks and full regression pass. Remove the
+override when upstream adopts a patched range and the ordinary gate passes
+without it; do not propagate it globally or downgrade lint rules.
+
+| Item | Result and boundary |
+| --- | --- |
+| Goal / behavior | Same typography with no runtime Google font service dependency; security-maintenance findings addressed. |
+| Architecture | Pinned same-origin fonts/CSS and two Latin preloads; no new runtime package, backend or persisted state. Existing discrete face matching is retained rather than broadened to variable ranges. |
+| Invariants | Typeface bytes, weights/styles, Unicode ranges, font stacks, five Zhuque subsets, colors, spacing, personal content, 106 graph nodes/49 edges and force equations remain unchanged. |
+| Caption correction | Canvas caption measurement now resolves the existing DOM font family once per mount. Font-ready/loading-done events invalidate only measurement caches and wake the existing renderer; alive/AbortSignal guards prevent teardown callbacks. No per-frame DOM reads. |
+| Automated evidence | Full local gate: Astro 131 files with zero diagnostics, ESLint, 188 passed unit tests/zero failures plus one explicit Windows file-symlink privilege skip, 297-page build/HTML validation and 74 passed E2E cases. Directory-junction counterexamples actually run on Windows; Linux CI can exercise the file-symlink case. Both full and omit-dev npm audits report zero; installed dependency graph is valid. |
+| Independent browser evidence | Same 1280x720/DPR1.75 browser compares EN/ZH/JA home, JA About, ZH Blog, EN Beyond and EN Projects after fonts.ready: all 44 typography samples have identical family/weight/style/size/line-height/letter-spacing/text rectangles. New samples make zero Google font requests. EN/ZH screenshots were visually compared; all seven before/after captures are retained. |
+| Counterexamples | With Google explicitly blocked, real same-origin WOFF2 files load for all six families and CJK fallbacks/rare-character probes through SPA locale changes. A real-font delay test fails before the caption fix (measurement count stays one), then passes after cache invalidation. Isolated path tests reject traversal and escaping license/metadata junctions before I/O. |
+| Regression / assumptions | Keep ordinary missing-weight matching (for example Mono700 selects existing500) and OS/emoji fallbacks. Full provider Unicode coverage means its original coverage, not every possible glyph. Both same-origin delivery and original Google reference were measured in the same browser; the initial mismatched-viewport sample was discarded as a comparison and retained separately. |
+| Known limits | Catalog storage grows by about 22MB; browsers do not eagerly download all files. Cold/warm cache and network conditions differ, so no universal speed percentage is claimed. Audit zero means no current registry findings, not proof against unknown vulnerabilities. The existing lazy Journey vendor-chunk warning remains. |
+| Trajectory / rollback | Continue with pinned static assets and explicit reviewed refreshes. Independent reviews found and closed the junction boundary gap; no blocker remains. A normal Git revert restores the old provider/dependency state without data migration. |
+
+Evidence is retained in `2026/11/14/fonts-and-security/`, including the full gate
+log, controlled typography JSON/screenshots and the before-fix caption failure.
+Dependency/glob provenance is in `2026/11/14/site-loading-performance/dependency-security-refresh.json`.
+
+## Previous loading milestone scope (2026-11-14)
 
 Owner outcome: opening and switching pages should feel responsive, while keeping
 the current typography, artwork, layout and graph interaction. This scope refines
@@ -88,21 +180,13 @@ Astro's page-load plus two animation frames, not all images or completed GPU pai
 
 ## Remaining debt, ordered by evidence
 
-- Dependency maintenance is a separate actionable debt. The 2026-11-14 lockfile
-  audit reports 14 affected package entries (2 high, 12 moderate), not 14 distinct
-  advisories. `--omit=dev` reports Astro 7.3.8, Undici 8.11.2 and Zod 4.6.5; their
-  patched versions 7.4.7 / 8.12.2 / 4.6.6 are available within existing ranges.
-  These packages belong to the static build/toolchain here, not a deployed Astro
-  Node server or Worker imports. That bounds exposure but does not establish
-  non-exploitability. No evidence connects the advisories to the loading issue.
-  Plan a separate verified lockfile refresh; `audit fix --force` also proposes
-  downgrading parts of the lint chain, so do not apply it blindly. Primary reports:
+- The font/provider and dependency findings that motivated this follow-up are
+  resolved above. Initial audit was 14 affected package entries (2 high,
+  12 moderate), including three omit-dev entries; this was not a count of distinct
+  advisories. Primary reports remain useful history:
   [Astro](https://github.com/advisories/GHSA-r3h5-4585-7x3w),
   [Undici](https://github.com/advisories/GHSA-2m5v-pch6-74hx),
   [Zod](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5).
-- First-load fonts depend on one external render-blocking stylesheet with six
-  families. Used glyphs determine actual font requests. Font delivery deserves
-  isolated cold-cache measurement and visual verification before changing it.
 - The decorative starfield draws 300 gradients per frame at normal desktop
   refresh rates. Glass/backdrop paint and cursor DOM particles can contribute
   runtime cost; fresh isolated A/B evidence is required before changing the look.
@@ -114,7 +198,7 @@ Astro's page-load plus two animation frames, not all images or completed GPU pai
   A `_headers` file does not configure this GitHub Pages deployment, and HTML
   cache changes must not cause stale content.
 
-## Review packet
+## Previous loading milestone review packet (font/dependency notes superseded above)
 
 | Item | Result and boundary |
 | --- | --- |

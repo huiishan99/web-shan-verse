@@ -5,6 +5,7 @@ import CustomCursor from '../components/CustomCursor.astro';
 import MusicPlayer from '../components/MusicPlayer.astro';
 import ShanCli from '../components/ShanCli.astro';
 import SiteStats from '../components/SiteStats.astro';
+import fonts from '../data/google-fonts.json';
 import { defaultLocale, localeNames, localeShortNames, locales, localizePath, type Locale } from '../i18n/config';
 import { useTranslations } from '../i18n/ui';
 
@@ -66,10 +67,10 @@ const defaultAlternateUrl = new URL(
   <meta name="twitter:image" content={previewImage}>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Noto+Serif+SC:wght@400;500;600;700&family=Shippori+Mincho:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Original font bytes and face definitions, served by this site. -->
+  <link rel="preload" href={fonts.preloads.cinzelLatin} as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href={fonts.preloads.crimsonProNormalLatin} as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href={fonts.css.href}>
   
   <title>{pageTitle}</title>
   <ClientRouter fallback="swap" />

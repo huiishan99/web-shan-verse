@@ -54,6 +54,9 @@ Blog authoring conventions live in `docs/blog-authoring.md`. Development
 workarounds and known Astro cache behavior live in `docs/dev-notes.md`.
 Loading/navigation decisions, measurements and remaining performance debt live in
 `docs/performance.md`.
+Fonts are served from pinned local files with their original face definitions and
+licenses. `npm run check:fonts` verifies them offline; maintenance and security
+override removal conditions are documented in the performance guide.
 
 ## Site statistics
 

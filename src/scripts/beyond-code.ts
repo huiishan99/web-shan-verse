@@ -101,6 +101,7 @@ function setupBeyondCode() {
     if (labelTitle) labelTitle.textContent = text;
     return [node.id, {label, text}];
   }));
+  const captionFamily = getComputedStyle(root.querySelector<HTMLElement>('.beyond-node-label')!).fontFamily;
   const history = createViewHistory();
   let restoringView = false;
   let editingSearch = false;
@@ -594,7 +595,7 @@ function setupBeyondCode() {
       const presentation=views.get(node.id)!;
       const label=presentation.label!;
       const labelWidth=125;
-      const font=`${mobileQuery.matches?13:14}px "Crimson Pro", Georgia, serif`;
+      const font=`${mobileQuery.matches?13:14}px ${captionFamily}`;
       if (presentation.font !== font) {
         ctx!.font=font;
         presentation.labelHeight=Math.max(1,Math.ceil(ctx!.measureText(presentation.text).width/labelWidth))*17+15;
@@ -758,6 +759,13 @@ function setupBeyondCode() {
   document.addEventListener('keydown',(event)=>{if(event.key==='Escape'&&selected)closeDetail(true,true,true);},{signal});
   document.addEventListener('visibilitychange',()=>{lastTime=0;if(document.hidden){cancelAnimationFrame(frame);frame=0;}else wake();},{signal});
   reducedMotion.addEventListener('change',()=>{motion=!reducedMotion.matches;updateMotionControl();camera={...targetCamera};updateTargets();wake();},{signal});
+  const refreshCaptionFonts = () => {
+    if (!alive) return;
+    for (const presentation of views.values()) presentation.font = undefined;
+    wake();
+  };
+  document.fonts.addEventListener('loadingdone', refreshCaptionFonts, { signal });
+  document.fonts.ready.then(refreshCaptionFonts);
   mobileQuery.addEventListener('change',resize,{signal});
   const resizeObserver=new ResizeObserver(resize); resizeObserver.observe(stage);
   const intersection=new IntersectionObserver(([entry])=>{

@@ -9,6 +9,8 @@
     "preview": "astro preview",
     "update:github": "node scripts/update-github-contributions.mjs",
     "generate:beyond-thumbnails": "node --experimental-strip-types scripts/generate-beyond-code-thumbnails.mjs",
+    "vendor:fonts": "node scripts/vendor-google-fonts.mjs",
+    "check:fonts": "node scripts/vendor-google-fonts.mjs --check",
     "check": "astro check",
     "lint": "eslint . --max-warnings=0",
     "test": "node --experimental-strip-types --test tests/*.test.mjs",
@@ -38,7 +40,7 @@
     "@astrojs/markdown-remark": "^7.3.2",
     "@astrojs/mdx": "^8.0.3",
     "@astrojs/sitemap": "^3.7.4",
-    "astro": "^7.3.8",
+    "astro": "^7.4.12",
     "remark-mdx": "^3.1.1",
     "remark-parse": "^11.0.0",
     "three": "^0.186.1",
@@ -49,7 +51,7 @@
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.62.1",
     "@types/three": "^0.186.0",
-    "eslint": "^10.8.0",
+    "eslint": "^10.15.0",
     "eslint-plugin-astro": "^3.2.1",
     "globals": "^17.7.0",
     "parse5": "7.3.0",
@@ -58,6 +60,9 @@
     "typescript-eslint": "^8.65.0"
   },
   "overrides": {
+    "@typescript-eslint/typescript-estree": {
+      "minimatch": "11.0.8"
+    },
     "yaml-language-server": {
       "yaml": "2.9.0"
     }
