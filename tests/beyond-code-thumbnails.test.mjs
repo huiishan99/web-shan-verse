@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import sharp from 'sharp';
+import { nodes, edges } from '../src/data/beyond-code.ts';
 import {
   artworkPath, manifestFile, sha256, thumbnailBudget, thumbnailSettings, usedArtwork,
 } from '../scripts/generate-beyond-code-thumbnails.mjs';
@@ -31,6 +32,35 @@ test('each used original artwork has exactly one generated thumbnail, with uncha
     bytes += image.bytes;
   }
   assert.ok(bytes <= thumbnailBudget, `Thumbnails use ${bytes} bytes; budget is ${thumbnailBudget}`);
+});
+
+test('directly connected entries use distinct artwork content in the graph and introductions', async () => {
+  const artworkById = new Map(nodes.map((node) => [node.id, media[node.id]?.artwork || node.artwork || '']));
+  const fingerprints = new Map();
+  const fingerprint = async (artwork) => {
+    if (!fingerprints.has(artwork)) {
+      const image = manifest.images[artwork];
+      assert.ok(image, `Missing generated artwork for ${artwork}`);
+      const [original, thumbnail] = await Promise.all([
+        readFile(artworkPath(artwork)), readFile(artworkPath(image.thumbnail, true)),
+      ]);
+      fingerprints.set(artwork, { original: sha256(original), thumbnail: sha256(thumbnail) });
+    }
+    return fingerprints.get(artwork);
+  };
+  const duplicates = [];
+  for (const edge of edges) {
+    const source = artworkById.get(edge.source);
+    const target = artworkById.get(edge.target);
+    assert.ok(source && target, `A connected entry lacks artwork: ${edge.source} / ${edge.target}`);
+    const [first, second] = await Promise.all([fingerprint(source), fingerprint(target)]);
+    // Compare actual bytes as well as paths: copying an image under a new name
+    // must not make two connected bubbles look like distinct collection entries.
+    if (source === target || first.original === second.original || first.thumbnail === second.thumbnail) {
+      duplicates.push({ source: edge.source, target: edge.target });
+    }
+  }
+  assert.deepEqual(duplicates, [], 'Connected entries must not reuse identical original or thumbnail artwork');
 });
 
 test('thumbnail paths cannot escape or overwrite the original collection', () => {

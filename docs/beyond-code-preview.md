@@ -11,7 +11,8 @@ on 2026-11-12. The constellation checkpoint is `7045510`. Reuse the site's
 near-black background, brass accents, serif typography, and existing interest
 content. No new runtime dependency or backend is required.
 
-Current owner requirements are in [All overview Back visibility](#all-overview-back-visibility-2026-11-15),
+Current owner requirements are in [Distinct cover identity](#distinct-cover-identity-2026-11-15),
+[All overview Back visibility](#all-overview-back-visibility-2026-11-15),
 [Link contact](#link-contact-2026-11-15),
 [Timeline visibility](#timeline-visibility-2026-11-15),
 [Connected exploration](#connected-exploration-2026-11-14),
@@ -24,6 +25,39 @@ The current cover delivery and mount lifecycle are refined by
 below describe their historical checkpoints.
 The motion prototype and older publication checkpoints below record the design
 and evidence at those stages; their removed category hubs are historical.
+
+## Distinct cover identity (2026-11-15)
+
+Connected parent and child bubbles must use distinguishable artwork. This
+supersedes the historical first-film representative posters for Indiana Jones
+and Terminator, and the Jung portrait used to illustrate analytical psychology.
+Replace only those three parent/topic images; preserve the individual film
+posters, Jung portrait, approved collection scope and graph behavior.
+
+Use authentic franchise artwork and a sourced subject illustration, with image
+provenance recorded separately from description licensing. A neutral franchise
+mark must not imply a four-film Indiana Jones or six-film Terminator collection.
+Preserve ordinary circular image bubbles; contain wide marks so their text is
+not cropped. No new works, people, arrows, dependencies or physics changes.
+
+Acceptance: every directly connected pair has distinct original and thumbnail
+content, the actual graph and detail views show the new images, existing
+thumbnails remain unchanged and total eager thumbnail bytes stay below the
+existing 1,500,000-byte budget. Verify the three visual pairs and image loading,
+then retain the standard build and interaction regressions.
+
+### Distinct cover identity review packet
+
+| Item | Result / evidence boundary |
+| --- | --- |
+| Goal / behavior | Indiana Jones and Terminator parents now use their franchise wordmarks; analytical psychology uses a psychological-functions diagram. The connected film covers and Jung portrait remain unchanged. Wide marks stay complete in graph, Index and related-item images. |
+| Architecture / invariants | Three media records, three new originals/derived thumbnails and scoped image-fit styles; no runtime dependency, graph entity, relationship, force, size, navigation or state-ownership change. The existing graph script bundle is unchanged. |
+| Assumptions / provenance | Logos identify the approved five-film selections without claiming a boxed-set count. Lucasfilm's mark is traceable through the official Hasbro PDF; Paramount's mark is documented on Commons, although its original 2019 website is unavailable. The public-domain functions diagram is Hk kng's Jacobi-derived illustration, not a Jung-authored image or an added book. Image sources, rights tags and faithful transforms are recorded in the three media entries. |
+| Evidence | Actual graph/detail screenshots distinguish all three pairs and confirm six decoded covers. Independent comparison confirms all 103 prior thumbnail entries/settings are unchanged. The direct-edge hash regression fails on exactly the three old pairs and passes after replacement, including original and thumbnail bytes. |
+| Validation / regression | 145 files checked without diagnostics; lint; 207 unit passes plus the existing Windows symlink EPERM skip; 294-page build/HTML checks. The initial full browser run passes all 103 cases; after the Index/related-fit correction, all 21 focused cases pass, including two new cover cases at verified 1280×900 and 390×844 viewports, All Back visibility and native canvas line contact. |
+| Counterexamples / review | The regression rejects renamed copies, not just equal paths. Independent review caught cropped wordmarks in Index/related images; both are now covered. No child image was overwritten; the original topic-named JPEG still serves Jung. |
+| Cost / known limits | 106 unique eager thumbnails total 1,490,012 bytes, adding 21,044 bytes within the existing 1,500,000-byte cap; original covers remain lazy. Wordmarks are naturally small in compact circles, with unchanged accessible titles. The manual browser viewport override did not apply, so mobile evidence comes from actual-size browser tests, not a claimed phone screenshot or physical-device certification. |
+| Trajectory / recovery | Continue the existing asset pipeline and graph architecture; no unresolved blocker. Reverting this commit restores the previous media selection without a migration or data loss. Visual evidence is in `2026/11/15/beyond-distinct-covers/`. |
 
 ## All overview Back visibility (2026-11-15)
 
