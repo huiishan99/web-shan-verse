@@ -59,7 +59,7 @@ test('a fresh overview has no local Back or empty breadcrumb, while selection re
   await expect(breadcrumb).toBeHidden();
 });
 
-test('category, Index, coalesced search and Reset retain meaningful local return points', async ({ page }) => {
+test('non-All category, Index and coalesced search retain their local Back chain', async ({ page }) => {
   const root = await openCollection(page);
   const back = root.locator('[data-beyond-back]');
   const search = root.locator('[data-beyond-search]');
@@ -68,25 +68,19 @@ test('category, Index, coalesced search and Reset retain meaningful local return
   const detail = root.locator('[data-beyond-detail]');
 
   await games.click();
+  await expect(back).toBeVisible();
   await root.locator('[data-beyond-view="index"]').click();
   await expect(index).toBeVisible();
+  await expect(back).toBeVisible();
   await search.fill('Assa');
   await search.fill('Assassin');
+  await expect(back).toBeVisible();
   await root.locator('[data-index-node="games-assassins-creed-series"]').press('Enter');
   await expect(detail).toBeVisible();
   await expect(index).toBeHidden();
   await expect(root.locator('[data-detail-title]')).toHaveText("Assassin's Creed series");
 
-  await root.locator('[data-beyond-reset]').click();
-  await expect(detail).toBeHidden();
-  await expect(search).toHaveValue('');
-  await expect(root.locator('[data-beyond-category="all"]')).toHaveAttribute('aria-pressed', 'true');
-  await expect(back).toBeVisible(); // All still owns the return point saved by Reset.
-  await root.locator('[data-beyond-reset]').click(); // A repeated reset is a no-op for history.
-
-  await back.click();
-  await expect(detail).toBeVisible();
-  await expect(root.locator('[data-detail-title]')).toHaveText("Assassin's Creed series");
+  await expect(back).toBeVisible();
   await expect(search).toHaveValue('Assassin');
   await expect(games).toHaveAttribute('aria-pressed', 'true');
 
@@ -94,16 +88,92 @@ test('category, Index, coalesced search and Reset retain meaningful local return
   await expect(detail).toBeHidden();
   await expect(index).toBeVisible();
   await expect(search).toHaveValue('Assassin');
+  await expect(back).toBeVisible();
   await back.click();
   await expect(index).toBeVisible();
   await expect(search).toHaveValue('');
+  await expect(back).toBeVisible();
   await back.click();
   await expect(index).toBeHidden();
   await expect(games).toHaveAttribute('aria-pressed', 'true');
+  await expect(back).toBeVisible();
   await back.click();
   await expect(root.locator('[data-beyond-category="all"]')).toHaveAttribute('aria-pressed', 'true');
   await expect(back).toBeHidden();
 });
+
+for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 }]) {
+test(`All overview hides Back after category return, search, Index and Reset despite retained history at ${viewport.width}px`, async ({ page }) => {
+  await page.setViewportSize(viewport);
+  expect(page.viewportSize()).toEqual(viewport);
+  const root = await openCollection(page);
+  expect(await page.evaluate(() => ({ width: innerWidth, height: innerHeight }))).toEqual(viewport);
+  const back = root.locator('[data-beyond-back]');
+  const breadcrumb = root.locator('.beyond-breadcrumb');
+  const search = root.locator('[data-beyond-search]');
+  const all = root.locator('[data-beyond-category="all"]');
+  const games = root.locator('[data-beyond-category="games"]');
+
+  await games.click();
+  await expect(back).toBeVisible();
+  await all.click();
+  await expect(all).toHaveAttribute('aria-pressed', 'true');
+  await expect(back).toBeHidden();
+  await expect(breadcrumb).toBeHidden();
+
+  await search.fill('Stardew');
+  await expect(back).toBeHidden();
+  await root.locator('[data-beyond-view="index"]').click();
+  await expect(root.locator('[data-beyond-index]')).toBeVisible();
+  await expect(back).toBeHidden();
+  await expect(breadcrumb).toBeHidden();
+  await root.locator('[data-beyond-view="graph"]').click();
+  await expect(back).toBeHidden();
+
+  await games.click();
+  await expect(back).toBeVisible();
+  await root.locator('[data-node="games-stardew-valley"]').press('Enter');
+  await expect(root.locator('[data-beyond-detail]')).toBeVisible();
+  await expect(back).toBeVisible();
+  await root.locator('[data-beyond-reset]').click();
+  await expect(root.locator('[data-beyond-detail]')).toBeHidden();
+  await expect(all).toHaveAttribute('aria-pressed', 'true');
+  await expect(search).toHaveValue('');
+  await expect(back).toBeHidden();
+  await expect(breadcrumb).toBeHidden();
+  await root.locator('[data-beyond-reset]').click();
+  await expect(back).toBeHidden();
+  await expect(breadcrumb).toBeHidden();
+});
+
+test(`All detail Close and Escape hide Back again without exposing retained return points at ${viewport.width}px`, async ({ page }) => {
+  await page.setViewportSize(viewport);
+  expect(page.viewportSize()).toEqual(viewport);
+  const root = await openCollection(page);
+  expect(await page.evaluate(() => ({ width: innerWidth, height: innerHeight }))).toEqual(viewport);
+  const back = root.locator('[data-beyond-back]');
+  const breadcrumb = root.locator('.beyond-breadcrumb');
+  const detail = root.locator('[data-beyond-detail]');
+  const node = root.locator('[data-node="games-stardew-valley"]');
+
+  await node.press('Enter');
+  await expect(detail).toBeVisible();
+  await expect(back).toBeVisible();
+  await root.locator('[data-beyond-close]').click();
+  await expect(detail).toBeHidden();
+  await expect(back).toBeHidden();
+  await expect(breadcrumb).toBeHidden();
+
+  await node.press('Enter');
+  await expect(detail).toBeVisible();
+  await expect(back).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(detail).toBeHidden();
+  await expect(root.locator('[data-beyond-category="all"]')).toHaveAttribute('aria-pressed', 'true');
+  await expect(back).toBeHidden();
+  await expect(breadcrumb).toBeHidden();
+});
+}
 
 test('discovery uses direct filtered personal matches, excludes the selected node, and supports Index history', async ({ page }) => {
   const root = await openCollection(page);

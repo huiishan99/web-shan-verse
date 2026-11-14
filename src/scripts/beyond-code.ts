@@ -185,10 +185,10 @@ function setupBeyondCode() {
   }
 
   function updateBackControl() {
-    const available = history.canGoBack();
-    backButton.disabled = !available;
-    backButton.hidden = !available;
-    backControl.hidden = !available;
+    const show = history.canGoBack() && (category !== 'all' || selected !== null);
+    backButton.disabled = !show;
+    backButton.hidden = !show;
+    backControl.hidden = !show;
   }
 
   function stepBack() {
@@ -316,6 +316,7 @@ function setupBeyondCode() {
       section.hidden = !section.querySelector('[data-index-node]:not([hidden])');
     }
     root!.querySelector<HTMLElement>('[data-beyond-empty]')!.hidden = matches.length > 0;
+    updateBackControl();
     if (fit && matches.length) fitVisible();
     wake();
   }

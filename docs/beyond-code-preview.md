@@ -11,7 +11,8 @@ on 2026-11-12. The constellation checkpoint is `7045510`. Reuse the site's
 near-black background, brass accents, serif typography, and existing interest
 content. No new runtime dependency or backend is required.
 
-Current owner requirements are in [Link contact](#link-contact-2026-11-15),
+Current owner requirements are in [All overview Back visibility](#all-overview-back-visibility-2026-11-15),
+[Link contact](#link-contact-2026-11-15),
 [Timeline visibility](#timeline-visibility-2026-11-15),
 [Connected exploration](#connected-exploration-2026-11-14),
 [Controls and game additions](#controls-and-game-additions-2026-11-14)
@@ -23,6 +24,36 @@ The current cover delivery and mount lifecycle are refined by
 below describe their historical checkpoints.
 The motion prototype and older publication checkpoints below record the design
 and evidence at those stages; their removed category hubs are historical.
+
+## All overview Back visibility (2026-11-15)
+
+Owner correction: All overview must hide the local Back button even when return
+history exists. The earlier interpretation of "initial All only" was incorrect.
+This explicitly supersedes the older Reset-to-All-visible-Back UI expectation.
+
+Show the control only when a return point exists and either a non-All category
+is active or an introduction is open. Thus All without a selected node hides
+both button and wrapper after category navigation, search, Index, close/Escape,
+Back and Reset; opening an All node shows it again. Non-All navigation retains
+its current behavior. Preserve the bounded history itself, scene placement,
+media, styling and Back-to-About link.
+
+Synchronize visibility after category/selection mutations via `applyVisibility`,
+as well as the existing history/initialization updates. Updating only when saving
+the previous view leaves a stale control. Verify actual DOM states after every
+entry path, including reset with existing history and repeated Reset, and retain
+positive detail/related-item and non-All history traversal tests.
+
+### All overview Back review packet
+
+| Item | Result / evidence boundary |
+| --- | --- |
+| Goal / behavior | All without an introduction now hides Back regardless of retained history, including category return, search, Index, Close/Escape and Reset. All node details reveal it when a return point exists. |
+| Architecture / invariants | One visibility predicate also disables the hidden button and hides its wrapper; the existing visibility-update path synchronizes it after state changes. No history clearing, router/state ownership change, layout, media, force or line-contact change. |
+| Evidence | Both new state regressions fail against the previous build because Back remains visible. The fixed build passes the same cases at actual 1280×900 and 390×844 page dimensions, plus positive non-All history and All detail-return tests. Manual desktop checks confirm Games→All hidden, All detail shown, Close/Reset→All hidden. |
+| Validation / regression | 144 files checked without diagnostics; lint; 206 passing unit tests plus the existing Windows symlink EPERM skip; 294-page build/HTML checks; 19 focused browser cases pass, including the previous line-contact regressions. |
+| Assumptions / counterexamples | "All" includes its search and Index views when no node is selected. Reset no longer exposes an undo button from All; older visible-undo UI expectations are superseded. The underlying bounded history remains intact. Repeated Reset, Escape, category return and post-selection state refresh are covered. |
+| Risks / trajectory | This changes control availability only; no new dependency, asset or idle work. Automated mobile viewport checks are not physical-device certification. No unresolved blocker; retain the current navigation mechanism. Evidence is in `2026/11/15/beyond-all-back/`. |
 
 ## Link contact (2026-11-15)
 
@@ -99,10 +130,10 @@ theme, typography, genuine artwork and approved collection.
 
 Design review and boundaries:
 
-- Hide the local Back control when there is no return point. Initial All has no
+- Superseded visibility policy: hide the local Back control when there is no return point. Initial All has no
   disabled control; categories, search, Index and Reset retain meaningful history.
-  This refines visibility without superseding the existing Reset-to-All undo
-  contract. Removing it merely for `category === 'all'` would break that contract.
+  Its earlier Reset-to-All-visible-Back UI expectation is superseded by the
+  owner's [All overview correction](#all-overview-back-visibility-2026-11-15).
 - Remove the detached orbit decoration and dashed creator rims; use one consistent
   artwork edge, clearer covers and the existing hover/focus/selected feedback.
   Keep invisible collision padding, image sizes, forces and layout gates unchanged.
