@@ -7,10 +7,12 @@ import { createViewHistory } from '../utils/beyond-code-navigation.js';
 import { segmentBetweenCircles } from '../utils/beyond-code-links.js';
 import { createFrameProfile } from '../utils/beyond-code-profile.js';
 import { createPhysicsNetwork } from '../utils/beyond-code-network.js';
+import { baseNodeDiameter, screenNodeDiameter } from '../utils/beyond-code-sizing.js';
 
 interface GraphNode {
   id: string; category: string; type: string; title: string; subtitle: string;
   searchText: string; artwork: string; description: string; externalUrl: string; isContext: boolean;
+  sizeBoost?: 0 | 1 | 2 | 3;
 }
 interface GraphEdge { id: string; source: string; target: string; relationship: string; label: string }
 interface GraphCategory { id: string; title: string }
@@ -69,7 +71,6 @@ function setupBeyondCode() {
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const mobileQuery = window.matchMedia('(max-width: 640px)');
   const nodeById = new Map(data.nodes.map((node) => [node.id, node]));
-  const seriesNodes = data.nodes.filter((node) => node.type === 'series');
   const contentLayout: LayoutNode[] = createGraphLayout(data.nodes, data.edges).map((node: Omit<LayoutNode, 'vx' | 'vy' | 'targetX' | 'targetY' | 'element'>) => ({
     ...node, vx: 0, vy: 0, targetX: node.x, targetY: node.y,
     element: root.querySelector<HTMLButtonElement>(`[data-node="${node.id}"]`)!,
@@ -82,6 +83,8 @@ function setupBeyondCode() {
     connectionCounts.set(edge.source, connectionCounts.get(edge.source)! + 1);
     connectionCounts.set(edge.target, connectionCounts.get(edge.target)! + 1);
   }
+  const baseSizes = new Map(data.nodes.map((node) => [node.id,
+    baseNodeDiameter(connectionCounts.get(node.id) ?? 0, node.sizeBoost)]));
   const positions = new Map(layout.map((node) => [node.id, node]));
   const views = new Map<string, NodeView>(layout.map((node) => {
     const entry = nodeById.get(node.id);
@@ -137,15 +140,13 @@ function setupBeyondCode() {
   }
 
   function isMajor(id: string) {
-    return (connectionCounts.get(id) ?? 0) >= 2 || nodeById.get(id)!.type === 'series' || neighbors.has(id);
+    return (connectionCounts.get(id) ?? 0) >= 2 || neighbors.has(id);
   }
 
   function nodeSize(node: { id: string }) {
     const entry = nodeById.get(node.id)!;
     if (entry.type === 'topic' && !entry.artwork) return 20;
-    const degree = Math.min(connectionCounts.get(node.id) ?? 0, 4);
-    const base = entry.type === 'series' ? 70 : 34 + degree * 8;
-    return clamp((base + (selected === node.id ? 6 : 0)) * Math.sqrt(camera.scale), 24, 82);
+    return screenNodeDiameter(baseSizes.get(node.id)!, camera.scale, selected === node.id);
   }
 
   function categoryOf(id: string) {
@@ -507,8 +508,7 @@ function setupBeyondCode() {
     const screenPoints = new Map<string, Point>();
     const labelCandidates: { node: LayoutNode; point: Point; size: number }[] = [];
     const occupied: { x:number; y:number; w:number; h:number }[] = [];
-    const needsCaptions = nodeById.has(hovered ?? '') || nodeById.has(keyboardFocus ?? '') || !!selected
-      || seriesNodes.some((node) => visibleIds.has(node.id));
+    const needsCaptions = nodeById.has(hovered ?? '') || nodeById.has(keyboardFocus ?? '') || !!selected;
     for (const node of layout) {
       if (!visibleIds.has(node.id)) continue;
       const position = worldToScreen(node, camera, view);
@@ -522,8 +522,7 @@ function setupBeyondCode() {
       const minor = !isMajor(node.id);
       if (presentation.minor !== minor) node.element.classList.toggle('is-minor', minor);
       presentation.minor = minor;
-      const showLabel = nodeById.get(node.id)!.type === 'series'
-        || hovered === node.id || keyboardFocus === node.id || selected === node.id;
+      const showLabel = hovered === node.id || keyboardFocus === node.id || selected === node.id;
       if (presentation.labelVisible !== showLabel) presentation.label!.style.visibility = showLabel ? 'visible' : 'hidden';
       presentation.labelVisible = showLabel;
       if (showLabel) labelCandidates.push({node,point:position,size});

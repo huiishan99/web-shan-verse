@@ -100,11 +100,20 @@ function separation(first, second, padding) {
   return { distance, normal, minimum: first.radius + second.radius + padding };
 }
 
+// An axis outside a circle's interaction range proves the pair cannot touch;
+// keep the existing distance/normal calculation for every remaining pair.
+function outsideRange(first, second, range) {
+  return Math.abs(second.node.x - first.node.x) >= range
+    || Math.abs(second.node.y - first.node.y) >= range;
+}
+
 function maxOverlap(entries, padding) {
   let maximum = 0;
   for (let first = 0; first < entries.length; first++) {
     for (let second = first + 1; second < entries.length; second++) {
-      const pair = separation(entries[first], entries[second], padding);
+      const a = entries[first]; const b = entries[second];
+      if (outsideRange(a, b, a.radius + b.radius + padding)) continue;
+      const pair = separation(a, b, padding);
       maximum = Math.max(maximum, pair.minimum - pair.distance);
     }
   }
@@ -121,6 +130,7 @@ function projectCollisions(entries, padding, iterations) {
         const bWeight = b.inverseMass;
         const weight = aWeight + bWeight;
         if (!weight) continue;
+        if (outsideRange(a, b, a.radius + b.radius + padding)) continue;
         const { distance, minimum, normal } = separation(a, b, padding);
         const overlap = minimum - distance;
         if (overlap <= 0) continue;
@@ -223,6 +233,7 @@ export function stepPhysics(nodes, links, options = {}) {
       for (let first = 0; first < entries.length; first++) {
         for (let second = first + 1; second < entries.length; second++) {
           const a = entries[first]; const b = entries[second];
+          if (outsideRange(a, b, a.radius + b.radius + padding + repulsionRange)) continue;
           const { distance, minimum, normal } = separation(a, b, padding);
           const penetration = minimum + repulsionRange - distance;
           if (penetration <= 0) continue;

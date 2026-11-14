@@ -12,6 +12,53 @@ const nodeById = new Map(nodes.map((node) => [node.id, node]));
 const titleOf = (item) => typeof item === 'object' && 'title' in item ? item.title : item;
 const collectionKey = (category, title) => `${resolveLocalized(category)}\u0000${resolveLocalized(title)}`;
 
+// Owner-approved scope: franchise names do not authorize any other installments.
+const secondBatchSeries = {
+  'games-resident-evil-series': [
+    'games-resident-evil-4', 'games-resident-evil-2-1998',
+    'games-resident-evil-village', 'games-resident-evil-requiem',
+  ],
+  'movies-indiana-jones-series': [
+    'movies-raiders-of-the-lost-ark-1981',
+    'movies-indiana-jones-and-the-temple-of-doom-1984',
+    'movies-indiana-jones-and-the-last-crusade-1989',
+    'movies-indiana-jones-and-the-kingdom-of-the-crystal-skull-2008',
+    'movies-indiana-jones-and-the-dial-of-destiny-2023',
+  ],
+  'movies-the-mummy-series': [
+    'movies-the-mummy-1999', 'movies-the-mummy-returns-2001',
+    'movies-the-mummy-tomb-of-the-dragon-emperor-2008',
+  ],
+  'movies-terminator-series': [
+    'movies-the-terminator-1984', 'movies-terminator-2-judgment-day-1991',
+    'movies-terminator-3-rise-of-the-machines-2003',
+    'movies-terminator-salvation-2009', 'movies-terminator-genisys-2015',
+  ],
+  'movies-harry-potter-series': [
+    'movies-harry-potter-and-the-philosophers-stone-2001',
+    'movies-harry-potter-and-the-chamber-of-secrets-2002',
+    'movies-harry-potter-and-the-prisoner-of-azkaban-2004',
+    'movies-harry-potter-and-the-goblet-of-fire-2005',
+    'movies-harry-potter-and-the-order-of-the-phoenix-2007',
+    'movies-harry-potter-and-the-half-blood-prince-2009',
+    'movies-harry-potter-and-the-deathly-hallows-part-1-2010',
+    'movies-harry-potter-and-the-deathly-hallows-part-2-2011',
+  ],
+};
+const secondBatchStandaloneIds = [
+  'games-nobunagas-ambition-sphere-of-influence', 'games-taiko-risshiden-v',
+  'movies-3-idiots-2009', 'movies-the-pursuit-of-happyness-2006',
+  'movies-how-to-train-your-dragon-2010', 'movies-project-hail-mary-2026',
+  'movies-titanic-1997', 'movies-a-beautiful-mind-2001', 'movies-inception-2010',
+  'movies-life-of-pi-2012', 'movies-gone-with-the-wind-1939',
+  'movies-leon-the-professional-1994', 'movies-the-devil-wears-prada-2006',
+];
+const approvedSecondBatchIds = [
+  ...Object.keys(secondBatchSeries),
+  ...Object.values(secondBatchSeries).flat().filter((id) => id !== 'games-resident-evil-4'),
+  ...secondBatchStandaloneIds,
+];
+
 test('the constellation preserves each existing interest once without adding inferred favorites', () => {
   const expected = new Map(interests.flatMap((category) => category.items.map((item) => [
     collectionKey(category.name, titleOf(item)), { category, item },
@@ -37,6 +84,10 @@ test('the constellation preserves each existing interest once without adding inf
       assert.equal(node.itunesCountry, item.itunesCountry);
       assert.equal(node.audioSrc, item.audioSrc);
       assert.equal(node.type, item.kind ?? 'work');
+      assert.equal(node.sizeBoost, item.sizeBoost ?? 0);
+      assert.equal(node.externalUrl, item.externalUrl ?? (item.wikiPage
+        ? `https://en.wikipedia.org/wiki/${encodeURIComponent(item.wikiPage.replaceAll(' ', '_'))}`
+        : undefined));
       if (item.id) assert.equal(node.id, item.id);
     }
   }
@@ -97,7 +148,8 @@ test('only existing favorites and the exact user-approved expansion enter the co
     'movies-the-two-towers', 'movies-the-return-of-the-king',
   ];
   assert.deepEqual(nodes.filter((node) => !node.isContext).map((node) => node.id).sort(),
-    [...existing, ...approved].sort());
+    [...existing, ...approved, ...approvedSecondBatchIds].sort());
+  assert.equal(approvedSecondBatchIds.length, 42);
   assert.deepEqual(nodes.filter((node) => node.isContext).map((node) => node.id).sort(),
     ['group-queen', 'person-kenshi-yonezu', 'studio-ghibli', 'studio-pixar']);
   assert.equal(nodeById.has('book-howls-moving-castle'), false);
@@ -111,6 +163,49 @@ test('only existing favorites and the exact user-approved expansion enter the co
   }
   assert.equal(nodeById.get('movies-spider-man-2002').wikiPage, 'Spider-Man (2002 film)');
   assert.equal(nodeById.get('movies-ben-hur-1959').wikiPage, 'Ben-Hur (1959 film)');
+});
+
+test('the second batch preserves clarified editions, films and exact series scope', () => {
+  for (const [id, wikiPage, title] of [
+    ['games-resident-evil-2-1998', 'Resident Evil 2', 'Resident Evil 2 (1998)'],
+    ['games-resident-evil-village', 'Resident Evil Village', 'Resident Evil Village (2021)'],
+    ['games-resident-evil-requiem', 'Resident Evil Requiem', 'Resident Evil Requiem (2026)'],
+    ['games-taiko-risshiden-v', 'Taikou Risshiden V', 'Taikō Risshiden V (2004)'],
+    ['movies-how-to-train-your-dragon-2010', 'How to Train Your Dragon (2010 film)', 'How to Train Your Dragon (2010)'],
+    ['movies-project-hail-mary-2026', 'Project Hail Mary (film)', 'Project Hail Mary (2026)'],
+  ]) {
+    const node = nodeById.get(id);
+    assert.equal(node.type, 'work');
+    assert.equal(node.isContext, false);
+    assert.equal(node.wikiPage, wikiPage);
+    assert.equal(resolveLocalized(node.title), title);
+  }
+  const nobunaga = nodeById.get('games-nobunagas-ambition-sphere-of-influence');
+  assert.equal(resolveLocalized(nobunaga.title), "Nobunaga's Ambition: Sphere of Influence (XIV)");
+  assert.equal(nobunaga.externalUrl, 'https://store.steampowered.com/app/392470/');
+  assert.equal(nodeById.get('music-kirari').externalUrl, 'https://fujiikaze.com/music/kirari/');
+  for (const [parent, children] of Object.entries(secondBatchSeries)) {
+    assert.equal(nodeById.get(parent).type, 'series');
+    assert.equal(nodeById.get(parent).isContext, false);
+    assert.deepEqual(edges.filter((edge) => edge.relationship === 'part-of' && edge.target === parent)
+      .map((edge) => edge.source).sort(), [...children].sort());
+  }
+  for (const excluded of [
+    'games-resident-evil-2-2019', 'games-taiko-risshiden-v-dx',
+    'movies-how-to-train-your-dragon-2025', 'books-project-hail-mary',
+    'movies-the-mummy-2017', 'movies-terminator-dark-fate-2019',
+    'movies-fantastic-beasts-and-where-to-find-them-2016',
+  ]) assert.equal(nodeById.has(excluded), false, `Unapproved expansion: ${excluded}`);
+});
+
+test('no owner preference boost is inferred from series membership or popularity', () => {
+  for (const item of interests.flatMap((category) => category.items)) {
+    if (typeof item === 'object' && 'title' in item) assert.equal(item.sizeBoost, undefined);
+  }
+  for (const node of nodes) {
+    assert.ok([0, 1, 2, 3].includes(node.sizeBoost ?? 0));
+    assert.equal(node.sizeBoost ?? 0, 0, `Unconfirmed preference boost: ${node.id}`);
+  }
 });
 
 test('graph edges have valid endpoints, semantic relations and traceable provenance', () => {
@@ -142,11 +237,16 @@ test('graph edges have valid endpoints, semantic relations and traceable provena
     } else if (edge.provenance.kind === 'existing-metadata') {
       assert.match(edge.provenance.source, /^src\/data\/about\.ts#/);
       assert.equal(edge.relationship, 'performed-by');
-    } else {
+    } else if (edge.provenance.source === 'docs/beyond-code-preview.md#approved-expansion-2026-11-14') {
       assert.equal(edge.provenance.source, 'docs/beyond-code-preview.md#approved-expansion-2026-11-14');
       assert.ok(['style-of', 'ingredient-of'].includes(edge.relationship));
       assert.equal(nodeById.get(edge.source).category, 'foods');
       assert.equal(nodeById.get(edge.target).category, 'foods');
+    } else {
+      assert.equal(edge.provenance.source, 'docs/beyond-code-preview.md#approved-expansion-2026-11-14-second-batch');
+      assert.equal(edge.relationship, 'part-of');
+      assert.ok(Object.hasOwn(secondBatchSeries, edge.target));
+      assert.ok(secondBatchSeries[edge.target].includes(edge.source));
     }
   }
 });
@@ -189,9 +289,9 @@ test('relationship direction preserves creators, studios, series and explicit fo
         break;
       case 'part-of':
         assert.equal(source.type, 'work');
-        assert.equal(source.category, 'movies');
+        assert.ok(['games', 'movies'].includes(source.category));
         assert.equal(target.type, 'series');
-        assert.equal(target.category, 'movies');
+        assert.equal(target.category, source.category);
         break;
       case 'style-of':
       case 'ingredient-of':
@@ -215,7 +315,9 @@ test('approved branches have exact endpoints without introducing unrelated works
     'movies-the-fellowship-of-the-ring->movies-the-lord-of-the-rings',
     'movies-the-return-of-the-king->movies-the-lord-of-the-rings',
     'movies-the-two-towers->movies-the-lord-of-the-rings',
-  ]);
+    ...Object.entries(secondBatchSeries).flatMap(([parent, children]) =>
+      children.map((child) => `${child}->${parent}`)),
+  ].sort());
   assert.deepEqual(facts('style-of'), ['foods-jiro-ramen->foods-ramen']);
   assert.deepEqual(facts('ingredient-of'), [
     'foods-beef-tongue->foods-yakiniku', 'foods-otoro->foods-sushi',

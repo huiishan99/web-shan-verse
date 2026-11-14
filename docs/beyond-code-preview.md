@@ -11,9 +11,99 @@ on 2026-11-12. The constellation checkpoint is `7045510`. Reuse the site's
 near-black background, brass accents, serif typography, and existing interest
 content. No new runtime dependency or backend is required.
 
-Current owner requirements are in [Approved expansion](#approved-expansion-2026-11-14).
+Current owner requirements are in [Second approved expansion](#approved-expansion-2026-11-14-second-batch),
+which extends [the first approved expansion](#approved-expansion-2026-11-14).
 The motion prototype and older publication checkpoints below record the design
 and evidence at those stages; their removed category hubs are historical.
+
+## Approved expansion (2026-11-14 second batch)
+
+Authority: the owner supplied a second explicit content list and confirmed
+Nobunaga's Ambition: Sphere of Influence / 創造 (the 14th entry), the animated
+How to Train Your Dragon (2010), and original Resident Evil 2 (1998). Standing
+authorization permits commit/push after verification. No unlisted favorite,
+actor, author, adaptation, or personal preference may be inferred.
+
+Add six game entities: Resident Evil series, RE2 (1998), Village, Requiem,
+Nobunaga 14, and original Taiko Risshiden V. The RE parent connects these three
+new RE games and the existing RE4. Add eleven standalone movies: 3 Idiots,
+The Pursuit of Happyness, How to Train Your Dragon (2010), Project Hail Mary
+(2026 film), Titanic, A Beautiful Mind, Inception, Life of Pi, Gone with the
+Wind, Léon: The Professional, and The Devil Wears Prada. Add ordinary series
+parents with exactly Indiana Jones 1–5, The Mummy (1999/2001/2008), Terminator
+1–5 by release order (through Genisys, excluding Dark Fate), and the eight main
+Harry Potter films (excluding Fantastic Beasts). Expected delta: 42 nodes and
+25 approved part-of edges; total 101 personal entries, four contextual entities,
+and 45 relations. About remains the source of confirmed personal content.
+
+Problem framing: the previous fixed 70px series treatment and custom LOTR
+wordmark overstate a display role; the owner meant a normal covered collection
+entity. Remove special series image fitting, ring styling and persistent labels.
+Keep series semantics and exact child relationships. Use genuine covers for all
+new items and a suitable actual LOTR collection cover. Hover, keyboard focus,
+and selection reveal titles consistently for every entity kind.
+
+Design: full unique graph degree determines a cached base diameter of
+`min(76, 34 + 12 * log2(degree + 1))` pixels. This grows smoothly with diminishing
+returns: a trilogy has about 58px and an eight-film collection about 72px before
+zoom. Optional explicit owner preference levels 0–3 can add at most six pixels;
+all current entries retain zero. Selection adds temporary emphasis, not stored
+preference. The final zoomed diameter stays within 24–82px. Active visible degree
+continues to control physical mass; filtering must not shrink visual hierarchy.
+
+Alternatives and boundaries: raw linear growth makes large collections dominate;
+fixed series sizes ignore actual connections. The bounded logarithmic rule is
+local and reversible, needs no runtime dependency or persistence migration, and
+keeps current reciprocal springs and Back state ownership. Dense overview
+legibility and O(n²) contacts need real 105-node desktop/mobile observation;
+category filters, search and the complete Index remain direct access routes.
+
+Scaling observation: the first 105-body local sample spent 7.5–8.3ms p95 in
+physics (45.08/46.79fps; media still incomplete), versus about 1ms at 63 bodies.
+Before considering a spatial-index or renderer migration, add conservative
+axis-distance rejection before exact pair geometry: circles whose horizontal or
+vertical separation already exceeds the contact/repulsion range cannot interact.
+Keep all existing force equations, substeps, projection iterations and tolerances.
+Compare old/new seeded trajectories and diagnostics, retain collision tests and
+measure the completed artwork scene again. This local reversible optimization
+does not change the force contract or introduce a dependency.
+
+Browser counterexample: at the previous 500px desktop stage height, five of the
+105 image circles were partly clipped above the stage after collision settling.
+The 650px prototype still clipped two circles; a 720px desktop minimum showed
+all settled image circles inside the stage at the tested default viewport.
+Retain the separate mobile sizing. Verify settled image bounds rather than
+relying on target-anchor camera fits alone. No invisible nodes or content pruning
+may be used to make the enlarged collection fit.
+
+Verification: independently compare the exact approved entity and child sets;
+verify artwork identity/decoding and source coverage; test monotonic bounded
+size, neutral preferences and malformed numerical inputs. Retain physics and
+navigation thresholds. Run lint/type/unit/build/HTML checks, then inspect
+desktop/mobile selection, series traversal, search/Back, leaf-to-parent pulling,
+idle labels and sampled frame cadence before publishing. Real hardware touch
+and OS reduced-motion behavior remain separate evidence boundaries.
+
+### Second batch review packet
+
+| Item | Result / evidence boundary |
+| --- | --- |
+| Goal | Add only the requested works and series, with ordinary covers and explainable connection-based sizes. |
+| Behavior delta | 42 approved entries, 25 part-of relations and genuine thumbnails added. LOTR uses a real trilogy cover and ordinary hover/focus/selection labels. Series sizes depend on degree, not entity kind. Desktop stage has more vertical room. |
+| Architecture delta | Optional explicit external URL and neutral size-boost metadata extend the existing About-to-graph mapping. Base sizes are cached from the full unique graph. Conservative pair rejection avoids exact distance calculations for distant circles; force equations and state ownership are unchanged. No runtime dependency or persistence migration. |
+| Invariants | Exactly 105 nodes (101 personal, four context) and 45 relations; approved installment sets only. No generic category bodies/springs, inferred favorites or assigned preference boosts. Filtering keeps full-graph visual hierarchy and active-graph inertia. |
+| Assumptions | Series cover art represents a collection; Indy/Terminator use their approved first-film posters, explicitly documented as representative images. Taiko artwork is the original game's PSP-port packaging, not DX. Genuine artwork metadata records provenance, not a blanket reuse license. |
+| Automated evidence | 157 unit tests pass with existing layout/collision thresholds retained; ESLint passes and Astro reports zero diagnostics across 120 files. The static site has 297 valid generated pages. 105/105 media references decode at <=500px; 41 new WebP files total 964,002 bytes. Independently inspected the exact content/child sets and all 43 new/replacement artwork entries. |
+| Physics equivalence | Against HEAD `bf23a18`, 96 seeded scenarios / 2,304 frames and 123 tangent/diagonal/coincident/extreme-coordinate cases match trajectories and diagnostics exactly. The 105-body Node microbenchmark p95 changed from 3.10–3.66ms to 0.94–1.06ms; this is not browser FPS evidence. |
+| Browser performance | Final 105-image scene at 1280×720 sampled 46.79/46.62fps across two 180-frame windows; physics p95 2.0ms and render p95 0.6ms. The earlier 105-body pre-rejection sample was 45.08/46.79fps with physics p95 7.5–8.3ms. These local observations include media/stage changes and do not isolate a compositor or device-independent FPS improvement. |
+| Browser evidence | All 105 local images loaded. Tested each new series' 4/5/3/5/8 child scope; Harry Potter finale / Back, RE2 original / Back, mobile Nobunaga search and official outlet. Mobile long-series traversal resets detail scroll to zero. Astro About/back re-entry restores 105 images, no selection, no generic hubs and no idle labels. A paused 110px RE2 drag moved its parent 4.6px, its sibling 0.1px and unconnected Zelda <0.01px without opening details. |
+| Counterexamples / regression surface | Exact version clarifications, excluded sequels, neutral boost, invalid sizing numbers, complete Index, hidden/duplicate physical endpoints, circle clipping, reciprocal drag and page teardown. Desktop 500/650px stage clipping was observed and corrected locally at 720px. |
+| Known risks / unresolved | Mobile All is a dense overview that still requires pan/zoom or category/search/Index; all 105 entries remain reachable with no document overflow. Straight lines can cross other nodes. Actual touch hardware and OS reduced-motion settings remain untested; no universal 60fps claim. |
+| Trajectory | Continue with the bounded renderer. Measured local rejection is justified; a new force library, spatial index or renderer migration is not required for this batch. Standing owner authorization covers verified commit/push. |
+
+Raw scene checks, artwork contact sheet and media report live outside the repo in
+`2026/11/14/beyond-second-batch/`; reproducible physics comparisons are in
+`2026/11/14/beyond-physics-axis-audit/`.
 
 ## Motion implementation review (2026-11-14; category hubs superseded)
 

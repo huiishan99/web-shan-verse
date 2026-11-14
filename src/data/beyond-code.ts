@@ -24,6 +24,8 @@ export interface BeyondCodeNode {
   itunesCountry?: string;
   itunesTerm?: LocalizedString;
   audioSrc?: string;
+  /** Optional owner-confirmed emphasis, separate from graph degree; default is zero. */
+  sizeBoost?: 0 | 1 | 2 | 3;
   /** Context explains a collection item; it does not assert another favorite. */
   isContext: boolean;
 }
@@ -85,12 +87,13 @@ function collectionNode(item: InterestItem, category: BeyondCodeCategoryId): Bey
     id: detail?.id ?? `${category}-${slug(resolveLocalized(title))}`,
     category,
     type: detail ? detail.kind ?? 'work' : 'topic',
+    sizeBoost: detail?.sizeBoost ?? 0,
     title,
     subtitle: detail?.artist,
     wikiPage: detail?.wikiPage,
-    externalUrl: detail?.wikiPage
+    externalUrl: detail?.externalUrl ?? (detail?.wikiPage
       ? `https://en.wikipedia.org/wiki/${encodeURIComponent(detail.wikiPage.replaceAll(' ', '_'))}`
-      : undefined,
+      : undefined),
     previewProvider: detail?.previewProvider,
     itunesCountry: detail?.itunesCountry,
     itunesTerm: detail?.itunesTerm,
@@ -191,8 +194,49 @@ const trilogySource = {
   source: 'https://www.fathomentertainment.com/series/the-lord-of-the-rings-trilogy/',
 };
 
+const approvedSecondBatch = {
+  kind: 'user-confirmed' as const,
+  source: 'docs/beyond-code-preview.md#approved-expansion-2026-11-14-second-batch',
+};
+
+// These are the exact entries the owner selected, not an inferred franchise filmography.
+const approvedSeries: [string, string[]][] = [
+  ['games-resident-evil-series', [
+    'games-resident-evil-4', 'games-resident-evil-2-1998',
+    'games-resident-evil-village', 'games-resident-evil-requiem',
+  ]],
+  ['movies-indiana-jones-series', [
+    'movies-raiders-of-the-lost-ark-1981',
+    'movies-indiana-jones-and-the-temple-of-doom-1984',
+    'movies-indiana-jones-and-the-last-crusade-1989',
+    'movies-indiana-jones-and-the-kingdom-of-the-crystal-skull-2008',
+    'movies-indiana-jones-and-the-dial-of-destiny-2023',
+  ]],
+  ['movies-the-mummy-series', [
+    'movies-the-mummy-1999', 'movies-the-mummy-returns-2001',
+    'movies-the-mummy-tomb-of-the-dragon-emperor-2008',
+  ]],
+  ['movies-terminator-series', [
+    'movies-the-terminator-1984', 'movies-terminator-2-judgment-day-1991',
+    'movies-terminator-3-rise-of-the-machines-2003',
+    'movies-terminator-salvation-2009', 'movies-terminator-genisys-2015',
+  ]],
+  ['movies-harry-potter-series', [
+    'movies-harry-potter-and-the-philosophers-stone-2001',
+    'movies-harry-potter-and-the-chamber-of-secrets-2002',
+    'movies-harry-potter-and-the-prisoner-of-azkaban-2004',
+    'movies-harry-potter-and-the-goblet-of-fire-2005',
+    'movies-harry-potter-and-the-order-of-the-phoenix-2007',
+    'movies-harry-potter-and-the-half-blood-prince-2009',
+    'movies-harry-potter-and-the-deathly-hallows-part-1-2010',
+    'movies-harry-potter-and-the-deathly-hallows-part-2-2011',
+  ]],
+];
+
 export const edges: BeyondCodeEdge[] = [
   ...artistEdges,
+  ...approvedSeries.flatMap(([series, works]) =>
+    works.map((work) => edge(work, series, 'part-of', approvedSecondBatch))),
   edge('movies-howls-moving-castle', 'studio-ghibli', 'produced-by', {
     kind: 'official-source', source: 'https://www.ghibli.jp/works/howl/',
   }),

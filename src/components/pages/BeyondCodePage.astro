@@ -200,7 +200,7 @@ const graphData = JSON.stringify({
   .beyond-breadcrumb button { display:inline-flex; align-items:center; gap:4px; min-height:44px; padding:0 10px 0 0; border:0; background:transparent; color:#c8b174; font-size:13px; }
   .beyond-breadcrumb button:hover:not(:disabled) { color:#ead79e; }
   .beyond-breadcrumb button:disabled { color:#666258; cursor:default; }
-  .beyond-stage { position:relative; min-height:500px; height:calc(100svh - 319px); max-height:1000px; isolation:isolate; border-top:1px solid rgba(255,255,255,.045); }
+  .beyond-stage { position:relative; min-height:720px; height:calc(100svh - 319px); max-height:1000px; isolation:isolate; border-top:1px solid rgba(255,255,255,.045); }
   .beyond-atmosphere { position:absolute; inset:0; pointer-events:none; z-index:-1; background:radial-gradient(ellipse at 24% 40%,rgba(115,93,40,.05),transparent 43%),radial-gradient(ellipse at 73% 56%,rgba(99,112,128,.035),transparent 43%); }
   .beyond-graph { position:absolute; inset:0; overflow:hidden; touch-action:pan-y; cursor:grab; }
   .beyond-graph.is-dragging { cursor:grabbing; }
@@ -220,9 +220,6 @@ const graphData = JSON.stringify({
   .beyond-node-subtitle { display:none; }
   .beyond-node.is-minor .beyond-node-art { filter:saturate(.8); }
   .beyond-node:hover .beyond-node-label,.beyond-node:focus-visible .beyond-node-label,.beyond-node.is-selected .beyond-node-label { opacity:1; }
-  .beyond-node--series .beyond-node-label { opacity:1; color:#d8c797; }
-  .beyond-node--series .beyond-node-art img { object-fit:contain; padding:5px; }
-  .beyond-node--series .beyond-node-orbit { border-color:rgba(201,162,39,.3); }
   .beyond-node:hover,.beyond-node:focus-visible,.beyond-node.is-selected { z-index:5; outline:none; }
   .beyond-node:hover .beyond-node-art,.beyond-node:focus-visible .beyond-node-art,.beyond-node.is-selected .beyond-node-art { border-color:#d3b666; box-shadow:0 0 24px rgba(201,162,39,.17); }
   .beyond-node:hover img,.beyond-node.is-selected img { opacity:1; }
@@ -272,7 +269,6 @@ const graphData = JSON.stringify({
   .beyond.is-detail-open .beyond-bottom { right:358px; }
   .beyond.is-index .beyond-bottom { display:none; }
   .beyond:not(.is-ready) .beyond-graph { visibility:hidden; }
-  @media (min-width:1600px) { .beyond-stage { min-height:650px; } }
   @media (max-width:1050px) {
     .beyond { padding:25px 24px 0; }
     .beyond-categories { column-gap:17px; }
