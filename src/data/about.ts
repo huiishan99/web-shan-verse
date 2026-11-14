@@ -145,13 +145,13 @@ export const experience: ExperienceItem[] = [
   {
     company: { en: "ALPS ALPINE", zh: "阿尔卑斯阿尔派", ja: "アルプスアルパイン" },
     website: "https://www.alpsalpine.com/e/",
-    role: { en: "Engineer (New Graduate)", zh: "工程师（应届毕业生）", ja: "エンジニア（新卒）" },
+    role: { en: "Software System Engineer", zh: "软件系统工程师", ja: "ソフトウェアシステムエンジニア" },
     period: { en: "Apr 2026 – Present", zh: "2026年4月 – 至今", ja: "2026年4月 – 現在" },
     logo: "/images/logo-alps.png",
     description: {
-      en: "Currently working as a new graduate engineer in the Development & Design Division, 4th Software Engineering Department (開発設計部第４ソフト技術部). The team focuses on embedded software development with PoC-style prototyping. I am learning the department's development workflow and strengthening my embedded software engineering fundamentals through daily project work.",
-      zh: "目前在开发设计部第四软件技术部担任应届毕业生工程师。团队专注于嵌入式软件开发和 PoC 风格的原型制作。我正在通过日常项目工作学习部门的开发流程，并加强自己的嵌入式软件工程基础。",
-      ja: "現在、開発設計部第4ソフト技術部で新卒エンジニアとして働いています。チームは、PoC スタイルのプロトタイピングを伴う組込みソフトウェア開発に焦点を当てています。日々のプロジェクト業務を通じて、部署の開発ワークフローを学び、組込みソフトウェアエンジニアリングの基礎を強化しています。"
+      en: "Work on software proof-of-concept (PoC) development for international automotive projects, using IBM Rhapsody and an MBTDD development process. The work involves embedded software and LIN/CAN in-vehicle communication.",
+      zh: "参与国际汽车行业相关的软件概念验证（PoC）开发。以 IBM Rhapsody 为主要开发工具，按照 MBTDD 流程推进开发工作，涉及嵌入式软件及 LIN、CAN 等车载通信技术。",
+      ja: "自動車分野の国際的な開発プロジェクトで、ソフトウェアの概念実証（PoC）に携わっています。IBM Rhapsody を主な開発ツールとして、MBTDD プロセスに沿って、組込みソフトウェアや LIN・CAN などの車載通信に関わる開発業務に取り組んでいます。"
     }
   },
   {
