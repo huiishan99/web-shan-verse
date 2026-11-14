@@ -38,7 +38,7 @@
     "@astrojs/markdown-remark": "^7.3.2",
     "@astrojs/mdx": "^8.0.3",
     "@astrojs/sitemap": "^3.7.4",
-    "astro": "^7.3.8",
+    "astro": "^7.4.12",
     "remark-mdx": "^3.1.1",
     "remark-parse": "^11.0.0",
     "three": "^0.186.1",
