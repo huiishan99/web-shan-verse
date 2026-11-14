@@ -1,0 +1,27 @@
+{
+  "family": "Zhuque Fangsong Explore",
+  "source": {
+    "href": "/fonts/ZhuqueFangsong-Blog.woff2",
+    "sha256": "6dfcf5a39c04348017c9d711fd4e21e720ae4242fca19bd2cfb75db9acd37fea",
+    "version": "Version 0.212",
+    "licenseHref": "/fonts/ZhuqueFangsong-OFL.txt"
+  },
+  "font": {
+    "href": "/fonts/ZhuqueFangsong-Explore.632f645f0a4fed74.woff2",
+    "sha256": "632f645f0a4fed74bb375a3bf63f06dafc845ac4b65aa54a4392eb40b838a6ce",
+    "bytes": 6280
+  },
+  "coverage": {
+    "characters": "之代便图外探旅时星看码索线行间随",
+    "unicodeRange": "U+4E4B, U+4EE3, U+4FBF, U+56FE, U+5916, U+63A2, U+65C5, U+65F6, U+661F, U+770B, U+7801, U+7D22, U+7EBF, U+884C, U+95F4, U+968F"
+  },
+  "build": {
+    "tool": "fontTools.subset",
+    "options": [
+      "--flavor=woff2",
+      "--layout-features=*",
+      "--no-recalc-timestamp"
+    ],
+    "unicodes": "U+4E4B,U+4EE3,U+4FBF,U+56FE,U+5916,U+63A2,U+65C5,U+65F6,U+661F,U+770B,U+7801,U+7D22,U+7EBF,U+884C,U+95F4,U+968F"
+  }
+}

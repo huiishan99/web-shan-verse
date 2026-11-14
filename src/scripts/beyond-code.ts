@@ -8,6 +8,8 @@ import { segmentBetweenCircles } from '../utils/beyond-code-links.js';
 import { createFrameProfile } from '../utils/beyond-code-profile.js';
 import { createPhysicsNetwork } from '../utils/beyond-code-network.js';
 import { baseNodeDiameter, screenNodeDiameter } from '../utils/beyond-code-sizing.js';
+import { chooseDiscoveryId, discoveryCandidateIds } from '../utils/beyond-code-discovery.js';
+import { selectionFocusIds } from '../utils/beyond-code-focus.js';
 
 interface GraphNode {
   id: string; category: string; type: string; title: string; subtitle: string;
@@ -63,6 +65,8 @@ function setupBeyondCode() {
   const search = root.querySelector<HTMLInputElement>('[data-beyond-search]')!;
   const motionButton = root.querySelector<HTMLButtonElement>('[data-beyond-motion]')!;
   const backButton = root.querySelector<HTMLButtonElement>('[data-beyond-back]')!;
+  const backControl = backButton.closest<HTMLElement>('.beyond-breadcrumb')!;
+  const surpriseButton = root.querySelector<HTMLButtonElement>('[data-beyond-surprise]')!;
   const title = root.querySelector<HTMLElement>('[data-detail-title]')!;
   const media = root.querySelector<HTMLElement>('[data-detail-image]')!;
   const source = root.querySelector<HTMLAnchorElement>('[data-detail-source]')!;
@@ -109,6 +113,7 @@ function setupBeyondCode() {
   let query = '';
   let searchText = '';
   let selected: string | null = null;
+  let discoveryIds = discoveryCandidateIds(data.nodes, selected);
   let hovered: string | null = null;
   let keyboardFocus: string | null = null;
   let visibleIds = new Set(data.nodes.map((node) => node.id));
@@ -176,7 +181,14 @@ function setupBeyondCode() {
   function rememberView() {
     if (restoringView) return;
     history.push(snapshot());
-    backButton.disabled = !history.canGoBack();
+    updateBackControl();
+  }
+
+  function updateBackControl() {
+    const available = history.canGoBack();
+    backButton.disabled = !available;
+    backButton.hidden = !available;
+    backControl.hidden = !available;
   }
 
   function stepBack() {
@@ -204,7 +216,7 @@ function setupBeyondCode() {
       fitVisible();
     }
     restoringView = false;
-    backButton.disabled = !history.canGoBack();
+    updateBackControl();
     camera = { ...targetCamera };
     lastTime = 0;
     if (mode === 'graph') {
@@ -281,6 +293,9 @@ function setupBeyondCode() {
       (category === 'all' || node.category === category)
       && (!query || `${node.title} ${node.searchText} ${node.subtitle}`.toLocaleLowerCase().includes(query)),
     );
+    // A displayed neighbor can cross the active filter; discovery cannot.
+    discoveryIds = discoveryCandidateIds(matches, selected);
+    surpriseButton.disabled = discoveryIds.length === 0;
     visibleIds = new Set(matches.map((node) => node.id));
     // Actual neighbors stay reachable across categories; unrelated context is not a favorite.
     for (const node of matches) {
@@ -368,6 +383,15 @@ function setupBeyondCode() {
     return button;
   }
 
+  function fitSelectionCamera(id: string) {
+    const points = selectionFocusIds(id, nodeById, neighbors).map((key) => {
+      const position = positions.get(key)!; return { x: position.targetX, y: position.targetY };
+    });
+    const next = fitCamera(points, viewport(), mobileQuery.matches ? 72 : 125);
+    next.scale = Math.min(next.scale, mobileQuery.matches ? 0.95 : 1.35);
+    setCamera(next);
+  }
+
   function selectNode(id: string) {
     const node = nodeById.get(id);
     if (!node || selected === id) return;
@@ -406,12 +430,7 @@ function setupBeyondCode() {
     }
     updateTargets();
     applyVisibility(false);
-    const focusPoints = [...neighbors].map((key) => {
-      const position = positions.get(key)!; return { x: position.targetX, y: position.targetY };
-    });
-    const next = fitCamera(focusPoints, viewport(), mobileQuery.matches ? 72 : 125);
-    next.scale = Math.min(next.scale, mobileQuery.matches ? 0.95 : 1.35);
-    setCamera(next);
+    fitSelectionCamera(id);
     for (const item of contentLayout) {
       item.element.setAttribute('aria-pressed', String(item.id === selected));
       item.element.classList.toggle('is-selected', item.id === selected);
@@ -524,9 +543,7 @@ function setupBeyondCode() {
     canvas.width = Math.round(width * ratio); canvas.height = Math.round(height * ratio);
     ctx!.setTransform(ratio, 0, 0, ratio, 0, 0);
     if (selected) {
-      const points = [...neighbors].map((id) => { const node = positions.get(id)!; return { x: node.targetX, y: node.targetY }; });
-      const next = fitCamera(points, viewport(), mobileQuery.matches ? 72 : 125);
-      next.scale = Math.min(next.scale, mobileQuery.matches ? .95 : 1.35); setCamera(next);
+      fitSelectionCamera(selected);
     } else fitVisible();
     if (!initialized) { camera = { ...targetCamera }; initialized = true; }
     wake();
@@ -733,6 +750,11 @@ function setupBeyondCode() {
     if (related) { selectNode(related.dataset.relatedNode!); return; }
     const item=target.closest<HTMLElement>('[data-index-node]');
     if (item) { navigate(() => { setView('graph'); selectNode(item.dataset.indexNode!); }); return; }
+    if (target.closest('[data-beyond-surprise]')) {
+      const id = chooseDiscoveryId(discoveryIds);
+      if (id) navigate(() => { if (mode !== 'graph') setView('graph'); selectNode(id); });
+      return;
+    }
     const categoryButton=target.closest<HTMLElement>('[data-beyond-category]');
     if (categoryButton) { chooseCategory(categoryButton.dataset.beyondCategory!); return; }
     const viewButton=target.closest<HTMLElement>('[data-beyond-view]');
@@ -773,6 +795,8 @@ function setupBeyondCode() {
     if(!inView){cancelAnimationFrame(frame);frame=0;lastTime=0;}else wake();
   }); intersection.observe(stage);
   updateMotionControl();
+  updateBackControl();
+  surpriseButton.disabled = discoveryIds.length === 0;
   resize(); root.classList.add('is-ready');
   state.cleanup=()=>{
     alive=false; resetTransientGesture(); cancelAnimationFrame(frame); controller.abort();

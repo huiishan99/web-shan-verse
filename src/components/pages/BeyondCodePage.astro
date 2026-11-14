@@ -12,7 +12,7 @@ const copy = {
   en: {
     eyebrow: 'A PERSONAL CONSTELLATION', title: 'Beyond Code',
     subtitle: "What I've watched, read, played, and listened to, plus the food and ideas I enjoy.",
-    all: 'All', search: 'Find something…', constellation: 'Constellation', index: 'Index',
+    all: 'All', search: 'Find something…', constellation: 'Constellation', index: 'Index', surprise: 'Surprise me',
     reset: 'Reset constellation', stepBack: 'Back',
     zoomIn: 'Zoom in', zoomOut: 'Zoom out', pauseMotion: 'Pause floating motion', resumeMotion: 'Resume floating motion',
     reducedMotion: 'Motion is off to follow your system preference', close: 'Close introduction',
@@ -22,7 +22,7 @@ const copy = {
   },
   zh: {
     eyebrow: '我的兴趣星群', title: '代码之外', subtitle: '记录我看过、读过、玩过、听过的作品，以及喜欢的食物和想法。',
-    all: '全部', search: '寻找一颗星…', constellation: '星群', index: '索引',
+    all: '全部', search: '寻找一颗星…', constellation: '星群', index: '索引', surprise: '随便看看',
     reset: '重置星群', stepBack: '返回上一步', zoomIn: '放大', zoomOut: '缩小',
     pauseMotion: '暂停气泡漂浮', resumeMotion: '恢复气泡漂浮', reducedMotion: '已根据系统偏好关闭动态效果',
     close: '关闭介绍', related: '相连的世界', nearby: '同一片星群',
@@ -31,7 +31,7 @@ const copy = {
   },
   ja: {
     eyebrow: '私の小さな星座', title: 'コードを超えて', subtitle: '観たもの、読んだもの、遊んだもの、聴いたもの。好きな食べ物や関心のあることも。',
-    all: 'すべて', search: '星を探す…', constellation: '星座', index: '一覧',
+    all: 'すべて', search: '星を探す…', constellation: '星座', index: '一覧', surprise: 'おまかせ',
     reset: '星座をリセット', stepBack: 'ひとつ戻る', zoomIn: '拡大', zoomOut: '縮小',
     pauseMotion: '浮遊する動きを止める', resumeMotion: '浮遊する動きを再開する', reducedMotion: 'システム設定に従って動きを停止しています',
     close: '紹介を閉じる', related: 'つながる世界', nearby: '同じ星座から',
@@ -83,9 +83,15 @@ const graphData = JSON.stringify({
           <Icon name="search" size={17} />
           <input type="search" placeholder={copy.search} aria-label={copy.search} data-beyond-search autocomplete="off" />
         </label>
-        <div class="beyond-view" role="group" aria-label={lang === 'zh' ? '浏览方式' : 'View'}>
-          <button type="button" aria-pressed="true" data-beyond-view="graph"><Icon name="sparkle" size={15} /> {copy.constellation}</button>
-          <button type="button" aria-pressed="false" data-beyond-view="index"><Icon name="layers" size={15} /> {copy.index}</button>
+        <div class="beyond-view-actions">
+          <div class="beyond-view" role="group" aria-label={lang === 'zh' ? '浏览方式' : 'View'}>
+            <button type="button" aria-pressed="true" data-beyond-view="graph"><Icon name="sparkle" size={15} /> {copy.constellation}</button>
+            <button type="button" aria-pressed="false" data-beyond-view="index"><Icon name="layers" size={15} /> {copy.index}</button>
+          </div>
+          <button type="button" class="beyond-surprise" data-beyond-surprise disabled>
+            <span>{copy.surprise}</span>
+            <Icon name="arrowRight" size={14} />
+          </button>
         </div>
       </div>
     </div>
@@ -98,13 +104,12 @@ const graphData = JSON.stringify({
         </button>
       ))}
     </nav>
-    <div class="beyond-breadcrumb">
-      <button type="button" data-beyond-back disabled>
-        <Icon name="chevronLeft" size={14} />{copy.stepBack}
-      </button>
-    </div>
-
     <div class="beyond-stage" data-beyond-stage>
+      <div class="beyond-breadcrumb" hidden>
+        <button type="button" data-beyond-back hidden disabled>
+          <Icon name="chevronLeft" size={14} />{copy.stepBack}
+        </button>
+      </div>
       <div class="beyond-atmosphere" aria-hidden="true"></div>
       <div class="beyond-graph" data-beyond-graph role="group" aria-label={copy.constellation}>
         <canvas class="beyond-links" data-beyond-canvas aria-hidden="true"></canvas>
@@ -119,7 +124,6 @@ const graphData = JSON.stringify({
             return (
               <button type="button" class:list={['beyond-node', `beyond-node--${node.type}`, { 'has-artwork': !!node.artwork }]}
                 data-node={node.id} aria-label={`${node.title} · ${category.title}`} aria-pressed="false">
-                <span class="beyond-node-orbit" aria-hidden="true"></span>
                 <span class="beyond-node-art">
                   {node.artwork ? <img src={node.thumbnail} alt="" loading="eager" decoding="async" draggable="false" /> : <Icon name={category.icon} size={21} />}
                 </span>
@@ -200,18 +204,24 @@ const graphData = JSON.stringify({
   .beyond-search input { appearance:none; width:100%; background:transparent; color:var(--color-text-primary); border:0; outline:0; font:16px var(--font-body); }
   .beyond-search:focus-within { border-color:var(--color-brass); }
   .beyond-search input::placeholder { color:#8d8982; }
+  .beyond-view-actions { display:flex; align-items:center; justify-content:flex-end; gap:14px; }
   .beyond-view { display:flex; gap:3px; }
   .beyond button { font-family:var(--font-about-copy); cursor:pointer; -webkit-tap-highlight-color:transparent; }
   .beyond-view button { display:flex; align-items:center; gap:7px; padding:6px 13px; color:#9b978e; background:transparent; border:1px solid transparent; border-radius:3px; font-size:14px; }
   .beyond-view button[aria-pressed='true'] { color:#d6be80; border-color:rgba(201,162,39,.2); background:rgba(201,162,39,.05); }
+  .beyond-surprise { display:inline-flex; align-items:center; justify-content:center; gap:6px; min-height:34px; padding:6px 2px; border:0; border-radius:2px; background:transparent; color:#bbaa84; font-size:13px; white-space:nowrap; }
+  :global(html[lang='zh']) .beyond-surprise { font-family:'Crimson Pro','Zhuque Fangsong Explore',var(--font-cjk),serif; }
+  .beyond-surprise:hover:not(:disabled) { color:#ead79e; }
+  .beyond-surprise:focus-visible { outline:1px solid var(--color-brass); outline-offset:3px; }
+  .beyond-surprise:disabled { opacity:.38; cursor:default; }
   .beyond-categories { display:flex; flex-wrap:wrap; gap:8px 22px; align-items:center; border-top:1px solid rgba(201,162,39,.12); padding:15px 12px 13px; }
   .beyond-categories button { display:flex; align-items:center; gap:7px; border:0; border-bottom:1px solid transparent; color:#99958d; background:transparent; padding:3px 1px 7px; font-size:15px; white-space:nowrap; transition:color .2s,border-color .2s; }
   .beyond-categories button :global(svg) { opacity:.5; }
   .beyond-categories button.is-active { border-color:var(--color-brass); color:#e1c579; }
   .beyond-categories button.is-active :global(svg) { opacity:1; }
   .beyond-categories button:hover { color:#ddd3be; }
-  .beyond-breadcrumb { display:flex; align-items:center; min-height:44px; padding:0 12px 5px; }
-  .beyond-breadcrumb button { display:inline-flex; align-items:center; gap:4px; min-height:44px; padding:0 10px 0 0; border:0; background:transparent; color:#c8b174; font-size:13px; }
+  .beyond-breadcrumb { position:absolute; top:5px; left:12px; z-index:8; pointer-events:none; }
+  .beyond-breadcrumb button { display:inline-flex; align-items:center; gap:4px; min-height:44px; padding:0 10px 0 5px; border:0; border-radius:3px; background:rgba(10,10,15,.88); color:#c8b174; font-size:13px; pointer-events:auto; }
   .beyond-breadcrumb button:hover:not(:disabled) { color:#ead79e; }
   .beyond-breadcrumb button:disabled { color:#666258; cursor:default; }
   .beyond-stage { position:relative; min-height:820px; height:calc(100svh - 319px); max-height:1000px; isolation:isolate; border-top:1px solid rgba(255,255,255,.045); }
@@ -223,15 +233,12 @@ const graphData = JSON.stringify({
   .beyond-region-label { position:absolute; top:0; left:0; color:#bdb19a; font:400 14px/20px var(--font-display); letter-spacing:.11em; white-space:nowrap; text-shadow:0 2px 8px #08080d; pointer-events:none; }
   .beyond-node { position:absolute; left:0; top:0; display:flex; align-items:center; justify-content:center; width:max(44px,var(--node-size,52px)); height:max(44px,var(--node-size,52px)); min-height:44px; padding:0; background:transparent; border:0; color:var(--beyond-ink); user-select:none; will-change:transform; transition:opacity .4s; touch-action:none; }
   .beyond-node-art { position:relative; display:grid; place-items:center; flex:0 0 var(--node-size,52px); width:var(--node-size,52px); height:var(--node-size,52px); aspect-ratio:1; border-radius:50%; overflow:hidden; background:rgba(21,21,27,.9); border:1px solid rgba(186,163,104,.28); box-shadow:0 0 15px rgba(201,162,39,.04); transition:border-color .3s,box-shadow .3s; }
-  .beyond-node-art img { width:100%; height:100%; object-fit:cover; opacity:.84; pointer-events:none; transition:opacity .3s; }
+  .beyond-node-art img { width:100%; height:100%; object-fit:cover; opacity:.96; pointer-events:none; transition:opacity .3s; }
   .beyond-node--work[data-category='books'] .beyond-node-art img { object-position:50% 25%; }
-  .beyond-node--person .beyond-node-art,.beyond-node--group .beyond-node-art,.beyond-node--studio .beyond-node-art { border-style:dashed; }
   .beyond-node[data-node='studio-ghibli'] .beyond-node-art { background:#c9c3b5; }
   .beyond-node[data-node='studio-ghibli'] .beyond-node-art img { object-fit:contain; padding:5px; }
   .beyond-node--topic:not(.has-artwork) .beyond-node-art { width:20px; height:20px; background:rgba(201,162,39,.06); border-color:rgba(201,162,39,.4); }
   .beyond-node--topic:not(.has-artwork) .beyond-node-art :global(svg) { width:11px;height:11px;opacity:.8; }
-  .beyond-node-orbit { position:absolute; width:calc(var(--node-size,52px) + 12px); height:calc(var(--node-size,52px) + 12px); border:1px solid rgba(201,162,39,.08); border-radius:50%; pointer-events:none; transition:border-color .3s; }
-  .beyond-node--topic:not(.has-artwork) .beyond-node-orbit { display:none; }
   .beyond-node-label { position:absolute; display:block; font-size:14px; line-height:1.2; margin:0; width:125px; left:50%; top:50%; max-width:125px; text-wrap:balance; text-shadow:0 1px 8px #08080d,0 0 6px #08080d; opacity:0; pointer-events:none; transition:opacity .15s; }
   .beyond-node-subtitle { display:none; }
   .beyond-node-label small { display:block; margin-top:3px; color:#b8aa8d; font:10px/12px var(--font-body); letter-spacing:.04em; }
@@ -239,7 +246,6 @@ const graphData = JSON.stringify({
   .beyond-node:hover,.beyond-node:focus-visible,.beyond-node.is-selected { z-index:5; outline:none; }
   .beyond-node:hover .beyond-node-art,.beyond-node:focus-visible .beyond-node-art,.beyond-node.is-selected .beyond-node-art { border-color:#d3b666; box-shadow:0 0 24px rgba(201,162,39,.17); }
   .beyond-node:hover img,.beyond-node.is-selected img { opacity:1; }
-  .beyond-node.is-selected .beyond-node-orbit { border-color:rgba(201,162,39,.5); }
   .beyond-node.is-muted { opacity:.12; }
   .beyond-node.is-muted:hover,.beyond-node.is-muted:focus-visible { opacity:1; }
   .beyond-node.is-neighbor { color:#e4d5b2; opacity:1; }
@@ -251,7 +257,7 @@ const graphData = JSON.stringify({
   .beyond-motion-pause,.beyond-motion-play { display:grid; place-items:center; }
   [data-beyond-motion][aria-pressed='true'] .beyond-motion-play,[data-beyond-motion][aria-pressed='false'] .beyond-motion-pause { display:none; }
   .beyond-control-divider { height:16px; width:1px; background:rgba(201,162,39,.18); margin:0 6px; }
-  .beyond-index { padding:32px 20px 80px; }
+  .beyond-index { padding:64px 20px 80px; }
   .beyond-stage:has(.beyond-index:not([hidden])) { height:auto; max-height:none; }
   .beyond-index-category { margin-bottom:35px; }
   .beyond-index-category h2 { font:400 20px var(--font-display); display:flex; align-items:center; gap:10px; color:#c8b681; padding-bottom:13px; border-bottom:1px solid rgba(201,162,39,.12); }
@@ -299,16 +305,18 @@ const graphData = JSON.stringify({
     .beyond-back { margin-bottom:12px; }
     h1 { font-size:32px; }
     .beyond-subtitle { font-size:15px; margin-top:4px; }
-    .beyond-tools { flex-direction:row; align-items:center; justify-content:space-between; margin-top:23px; gap:14px; }
-    .beyond-search { width:45%; }
+    .beyond-tools { align-items:stretch; margin-top:23px; gap:12px; }
+    .beyond-search { width:100%; }
     .beyond-search input { font-size:16px; }
     .beyond-view { gap:0; }
-    .beyond-view button { font-size:12px; padding:7px 8px; gap:4px; }
+    .beyond-view-actions { width:100%; justify-content:space-between; gap:8px; }
+    .beyond-view button { min-height:44px; font-size:12px; padding:7px 8px; gap:4px; }
     .beyond-view button :global(svg) { width:12px; }
+    .beyond-surprise { min-height:44px; font-size:12px; }
     .beyond-categories { flex-wrap:nowrap; overflow-x:auto; gap:20px; padding:11px 22px 6px; scrollbar-width:none; }
     .beyond-categories::-webkit-scrollbar { display:none; }
     .beyond-categories button { font-size:14px; }
-    .beyond-breadcrumb { padding:0 22px 5px; }
+    .beyond-breadcrumb { left:22px; }
     .beyond-stage { min-height:580px; height:calc(100svh - 339px); border-top:0; scroll-margin-top:90px; }
     .beyond-node-label { font-size:13px; max-width:130px; }
     .beyond-bottom { bottom:14px; left:20px; right:20px; gap:12px; }
@@ -324,7 +332,7 @@ const graphData = JSON.stringify({
     .beyond-detail:has(.beyond-detail-image[hidden]) { display:block; }
     .beyond-detail:has(.beyond-detail-image[hidden]) .beyond-detail-copy { padding:8px 24px 24px; }
     .beyond.is-detail-open .beyond-bottom { left:20px; right:20px; bottom:calc(43% + 16px); }
-    .beyond-index { padding:24px 22px 60px; }
+    .beyond-index { padding:64px 22px 60px; }
     .beyond-index-works { grid-template-columns:1fr; }
     .beyond-index-item { font-size:16px; }
   }

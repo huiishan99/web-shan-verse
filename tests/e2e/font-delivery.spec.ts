@@ -163,7 +163,8 @@ test('local fonts and multilingual stacks survive SPA locale changes and unfamil
   expect(japaneseAbout).toContain('Shippori Mincho');
   expect(japaneseAbout).not.toContain('Zhuque Fangsong About Supplement');
   await page.evaluate(() => document.fonts.ready.then(() => undefined));
-  await page.locator('a[href="/ja/beyond-code/"]').click();
+  // The shared Explore disclosure also links here; this flow uses About's entry.
+  await page.locator('.world-entry-link[href="/ja/beyond-code/"]').click();
   await expect(page).toHaveURL(/\/ja\/beyond-code\/$/);
   await expect(page.locator('[data-beyond]')).toHaveClass(/is-ready/);
   expect(await page.locator('.beyond-subtitle').evaluate((element) => getComputedStyle(element).fontFamily))

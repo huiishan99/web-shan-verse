@@ -5,6 +5,7 @@ import CustomCursor from '../components/CustomCursor.astro';
 import MusicPlayer from '../components/MusicPlayer.astro';
 import ShanCli from '../components/ShanCli.astro';
 import SiteStats from '../components/SiteStats.astro';
+import ExploreNavigation from '../components/navigation/ExploreNavigation.astro';
 import fonts from '../data/google-fonts.json';
 import { defaultLocale, localeNames, localeShortNames, locales, localizePath, type Locale } from '../i18n/config';
 import { useTranslations } from '../i18n/ui';
@@ -103,6 +104,7 @@ const defaultAlternateUrl = new URL(
               <li><a href={localizePath('/about', lang)}>{t.nav.about}</a></li>
               <li><a href={localizePath('/projects', lang)}>{t.nav.projects}</a></li>
               <li><a href={localizePath('/blog', lang)}>{t.nav.blog}</a></li>
+              <li><ExploreNavigation lang={lang} currentPath={currentPath} /></li>
             </ul>
             <div class="language-switcher" aria-label={t.nav.languageSwitcher} data-language-switcher>
               <button

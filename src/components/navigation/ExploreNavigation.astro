@@ -1,0 +1,131 @@
+---
+import Icon from '../Icon.astro';
+import { exploreDestinations, exploreLabels } from '../../data/site-navigation';
+import { localizePath, normalizePath, type Locale } from '../../i18n/config';
+
+interface Props { lang: Locale; currentPath: string }
+const { lang, currentPath } = Astro.props;
+const copy = exploreLabels[lang];
+const activePath = normalizePath(currentPath);
+---
+
+<details class="site-explore" data-site-explore>
+  <summary class="site-explore-toggle" data-site-explore-toggle>
+    <span>{copy.toggle}</span><Icon name="chevronDown" size={12} class="site-explore-chevron" />
+  </summary>
+  <nav class="site-explore-panel" aria-label={copy.landmark} data-site-explore-panel>
+    <ul class="site-explore-links">
+      {exploreDestinations.map((destination) => (
+        <li>
+          <a href={localizePath(destination.path, lang)}
+            aria-current={activePath === destination.path ? 'page' : undefined}
+            data-site-area={destination.id}>
+            <Icon name={destination.icon} size={17} /><span>{destination.label[lang]}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</details>
+
+<script>
+  import { setupExploreNavigation } from '../../scripts/client/explore-navigation.js';
+  // Astro executes this shared module once per document. The listeners delegate
+  // to the current header DOM, so a page swap needs no persistent menu state.
+  setupExploreNavigation();
+</script>
+
+<style>
+  /* Pinned subset provenance/coverage: src/data/explore-font.json. Keep this in
+     the shared compiled stylesheet so SPA swaps retain the loaded font face. */
+  @font-face {
+    font-family: 'Zhuque Fangsong Explore';
+    src: url('/fonts/ZhuqueFangsong-Explore.632f645f0a4fed74.woff2') format('woff2');
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    unicode-range: U+4E4B, U+4EE3, U+4FBF, U+56FE, U+5916, U+63A2, U+65C5, U+65F6, U+661F, U+770B, U+7801, U+7D22, U+7EBF, U+884C, U+95F4, U+968F;
+  }
+  .site-explore {
+    --explore-font: var(--font-navigation);
+    position: relative;
+  }
+  .site-explore-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: var(--space-xs) 0;
+    color: var(--color-text-secondary);
+    font-family: var(--explore-font);
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    line-height: inherit;
+    list-style: none;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .site-explore-toggle::-webkit-details-marker { display: none; }
+  .site-explore-toggle:hover,
+  .site-explore-toggle:focus-visible,
+  .site-explore[open] .site-explore-toggle { color: var(--color-brass-light); }
+  .site-explore-toggle:focus-visible { outline-offset: 5px; }
+  .site-explore-toggle :global(.site-explore-chevron) { transition: transform 0.16s ease; }
+  .site-explore[open] .site-explore-toggle :global(.site-explore-chevron) { transform: rotate(180deg); }
+  .site-explore-panel {
+    position: absolute;
+    z-index: 6;
+    top: calc(100% + 0.65rem);
+    right: 0;
+    width: min(17rem, calc(100vw - 2rem));
+    max-height: min(21rem, calc(100dvh - 7rem));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    padding: 0.45rem;
+    border: 1px solid rgba(201, 162, 39, 0.2);
+    border-radius: 4px;
+    background: #0d0d13;
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.32);
+  }
+  .site-explore-links { margin: 0; padding: 0; list-style: none; }
+  .site-explore-links a {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    min-height: 44px;
+    padding: 0.5rem 0.65rem;
+    border-radius: 2px;
+    color: var(--color-text-secondary);
+    font-family: var(--explore-font);
+    font-size: 0.97rem;
+    line-height: 1.35;
+    letter-spacing: 0.015em;
+    text-decoration: none;
+  }
+  .site-explore-links a:hover,
+  .site-explore-links a:focus-visible,
+  .site-explore-links a[aria-current='page'] {
+    color: var(--color-brass-light);
+    background: rgba(201, 162, 39, 0.08);
+  }
+  .site-explore-links a:focus-visible { outline-offset: -2px; }
+  :global(html[lang='zh']) .site-explore {
+    --explore-font: 'Crimson Pro', 'Zhuque Fangsong Explore', var(--font-cjk), serif;
+  }
+  :global(html[lang='ja']) .site-explore { --explore-font: var(--font-body); }
+  :global(html[lang='zh']) .site-explore-toggle { font-size: 0.9rem; letter-spacing: 0.08em; }
+  :global(html[lang='ja']) .site-explore-toggle { font-size: 0.9rem; }
+  @media (max-width: 768px) {
+    .site-explore { position: static; }
+    .site-explore-toggle { min-height: 1.75rem; padding: 0.15rem 0.02rem 0.22rem; font-size: 0.94rem; line-height: 1; letter-spacing: 0.035em; }
+    /* The mobile .nav owns positioning, so long localized trigger labels cannot
+       push a right-anchored panel beyond the viewport's left edge. */
+    .site-explore-panel { top: calc(100% + 0.5rem); left: 50%; right: auto; transform: translateX(-50%); }
+    :global(html[lang='zh']) .site-explore-toggle { font-size: 0.92rem; letter-spacing: 0.04em; }
+    :global(html[lang='ja']) .site-explore-toggle { font-size: 0.8rem; letter-spacing: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .site-explore-toggle :global(.site-explore-chevron) { transition: none; }
+  }
+</style>

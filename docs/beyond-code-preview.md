@@ -11,7 +11,8 @@ on 2026-11-12. The constellation checkpoint is `7045510`. Reuse the site's
 near-black background, brass accents, serif typography, and existing interest
 content. No new runtime dependency or backend is required.
 
-Current owner requirements are in [Controls and game additions](#controls-and-game-additions-2026-11-14)
+Current owner requirements are in [Connected exploration](#connected-exploration-2026-11-14),
+[Controls and game additions](#controls-and-game-additions-2026-11-14)
 and [Category legibility](#category-legibility-2026-11-14),
 which refines the [second approved expansion](#approved-expansion-2026-11-14-second-batch)
 and [the first approved expansion](#approved-expansion-2026-11-14).
@@ -20,6 +21,81 @@ The current cover delivery and mount lifecycle are refined by
 below describe their historical checkpoints.
 The motion prototype and older publication checkpoints below record the design
 and evidence at those stages; their removed category hubs are historical.
+
+## Connected exploration (2026-11-14)
+
+Outcome: make the existing collection easier to explore and connect it to the
+Travel Atlas, without another scene framework or speculative pages. Fresh All,
+selected-work and Atlas screenshots show detached decorative rings around small,
+dim covers and no common secondary-page entry. Preserve the near-black/brass
+theme, typography, genuine artwork and approved collection.
+
+Design review and boundaries:
+
+- Hide the local Back control when there is no return point. Initial All has no
+  disabled control; categories, search, Index and Reset retain meaningful history.
+  This refines visibility without superseding the existing Reset-to-All undo
+  contract. Removing it merely for `category === 'all'` would break that contract.
+- Remove the detached orbit decoration and dashed creator rims; use one consistent
+  artwork edge, clearer covers and the existing hover/focus/selected feedback.
+  Keep invisible collision padding, image sizes, forces and layout gates unchanged.
+- Mobile verification exposed a pre-existing camera failure: selecting Cyberpunk
+  2077 at 390px fitted the distant cross-category Edgerunners together, hit the
+  0.16 scale floor and left the selected 44px button at x=-220.85px. Focus selection
+  on the chosen work plus same-category neighbors. Cross-category threads and
+  related-item navigation remain intact; their distance must not dominate framing.
+- Add a small localized discovery action using existing selection/history. Choose
+  uniformly from the current filtered personal collection, excluding the current
+  node and contextual entries; disable it if there is no eligible choice. It is
+  discovery, not an inferred favorite, rank or new content relationship.
+- Add one native disclosure in the shared header for Beyond Code, Travel Atlas
+  and Timeline. One build-time destination catalog owns their paths and labels.
+  Native links retain locale, new-tab behavior and existing page lifecycle. Escape
+  closes the disclosure before underlying scene controls; outside clicks dismiss
+  it. No global scene state or cross-page selection persistence is introduced.
+- Alternatives rejected: floating scene-specific switchers duplicate navigation;
+  a new portal route adds an unnecessary step; pre-mounted scenes and a global
+  graph/router increase loading and lifecycle cost. The static catalog/disclosure
+  is reversible and can register a future page only after it actually exists.
+- Devices and 3D scans remain ideas: no routes, content, placeholder links or assets.
+
+Typography boundary: the old navigation subset does not contain 探/索. Rather
+than load a large font or mix fallback faces in the new control, serve a 6,280-byte,
+16-glyph subset of the existing Zhuque Blog font for the new Chinese labels.
+`src/data/explore-font.json` records source/hash/coverage and regeneration options;
+outlines and horizontal metrics match the existing v0.212 source. The five old
+subsets and Google catalog stay byte-identical; no new font is preloaded.
+
+Acceptance: initial overview hides Back; node traversal and filtered/Index/Reset
+history still return correctly. Discovery respects the active filter; selected
+artwork stays inside the visible graph area, including cross-category works. Shared entry
+works in EN/ZH/JA at desktop and 320/390px, without clipping or covering scene
+controls. Opening/dismissing it does not mutate graph state. Beyond→Atlas→Beyond
+mounts one active scene and cleans up the old scene. Keyboard focus and Escape
+have one owner. Verify real browser views plus the existing geometry/state tests.
+
+Performance invariants: zero new runtime dependencies, zero new idle RAF, no Earth
+textures/Three request from opening the entry, unchanged 103-thumbnail payload
+(1,468,968 bytes), 106 nodes/49 edges/seven categories, 24–82px image bounds and
+40px desktop/35px compact category clearance. Do not attach the Home CTA's
+`data-journey-preload` behavior to the shared entry. The review packet below records
+the completed verification; screenshots are under
+`2026/11/14/beyond-connected-worlds/`.
+
+### Connected exploration review packet
+
+| Item | Result / evidence boundary |
+| --- | --- |
+| Goal / behavior | Initial All has no Back or reserved row; history remains undoable. Single cover rims replace detached circles. Filtered discovery opens a personal item. The shared Explore entry connects three existing pages in all locales. |
+| Architecture | Build-time `site-navigation.ts` metadata, native disclosure/links, delegated dismissal and existing scene navigation. Selection and resize share one local camera-framing policy. No new router, scene store, backend, dependency or idle animation. |
+| Invariants | Approved 106 nodes/49 edges/seven categories, neutral preferences, cover delivery/sizing, forces, collision padding and 40/35px geometry gates remain unchanged. No speculative device/scan pages. |
+| Assumptions | Cross-category distance should not determine the selected work's camera; those relations remain discoverable through the unchanged introduction links. Local Back remains logical history rather than browser history. |
+| Automated evidence | Full `npm run verify`: 142 checked files, no diagnostics; lint passes; 206 unit tests pass, one existing Windows file-symlink case skips for EPERM; 294 pages and HTML checks pass; 88 Chromium E2E pass. A subsequent instrumented round-trip test also passes with exactly one delegated pointerdown registration across three Astro page loads. |
+| Browser evidence | Desktop and 320/390px Chinese/Japanese previews inspected. Initial Back is hidden with a zero-height wrapper; all 106 covers have no detached orbit. Menu Escape leaves an open introduction intact. Atlas round trip leaves one graph canvas and no Earth canvas. At 390px, Cyberpunk's cover is now x=156.98px/width=38.41px inside the 375.43px graph instead of offscreen. |
+| Performance / regression | Opening/hovering Explore starts no Earth texture or new script request. Its compiled client helper is 849 bytes; shared CSS grows 3,530 bytes and graph JS 587 bytes, before transfer compression. Chinese UI adds one 6,280-byte font without a preload. Thumbnails remain 1,468,968 bytes. Shared header, locale changes and selection/resize are the regression surface. |
+| Counterexamples | Tested empty/sole discovery matches, cross-category neighbor expansion, Index/search/Reset undo, duplicate Reset, external-focus Escape, outside dismissal, smallest menu bounds, cross-category artwork framing and reciprocal detail traversal. A real 320px overflow failure was fixed by centering the mobile panel; a real SPA font revalidation failure was fixed by moving its face from body-inline to shared compiled CSS. Test thresholds were retained. |
+| Known risks | Viewport and keyboard checks are real Chromium evidence, not physical touch or screen-reader certification. Canvas counts do not prove GPU release; existing scene disposal code was separately reviewed. No universal FPS or faster-navigation claim is made. |
+| Trajectory / unresolved | Continue the existing bounded renderer and static navigation. Future real destinations can extend the catalog; register localization when implementing the route. No unresolved blocker; future collection-scale changes still need layout/performance validation. |
 
 ## Controls and game additions (2026-11-14)
 
