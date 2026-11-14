@@ -23,6 +23,12 @@ and evidence at those stages; their removed category hubs are historical.
 
 ## Controls and game additions (2026-11-14)
 
+Current paint refinement: cross-category threads should be quieter than local
+connections. Their idle/emphasized/unrelated opacity is 0.08/0.28/0.025; local
+threads retain 0.28/0.65/0.065. Determine this from actual node categories. The
+current collection has one cross-category edge, Cyberpunk 2077 to Edgerunners.
+The common solid 0.9px geometry, relationship data and physics remain unchanged.
+
 Owner requests: fix the pause button display and make returning to a default view
 quick; verify English book names; add Assassin's Creed series with exactly II,
 Brotherhood and Revelations, plus standalone Yakuza 0. Subsequent steering removes

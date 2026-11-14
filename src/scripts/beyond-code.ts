@@ -577,7 +577,10 @@ function setupBeyondCode() {
       const segment = segmentBetweenCircles(from, to, radius(edge.source), radius(edge.target), 3);
       if (!segment) return;
       const active = emphasis === edge.source || emphasis === edge.target;
-      const opacity = active ? .65 : emphasis ? .065 : .28;
+      const crossCategory = nodeById.get(edge.source)!.category !== nodeById.get(edge.target)!.category;
+      const opacity = crossCategory
+        ? active ? .28 : emphasis ? .025 : .08
+        : active ? .65 : emphasis ? .065 : .28;
       ctx!.strokeStyle = `rgba(183,172,145,${opacity})`;
       ctx!.beginPath(); ctx!.moveTo(segment.from.x, segment.from.y);
       ctx!.lineTo(segment.to.x, segment.to.y); ctx!.stroke();
