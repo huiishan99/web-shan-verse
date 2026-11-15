@@ -47,6 +47,23 @@ pointer/touch and by keyboard, including first use from Home and after SPA swaps
 Check 320/390px localized geometry, focus restoration, scene/history isolation
 and no extra script/Earth-texture load merely from opening the panel.
 
+Mobile alignment correction: at widths up to 768px, use three equal columns
+and center each complete navigation group, including About's chevron. Preserve
+the common text baseline, separate About/chevron targets, 44px touch sizing,
+centered dropdown and desktop layout. Equal spacing applies to group centers,
+not blank gaps between labels of different lengths. Check EN/ZH/JA at 320, 390
+and 768px for alignment, non-overlap and viewport containment.
+
+The layout correction passes all six About-menu browser cases. Across the nine
+locale/width combinations, maximum column-width error is 0.011px, maximum group
+centering error is 0.019px and baseline spread is zero. The tightest Japanese
+320px layout retains a 2.97px gap between the chevron and Projects. Independent
+review confirms mobile-only CSS scope, unchanged fonts/state and separate touch
+targets. Build/HTML checks cover 294 pages; type checks and lint pass. Screenshots
+and measurements in `2026/11/15/mobile-nav-alignment/` show the corrected layout;
+no old-layout screenshot was captured. Continue the existing header architecture;
+this reversible CSS change adds no assets, dependency or runtime work.
+
 ### About navigation review packet
 
 | Item | Result / evidence boundary |

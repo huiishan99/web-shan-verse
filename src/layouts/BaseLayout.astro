@@ -490,18 +490,20 @@ const defaultAlternateUrl = new URL(
     }
     
     .nav-links {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-items: center;
+      width: min(100%, 23rem);
+      gap: 0;
+      margin-left: 0;
+    }
+
+    .nav-links > li {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: min(100%, 23rem);
-      gap: 0.9rem;
-      margin-left: 0;
-      flex-wrap: nowrap;
-    }
-
-    .nav-links li {
-      flex: 0 1 auto;
       min-width: 0;
+      min-height: 44px;
     }
 
     .nav-links a {
@@ -531,10 +533,6 @@ const defaultAlternateUrl = new URL(
 
     .nav-links a:focus-visible::after {
       width: 100%;
-    }
-
-    :global(html[lang='ja']) .nav-links {
-      gap: 0.72rem;
     }
 
     :global(html[lang='zh']) .nav-links a {

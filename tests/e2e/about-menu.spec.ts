@@ -1,4 +1,5 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
+import { writeFile } from 'node:fs/promises';
 
 async function mockRuntimeServices(page: Page) {
   await page.route('https://**/*', async (route) => route.fulfill({
@@ -29,6 +30,47 @@ async function paddingPoint(link: Locator) {
   const point = { x: box.width - 4, y: box.height / 2 };
   expect(box.x + point.x).toBeGreaterThan(text.x + text.width);
   return point;
+}
+
+async function mobileNavigationMetrics(page: Page) {
+  return page.evaluate(() => {
+    const rect = (element: Element) => {
+      const box = element.getBoundingClientRect();
+      return {
+        x: box.x, y: box.y, width: box.width, height: box.height,
+        right: box.right, bottom: box.bottom,
+        centerX: box.x + box.width / 2, centerY: box.y + box.height / 2,
+      };
+    };
+    const row = document.querySelector('.nav-links')!;
+    const context = document.createElement('canvas').getContext('2d')!;
+    const items = [...row.querySelectorAll(':scope > li')].map((item) => {
+      const label = item.querySelector<HTMLAnchorElement>('[data-site-about-link], :scope > a')!;
+      const group = item.querySelector('[data-site-about]') ?? label;
+      const range = document.createRange();
+      range.selectNodeContents(label);
+      const text = range.getBoundingClientRect();
+      const style = getComputedStyle(label);
+      context.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+      const font = context.measureText(label.textContent!.trim());
+      return {
+        text: label.textContent!.trim(), item: rect(item), group: rect(group), link: rect(label),
+        label: { x: text.x, y: text.y, width: text.width, height: text.height, bottom: text.bottom },
+        // The labels share a font within a locale. Range top + the browser's
+        // font-box ascent gives a comparable baseline without changing the DOM.
+        baseline: text.y + font.fontBoundingBoxAscent,
+        font: { family: style.fontFamily, size: style.fontSize, lineHeight: style.lineHeight },
+      };
+    });
+    return {
+      viewport: { width: innerWidth, height: innerHeight, dpr: devicePixelRatio },
+      header: rect(document.querySelector('.site-header')!), row: rect(row), items,
+      toggle: rect(document.querySelector('[data-site-about-toggle]')!),
+      groupGaps: items.slice(1).map((item, index) => item.group.x - items[index].group.right),
+      itemGaps: items.slice(1).map((item, index) => item.item.x - items[index].item.right),
+      baselineSpread: Math.max(...items.map((item) => item.baseline)) - Math.min(...items.map((item) => item.baseline)),
+    };
+  });
 }
 
 test.beforeEach(async ({ page }) => {
@@ -159,15 +201,48 @@ for (const locale of [
   { lang: 'zh', prefix: '/zh', about: '关于', toggle: '更多关于我的页面', beyond: '代码之外', atlas: '旅行星图' },
   { lang: 'ja', prefix: '/ja', about: '私について', toggle: '自分についてのページ', beyond: 'コードを超えて', atlas: '旅の星図' },
 ]) {
-  test(`${locale.lang} About destinations fit 320px and 390px without adding a top-level tab`, async ({ page }) => {
-    for (const width of [320, 390]) {
+  test(`${locale.lang} About destinations fit 320px, 390px and 768px without adding a top-level tab`, async ({ page }, testInfo) => {
+    for (const width of [320, 390, 768]) {
       await page.setViewportSize({ width, height: 844 });
       await page.goto(locale.prefix ? `${locale.prefix}/` : '/');
+      await page.evaluate(() => document.fonts.ready);
       const nav = aboutNavigation(page);
       await expect(nav.about).toHaveAttribute('href', `${locale.prefix}/about/`);
       await expect(nav.about).toHaveText(locale.about);
       await expect(nav.toggle).toHaveAccessibleName(locale.toggle);
       await expect(page.locator('.nav-links > li')).toHaveCount(3);
+      const alignment = await mobileNavigationMetrics(page);
+      // Local review capture is opt-in. --output chooses its location; no user
+      // machine path or routine screenshot artifact is part of the CI contract.
+      if (process.env.CAPTURE_MOBILE_NAV_ALIGNMENT === '1') {
+        const metricsPath = testInfo.outputPath(`nav-${locale.lang}-${width}.json`);
+        await writeFile(metricsPath, `${JSON.stringify(alignment, null, 2)}\n`);
+        await testInfo.attach(`nav-${locale.lang}-${width}-geometry`, { path: metricsPath, contentType: 'application/json' });
+        const screenshotPath = testInfo.outputPath(`nav-${locale.lang}-${width}.png`);
+        await page.locator('.site-header').screenshot({ path: screenshotPath });
+        await testInfo.attach(`nav-${locale.lang}-${width}`, { path: screenshotPath, contentType: 'image/png' });
+      }
+      expect(alignment.viewport.width).toBe(width);
+      expect(alignment.viewport.height).toBe(844);
+      expect(alignment.items).toHaveLength(3);
+      const columnWidth = alignment.row.width / 3;
+      for (const [index, item] of alignment.items.entries()) {
+        // Compare group centers, including About's arrow, rather than expecting
+        // equal blank edge gaps between labels of different widths.
+        expect(Math.abs(item.item.width - columnWidth)).toBeLessThanOrEqual(0.5);
+        expect(Math.abs(item.item.centerX - (alignment.row.x + columnWidth * (index + 0.5)))).toBeLessThanOrEqual(0.5);
+        expect(Math.abs(item.group.centerX - item.item.centerX)).toBeLessThanOrEqual(0.5);
+        expect(Math.abs(item.group.centerY - alignment.items[0].group.centerY)).toBeLessThanOrEqual(0.5);
+        expect(item.group.x).toBeGreaterThanOrEqual(0);
+        expect(item.group.right).toBeLessThanOrEqual(width);
+        expect(Number.isFinite(item.baseline)).toBe(true);
+      }
+      expect(alignment.baselineSpread).toBeLessThanOrEqual(0.5);
+      expect(alignment.toggle.width).toBeGreaterThanOrEqual(44);
+      expect(alignment.toggle.height).toBeGreaterThanOrEqual(44);
+      expect(alignment.items[0].link.right).toBeLessThanOrEqual(alignment.toggle.x);
+      expect(alignment.toggle.right).toBeLessThanOrEqual(alignment.items[1].link.x);
+      expect(alignment.items[1].link.right).toBeLessThanOrEqual(alignment.items[2].link.x);
       await nav.toggle.click();
       await expect(nav.panel).toBeVisible();
       const box = (await nav.panel.boundingBox())!;
