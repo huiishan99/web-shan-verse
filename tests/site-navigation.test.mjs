@@ -1,15 +1,15 @@
 import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
 import test from 'node:test';
-import { exploreDestinations, exploreLabels } from '../src/data/site-navigation.ts';
+import { aboutDestinations, aboutMenuLabels } from '../src/data/site-navigation.ts';
 import { locales, localizePath, normalizePath } from '../src/i18n/config.ts';
 
-test('Explore lists the two public secondary destinations and leaves Timeline hidden', () => {
-  assert.deepEqual(exploreDestinations.map(({ id, path }) => [id, path]), [
+test('About lists the two public secondary destinations and leaves Timeline hidden', () => {
+  assert.deepEqual(aboutDestinations.map(({ id, path }) => [id, path]), [
     ['beyond-code', '/beyond-code'], ['atlas', '/journey'],
   ]);
-  assert.equal(new Set(exploreDestinations.map(({ path }) => path)).size, exploreDestinations.length);
-  for (const destination of exploreDestinations) {
+  assert.equal(new Set(aboutDestinations.map(({ path }) => path)).size, aboutDestinations.length);
+  for (const destination of aboutDestinations) {
     assert.ok(existsSync(new URL(`../src/pages${destination.path}.astro`, import.meta.url)));
     assert.ok(existsSync(new URL(`../src/pages/[lang]${destination.path}.astro`, import.meta.url)));
     for (const locale of locales) {
@@ -23,12 +23,12 @@ test('Explore lists the two public secondary destinations and leaves Timeline hi
   }
 });
 
-test('Explore supplies explicit disclosure and landmark text in all site locales', () => {
+test('About supplies explicit disclosure and landmark text in all site locales', () => {
   for (const locale of locales) {
-    assert.ok(exploreLabels[locale].toggle.trim());
-    assert.ok(exploreLabels[locale].landmark.trim());
+    assert.ok(aboutMenuLabels[locale].toggle.trim());
+    assert.ok(aboutMenuLabels[locale].landmark.trim());
   }
-  assert.equal(exploreLabels.en.toggle, 'Explore');
-  assert.equal(exploreLabels.zh.toggle, '探索');
-  assert.equal(exploreLabels.ja.toggle, '探索');
+  assert.equal(aboutMenuLabels.en.toggle, 'More about me');
+  assert.equal(aboutMenuLabels.zh.toggle, '更多关于我的页面');
+  assert.equal(aboutMenuLabels.ja.toggle, '自分についてのページ');
 });

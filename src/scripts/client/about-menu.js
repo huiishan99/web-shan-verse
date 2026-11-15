@@ -1,12 +1,12 @@
 // A plain-link disclosure, not a menu widget or a scene controller.
-export function setupExploreNavigation(rootDocument = document) {
+export function setupAboutMenu(rootDocument = document) {
   const controller = new AbortController();
   const { signal } = controller;
-  const openDisclosures = () => [...rootDocument.querySelectorAll('[data-site-explore][open]')];
+  const openDisclosures = () => [...rootDocument.querySelectorAll('[data-site-about-menu][open]')];
   const contains = (disclosure, target) => Boolean(target?.nodeType && disclosure.contains(target));
   const close = (disclosure, restoreFocus = false) => {
     disclosure.open = false;
-    if (restoreFocus) disclosure.querySelector('[data-site-explore-toggle]')?.focus({ preventScroll: true });
+    if (restoreFocus) disclosure.querySelector('[data-site-about-toggle]')?.focus({ preventScroll: true });
   };
 
   rootDocument.addEventListener('keydown', (event) => {
@@ -29,11 +29,9 @@ export function setupExploreNavigation(rootDocument = document) {
   };
   rootDocument.addEventListener('pointerdown', dismissOutside, { signal });
   rootDocument.addEventListener('click', dismissOutside, { signal });
-  rootDocument.addEventListener('focusout', (event) => {
-    for (const disclosure of openDisclosures()) {
-      if (contains(disclosure, event.target) && !contains(disclosure, event.relatedTarget)) close(disclosure);
-    }
-  }, { signal });
+  // Focus entering a real outside element closes the panel. A null focusout
+  // during pointer activation must not hide an anchor before its click arrives.
+  rootDocument.addEventListener('focusin', dismissOutside, { signal });
   rootDocument.addEventListener('astro:before-swap', () => {
     for (const disclosure of openDisclosures()) close(disclosure);
   }, { signal });

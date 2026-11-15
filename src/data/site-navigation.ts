@@ -4,7 +4,7 @@ import type { Locale } from '../i18n/config';
 export const unlistedPagePaths = ['/timeline'] as const;
 
 // Navigation metadata only. Register a destination after its real page exists.
-export const exploreDestinations = [
+export const aboutDestinations = [
   {
     id: 'beyond-code', path: '/beyond-code', icon: 'sparkle',
     label: { en: 'Beyond Code', zh: '代码之外', ja: 'コードを超えて' },
@@ -17,8 +17,8 @@ export const exploreDestinations = [
   id: string; path: string; icon: string; label: Record<Locale, string>;
 }[];
 
-export const exploreLabels = {
-  en: { toggle: 'Explore', landmark: 'Explore site sections' },
-  zh: { toggle: '探索', landmark: '探索站点分区' },
-  ja: { toggle: '探索', landmark: 'サイトを探索' },
+export const aboutMenuLabels = {
+  en: { toggle: 'More about me', landmark: 'More about me' },
+  zh: { toggle: '更多关于我的页面', landmark: '更多关于我' },
+  ja: { toggle: '自分についてのページ', landmark: '自分について' },
 } as const satisfies Record<Locale, { toggle: string; landmark: string }>;

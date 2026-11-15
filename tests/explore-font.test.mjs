@@ -21,7 +21,7 @@ test('the new exploration labels use a bounded authentic font subset', async () 
   assert.deepEqual([...manifest.coverage.characters], expected);
   assert.equal(manifest.coverage.unicodeRange,
     expected.map((character) => `U+${character.codePointAt(0).toString(16).toUpperCase()}`).join(', '));
-  const component = await readFile(new URL('../src/components/navigation/ExploreNavigation.astro', import.meta.url), 'utf8');
+  const component = await readFile(new URL('../src/components/navigation/AboutMenu.astro', import.meta.url), 'utf8');
   assert.ok(component.includes(`font-family: '${manifest.family}'`));
   assert.ok(component.includes(`src: url('${manifest.font.href}')`));
   assert.ok(component.includes(`unicode-range: ${manifest.coverage.unicodeRange};`));

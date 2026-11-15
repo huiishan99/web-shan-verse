@@ -11,7 +11,8 @@ on 2026-11-12. The constellation checkpoint is `7045510`. Reuse the site's
 near-black background, brass accents, serif typography, and existing interest
 content. No new runtime dependency or backend is required.
 
-Current owner requirements are in [Distinct cover identity](#distinct-cover-identity-2026-11-15),
+Current owner requirements are in [About navigation](#about-navigation-2026-11-15),
+[Distinct cover identity](#distinct-cover-identity-2026-11-15),
 [All overview Back visibility](#all-overview-back-visibility-2026-11-15),
 [Link contact](#link-contact-2026-11-15),
 [Timeline visibility](#timeline-visibility-2026-11-15),
@@ -25,6 +26,39 @@ The current cover delivery and mount lifecycle are refined by
 below describe their historical checkpoints.
 The motion prototype and older publication checkpoints below record the design
 and evidence at those stages; their removed category hubs are historical.
+
+## About navigation (2026-11-15)
+
+Replace the separate Explore top-level item with two secondary destinations
+beneath About. About text remains a native direct link to the personal profile;
+its adjacent chevron opens Beyond Code and Travel Atlas. This supersedes the
+earlier standalone Explore disclosure decision. Timeline remains unlisted.
+
+Keep native localized anchors and a native details disclosure, with no scene
+preload, additional runtime dependency or hover-only interaction. Preserve the
+shared compiled font face used by both the secondary links and Chinese discovery
+text. Keyboard focus entering an outside element, outside pointer input, Escape
+and Astro swaps dismiss the panel; a null focusout target must not hide a link
+between pointer press and activation.
+
+Acceptance: only About, Projects and Blog remain primary items; About still
+navigates directly; both secondary rows work on their text, icon and padding by
+pointer/touch and by keyboard, including first use from Home and after SPA swaps.
+Check 320/390px localized geometry, focus restoration, scene/history isolation
+and no extra script/Earth-texture load merely from opening the panel.
+
+### About navigation review packet
+
+| Item | Result / evidence boundary |
+| --- | --- |
+| Goal / behavior | The header has three primary items. About text opens the profile; its adjacent chevron reveals Beyond Code and Travel Atlas. Mobile chevron and destination rows have at least 44px touch targets. |
+| Architecture / invariants | The existing native disclosure is now `AboutMenu`; localized secondary metadata remains the single destination catalog. The About anchor is slotted from BaseLayout to retain its original scoped typography. One delegated helper owns dismissal across Astro swaps; graph/history, URLs, hidden Timeline and scene loading remain unchanged. |
+| Assumptions / diagnosis | The reported failure was not universal in desktop Chromium: the old link navigated during manual reproduction. The old synchronous focusout handler did hide the panel for a null related target; this event sequence is independently reproduced in a regression, without claiming it proves the user's original browser cause. Closing on focus entering a real outside element avoids cancelling an in-progress pointer activation. |
+| Evidence / counterexamples | The null-focusout regression fails against the old handler and passes with focusin dismissal. Six new browser cases exercise first click/tap from Home, text/SVG/blank row padding, both routes, direct About, keyboard Tab/Enter/Escape, outside dismissal and repeated SPA entry. Real touch emulation at 390px and EN/ZH/JA geometry at 320/390px pass; manual desktop clicks confirm all three destinations. |
+| Validation | 146 checked files without diagnostics; lint; 208 unit passes plus the existing Windows symlink EPERM skip; 294 built/checked pages. All 38 targeted navigation, Timeline and font cases pass. After enlarging the mobile target, eight final cover-independent navigation/line-contact cases pass, including all six new cases. |
+| Independent review / regression | Review confirms hidden details links stay out of the keyboard order, the direct About anchor cannot also toggle the menu, and secondary font variables do not affect body/profile text. Existing Escape scene isolation, one-listener SPA round trip, canonical locale links and no-extra-script/Earth-request checks remain intact. |
+| Cost / limits | No new asset, dependency, preload or backend. Existing shared font bytes and compiled stylesheet delivery are retained. Browser touch emulation is not physical-device or Safari certification; the precise original failure remains unconfirmed. |
+| Trajectory / recovery | Continue the shared metadata/native-disclosure architecture with About as the entry. No unresolved implementation blocker or migration; reverting restores the previous header. Local evidence is in `2026/11/15/about-menu/`. |
 
 ## Distinct cover identity (2026-11-15)
 

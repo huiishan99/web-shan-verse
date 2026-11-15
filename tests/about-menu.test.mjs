@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { setupExploreNavigation } from '../src/scripts/client/explore-navigation.js';
+import { setupAboutMenu } from '../src/scripts/client/about-menu.js';
 
 class Disclosure {
   nodeType = 1;
@@ -14,7 +14,7 @@ class Disclosure {
 
   contains(node) { return node === this || node?.owner === this; }
   querySelector(selector) {
-    assert.equal(selector, '[data-site-explore-toggle]');
+    assert.equal(selector, '[data-site-about-toggle]');
     return this.toggle;
   }
 }
@@ -26,7 +26,7 @@ class DocumentSurface {
   activeElement = null;
 
   querySelectorAll(selector) {
-    assert.equal(selector, '[data-site-explore][open]');
+    assert.equal(selector, '[data-site-about-menu][open]');
     return this.disclosures.filter((disclosure) => disclosure.open);
   }
 
@@ -59,7 +59,7 @@ function fixture() {
   const document = new DocumentSurface();
   const disclosure = new Disclosure();
   document.disclosures.push(disclosure);
-  const cleanup = setupExploreNavigation(document);
+  const cleanup = setupAboutMenu(document);
   return { document, disclosure, cleanup };
 }
 
@@ -69,7 +69,7 @@ test('an open disclosure owns Escape before a selected scene and returns focus t
   document.disclosures.push(disclosure);
   let sceneEscapes = 0;
   document.addEventListener('keydown', () => sceneEscapes++);
-  setupExploreNavigation(document);
+  setupAboutMenu(document);
   disclosure.open = true;
   document.activeElement = disclosure.link;
   const event = document.emit('keydown', { key: 'Escape', target: disclosure.link });
@@ -122,9 +122,9 @@ test('outside pointer/click dismissal does not focus a control or change in-pane
 test('keyboard focus can move within the disclosure and leaving closes it without a focus trap', () => {
   const { document, disclosure } = fixture();
   disclosure.open = true;
-  document.emit('focusout', { target: disclosure.toggle, relatedTarget: disclosure.link });
+  document.emit('focusin', { target: disclosure.link });
   assert.equal(disclosure.open, true);
-  document.emit('focusout', { target: disclosure.link, relatedTarget: { nodeType: 1 } });
+  document.emit('focusin', { target: { nodeType: 1 } });
   assert.equal(disclosure.open, false);
   assert.deepEqual(disclosure.focusCalls, []);
 });
@@ -152,4 +152,14 @@ test('cleanup removes the delegated handlers', () => {
   const event = document.emit('keydown', { key: 'Escape', target: disclosure.link });
   assert.equal(disclosure.open, true);
   assert.equal(event.prevented, false);
+});
+
+test('a null focusout during pointer activation does not hide the destination before its click', () => {
+  const { document, disclosure } = fixture();
+  disclosure.open = true;
+  document.emit('focusout', { target: disclosure.toggle, relatedTarget: null });
+  assert.equal(disclosure.open, true);
+  const click = document.emit('click', { target: disclosure.link });
+  assert.equal(disclosure.open, true);
+  assert.equal(click.prevented, false);
 });

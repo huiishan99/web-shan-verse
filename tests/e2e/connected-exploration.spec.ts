@@ -215,37 +215,37 @@ test('discovery uses direct filtered personal matches, excludes the selected nod
   await expect(root.locator('[data-node][aria-pressed="true"]')).toHaveCount(0);
 });
 
-test('Explore owns its Escape without closing a selected work or adding graph history', async ({ page }) => {
+test('About menu owns its Escape without closing a selected work or adding graph history', async ({ page }) => {
   const root = await openCollection(page);
-  const explore = page.locator('[data-site-explore]');
-  const toggle = explore.locator('[data-site-explore-toggle]');
+  const aboutMenu = page.locator('[data-site-about-menu]');
+  const toggle = aboutMenu.locator('[data-site-about-toggle]');
   const detail = root.locator('[data-beyond-detail]');
   const back = root.locator('[data-beyond-back]');
 
   await toggle.click();
-  await expect(explore).toHaveAttribute('open', '');
+  await expect(aboutMenu).toHaveAttribute('open', '');
   await toggle.press('Escape');
-  await expect(explore).not.toHaveAttribute('open', '');
+  await expect(aboutMenu).not.toHaveAttribute('open', '');
   await expect(back).toBeHidden();
 
   await root.locator('[data-node="games-stardew-valley"]').press('Enter');
   await expect(detail).toBeVisible();
   const title = await root.locator('[data-detail-title]').textContent();
   await toggle.click();
-  await expect(explore).toHaveAttribute('open', '');
+  await expect(aboutMenu).toHaveAttribute('open', '');
   await toggle.press('Escape');
-  await expect(explore).not.toHaveAttribute('open', '');
+  await expect(aboutMenu).not.toHaveAttribute('open', '');
   await expect(toggle).toBeFocused();
   await expect(detail).toBeVisible();
   await expect(root.locator('[data-detail-title]')).toHaveText(title!);
 
   await toggle.click();
   await root.locator('[data-detail-title]').click(); // Outside dismissal leaves scene state alone.
-  await expect(explore).not.toHaveAttribute('open', '');
+  await expect(aboutMenu).not.toHaveAttribute('open', '');
   await expect(detail).toBeVisible();
   await back.click();
   await expect(detail).toBeHidden();
-  await expect(back).toBeHidden(); // Opening/dismissing Explore added no return point.
+  await expect(back).toBeHidden(); // Opening/dismissing About menu added no return point.
 });
 
 for (const locale of [
@@ -253,11 +253,11 @@ for (const locale of [
   { prefix: '/zh', current: '代码之外', discovery: '随便看看' },
   { prefix: '/ja', current: 'コードを超えて', discovery: 'おまかせ' },
 ]) {
-  test(`Explore links address existing locale-canonical destinations for ${locale.prefix || 'English'}`, async ({ page }) => {
+  test(`About menu links address existing locale-canonical destinations for ${locale.prefix || 'English'}`, async ({ page }) => {
     const root = await openCollection(page, `${locale.prefix}/beyond-code/`);
-    const explore = page.locator('[data-site-explore]');
-    await explore.locator('[data-site-explore-toggle]').click();
-    const panel = explore.locator('[data-site-explore-panel]');
+    const aboutMenu = page.locator('[data-site-about-menu]');
+    await aboutMenu.locator('[data-site-about-toggle]').click();
+    const panel = aboutMenu.locator('[data-site-about-panel]');
     await expect(panel.locator('a')).toHaveCount(2);
     const current = panel.locator('[data-site-area="beyond-code"]');
     await expect(current).toHaveAttribute('href', `${locale.prefix}/beyond-code/`);
@@ -270,7 +270,7 @@ for (const locale of [
   });
 }
 
-test('opening and browsing Explore starts no Earth texture or new script load', async ({ page }) => {
+test('opening and browsing About menu starts no Earth texture or new script load', async ({ page }) => {
   const scripts: string[] = [];
   const earthTextures: string[] = [];
   page.on('request', (request) => {
@@ -280,9 +280,9 @@ test('opening and browsing Explore starts no Earth texture or new script load', 
   const root = await openCollection(page);
   await page.waitForLoadState('networkidle');
   const initialScripts = [...scripts];
-  const explore = page.locator('[data-site-explore]');
-  await explore.locator('[data-site-explore-toggle]').click();
-  await explore.locator('[data-site-area="atlas"]').hover();
+  const aboutMenu = page.locator('[data-site-about-menu]');
+  await aboutMenu.locator('[data-site-about-toggle]').click();
+  await aboutMenu.locator('[data-site-area="atlas"]').hover();
   await page.evaluate(() => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
   await page.waitForLoadState('networkidle');
   expect(scripts).toEqual(initialScripts);
@@ -306,7 +306,7 @@ test('Beyond and Atlas links mount one scene per route through an Astro round tr
     state.__connectedPointerdownRegistrations = 0;
     const addDocumentListener = document.addEventListener.bind(document);
     // Count real registrations across the same-document route changes. This
-    // detects a replayed inline Explore module without mocking its behavior.
+    // detects a replayed inline About menu module without mocking its behavior.
     document.addEventListener = ((type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions) => {
       if (type === 'pointerdown') state.__connectedPointerdownRegistrations!++;
       addDocumentListener(type, listener, options);
@@ -325,7 +325,7 @@ test('Beyond and Atlas links mount one scene per route through an Astro round tr
   await root.locator('[data-node="music-bohemian-rhapsody"]').press('Enter');
   await expect(root.locator('[data-beyond-detail]')).toBeVisible();
 
-  await page.locator('[data-site-explore-toggle]').click();
+  await page.locator('[data-site-about-toggle]').click();
   await page.locator('[data-site-area="atlas"]').click();
   await expect(page).toHaveURL(/\/journey\/$/);
   await expect(page.locator('[data-earth-scene]')).toHaveCount(1);
@@ -333,7 +333,7 @@ test('Beyond and Atlas links mount one scene per route through an Astro round tr
   await expect(page.locator('[data-earth-canvas]')).toHaveCount(1);
   await expect(page.locator('[data-beyond-canvas]')).toHaveCount(0);
   await expect.poll(loads).toBe(2);
-  await page.locator('[data-site-explore-toggle]').click();
+  await page.locator('[data-site-about-toggle]').click();
   await expect(page.locator('[data-site-area="atlas"]')).toHaveAttribute('aria-current', 'page');
   await page.locator('[data-site-area="beyond-code"]').click();
   await expect(page).toHaveURL(/\/beyond-code\/$/);
@@ -346,7 +346,7 @@ test('Beyond and Atlas links mount one scene per route through an Astro round tr
   await expect(root.locator('[data-beyond-back]')).toBeHidden();
   await expect(root.locator('[data-beyond-detail]')).toBeHidden();
   await expect(root.locator('[data-beyond-category="all"]')).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.locator('[data-site-explore]')).not.toHaveAttribute('open', '');
+  await expect(page.locator('[data-site-about-menu]')).not.toHaveAttribute('open', '');
   expect(errors).toEqual([]);
 });
 
@@ -400,13 +400,13 @@ for (const viewport of [
 }
 
 for (const width of [320, 390]) {
-  test(`Explore remains readable and dismissible at ${width}px without horizontal overflow`, async ({ page }) => {
+  test(`About menu remains readable and dismissible at ${width}px without horizontal overflow`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     await openCollection(page, '/zh/beyond-code/');
-    const explore = page.locator('[data-site-explore]');
-    const toggle = explore.locator('[data-site-explore-toggle]');
+    const aboutMenu = page.locator('[data-site-about-menu]');
+    const toggle = aboutMenu.locator('[data-site-about-toggle]');
     await toggle.click();
-    const panel = explore.locator('[data-site-explore-panel]');
+    const panel = aboutMenu.locator('[data-site-about-panel]');
     await expect(panel).toBeVisible();
     const box = (await panel.boundingBox())!;
     expect(box.x).toBeGreaterThanOrEqual(0);

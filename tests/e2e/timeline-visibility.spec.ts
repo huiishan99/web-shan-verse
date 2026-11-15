@@ -47,7 +47,7 @@ for (const { lang, prefix } of locales) {
     expect(directives).not.toContain('nofollow');
 
     // A normal SPA destination must not inherit the legacy page's robots tag.
-    await page.locator('[data-site-explore-toggle]').click();
+    await page.locator('[data-site-about-toggle]').click();
     await page.locator('[data-site-area="beyond-code"]').click();
     await expect(page).toHaveURL(new RegExp(`${prefix}/beyond-code/$`));
     await expect(page.locator('[data-beyond]')).toHaveClass(/is-ready/);

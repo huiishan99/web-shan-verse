@@ -5,7 +5,7 @@ import CustomCursor from '../components/CustomCursor.astro';
 import MusicPlayer from '../components/MusicPlayer.astro';
 import ShanCli from '../components/ShanCli.astro';
 import SiteStats from '../components/SiteStats.astro';
-import ExploreNavigation from '../components/navigation/ExploreNavigation.astro';
+import AboutMenu from '../components/navigation/AboutMenu.astro';
 import fonts from '../data/google-fonts.json';
 import { unlistedPagePaths } from '../data/site-navigation';
 import { defaultLocale, localeNames, localeShortNames, locales, localizePath, normalizePath, type Locale } from '../i18n/config';
@@ -104,10 +104,13 @@ const defaultAlternateUrl = new URL(
               <span class="logo-symbol">✧</span>
             </a>
             <ul class="nav-links">
-              <li><a href={localizePath('/about', lang)}>{t.nav.about}</a></li>
+              <li>
+                <AboutMenu lang={lang} currentPath={currentPath}>
+                  <a href={localizePath('/about', lang)} data-site-about-link>{t.nav.about}</a>
+                </AboutMenu>
+              </li>
               <li><a href={localizePath('/projects', lang)}>{t.nav.projects}</a></li>
               <li><a href={localizePath('/blog', lang)}>{t.nav.blog}</a></li>
-              <li><ExploreNavigation lang={lang} currentPath={currentPath} /></li>
             </ul>
             <div class="language-switcher" aria-label={t.nav.languageSwitcher} data-language-switcher>
               <button
