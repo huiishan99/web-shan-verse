@@ -135,8 +135,8 @@ test('desktop cuisine details preserve Japanese ramen branches and the six Chine
   const payload = JSON.parse((await root.locator('[data-beyond-data]').textContent())!) as {
     nodes: { id: string }[]; edges: { source: string; target: string }[];
   };
-  expect(payload.nodes).toHaveLength(117);
-  expect(payload.edges).toHaveLength(60);
+  expect(payload.nodes).toHaveLength(124);
+  expect(payload.edges).toHaveLength(65);
   expect(payload.nodes.filter((node) => node.id === 'foods-hot-pot')).toHaveLength(1);
   await expect(root.locator('[data-node="foods-hot-pot"]')).toHaveCount(1);
   await expect(root.locator('[data-index-node="foods-hot-pot"]')).toHaveCount(1);

@@ -11,7 +11,8 @@ on 2026-11-12. The constellation checkpoint is `7045510`. Reuse the site's
 near-black background, brass accents, serif typography, and existing interest
 content. No new runtime dependency or backend is required.
 
-Current owner requirements are in [Food and film additions](#food-and-film-additions-2026-11-16),
+Current owner requirements are in [Malaysia and India additions](#malaysia-and-india-additions-2026-11-16),
+[Food and film additions](#food-and-film-additions-2026-11-16),
 [About navigation](#about-navigation-2026-11-15),
 [Distinct cover identity](#distinct-cover-identity-2026-11-15),
 [All overview Back visibility](#all-overview-back-visibility-2026-11-15),
@@ -27,6 +28,49 @@ The current cover delivery and mount lifecycle are refined by
 below describe their historical checkpoints.
 The motion prototype and older publication checkpoints below record the design
 and evidence at those stages; their removed category hubs are historical.
+
+## Malaysia and India additions (2026-11-16)
+
+Add only Malaysian cuisine with Hainanese chicken rice, nasi kandar, roti canai
+and bak kut teh, plus Indian cuisine with chicken biryani. Preserve native dish
+names where appropriate and provide natural English, Chinese and Japanese
+labels. Use ordinary food-topic nodes and neutral preference boosts.
+English uses the common display spelling `Chicken biryani`; keep the requested
+regional spelling `Chicken briyani` as a search-only alias through optional
+interest metadata. Prior titles/search behavior stay intact. The five
+new `dish-of` links describe nonexclusive cuisine membership, not ownership or
+exclusive origin; add no unrequested cross-cuisine or heritage links.
+
+Acceptance: 124 nodes (120 personal and four context), 65 edges, the seven
+requested new photos with public selected-detail credits, correct three-language
+titles/search and working parent/child traversal. Retain all 117 earlier media
+records/hashes, the fixed 1,700,000-byte thumbnail cap and existing quality/framing.
+Measure all seven new derivatives before acceptance. Run the unchanged geometry
+gates for this larger food collection; do not weaken them to fit more content.
+The deferred review feature and all other prior scope boundaries remain intact.
+
+Desktop layout decision: the larger food collection exceeds the old greedy
+macro layout's fit limit. Search geometry-sorted cyclic/reversed category orders
+using the existing seven width candidates, then select by aspect-normalized
+perimeter. The search is bounded to 16 orders (14 for the current seven categories),
+runs only when creating a layout, and does not privilege content IDs or array rank.
+Use a fixed 320-world-unit desktop category gap for visual breathing room. This
+supersedes the old 220-unit macro gap; it is an empirical presentation allowance,
+not a physical displacement bound. Local packing, compact placement, forces,
+image sizes, camera limits and all acceptance thresholds remain unchanged.
+
+### Malaysia and India review packet
+
+| Item | Result / evidence boundary |
+| --- | --- |
+| Goal / behavior | Seven requested food entries, seven distinct real photos and exactly five cuisine links. EN/ZH/JA names and cross-language search work, including the regional `briyani` spelling. Cuisine membership remains nonexclusive. Movie reviews remain deferred. |
+| Architecture / invariants | Optional search aliases flow from interest data to the existing search text. Reuse `dish-of`, ordinary food nodes, neutral boosts and existing selected-detail credits. Only desktop category packing changes; no runtime dependency, backend, persistence, force body or per-frame search is added. |
+| Media / capacity | Independent audit freezes all 117 earlier media records, thumbnail entries and 234 disk hashes. Seven additions use 71,798 thumbnail bytes. All 124 thumbnails total 1,687,326 bytes, leaving 12,674 under the unchanged 1,700,000 cap; quality, framing and original-on-selection delivery stay intact. |
+| Rejected assumptions | Old packing fails fit at 0.181038 versus 0.182. Width-only refinement fails physical clearance at 18.31px versus 40px. Order/perimeter search alone (39.967px) and a raw-idle-derived guard (39.884px) also fail; raw drift amplitude does not bound coupled contact expansion. None is retained or treated as acceptance evidence. |
+| Geometry evidence | The unchanged 16-test suite passes for both current 124-node and prior 117-node fixtures. Four 90-second desktop/compact simulations have no gate violation, with geometry sampled each second and contact residual checked every frame. Current desktop fit is 0.193560; minimum outer-orbit category gap is 48.189px against 40px. Prior desktop gap is 53.833px. Compact anchors are byte-identical to their pre-change outputs and retain at least 38.477px clearance against 35px. |
+| Cost / limitations | Layout-creation-only Node benchmark: median 4.373→5.594ms, p95 6.301→8.006ms (12 warmups and 50 alternating samples, possibly concurrent with build). This is initial/resize work, not an FPS or device-performance claim. Simulated trajectories do not prove arbitrary future collection sizes or gestures. |
+| Validation / regression | Full `npm run verify` passes: Astro diagnostics, ESLint, unit tests, static build/HTML validation and 119 browser cases. New cases cover three locales at actual 1280/390/320px viewports, native names, aliases, photo bytes/credits, exact parent/child links, Back restoration and mobile bounds. Manual browser preview confirms the food index and Malaysian detail. Independent source review checks bounded search, deterministic geometry and input immutability. |
+| Risks / trajectory | Watch desktop overview composition, category clearance, aliases and thumbnail capacity on future explicit additions. Keep existing gates; 12,674 bytes is limited remaining media headroom. Continue the static catalog/renderer for this verified batch; ordinary Git revert remains available. Reproducible logs, frozen media audit, packing metrics and screenshots are retained outside the repository under `2026/11/16/beyond-malaysia-india/`. |
 
 ## Food and film additions (2026-11-16)
 

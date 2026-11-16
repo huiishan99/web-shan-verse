@@ -72,7 +72,9 @@ const nodeSpacing = 220;
 const moduleGap = 40;
 const regionMargin = 140;
 const captionHeight = 90;
-const categoryGap = 220;
+// Reserve deliberate breathing room between desktop category regions. This is
+// presentation spacing, not a bound on the contact solver's displacement.
+const desktopCategoryGap = 320;
 // Compact category gutters retain room for idle contact expansion at minimum zoom.
 const mobileCategoryGap = 720;
 const categoryOrder = Object.keys(clusterCenters);
@@ -127,19 +129,36 @@ function packRectangles(items, width, gap) {
     height: Math.max(0, ...placed.map((item) => item.y + item.height)) };
 }
 
-function compactPacking(items, aspect, gap) {
+function categoryPackingOrders(ordered) {
+  const orders = [];
+  // Bound the initial-only search to at most sixteen orders. Try evenly spaced
+  // cyclic starts in both geometric directions, without privileging a category.
+  const starts = Math.min(ordered.length, 8);
+  for (const direction of [ordered, [...ordered].reverse()]) {
+    for (let index = 0; index < starts; index++) {
+      const start = Math.floor(index * ordered.length / starts);
+      orders.push([...direction.slice(start), ...direction.slice(0, start)]);
+    }
+  }
+  return orders;
+}
+
+function compactPacking(items, aspect, gap, exploreOrders = false) {
   // Geometry determines packing efficiency; stable identity breaks ties. This
   // sorting owns no personal-content order or preference metadata.
   const ordered = [...items].sort((first, second) => second.height - first.height
     || second.width - first.width || compareIds(first.id, second.id));
+  const orders = exploreOrders ? categoryPackingOrders(ordered) : [ordered];
   const widest = Math.max(...items.map((item) => item.width));
   const area = items.reduce((sum, item) => sum + (item.width + gap) * (item.height + gap), 0);
   let best;
   let score = Infinity;
-  for (const factor of [.8, .9, 1, 1.1, 1.2, 1.3, 1.4]) {
-    const packing = packRectangles(ordered, Math.max(widest, Math.sqrt(area * aspect) * factor), gap);
-    const candidateScore = Math.max(packing.width / aspect, packing.height)
-      + Math.sqrt(packing.width * packing.height) * .01;
+  for (const order of orders) for (const factor of [.8, .9, 1, 1.1, 1.2, 1.3, 1.4]) {
+    const packing = packRectangles(order, Math.max(widest, Math.sqrt(area * aspect) * factor), gap);
+    // Macro rectangles vary greatly in size. Minimize their aspect-normalized
+    // perimeter; local component placement keeps its existing minimax score.
+    const candidateScore = exploreOrders ? packing.width / aspect + packing.height
+      : Math.max(packing.width / aspect, packing.height) + Math.sqrt(packing.width * packing.height) * .01;
     if (candidateScore < score) { best = packing; score = candidateScore; }
   }
   return best;
@@ -248,7 +267,7 @@ export function createGraphLayout(nodes, edges = [], options = {}) {
   const boxes = regions.map((region) => ({ id: region.id,
     width: region.maxX - region.minX, height: region.maxY - region.minY }));
   const macro = options.mobile ? { placed: [], width: 0, height: Math.max(...boxes.map((box) => box.height)) }
-    : compactPacking(boxes, 1.55, categoryGap);
+    : compactPacking(boxes, 1.55, desktopCategoryGap, true);
   if (options.mobile) {
     for (const box of boxes) {
       macro.placed.push({ ...box, x: macro.width, y: 0 });

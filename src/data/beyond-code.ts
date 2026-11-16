@@ -16,6 +16,7 @@ export interface BeyondCodeNode {
   category: BeyondCodeCategoryId;
   type: 'work' | 'person' | 'group' | 'studio' | 'topic' | 'series';
   title: LocalizedString;
+  searchAliases?: readonly string[];
   subtitle?: LocalizedString;
   wikiPage?: string;
   artwork?: string;
@@ -88,6 +89,7 @@ function collectionNode(item: InterestItem, category: BeyondCodeCategoryId): Bey
     type: detail ? detail.kind ?? 'work' : 'topic',
     sizeBoost: detail?.sizeBoost ?? 0,
     title,
+    searchAliases: detail?.searchAliases,
     subtitle: detail?.artist,
     wikiPage: detail?.wikiPage,
     externalUrl: detail?.externalUrl ?? (detail?.wikiPage
@@ -209,6 +211,11 @@ const approvedFoodFilmAdditions = {
   source: 'docs/beyond-code-preview.md#food-and-film-additions-2026-11-16',
 };
 
+const approvedMalaysiaIndiaAdditions = {
+  kind: 'user-confirmed' as const,
+  source: 'docs/beyond-code-preview.md#malaysia-and-india-additions-2026-11-16',
+};
+
 // These are the exact entries the owner selected, not an inferred franchise filmography.
 const approvedSeries: [string, string[]][] = [
   ['games-resident-evil-series', [
@@ -285,6 +292,10 @@ export const edges: BeyondCodeEdge[] = [
   ...['foods-kaoyu', 'foods-jianbing-guozi', 'foods-hot-pot', 'foods-tomato-and-egg',
     'foods-twice-cooked-pork', 'foods-kou-shui-ji'].map((food) =>
     edge(food, 'foods-chinese-cuisine', 'dish-of', approvedFoodFilmAdditions)),
+  ...['foods-hainanese-chicken-rice', 'foods-nasi-kandar', 'foods-roti-canai',
+    'foods-bak-kut-teh'].map((food) =>
+    edge(food, 'foods-malaysian-cuisine', 'dish-of', approvedMalaysiaIndiaAdditions)),
+  edge('foods-chicken-biryani', 'foods-indian-cuisine', 'dish-of', approvedMalaysiaIndiaAdditions),
   edge('games-cyberpunk-2077', 'drama-cyberpunk-edgerunners', 'shared-universe', {
     kind: 'official-source',
     source: 'https://www.cyberpunk.net/en/news/35512/announcing-an-original-anime-series-cyberpunk-edgerunners',

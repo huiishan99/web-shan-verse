@@ -88,6 +88,14 @@
       "height": 370,
       "bytes": 11628
     },
+    "/images/beyond-code/foods-bak-kut-teh.webp": {
+      "thumbnail": "/images/beyond-code/thumbnails/foods-bak-kut-teh.2916d756727c.webp",
+      "sourceSha256": "b4cb175c71739075e97e7b61729216d163dee426f206a9be295dd569e6d2e9b9",
+      "sha256": "2916d756727c62a2533a277690c5180afec548148bfd3d903d76662388ff321f",
+      "width": 382,
+      "height": 256,
+      "bytes": 8252
+    },
     "/images/beyond-code/foods-beef-tongue.jpg": {
       "thumbnail": "/images/beyond-code/thumbnails/foods-beef-tongue.6b79bb8c6e99.webp",
       "sourceSha256": "3356856a0fa5ef3697485c54a78e40622118861767709eb5e95919558a799afb",
@@ -96,6 +104,14 @@
       "height": 236,
       "bytes": 15114
     },
+    "/images/beyond-code/foods-chicken-biryani.webp": {
+      "thumbnail": "/images/beyond-code/thumbnails/foods-chicken-biryani.23e32217304e.webp",
+      "sourceSha256": "5ffb36fd28916c2854c01c371487f48bd0fa4c7a331c2a51bfc3692de36817ee",
+      "sha256": "23e32217304e018b4bf5150e774e0a5d2aa618678fffd462020f81ee39202a55",
+      "width": 378,
+      "height": 256,
+      "bytes": 11118
+    },
     "/images/beyond-code/foods-chinese-cuisine.webp": {
       "thumbnail": "/images/beyond-code/thumbnails/foods-chinese-cuisine.463bf468f6b8.webp",
       "sourceSha256": "46f348e444cb4fd91387e732dc0e6d5e1faafec28d6921b09f70c2191f9f75df",
@@ -103,6 +119,14 @@
       "width": 256,
       "height": 256,
       "bytes": 11776
+    },
+    "/images/beyond-code/foods-hainanese-chicken-rice.webp": {
+      "thumbnail": "/images/beyond-code/thumbnails/foods-hainanese-chicken-rice.fe5ed7676cba.webp",
+      "sourceSha256": "030671cbb09d922920068d1374d4733ef73943dfc14b93656e333b21b0f65d67",
+      "sha256": "fe5ed7676cbac6bc7e4c6d692dbec4fd76ffee74bcd9266ab0ddcde3a8387992",
+      "width": 341,
+      "height": 256,
+      "bytes": 8178
     },
     "/images/beyond-code/foods-hakata-ramen.webp": {
       "thumbnail": "/images/beyond-code/thumbnails/foods-hakata-ramen.a640318e3909.webp",
@@ -119,6 +143,14 @@
       "width": 256,
       "height": 341,
       "bytes": 25040
+    },
+    "/images/beyond-code/foods-indian-cuisine.webp": {
+      "thumbnail": "/images/beyond-code/thumbnails/foods-indian-cuisine.7a1a9681a575.webp",
+      "sourceSha256": "2d3751e202a17df3deb6807d2b1b9f236509db25dff54081636f8b9f4e4e63c4",
+      "sha256": "7a1a9681a575783fc382a8ceddd6056ba654d3a169a8b2c4042b3bef412d2ee5",
+      "width": 341,
+      "height": 256,
+      "bytes": 10896
     },
     "/images/beyond-code/foods-japanese-cuisine.webp": {
       "thumbnail": "/images/beyond-code/thumbnails/foods-japanese-cuisine.9f7ed5f90db5.webp",
@@ -168,6 +200,22 @@
       "height": 256,
       "bytes": 14460
     },
+    "/images/beyond-code/foods-malaysian-cuisine.webp": {
+      "thumbnail": "/images/beyond-code/thumbnails/foods-malaysian-cuisine.add7f0e90b6d.webp",
+      "sourceSha256": "c2efb957e64fb5c46f2440c57944e11850255f7c5a0e7740bb76fb0a2c7a55d1",
+      "sha256": "add7f0e90b6dbb48adfde77fbf6fb053108078b19c32e9f14202353dbeeb010d",
+      "width": 341,
+      "height": 256,
+      "bytes": 11812
+    },
+    "/images/beyond-code/foods-nasi-kandar.webp": {
+      "thumbnail": "/images/beyond-code/thumbnails/foods-nasi-kandar.1bbb82064794.webp",
+      "sourceSha256": "109e0950f66241cb4805e34d31e3f73996bc9b7ab813d6a7671a588b2abf6eb7",
+      "sha256": "1bbb82064794781ebb3b46bc9dfc00383b34f0234c72bd06c41595b246b4528b",
+      "width": 341,
+      "height": 256,
+      "bytes": 9388
+    },
     "/images/beyond-code/foods-natto.webp": {
       "thumbnail": "/images/beyond-code/thumbnails/foods-natto.edb04ca85421.webp",
       "sourceSha256": "1b2d2a49bd4d24d45346e4c7d28883997dcb3975279b881c4872b36c47a77d0d",
@@ -191,6 +239,14 @@
       "width": 330,
       "height": 247,
       "bytes": 17988
+    },
+    "/images/beyond-code/foods-roti-canai.webp": {
+      "thumbnail": "/images/beyond-code/thumbnails/foods-roti-canai.d0a250b0fc2e.webp",
+      "sourceSha256": "d25e383b482f41c623999d9461955febc05d40a1d747d1fb1c04ac1279677b77",
+      "sha256": "d0a250b0fc2ed6d8a0f77cd4f869337f5b8d8a3a23ff7dead2c97bd5d4c9ad89",
+      "width": 341,
+      "height": 256,
+      "bytes": 12154
     },
     "/images/beyond-code/foods-sushi.jpg": {
       "thumbnail": "/images/beyond-code/thumbnails/foods-sushi.dc08831e755a.webp",

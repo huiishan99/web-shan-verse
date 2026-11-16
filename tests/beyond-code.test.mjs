@@ -85,6 +85,25 @@ const approvedFoodFilmEdges = [
   ...Object.entries(approvedCuisineMembers).flatMap(([target, sources]) =>
     sources.map((source) => ({ source, relationship: 'dish-of', target }))),
 ];
+const approvedMalaysiaIndiaLabels = {
+  'foods-malaysian-cuisine': { en: 'Malaysian cuisine', zh: '马来西亚料理', ja: 'マレーシア料理' },
+  'foods-hainanese-chicken-rice': { en: 'Hainanese chicken rice', zh: '海南鸡饭', ja: '海南チキンライス' },
+  'foods-nasi-kandar': { en: 'Nasi kandar', zh: '扁担饭', ja: 'ナシカンダー' },
+  'foods-roti-canai': { en: 'Roti canai', zh: '印度煎饼', ja: 'ロティチャナイ' },
+  'foods-bak-kut-teh': { en: 'Bak kut teh', zh: '肉骨茶', ja: 'バクテー' },
+  'foods-indian-cuisine': { en: 'Indian cuisine', zh: '印度料理', ja: 'インド料理' },
+  'foods-chicken-biryani': { en: 'Chicken biryani', zh: '鸡肉比里亚尼饭', ja: 'チキンビリヤニ' },
+};
+const approvedMalaysiaIndiaIds = Object.keys(approvedMalaysiaIndiaLabels);
+const approvedMalaysiaIndiaMembers = {
+  'foods-malaysian-cuisine': [
+    'foods-hainanese-chicken-rice', 'foods-nasi-kandar', 'foods-roti-canai', 'foods-bak-kut-teh',
+  ],
+  'foods-indian-cuisine': ['foods-chicken-biryani'],
+};
+const malaysiaIndiaProvenance = 'docs/beyond-code-preview.md#malaysia-and-india-additions-2026-11-16';
+const approvedMalaysiaIndiaEdges = Object.entries(approvedMalaysiaIndiaMembers).flatMap(([target, sources]) =>
+  sources.map((source) => ({ source, relationship: 'dish-of', target })));
 const edgeMeaning = (edge) => `${edge.source}:${edge.relationship}:${edge.target}`;
 
 test('the constellation preserves each existing interest once without adding inferred favorites', () => {
@@ -111,6 +130,7 @@ test('the constellation preserves each existing interest once without adding inf
       assert.equal(node.previewProvider, item.previewProvider);
       assert.equal(node.itunesCountry, item.itunesCountry);
       assert.equal(node.audioSrc, item.audioSrc);
+      assert.deepEqual(node.searchAliases, item.searchAliases);
       assert.equal(node.type, item.kind ?? 'work');
       assert.equal(node.sizeBoost, item.sizeBoost ?? 0);
       assert.equal(node.externalUrl, item.externalUrl ?? (item.wikiPage
@@ -178,7 +198,8 @@ test('only existing favorites and the exact user-approved expansion enter the co
     'movies-the-two-towers', 'movies-the-return-of-the-king',
   ];
   assert.deepEqual(nodes.filter((node) => !node.isContext).map((node) => node.id).sort(),
-    [...existing, ...approved, ...approvedSecondBatchIds, ...approvedGameIds, ...approvedFoodFilmIds].sort());
+    [...existing, ...approved, ...approvedSecondBatchIds, ...approvedGameIds,
+      ...approvedFoodFilmIds, ...approvedMalaysiaIndiaIds].sort());
   assert.equal(approvedSecondBatchIds.length, 42);
   assert.deepEqual(nodes.filter((node) => node.isContext).map((node) => node.id).sort(),
     ['group-queen', 'person-kenshi-yonezu', 'studio-ghibli', 'studio-pixar']);
@@ -200,8 +221,8 @@ test('only existing favorites and the exact user-approved expansion enter the co
 test('the food and film additions have only the approved cuisine memberships and ramen styles', () => {
   assert.equal(approvedFoodFilmIds.length, 11);
   assert.equal(new Set(approvedFoodFilmIds).size, 11);
-  assert.equal(nodes.length, 117);
-  assert.equal(nodes.filter((node) => !node.isContext).length, 113);
+  assert.equal(nodes.length, 124);
+  assert.equal(nodes.filter((node) => !node.isContext).length, 120);
   assert.equal(nodes.filter((node) => node.isContext).length, 4);
   for (const id of approvedFoodFilmIds) {
     const node = nodeById.get(id);
@@ -231,8 +252,38 @@ test('the food and film additions have only the approved cuisine memberships and
   assert.deepEqual(edges.filter((edge) => additionIds.has(edge.source) || additionIds.has(edge.target))
     .map(edgeMeaning).sort(), approvedFoodFilmEdges.map(edgeMeaning).sort(),
   'No additional food members, reverse memberships or film relations are inferred');
-  assert.equal(edges.filter((edge) => edge.provenance.source !== foodFilmProvenance).length, 49,
-    'The expansion retains the prior relation set alongside its eleven new edges');
+  assert.equal(edges.filter((edge) => ![foodFilmProvenance, malaysiaIndiaProvenance]
+    .includes(edge.provenance.source)).length, 49,
+  'Later batches retain the original relation set alongside the approved food edges');
+});
+
+test('Malaysia and India add exactly seven named food topics and five nonexclusive cuisine memberships', () => {
+  assert.equal(approvedMalaysiaIndiaIds.length, 7);
+  assert.equal(nodes.length, 124);
+  assert.equal(nodes.filter((node) => !node.isContext).length, 120);
+  assert.equal(nodes.filter((node) => node.isContext).length, 4);
+  for (const [id, labels] of Object.entries(approvedMalaysiaIndiaLabels)) {
+    const node = nodeById.get(id);
+    assert.ok(node, `Missing requested food entry: ${id}`);
+    assert.equal(node.category, 'foods');
+    assert.equal(node.type, 'topic');
+    assert.equal(node.isContext, false);
+    assert.equal(node.sizeBoost, 0);
+    for (const locale of locales) assert.equal(resolveLocalized(node.title, locale), labels[locale]);
+  }
+  assert.deepEqual(nodeById.get('foods-chicken-biryani').searchAliases, ['Chicken briyani']);
+  assert.equal(resolveLocalized(nodeById.get('foods-chicken-biryani').title), 'Chicken biryani',
+    'The regional search spelling does not replace the visible dish name');
+  const additions = edges.filter((edge) => edge.provenance.source === malaysiaIndiaProvenance);
+  assert.equal(additions.length, 5);
+  assert.deepEqual(additions.map(edgeMeaning).sort(), approvedMalaysiaIndiaEdges.map(edgeMeaning).sort());
+  for (const edge of additions) assert.equal(edge.provenance.kind, 'user-confirmed');
+  const additionIds = new Set(approvedMalaysiaIndiaIds);
+  assert.deepEqual(edges.filter((edge) => additionIds.has(edge.source) || additionIds.has(edge.target))
+    .map(edgeMeaning).sort(), approvedMalaysiaIndiaEdges.map(edgeMeaning).sort(),
+  'Cuisine membership does not infer exclusive origin, heritage links or other cross-cuisine associations');
+  assert.equal(edges.filter((edge) => edge.provenance.source !== malaysiaIndiaProvenance).length, 60,
+    'All sixty earlier relationships remain alongside the five approved memberships');
 });
 
 test('the approved game additions preserve the three AC originals and standalone Yakuza 0', () => {
@@ -305,7 +356,7 @@ test('the second batch preserves clarified editions, films and exact series scop
 });
 
 test('display titles omit release-year suffixes without losing sequel names or version identities', () => {
-  assert.equal(nodes.length, 117);
+  assert.equal(nodes.length, 124);
   for (const node of nodes) {
     for (const locale of locales) {
       assert.doesNotMatch(resolveLocalized(node.title, locale), /\s*[（(]\d{4}[）)]$/u,
@@ -383,6 +434,11 @@ test('graph edges have valid endpoints, semantic relations and traceable provena
       assert.ok(approvedAssassinCreedWorks.includes(edge.source));
     } else if (edge.provenance.source === foodFilmProvenance) {
       assert.ok(approvedFoodFilmEdges.some((expected) => edgeMeaning(expected) === edgeMeaning(edge)));
+      assert.equal(nodeById.get(edge.source).category, 'foods');
+      assert.equal(nodeById.get(edge.target).category, 'foods');
+    } else if (edge.provenance.source === malaysiaIndiaProvenance) {
+      assert.ok(approvedMalaysiaIndiaEdges.some((expected) => edgeMeaning(expected) === edgeMeaning(edge)));
+      assert.equal(edge.relationship, 'dish-of');
       assert.equal(nodeById.get(edge.source).category, 'foods');
       assert.equal(nodeById.get(edge.target).category, 'foods');
     } else {
@@ -476,7 +532,7 @@ test('approved branches have exact endpoints without introducing unrelated works
     'topics-analytical-psychology->topics-carl-jung',
     'topics-socionics->topics-carl-jung',
   ]);
-  assert.deepEqual(facts('dish-of'), Object.entries(approvedCuisineMembers).flatMap(([cuisine, foods]) =>
+  assert.deepEqual(facts('dish-of'), Object.entries({ ...approvedCuisineMembers, ...approvedMalaysiaIndiaMembers }).flatMap(([cuisine, foods]) =>
     foods.map((food) => `${food}->${cuisine}`)).sort());
   assert.deepEqual(facts('performed-by'), [
     'music-another-one-bites-the-dust->group-queen',
@@ -489,7 +545,7 @@ test('approved branches have exact endpoints without introducing unrelated works
     'movies-ratatouille->studio-pixar',
   ]);
   assert.deepEqual(facts('shared-universe'), ['games-cyberpunk-2077->drama-cyberpunk-edgerunners']);
-  assert.equal(edges.length, 60, 'Only the requested associations, food and series links are added');
+  assert.equal(edges.length, 65, 'Only the requested associations, food and series links are added');
   assert.equal(edges.some((edge) => edge.source.includes('diana-wynne-jones')
     || edge.target.includes('diana-wynne-jones') || edge.source === 'book-howls-moving-castle'
     || edge.target === 'book-howls-moving-castle'), false);

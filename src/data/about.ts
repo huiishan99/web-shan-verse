@@ -352,6 +352,8 @@ export type InterestItem = LocalizedString | {
   /** Owner-confirmed visual emphasis only; omitted means no preference boost. */
   sizeBoost?: 0 | 1 | 2 | 3;
   title: LocalizedString;
+  /** Alternate names remain searchable without cluttering the displayed title. */
+  searchAliases?: readonly string[];
   artist?: LocalizedString;
   wikiPage?: string;
   externalUrl?: string;
@@ -499,6 +501,13 @@ export const interests: InterestCategory[] = [
       { id: "foods-tomato-and-egg", kind: "topic", title: { en: "Tomato and egg stir-fry", zh: "番茄炒鸡蛋", ja: "トマトと卵の炒め物" }, externalUrl: "https://en.wikipedia.org/wiki/Stir-fried_tomato_and_scrambled_eggs" },
       { id: "foods-twice-cooked-pork", kind: "topic", title: { en: "Twice-cooked pork", zh: "回锅肉", ja: "回鍋肉" }, externalUrl: "https://en.wikipedia.org/wiki/Twice-cooked_pork" },
       { id: "foods-kou-shui-ji", kind: "topic", title: { en: "Kou shui ji", zh: "口水鸡", ja: "よだれ鶏" }, externalUrl: "https://thewoksoflife.com/sichuan-chicken-chili-oil-sauce-kou-shui-ji/" },
+      { id: "foods-malaysian-cuisine", kind: "topic", title: { en: "Malaysian cuisine", zh: "马来西亚料理", ja: "マレーシア料理" }, externalUrl: "https://en.wikipedia.org/wiki/Malaysian_cuisine" },
+      { id: "foods-hainanese-chicken-rice", kind: "topic", title: { en: "Hainanese chicken rice", zh: "海南鸡饭", ja: "海南チキンライス" }, externalUrl: "https://en.wikipedia.org/wiki/Hainanese_chicken_rice" },
+      { id: "foods-nasi-kandar", kind: "topic", title: { en: "Nasi kandar", zh: "扁担饭", ja: "ナシカンダー" }, externalUrl: "https://en.wikipedia.org/wiki/Nasi_kandar" },
+      { id: "foods-roti-canai", kind: "topic", title: { en: "Roti canai", zh: "印度煎饼", ja: "ロティチャナイ" }, externalUrl: "https://en.wikipedia.org/wiki/Roti_canai" },
+      { id: "foods-bak-kut-teh", kind: "topic", title: { en: "Bak kut teh", zh: "肉骨茶", ja: "バクテー" }, externalUrl: "https://en.wikipedia.org/wiki/Bak_kut_teh" },
+      { id: "foods-indian-cuisine", kind: "topic", title: { en: "Indian cuisine", zh: "印度料理", ja: "インド料理" }, externalUrl: "https://en.wikipedia.org/wiki/Indian_cuisine" },
+      { id: "foods-chicken-biryani", kind: "topic", title: { en: "Chicken biryani", zh: "鸡肉比里亚尼饭", ja: "チキンビリヤニ" }, searchAliases: ["Chicken briyani"], externalUrl: "https://en.wikipedia.org/wiki/Biryani" },
       { id: "foods-jiro-ramen", kind: "topic", title: { en: "Jiro-style ramen", zh: "二郎系拉面", ja: "二郎系ラーメン" }, wikiPage: "Ramen Jiro" },
       { id: "foods-otoro", kind: "topic", title: { en: "Otoro", zh: "金枪鱼大腹", ja: "大トロ" }, wikiPage: "Toro (sushi)" },
       { id: "foods-yakiniku", kind: "topic", title: { en: "Yakiniku", zh: "烧肉", ja: "焼肉" }, wikiPage: "Yakiniku" },
