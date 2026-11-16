@@ -19,6 +19,7 @@ const copy = {
     related: 'Connected worlds', nearby: 'In this constellation', source: 'Explore further',
     noResults: 'No matching worlds.', back: 'Back to About', collection: 'From my collection',
     context: 'Related creator or source', playing: 'Pause preview', play: 'Play preview',
+    creditChanges: 'Resized / WebP conversion',
   },
   zh: {
     eyebrow: '我的兴趣星群', title: '代码之外', subtitle: '记录我看过、读过、玩过、听过的作品，以及喜欢的食物和想法。',
@@ -28,6 +29,7 @@ const copy = {
     close: '关闭介绍', related: '相连的世界', nearby: '同一片星群',
     source: '继续了解', noResults: '没有找到相关内容。', back: '返回关于我',
     collection: '我的收藏', context: '相关创作者或原作', playing: '暂停试听', play: '试听',
+    creditChanges: '缩略／WebP 转换',
   },
   ja: {
     eyebrow: '私の小さな星座', title: 'コードを超えて', subtitle: '観たもの、読んだもの、遊んだもの、聴いたもの。好きな食べ物や関心のあることも。',
@@ -37,11 +39,27 @@ const copy = {
     close: '紹介を閉じる', related: 'つながる世界', nearby: '同じ星座から',
     source: 'もっと知る', noResults: '見つかりませんでした。', back: 'About に戻る',
     collection: '私のコレクション', context: '関連する作り手・原作', playing: '試聴を止める', play: '試聴',
+    creditChanges: '縮小・WebP 変換',
   },
 }[lang];
 
-type MediaEntry = { artwork?: string; description?: string; source?: string };
+type MediaEntry = {
+  artwork?: string; description?: string; source?: string;
+  artworkCredit?: string; artworkTitle?: string; artworkUsageSource?: string;
+  artworkLicenseName?: string; artworkLicenseUrl?: string;
+};
 const nodeMedia = media as Record<string, MediaEntry>;
+function creditFor(entry?: MediaEntry) {
+  if (!entry?.artworkCredit) return undefined;
+  const source = new URL(entry.artworkUsageSource!);
+  const license = new URL(entry.artworkLicenseUrl!);
+  if (!entry.artworkTitle || !entry.artworkLicenseName || [source, license].some((url) =>
+    url.protocol !== 'https:' || url.username || url.password)) {
+    throw new Error('Artwork credits require a title, author, license and public HTTPS links');
+  }
+  return { title: entry.artworkTitle, author: entry.artworkCredit, source: source.href,
+    license: license.href, licenseName: entry.artworkLicenseName };
+}
 const thumbnailImages = thumbnails.images as Record<string, { thumbnail: string }>;
 function thumbnailFor(artwork: string) {
   if (!artwork) return '';
@@ -58,6 +76,7 @@ const graphNodes = nodes.map((node) => ({
   artwork: nodeMedia[node.id]?.artwork || node.artwork || '',
   thumbnail: thumbnailFor(nodeMedia[node.id]?.artwork || node.artwork || ''),
   description: nodeMedia[node.id]?.description || '',
+  artworkCredit: creditFor(nodeMedia[node.id]),
   externalUrl: node.externalUrl || nodeMedia[node.id]?.source || '',
 }));
 const graphData = JSON.stringify({
@@ -176,6 +195,7 @@ const graphData = JSON.stringify({
           <h2 id="beyond-detail-title" tabindex="-1" data-detail-title></h2>
           <p class="beyond-detail-subtitle" data-detail-subtitle></p>
           <p class="beyond-detail-description" data-detail-description></p>
+          <p class="beyond-detail-credit" data-detail-credit hidden></p>
           <div class="beyond-detail-links" data-detail-links></div>
           <a class="beyond-detail-source" data-detail-source target="_blank" rel="noopener noreferrer">{copy.source}<Icon name="arrowRight" size={15} /></a>
         </div>
@@ -277,6 +297,9 @@ const graphData = JSON.stringify({
   .beyond-detail-image { width:100%; height:215px; background:rgba(201,162,39,.025); overflow:hidden; }
   .beyond-detail-image :global(img) { width:100%; height:100%; object-fit:contain; padding:20px; }
   .beyond-detail-image[hidden] { display:none; }
+  .beyond-detail-credit { margin:0 0 18px; color:#969080; font:11px/1.45 var(--font-body); overflow-wrap:anywhere; }
+  .beyond-detail-credit :global(a) { color:inherit; text-decoration:underline; text-underline-offset:2px; }
+  .beyond-detail-credit :global(a:hover) { color:var(--color-brass-light); }
   .beyond-detail-copy { padding:23px 27px 32px; }
   .beyond-detail-category { color:#bfa568; font-size:11px; letter-spacing:.14em; text-transform:uppercase; font-family:var(--font-mono); }
   .beyond-detail h2 { font:400 30px/1.22 var(--font-editorial); color:#f0e6cf; margin:9px 0 8px; }

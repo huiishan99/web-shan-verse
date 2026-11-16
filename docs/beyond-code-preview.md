@@ -11,7 +11,8 @@ on 2026-11-12. The constellation checkpoint is `7045510`. Reuse the site's
 near-black background, brass accents, serif typography, and existing interest
 content. No new runtime dependency or backend is required.
 
-Current owner requirements are in [About navigation](#about-navigation-2026-11-15),
+Current owner requirements are in [Food and film additions](#food-and-film-additions-2026-11-16),
+[About navigation](#about-navigation-2026-11-15),
 [Distinct cover identity](#distinct-cover-identity-2026-11-15),
 [All overview Back visibility](#all-overview-back-visibility-2026-11-15),
 [Link contact](#link-contact-2026-11-15),
@@ -26,6 +27,58 @@ The current cover delivery and mount lifecycle are refined by
 below describe their historical checkpoints.
 The motion prototype and older publication checkpoints below record the design
 and evidence at those stages; their removed category hubs are historical.
+
+## Food and film additions (2026-11-16)
+
+Add only the requested film Source Code (2011) and ten food entries: Japanese
+cuisine, Kitakata ramen, Hakata ramen, natto, Chinese cuisine, Chinese grilled
+fish, jianbing guozi, tomato-and-egg stir-fry, twice-cooked pork and kou shui ji.
+Reuse the existing hot-pot node. Preserve all prior collection items and owner
+preference values; titles do not display release years.
+
+Connect ramen, sushi and natto to Japanese cuisine. Connect Kitakata and Hakata
+ramen to ramen as styles. Connect the six requested Chinese dishes (including
+the existing hot pot) to Chinese cuisine. Use a distinct `dish-of` relation for
+cuisine membership, retaining `style-of` for ramen branches; details describe
+the relation correctly from either endpoint. Canvas lines remain undirected.
+Cuisine bubbles use the existing ordinary image-node presentation and bounded
+degree-based sizes. No additional cuisine members or film/creator links are
+inferred. Acceptance is 117 nodes and 60 explicit edges, with distinct sourced
+images, working localized search/details and traversable food relationships.
+
+Personal film reviews remain a deferred idea: no review fields, ratings, editor,
+placeholder UI, persistence or backend are introduced in this batch. Keep the
+existing thumbnail settings and original artwork; assess the incremental media
+bytes before revising the previous 106-node snapshot's capacity limit.
+
+Capacity decision: the 106-image checkpoint already uses 1,490,012 bytes, leaving
+only 9,988 under its old 1,500,000-byte gate. The 117-node approved batch uses a
+fixed 1,700,000-byte cap (209,988 bytes available for the additions). This
+explicitly supersedes the previous snapshot's total cap for this batch only;
+all 106 old originals/thumbnail hashes, quality 70, 256px framing and loading
+behavior remain unchanged. Reject an over-budget result rather than silently
+recompress old covers, auto-scale the cap or introduce a new lazy-loading
+architecture. Record the measured total after the assets are integrated.
+
+For newly licensed food images, selected details provide a compact author/source
+and license credit with a resize/format-change note. Use artwork-specific fields,
+plain escaped text and validated HTTPS links; description licensing is separate.
+No credit text is added to graph bubbles or Index rows.
+
+### Food and film review packet
+
+| Item | Result / evidence boundary |
+| --- | --- |
+| Goal / behavior | Source Code and the ten requested food entries are present with distinct real images. Cuisine membership, ramen styles and the reused hot-pot node have the exact requested connections. Titles omit years; personal reviews remain deferred. |
+| Architecture / invariants | Add one `dish-of` data relation with reciprocal localized detail labels. Cuisine nodes use existing topic rendering and degree sizing, with no preference boosts or new category hubs. Add compact photo attribution inside the existing detail-copy column using validated HTTPS links and plain text. No backend, dependency, comment editor or storage changes. |
+| Media / cost | Independent audit confirms all 106 prior media records and thumbnail entries, plus 212 prior source/thumbnail disk hashes, remain unchanged. The 11 additions add 125,516 thumbnail bytes (+8.42%); 117 unique thumbnails total 1,615,528 bytes, leaving 84,472 under the explicit 1,700,000-byte capacity. Existing quality/framing and original-on-selection loading are preserved; an independent test pins the new cap. |
+| Assumptions / provenance | Japanese cuisine links only ramen, sushi and natto; the two regional ramen styles link to ramen. Chinese cuisine links the six requested dishes. Public photographs are illustrative, not personal meal photos. Credits retain original source/title, required creator text, license and thumbnail/WebP change note. The movie poster is identified as copyrighted promotional artwork, not CC. |
+| Found / corrected | At 117 nodes the unchanged compact 30-second physics gate caught vertical clipping, reaching 6.375px in diagnostics. Portrait-oriented local packing left insufficient vertical room for screen-space collision envelopes. Change only compact packing aspect 0.8→0.85 and category gap 680→720; desktop, scale floor, forces, collision radii and all test thresholds remain intact. A credit paragraph initially inserted as a third mobile grid child was moved inside detail copy before acceptance. |
+| Independent geometry | The unchanged 16 geometry tests pass. A 90-second numerical check retains all 117 nodes, zero contact residual, at least 22.435px vertical orbit clearance, 21.902px caption clearance and 38.477px category gutter. Desktop layout serialization is byte-identical before/after the compact fix. These are deterministic current-collection checks, not browser FPS or physical-device certification. |
+| Verification | Astro checks 147 files without diagnostics; lint; 209 unit passes plus the existing Windows symlink EPERM skip; 294-page build/HTML checks; all 116 browser tests pass. Five new cases cover three-language film search, real poster/photo loads, exact cuisine links, credit authors/licenses, ten distinct downloaded food images, Back and the mobile detail grid. Manual desktop preview confirms the movie and both cuisine groups. |
+| Counterexamples / regression | Preserve frozen franchise scopes, prior 49 edge meanings and neutral sizes; all 60 current edges and 117 IDs are pinned. The old compact layout fails without weakening its gate. Tests reject duplicated artwork bytes, review placeholders, hot-pot duplication, broken credit/Back state, wrong mobile columns and horizontal overflow. Existing navigation, fonts, stats, contribution calendar, scene teardown and line-contact regressions pass. |
+| Limits / recovery | Compact movie-region width is 2099.927 world units against the retained 2100 bound, so later additions must rerun capacity/geometry checks. The wider compact strip adds only 38.4 screen pixels across six gutters at minimum zoom. No universal loading/FPS improvement or unlimited capacity is claimed. An ordinary revert restores the preceding content/configuration without a data migration. |
+| Trajectory | Continue the current static catalog and graph architecture for this verified batch. Reassess compact packing and initial payload when a later explicit expansion reaches their gates. Local sources, baseline snapshots, screenshots and verification logs are in `2026/11/16/beyond-food-film/`; no unresolved release blocker remains. |
 
 ## About navigation (2026-11-15)
 

@@ -9,7 +9,8 @@ export const thumbnailSettings = Object.freeze({
   schemaVersion: 1, width: 256, height: 256, fit: 'outside',
   withoutEnlargement: true, format: 'webp', quality: 70,
 });
-export const thumbnailBudget = 1_500_000;
+// Reviewed 117-node content capacity; do not auto-grow or change quality to fit.
+export const thumbnailBudget = 1_700_000;
 export const publicDirectory = fileURLToPath(new URL('../public/', import.meta.url));
 export const manifestFile = fileURLToPath(new URL('../src/data/beyond-code-thumbnails.json', import.meta.url));
 const mediaFile = new URL('../src/data/beyond-code-media.json', import.meta.url);

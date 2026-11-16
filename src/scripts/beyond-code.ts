@@ -15,6 +15,7 @@ interface GraphNode {
   id: string; category: string; type: string; title: string; subtitle: string;
   searchText: string; artwork: string; thumbnail: string; description: string; externalUrl: string; isContext: boolean;
   sizeBoost?: 0 | 1 | 2 | 3;
+  artworkCredit?: { title: string; author: string; source: string; license: string; licenseName: string };
 }
 interface GraphEdge { id: string; source: string; target: string; relationship: string; label: string }
 interface GraphCategory { id: string; title: string }
@@ -69,6 +70,7 @@ function setupBeyondCode() {
   const surpriseButton = root.querySelector<HTMLButtonElement>('[data-beyond-surprise]')!;
   const title = root.querySelector<HTMLElement>('[data-detail-title]')!;
   const media = root.querySelector<HTMLElement>('[data-detail-image]')!;
+  const mediaCredit = root.querySelector<HTMLElement>('[data-detail-credit]')!;
   const source = root.querySelector<HTMLAnchorElement>('[data-detail-source]')!;
   const description = root.querySelector<HTMLElement>('[data-detail-description]')!;
   const relatedList = root.querySelector<HTMLElement>('[data-detail-links]')!;
@@ -332,6 +334,7 @@ function setupBeyondCode() {
         'part-of': ['Part of', 'Series entry'],
         'style-of': ['Style of', 'Style'],
         'ingredient-of': ['Ingredient for', 'Ingredient'],
+        'dish-of': ['Cuisine', 'Dish'],
       },
       zh: {
         'performed-by': ['演唱', '演唱的歌曲'], 'written-by': ['作者', '创作的作品'],
@@ -341,6 +344,7 @@ function setupBeyondCode() {
         'part-of': ['所属系列', '系列作品'],
         'style-of': ['所属风格', '风格'],
         'ingredient-of': ['用于', '食材'],
+        'dish-of': ['所属料理', '菜品'],
       },
       ja: {
         'performed-by': ['アーティスト', '楽曲'], 'written-by': ['著者', '著作'],
@@ -350,6 +354,7 @@ function setupBeyondCode() {
         'part-of': ['シリーズ', 'シリーズ作品'],
         'style-of': ['スタイル', 'スタイル'],
         'ingredient-of': ['使う料理', '食材'],
+        'dish-of': ['料理の分類', '料理'],
       },
     };
     return labels[data.lang]?.[edge.relationship]?.[forward ? 0 : 1] ?? edge.label;
@@ -411,6 +416,18 @@ function setupBeyondCode() {
     description.hidden = !node.description;
     media.replaceChildren(); media.hidden = !node.artwork;
     if (node.artwork) { const image = document.createElement('img'); image.src = node.artwork; image.alt = node.title; media.append(image); }
+    mediaCredit.replaceChildren(); mediaCredit.hidden = !node.artworkCredit;
+    if (node.artworkCredit) {
+      const credit = node.artworkCredit;
+      const imageSource = document.createElement('a');
+      imageSource.href = credit.source; imageSource.textContent = credit.title;
+      imageSource.target = '_blank'; imageSource.rel = 'noopener noreferrer';
+      const license = document.createElement('a');
+      license.href = credit.license; license.textContent = credit.licenseName;
+      license.target = '_blank'; license.rel = 'noopener noreferrer';
+      mediaCredit.append(imageSource, document.createTextNode(` — ${credit.author} · `),
+        license, document.createTextNode(` · ${data.copy.creditChanges}`));
+    }
     source.hidden = !node.externalUrl;
     if (node.externalUrl) source.href = node.externalUrl;
     else source.removeAttribute('href');

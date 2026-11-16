@@ -11,6 +11,7 @@ const media = JSON.parse(await readFile(new URL('../src/data/beyond-code-media.j
 const manifest = JSON.parse(await readFile(manifestFile, 'utf8'));
 
 test('each used original artwork has exactly one generated thumbnail, with unchanged collection sources', async () => {
+  assert.equal(thumbnailBudget, 1_700_000, 'The reviewed 117-node capacity requires an explicit new budget decision to change');
   assert.deepEqual(Object.keys(manifest.images).sort(), usedArtwork(media));
   for (const [key, value] of Object.entries(thumbnailSettings)) assert.equal(manifest[key], value);
   assert.equal(manifest.sharpVersion, sharp.versions.sharp);

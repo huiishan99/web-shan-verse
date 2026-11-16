@@ -342,7 +342,7 @@ test('Beyond and Atlas links mount one scene per route through an Astro round tr
   expect(await pointerdownRegistrations()).toBe(1);
   await expect(page.locator('[data-beyond-canvas]')).toHaveCount(1);
   await expect(page.locator('[data-earth-canvas]')).toHaveCount(0);
-  await expect(root.locator('[data-node]')).toHaveCount(106);
+  await expect(root.locator('[data-node]')).toHaveCount(117);
   await expect(root.locator('[data-beyond-back]')).toBeHidden();
   await expect(root.locator('[data-beyond-detail]')).toBeHidden();
   await expect(root.locator('[data-beyond-category="all"]')).toHaveAttribute('aria-pressed', 'true');

@@ -73,7 +73,8 @@ const moduleGap = 40;
 const regionMargin = 140;
 const captionHeight = 90;
 const categoryGap = 220;
-const mobileCategoryGap = 680;
+// Compact category gutters retain room for idle contact expansion at minimum zoom.
+const mobileCategoryGap = 720;
 const categoryOrder = Object.keys(clusterCenters);
 const compareIds = (first, second) => first < second ? -1 : first > second ? 1 : 0;
 
@@ -233,7 +234,9 @@ export function createGraphLayout(nodes, edges = [], options = {}) {
   }
   const localPoints = [];
   for (const [category, modules] of categories) {
-    const packing = compactPacking(modules, options.mobile ? .8 : 1.45, moduleGap);
+    // The compact strip pans horizontally. Slightly wider local packing leaves
+    // vertical room for screen-space contact resolution at the overview zoom.
+    const packing = compactPacking(modules, options.mobile ? .85 : 1.45, moduleGap);
     for (const item of packing.placed) {
       const jitterX = Math.sin(phaseFor(`${item.id}:module-x`)) * 15;
       const jitterY = Math.sin(phaseFor(`${item.id}:module-y`)) * 15;

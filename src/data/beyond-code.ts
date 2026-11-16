@@ -33,7 +33,7 @@ export interface BeyondCodeNode {
 export type BeyondCodeRelationship =
   | 'performed-by' | 'written-by' | 'adapted-from'
   | 'produced-by' | 'shared-universe' | 'associated-with'
-  | 'part-of' | 'style-of' | 'ingredient-of';
+  | 'part-of' | 'style-of' | 'ingredient-of' | 'dish-of';
 
 export interface BeyondCodeEdge {
   id: string;
@@ -145,6 +145,7 @@ const labels: Record<BeyondCodeRelationship, LocalizedString> = {
   'part-of': { en: 'Part of series', zh: '属于系列', ja: 'シリーズ作品' },
   'style-of': { en: 'Style of', zh: '风格分支', ja: '系統' },
   'ingredient-of': { en: 'Ingredient for', zh: '食材', ja: '食材' },
+  'dish-of': { en: 'Cuisine', zh: '所属料理', ja: '料理の分類' },
 };
 
 function edge(
@@ -201,6 +202,11 @@ const approvedSecondBatch = {
 const approvedGameAdditions = {
   kind: 'user-confirmed' as const,
   source: 'docs/beyond-code-preview.md#controls-and-game-additions-2026-11-14',
+};
+
+const approvedFoodFilmAdditions = {
+  kind: 'user-confirmed' as const,
+  source: 'docs/beyond-code-preview.md#food-and-film-additions-2026-11-16',
 };
 
 // These are the exact entries the owner selected, not an inferred franchise filmography.
@@ -272,6 +278,13 @@ export const edges: BeyondCodeEdge[] = [
   edge('foods-otoro', 'foods-sushi', 'ingredient-of', approvedExpansion),
   edge('foods-wagyu', 'foods-yakiniku', 'ingredient-of', approvedExpansion),
   edge('foods-beef-tongue', 'foods-yakiniku', 'ingredient-of', approvedExpansion),
+  ...['foods-kitakata-ramen', 'foods-hakata-ramen'].map((food) =>
+    edge(food, 'foods-ramen', 'style-of', approvedFoodFilmAdditions)),
+  ...['foods-ramen', 'foods-sushi', 'foods-natto'].map((food) =>
+    edge(food, 'foods-japanese-cuisine', 'dish-of', approvedFoodFilmAdditions)),
+  ...['foods-kaoyu', 'foods-jianbing-guozi', 'foods-hot-pot', 'foods-tomato-and-egg',
+    'foods-twice-cooked-pork', 'foods-kou-shui-ji'].map((food) =>
+    edge(food, 'foods-chinese-cuisine', 'dish-of', approvedFoodFilmAdditions)),
   edge('games-cyberpunk-2077', 'drama-cyberpunk-edgerunners', 'shared-universe', {
     kind: 'official-source',
     source: 'https://www.cyberpunk.net/en/news/35512/announcing-an-original-anime-series-cyberpunk-edgerunners',

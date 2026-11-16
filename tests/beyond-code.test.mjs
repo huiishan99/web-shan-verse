@@ -65,6 +65,27 @@ const approvedGameIds = [
 ];
 const approvedAssassinCreedWorks = approvedGameIds.filter((id) =>
   id !== 'games-assassins-creed-series' && id !== 'games-yakuza-0');
+const approvedFoodFilmIds = [
+  'movies-source-code', 'foods-japanese-cuisine', 'foods-kitakata-ramen',
+  'foods-hakata-ramen', 'foods-natto', 'foods-chinese-cuisine', 'foods-kaoyu',
+  'foods-jianbing-guozi', 'foods-tomato-and-egg', 'foods-twice-cooked-pork',
+  'foods-kou-shui-ji',
+];
+const approvedCuisineMembers = {
+  'foods-japanese-cuisine': ['foods-ramen', 'foods-sushi', 'foods-natto'],
+  'foods-chinese-cuisine': [
+    'foods-kaoyu', 'foods-jianbing-guozi', 'foods-hot-pot', 'foods-tomato-and-egg',
+    'foods-twice-cooked-pork', 'foods-kou-shui-ji',
+  ],
+};
+const approvedRamenStyles = ['foods-kitakata-ramen', 'foods-hakata-ramen'];
+const foodFilmProvenance = 'docs/beyond-code-preview.md#food-and-film-additions-2026-11-16';
+const approvedFoodFilmEdges = [
+  ...approvedRamenStyles.map((source) => ({ source, relationship: 'style-of', target: 'foods-ramen' })),
+  ...Object.entries(approvedCuisineMembers).flatMap(([target, sources]) =>
+    sources.map((source) => ({ source, relationship: 'dish-of', target }))),
+];
+const edgeMeaning = (edge) => `${edge.source}:${edge.relationship}:${edge.target}`;
 
 test('the constellation preserves each existing interest once without adding inferred favorites', () => {
   const expected = new Map(interests.flatMap((category) => category.items.map((item) => [
@@ -157,7 +178,7 @@ test('only existing favorites and the exact user-approved expansion enter the co
     'movies-the-two-towers', 'movies-the-return-of-the-king',
   ];
   assert.deepEqual(nodes.filter((node) => !node.isContext).map((node) => node.id).sort(),
-    [...existing, ...approved, ...approvedSecondBatchIds, ...approvedGameIds].sort());
+    [...existing, ...approved, ...approvedSecondBatchIds, ...approvedGameIds, ...approvedFoodFilmIds].sort());
   assert.equal(approvedSecondBatchIds.length, 42);
   assert.deepEqual(nodes.filter((node) => node.isContext).map((node) => node.id).sort(),
     ['group-queen', 'person-kenshi-yonezu', 'studio-ghibli', 'studio-pixar']);
@@ -174,6 +195,44 @@ test('only existing favorites and the exact user-approved expansion enter the co
   }
   assert.equal(nodeById.get('movies-spider-man-2002').wikiPage, 'Spider-Man (2002 film)');
   assert.equal(nodeById.get('movies-ben-hur-1959').wikiPage, 'Ben-Hur (1959 film)');
+});
+
+test('the food and film additions have only the approved cuisine memberships and ramen styles', () => {
+  assert.equal(approvedFoodFilmIds.length, 11);
+  assert.equal(new Set(approvedFoodFilmIds).size, 11);
+  assert.equal(nodes.length, 117);
+  assert.equal(nodes.filter((node) => !node.isContext).length, 113);
+  assert.equal(nodes.filter((node) => node.isContext).length, 4);
+  for (const id of approvedFoodFilmIds) {
+    const node = nodeById.get(id);
+    assert.ok(node, `Missing requested entry: ${id}`);
+    assert.equal(node.isContext, false);
+    assert.equal(node.sizeBoost, 0);
+    assert.equal(node.category, id === 'movies-source-code' ? 'movies' : 'foods');
+    assert.equal(node.type, id === 'movies-source-code' ? 'work' : 'topic');
+  }
+  const film = nodeById.get('movies-source-code');
+  assert.equal(film.wikiPage, 'Source Code');
+  assert.deepEqual(locales.map((locale) => resolveLocalized(film.title, locale)),
+    ['Source Code', '源代码', 'ミッション：8ミニッツ']);
+  assert.equal(edges.some((edge) => edge.source === film.id || edge.target === film.id), false,
+    'A requested film does not authorize inferred creator or film links');
+  for (const food of nodes.filter((node) => node.category === 'foods')) {
+    assert.equal(food.type, 'topic', `Cuisine entries retain ordinary food-topic semantics: ${food.id}`);
+  }
+  assert.equal(nodes.filter((node) => node.id === 'foods-hot-pot').length, 1,
+    'Chinese cuisine reuses the existing hot-pot entry');
+
+  const additions = edges.filter((edge) => edge.provenance.source === foodFilmProvenance);
+  assert.equal(additions.length, 11);
+  assert.deepEqual(additions.map(edgeMeaning).sort(), approvedFoodFilmEdges.map(edgeMeaning).sort());
+  for (const edge of additions) assert.equal(edge.provenance.kind, 'user-confirmed');
+  const additionIds = new Set(approvedFoodFilmIds);
+  assert.deepEqual(edges.filter((edge) => additionIds.has(edge.source) || additionIds.has(edge.target))
+    .map(edgeMeaning).sort(), approvedFoodFilmEdges.map(edgeMeaning).sort(),
+  'No additional food members, reverse memberships or film relations are inferred');
+  assert.equal(edges.filter((edge) => edge.provenance.source !== foodFilmProvenance).length, 49,
+    'The expansion retains the prior relation set alongside its eleven new edges');
 });
 
 test('the approved game additions preserve the three AC originals and standalone Yakuza 0', () => {
@@ -246,7 +305,7 @@ test('the second batch preserves clarified editions, films and exact series scop
 });
 
 test('display titles omit release-year suffixes without losing sequel names or version identities', () => {
-  assert.equal(nodes.length, 106);
+  assert.equal(nodes.length, 117);
   for (const node of nodes) {
     for (const locale of locales) {
       assert.doesNotMatch(resolveLocalized(node.title, locale), /\s*[（(]\d{4}[）)]$/u,
@@ -281,7 +340,7 @@ test('no owner preference boost is inferred from series membership or popularity
 
 test('graph edges have valid endpoints, semantic relations and traceable provenance', () => {
   const relations = new Set(['performed-by', 'written-by', 'adapted-from', 'produced-by',
-    'shared-universe', 'associated-with', 'part-of', 'style-of', 'ingredient-of']);
+    'shared-universe', 'associated-with', 'part-of', 'style-of', 'ingredient-of', 'dish-of']);
   const edgeIds = new Set();
   const edgeFacts = new Set();
 
@@ -322,6 +381,10 @@ test('graph edges have valid endpoints, semantic relations and traceable provena
       assert.equal(edge.relationship, 'part-of');
       assert.equal(edge.target, 'games-assassins-creed-series');
       assert.ok(approvedAssassinCreedWorks.includes(edge.source));
+    } else if (edge.provenance.source === foodFilmProvenance) {
+      assert.ok(approvedFoodFilmEdges.some((expected) => edgeMeaning(expected) === edgeMeaning(edge)));
+      assert.equal(nodeById.get(edge.source).category, 'foods');
+      assert.equal(nodeById.get(edge.target).category, 'foods');
     } else {
       assert.equal(edge.provenance.source, 'docs/beyond-code-preview.md#category-legibility-2026-11-14');
       assert.equal(edge.relationship, 'associated-with');
@@ -375,6 +438,7 @@ test('relationship direction preserves creators, studios, series and explicit fo
         break;
       case 'style-of':
       case 'ingredient-of':
+      case 'dish-of':
         assert.equal(source.type, 'topic');
         assert.equal(target.type, 'topic');
         assert.equal(source.category, 'foods');
@@ -399,7 +463,10 @@ test('approved branches have exact endpoints without introducing unrelated works
       children.map((child) => `${child}->${parent}`)),
     ...approvedAssassinCreedWorks.map((work) => `${work}->games-assassins-creed-series`),
   ].sort());
-  assert.deepEqual(facts('style-of'), ['foods-jiro-ramen->foods-ramen']);
+  assert.deepEqual(facts('style-of'), [
+    'foods-jiro-ramen->foods-ramen',
+    ...approvedRamenStyles.map((food) => `${food}->foods-ramen`),
+  ].sort());
   assert.deepEqual(facts('ingredient-of'), [
     'foods-beef-tongue->foods-yakiniku', 'foods-otoro->foods-sushi',
     'foods-wagyu->foods-yakiniku',
@@ -409,7 +476,20 @@ test('approved branches have exact endpoints without introducing unrelated works
     'topics-analytical-psychology->topics-carl-jung',
     'topics-socionics->topics-carl-jung',
   ]);
-  assert.equal(edges.length, 49, 'Only the requested associations and series links are added');
+  assert.deepEqual(facts('dish-of'), Object.entries(approvedCuisineMembers).flatMap(([cuisine, foods]) =>
+    foods.map((food) => `${food}->${cuisine}`)).sort());
+  assert.deepEqual(facts('performed-by'), [
+    'music-another-one-bites-the-dust->group-queen',
+    'music-bohemian-rhapsody->group-queen', 'music-kirari->music-fujii-kaze',
+    'music-lemon->person-kenshi-yonezu', 'music-matsuri->music-fujii-kaze',
+    'music-we-are-the-champions->group-queen',
+  ]);
+  assert.deepEqual(facts('produced-by'), [
+    'movies-coco->studio-pixar', 'movies-howls-moving-castle->studio-ghibli',
+    'movies-ratatouille->studio-pixar',
+  ]);
+  assert.deepEqual(facts('shared-universe'), ['games-cyberpunk-2077->drama-cyberpunk-edgerunners']);
+  assert.equal(edges.length, 60, 'Only the requested associations, food and series links are added');
   assert.equal(edges.some((edge) => edge.source.includes('diana-wynne-jones')
     || edge.target.includes('diana-wynne-jones') || edge.source === 'book-howls-moving-castle'
     || edge.target === 'book-howls-moving-castle'), false);

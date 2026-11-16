@@ -106,7 +106,7 @@ test('the constellation downloads thumbnails until a selected detail needs its o
   const root = page.locator('[data-beyond]');
   const graphImages = root.locator('[data-beyond-graph] [data-node] img');
   await expect(root).toHaveClass(/is-ready/);
-  await expect(graphImages).toHaveCount(106);
+  await expect(graphImages).toHaveCount(117);
   expect(await graphImages.evaluateAll((images) => images.every((image) => (
     image.getAttribute('src')?.startsWith('/images/beyond-code/thumbnails/')
   )))).toBe(true);
