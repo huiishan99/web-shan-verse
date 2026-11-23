@@ -339,9 +339,12 @@ test('Chinese blog previews use Zhuque while card titles keep their original fon
   await page.goto('/zh/blog');
 
   const excerptFont = await page.locator('.post-excerpt').first().evaluate((element) => getComputedStyle(element).fontFamily);
-  const titleFont = await page.locator('.post-title').first().evaluate((element) => getComputedStyle(element).fontFamily);
-
   expect(excerptFont).toContain('Zhuque Fangsong Blog');
+
+  await page.locator('[data-kind-filter="article"]').click();
+  await expect(page).toHaveURL(/\/zh\/blog\/kind\/articles\/?$/);
+
+  const titleFont = await page.locator('.post-title').first().evaluate((element) => getComputedStyle(element).fontFamily);
   expect(titleFont).not.toContain('Zhuque Fangsong');
 });
 
