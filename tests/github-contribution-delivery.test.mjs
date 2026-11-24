@@ -34,9 +34,14 @@ function requestContext() {
   });
   let nextCalls = 0;
   return {
-    request: new Request('https://preview.example/data/github-contributions.json?url=https://other.example'),
-    async next() {
+    request: new Request('https://preview.example/data/github-contributions.json?url=https://other.example', {
+      headers: { 'If-None-Match': '"visitor-cache"', Range: 'bytes=0-8' },
+    }),
+    async next(request) {
       nextCalls++;
+      assert.equal(request.url, 'https://preview.example/data/github-contributions.json');
+      assert.equal(request.headers.has('if-none-match'), false);
+      assert.equal(request.headers.has('range'), false);
       return staticResponse;
     },
     expectStaticServed: async (response) => {

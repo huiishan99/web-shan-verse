@@ -1,9 +1,8 @@
-import bundledSnapshot from '../../public/data/github-contributions.json' with { type: 'json' };
 import { validateGithubSnapshot } from '../../src/utils/github-contributions.js';
 
-const publishedSnapshotUrl = 'https://huiishan99.github.io/web-shan-verse/data/github-contributions.json';
+const snapshotPath = '/data/github-contributions.json';
+const publishedSnapshotUrl = `https://huiishan99.github.io/web-shan-verse${snapshotPath}`;
 const maxSnapshotBytes = 64 * 1024;
-const staticSnapshot = validateGithubSnapshot(bundledSnapshot);
 
 async function readPublishedSnapshot() {
   const response = await fetch(publishedSnapshotUrl, {
@@ -22,15 +21,26 @@ async function readPublishedSnapshot() {
   return validateGithubSnapshot(JSON.parse(body));
 }
 
-export async function onRequestGet({ next }) {
-  const published = await readPublishedSnapshot().catch((error) => {
-    console.warn('GitHub contribution snapshot mirror unavailable:', error.message);
-    return undefined;
-  });
-  if (published && (published.rangeEnd > staticSnapshot.rangeEnd
-    || (published.rangeEnd === staticSnapshot.rangeEnd
-      && Date.parse(published.fetchedAt) > Date.parse(staticSnapshot.fetchedAt)))) {
-    return Response.json(published, { headers: { 'Cache-Control': 'public, max-age=300' } });
+export async function onRequestGet({ next, request }) {
+  // Request the full local asset without the visitor's conditional or range headers.
+  const assetRequest = new Request(new URL(snapshotPath, request.url));
+  const [fallback, published] = await Promise.all([
+    next(assetRequest),
+    readPublishedSnapshot().catch((error) => {
+      console.warn('GitHub contribution snapshot mirror unavailable:', error.message);
+      return undefined;
+    }),
+  ]);
+  if (!published) return fallback;
+
+  if (fallback.ok) {
+    try {
+      const local = validateGithubSnapshot(await fallback.clone().json());
+      if (published.rangeEnd < local.rangeEnd || (published.rangeEnd === local.rangeEnd
+        && Date.parse(published.fetchedAt) <= Date.parse(local.fetchedAt))) return fallback;
+    } catch (error) {
+      console.warn('Bundled GitHub contribution snapshot invalid:', error.message);
+    }
   }
-  return next();
+  return Response.json(published, { headers: { 'Cache-Control': 'public, max-age=300' } });
 }
