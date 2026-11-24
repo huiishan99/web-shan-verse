@@ -28,6 +28,54 @@ test('Chinese About copy renders Han glyphs without a second CJK typeface', asyn
   }
 });
 
+test('published Chinese blog prose uses Zhuque for every Han character', async ({ page }) => {
+  await page.goto('/zh/blog/every-lifetime-with-you/');
+  const postContent = page.locator('.post-content');
+  const probes = await postContent.evaluate(async (content) => {
+    const response = await fetch('/cli-index.json');
+    if (!response.ok) throw new Error(`Could not read blog index: ${response.status}`);
+    const index = await response.json() as { locales: { zh: { type: string; url: string }[] } };
+    const posts = index.locales.zh.filter(({ type }) => type === 'post');
+    const probes = await Promise.all(posts.map(async ({ url }) => {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`Could not read ${url}: ${response.status}`);
+      const html = new DOMParser().parseFromString(await response.text(), 'text/html');
+      const body = html.querySelector('.post-content');
+      if (!body) throw new Error(`No article body at ${url}`);
+      body.querySelectorAll('pre, code, .sync-note, script, style').forEach((node) => node.remove());
+      return { url, han: [...new Set(body.textContent?.match(/\p{Unified_Ideograph}/gu) ?? [])].join('') };
+    }));
+    // Probe only Han text inside the real article's font stack. Latin, code
+    // and emoji may legitimately use other faces.
+    return probes.filter(({ han }) => han).map(({ url, han }, index) => {
+      const probe = document.createElement('p');
+      probe.id = `blog-han-probe-${index}`;
+      probe.textContent = han;
+      content.append(probe);
+      return { url, selector: `#${probe.id}` };
+    });
+  });
+  expect(probes.some(({ url }) => url === '/zh/blog/every-lifetime-with-you/')).toBe(true);
+  await page.evaluate(() => document.fonts.ready.then(() => undefined));
+  const session = await page.context().newCDPSession(page);
+  await session.send('DOM.enable');
+  await session.send('CSS.enable');
+  try {
+    const { root } = await session.send('DOM.getDocument');
+    for (const { url, selector } of probes) {
+      const { nodeId } = await session.send('DOM.querySelector', { nodeId: root.nodeId, selector });
+      const { fonts } = await session.send('CSS.getPlatformFontsForNode', { nodeId });
+      expect(fonts.length, url).toBeGreaterThan(0);
+      for (const font of fonts) {
+        expect(font.isCustomFont, `${url}: ${font.postScriptName}`).toBe(true);
+        expect(font.postScriptName, `${url}: ${font.glyphCount} glyphs`).toMatch(/^ZhuqueFangsong/);
+      }
+    }
+  } finally {
+    await session.detach();
+  }
+});
+
 const latinProbes: FontProbe[] = [
   { family: 'Cinzel', weight: 400, text: 'BEYOND CODE' },
   { family: 'Cinzel', weight: 600, text: 'Signal Map' },

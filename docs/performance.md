@@ -1,5 +1,25 @@
 # Loading and navigation performance
 
+## Chinese blog prose glyph coverage (active, 2026-11-24)
+
+The original blog subset lacked 56 unique Han characters in the November 23
+note. Chromium rendered 70 occurrences with Noto Serif SC. Chinese article
+bodies now load a 21,324-byte Zhuque supplement on demand for those characters.
+The base blog face retains priority, and Latin text and emoji keep their existing
+fallbacks. This extends the old font-stack parity rule for Chinese article bodies.
+
+Regenerate the supplement from the pinned Zhuque v0.212 TTF documented in
+`src/data/about-font-supplement.json`, with fontTools 4.62.1 and Brotli 1.2.0:
+
+```sh
+python -m fontTools.subset ZhuqueFangsong-Regular.ttf --text=丈乡亲付休伙偷兼农勇叠召吵唤困圣坚备夫妻尊彼忠恍惚房挣掌握政普材济班疼租税糕荡蔬蛋订诞误课距辈迟退途钟钱阳零食魂 --flavor=woff2 --layout-features='*' --no-recalc-timestamp --output-file=blog-supplement.woff2
+```
+
+The output SHA-256 is `8337ca8ea1331a8d3a3a225e6f4b97932d89f9346fda7fa56ecef18d06d08e83`.
+For new missing characters, extend the same supplement and update its hashed
+path and `unicode-range` in `BlogPostPage.astro`. The browser test checks actual
+Han glyph providers for every published Chinese post's prose.
+
 ## Chinese About copy glyph coverage (active, 2026-11-14)
 
 New ALPS work-experience text exposed missing Han glyphs in the existing
