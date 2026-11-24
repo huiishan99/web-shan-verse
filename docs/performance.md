@@ -202,8 +202,9 @@ Owner outcome: opening and switching pages should feel responsive, while keeping
 the current typography, artwork, layout and graph interaction. This scope refines
 the owner's initial general lag report; it does not retune graph physics.
 
-The delivery pipeline is static Astro on GitHub Pages behind Cloudflare.
-No backend, hosting migration, cache-rule change or runtime dependency is needed.
+The Astro site builds to static files. Production uses Cloudflare Pages, with a
+separate deployment on GitHub Pages. The only Pages Function serves the GitHub
+contribution snapshot described in the README.
 The original media manifest remains the source of artwork and attribution.
 
 ## Findings and design

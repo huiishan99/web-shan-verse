@@ -75,8 +75,16 @@ for maintenance. Days outside the snapshot are unknown, rather than zero contrib
 the daily counts and date coverage before atomically replacing the snapshot.
 If the GitHub calendar includes extra days to start on Sunday, the refresh
 validates the full input and keeps the most recent 366 days.
-The Pages workflow refreshes it before each release and daily at 09:15 Japan
-time. If GitHub is unavailable, an existing valid snapshot is retained with its
-original dates; no valid snapshot means the refresh fails. No token is needed.
+The GitHub Pages workflow refreshes its published snapshot before each release
+and on a daily schedule at 09:15 Japan time. If GitHub is unavailable, an existing
+valid snapshot is retained with its original dates; no valid snapshot means the
+refresh fails. No token is needed.
+
+The production Cloudflare Pages site serves the same URL via one Pages Function.
+It checks the GitHub Pages snapshot and serves it only when it is valid and newer
+than the bundled fallback. A timeout, unavailable mirror, or invalid snapshot
+falls back to the bundled file. Other URLs stay static. The browser always reads
+the snapshot from the site it is visiting, and the GitHub grid advances by whole
+weeks as new data arrives beyond the homepage's build date.
 Normal local builds and the verification gate use the checked-in snapshot and
 remain independent of external network availability.

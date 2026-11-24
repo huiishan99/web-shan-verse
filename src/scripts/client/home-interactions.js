@@ -37,9 +37,17 @@ import { validateGithubSnapshot } from '../../utils/github-contributions.js';
     return date.toISOString().slice(0, 10);
   }
 
-  function buildWeeks(startKey, endKey, contributions) {
-    const start = parseUTCDate(startKey);
-    const end = parseUTCDate(endKey);
+  function buildWeeks(startKey, endKey, contributions, latestDate = endKey) {
+    let start = parseUTCDate(startKey);
+    let end = parseUTCDate(endKey);
+    if (latestDate > endKey) {
+      // The contribution snapshot can refresh after the homepage was built.
+      // Slide the displayed window by whole weeks without widening the grid.
+      const latest = parseUTCDate(latestDate);
+      const weekEnd = addDays(latest, 6 - latest.getUTCDay());
+      start = new Date(start.getTime() + weekEnd.getTime() - end.getTime());
+      end = weekEnd;
+    }
     const contributionByDate = new Map(
       contributions.map((item) => [item.date, item])
     );
@@ -194,7 +202,8 @@ import { validateGithubSnapshot } from '../../utils/github-contributions.js';
     try {
       const snapshot = await request;
       const today = toDateKey(new Date());
-      const calendars = roots.map((root) => buildWeeks(root.dataset.start, root.dataset.end, snapshot.contributions));
+      const latestDate = snapshot.rangeEnd <= today ? snapshot.rangeEnd : today;
+      const calendars = roots.map((root) => buildWeeks(root.dataset.start, root.dataset.end, snapshot.contributions, latestDate));
       for (const weeks of calendars) {
         const pastDays = weeks.flat().filter((day) => day.key <= today);
         if (!pastDays.some((day) => day.contribution)) {

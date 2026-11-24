@@ -19,15 +19,20 @@ function shiftDate(date: string, days: number): string {
 function displayDate(date: string): string {
   return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${date}T00:00:00.000Z`));
 }
+function fixtureEndingOn(rangeEnd: string, count: number, daysBeforeEnd: number): Fixture {
+  const markedDate = shiftDate(rangeEnd, -daysBeforeEnd);
+  const contributions = Array.from({ length: 365 }, (_, index) => {
+    const date = shiftDate(rangeEnd, index - 364);
+    return { date, count: date === markedDate ? count : 0, level: date === markedDate && count > 0 ? 4 : 0 };
+  });
+  return { snapshot: { schemaVersion: 1, username: 'huiishan99', source: SOURCE_URL, fetchedAt: `${rangeEnd}T02:00:00.000Z`, rangeStart: contributions[0].date, rangeEnd, contributions }, markedDate };
+}
 async function fixtureFor(page: Page, count = 7, ageDays = 0): Promise<Fixture> {
   const gridEnd = await page.locator('.github-calendar--full').getAttribute('data-end');
   if (!gridEnd) throw new Error('The full calendar has no date range');
   const today = await page.evaluate(() => new Date().toISOString().slice(0, 10));
   const rangeEnd = shiftDate(gridEnd < today ? gridEnd : today, -ageDays);
-  const contributions = Array.from({ length: 365 }, (_, index) => ({
-    date: shiftDate(rangeEnd, index - 364), count: index === 363 ? count : 0, level: index === 363 && count > 0 ? 4 : 0,
-  }));
-  return { snapshot: { schemaVersion: 1, username: 'huiishan99', source: SOURCE_URL, fetchedAt: `${rangeEnd}T02:00:00.000Z`, rangeStart: contributions[0].date, rangeEnd, contributions }, markedDate: contributions[363].date };
+  return fixtureEndingOn(rangeEnd, count, 1);
 }
 async function fulfillSnapshot(route: Route, snapshot: Snapshot) {
   expect(new URL(route.request().url()).origin).toBe('http://127.0.0.1:4321');
@@ -141,6 +146,45 @@ test('a dated older snapshot retains known contributions and marks later dates u
     const unknown = page.locator(`.github-calendar--${variant} .github-calendar-day--unknown`);
     await expect(unknown).toHaveCount(unknownCount);
     await expect(unknown.first()).not.toHaveAttribute('title', /: 0 GitHub contributions$/);
+  }
+});
+
+test('a newer snapshot rolls both calendars past the last build week without changing their sizes', async ({ page }) => {
+  let fixture: Fixture | undefined;
+  let nextSaturday = '';
+  await page.route('http://127.0.0.1:4321/', async (route) => {
+    const response = await route.fetch();
+    const html = await response.text();
+    const calendarRange = /data-github-calendar\b[^>]*\bdata-start="([\d-]+)"[^>]*\bdata-end="([\d-]+)"/g;
+    const ranges = [...html.matchAll(calendarRange)];
+    expect(ranges).toHaveLength(2);
+    nextSaturday = ranges[0][2];
+    expect(ranges[1][2]).toBe(nextSaturday);
+    const lastBuildSaturday = shiftDate(nextSaturday, -7);
+    fixture = fixtureEndingOn(shiftDate(lastBuildSaturday, 1), 7, 0);
+    const oldHtml = html.replace(calendarRange, (tag, start: string, end: string) =>
+      tag.replace(`data-start="${start}"`, `data-start="${shiftDate(start, -7)}"`)
+        .replace(`data-end="${end}"`, `data-end="${lastBuildSaturday}"`));
+    await route.fulfill({ response, body: oldHtml });
+  });
+  await page.route(SNAPSHOT_PATTERN, async (route) => {
+    if (!fixture) throw new Error('The old homepage fixture was not served');
+    const today = await page.evaluate(() => new Date().toISOString().slice(0, 10));
+    expect(fixture.snapshot.rangeEnd <= today).toBe(true);
+    await fulfillSnapshot(route, fixture.snapshot);
+  });
+
+  await visitHome(page);
+  await expect.poll(() => fixture?.markedDate).toBeTruthy();
+  await expectEnhanced(page, fixture!);
+
+  for (const [variant, weeks] of [['full', 52], ['compact', 26]] as const) {
+    const calendar = page.locator(`.github-calendar--${variant}`);
+    await expect(calendar.locator('.github-calendar-week')).toHaveCount(weeks);
+    await expect(calendar.locator('.github-calendar-day')).toHaveCount(weeks * 7);
+    await expect(calendar.locator('.github-calendar-day').last())
+      .toHaveAttribute('title', `${displayDate(nextSaturday)}: GitHub activity unavailable`);
+    await expect(calendar.locator('.github-calendar-day--unknown')).toHaveCount(6);
   }
 });
 
