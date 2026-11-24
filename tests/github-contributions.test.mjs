@@ -183,6 +183,32 @@ test('HTML parsing accepts a complete 366-day range containing February 29', () 
   assert.ok(parsed.contributions.some(({ date }) => date === '2024-02-29'));
 });
 
+test('HTML parsing accepts six leading week cells without extending snapshot coverage', () => {
+  const source = snapshotFixture({ days: 372, end: '2026-11-29', fetchedAt: '2026-11-29T12:00:00.000Z' });
+  const parsed = parseGithubContributions(htmlFixture(source), { fetchedAt: source.fetchedAt });
+  assert.equal(parsed.rangeStart, '2025-11-29');
+  assert.equal(parsed.rangeEnd, '2026-11-29');
+  assert.deepEqual(parsed.contributions, source.contributions.slice(6));
+});
+
+test('HTML parsing rejects invalid week padding before discarding any dates', () => {
+  const fetchedAt = '2026-11-30T12:00:00.000Z';
+  const padded = snapshotFixture({ days: 372, end: '2026-11-29', fetchedAt });
+  const duplicate = structuredClone(padded);
+  duplicate.contributions[1].date = '2025-11-23';
+  const gap = structuredClone(padded);
+  gap.contributions[0].date = '2025-11-16';
+  for (const [name, fixture, observedAt] of [
+    ['duplicate in the discarded prefix', duplicate, fetchedAt],
+    ['gap at a Sunday boundary', gap, fetchedAt],
+    ['non-Sunday start', snapshotFixture({ days: 367, end: '2026-11-25' }), fetchedAt],
+    ['too many source cells', snapshotFixture({ days: 373, end: '2026-11-30' }), fetchedAt],
+    ['future tail', padded, '2026-11-28T12:00:00.000Z'],
+  ]) {
+    assert.throws(() => parseGithubContributions(htmlFixture(fixture), { fetchedAt: observedAt }), name);
+  }
+});
+
 test('HTML parsing rejects missing/unrecognized tooltips rather than inventing zero contributions', () => {
   const html = htmlFixture();
   for (const invalidHtml of [
@@ -231,6 +257,27 @@ test('refresh writes only a validated snapshot from the canonical public endpoin
   assert.equal(result.updated, true);
   assert.deepEqual(result.snapshot, expected);
   assert.deepEqual(JSON.parse(await readFile(outputPath, 'utf8')), expected);
+});
+
+test('refresh replaces an older cache when GitHub returns 367 days including leading week padding', async (t) => {
+  const { outputPath } = await temporaryOutput(t);
+  await cacheSnapshot(outputPath);
+  // Same date range as the live GitHub calendar that stalled the refresh.
+  const source = snapshotFixture({ days: 367, end: '2026-11-24', fetchedAt: '2026-11-24T12:00:00.000Z' });
+  Object.assign(source.contributions.at(-2), { count: 50, level: 3 });
+  Object.assign(source.contributions.at(-1), { count: 9, level: 1 });
+  const result = await refreshGithubSnapshot({
+    outputPath,
+    now: () => new Date(source.fetchedAt),
+    fetchImpl: async () => htmlResponse(htmlFixture(source), SOURCE),
+    warn: () => assert.fail('A valid week-padded response must not warn'),
+  });
+  assert.equal(result.updated, true);
+  assert.equal(result.snapshot.rangeStart, '2025-11-24');
+  assert.equal(result.snapshot.rangeEnd, '2026-11-24');
+  assert.deepEqual(result.snapshot.contributions, source.contributions.slice(1));
+  assert.deepEqual(result.snapshot.contributions.slice(-2).map(({ count }) => count), [50, 9]);
+  assert.deepEqual(JSON.parse(await readFile(outputPath, 'utf8')), result.snapshot);
 });
 
 test('a response completed across UTC midnight records the completed observation date', async (t) => {

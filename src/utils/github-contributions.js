@@ -27,6 +27,27 @@ function dateValue(value) {
   return milliseconds;
 }
 
+/** @param {GithubContribution[]} days */
+export function validateGithubContributionDays(days) {
+  let previousDate;
+  for (const day of days) {
+    if (!day || typeof day !== 'object' || Array.isArray(day)) {
+      throw new Error('Invalid GitHub contribution day');
+    }
+    const currentDate = dateValue(day.date);
+    if (previousDate !== undefined && currentDate - previousDate !== DAY_MS) {
+      throw new Error('GitHub snapshot dates must be sorted, unique and consecutive');
+    }
+    if (!Number.isSafeInteger(day.count) || day.count < 0) {
+      throw new Error('Invalid GitHub contribution count');
+    }
+    if (!Number.isInteger(day.level) || day.level < 0 || day.level > 4) {
+      throw new Error('Invalid GitHub contribution level');
+    }
+    previousDate = currentDate;
+  }
+}
+
 /**
  * Validate source identity and a complete, chronological year of observed days.
  * Missing days are invalid data, never inferred zero-contribution days.
@@ -63,23 +84,7 @@ export function validateGithubSnapshot(data, expectedUsername = 'huiishan99') {
   if (!Array.isArray(days) || (days.length !== 365 && days.length !== 366)) {
     throw new Error('GitHub snapshot must contain 365 or 366 consecutive days');
   }
-  let previousDate;
-  for (const day of days) {
-    if (!day || typeof day !== 'object' || Array.isArray(day)) {
-      throw new Error('Invalid GitHub contribution day');
-    }
-    const currentDate = dateValue(day.date);
-    if (previousDate !== undefined && currentDate - previousDate !== DAY_MS) {
-      throw new Error('GitHub snapshot dates must be sorted, unique and consecutive');
-    }
-    if (!Number.isSafeInteger(day.count) || day.count < 0) {
-      throw new Error('Invalid GitHub contribution count');
-    }
-    if (!Number.isInteger(day.level) || day.level < 0 || day.level > 4) {
-      throw new Error('Invalid GitHub contribution level');
-    }
-    previousDate = currentDate;
-  }
+  validateGithubContributionDays(days);
   dateValue(snapshot.rangeStart);
   dateValue(snapshot.rangeEnd);
   if (snapshot.rangeStart !== days[0].date || snapshot.rangeEnd !== days.at(-1).date) {

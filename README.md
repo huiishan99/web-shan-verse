@@ -73,6 +73,8 @@ for maintenance. Days outside the snapshot are unknown, rather than zero contrib
 
 `npm run update:github` reads the public GitHub contribution page and validates
 the daily counts and date coverage before atomically replacing the snapshot.
+If the GitHub calendar includes extra days to start on Sunday, the refresh
+validates the full input and keeps the most recent 366 days.
 The Pages workflow refreshes it before each release and daily at 09:15 Japan
 time. If GitHub is unavailable, an existing valid snapshot is retained with its
 original dates; no valid snapshot means the refresh fails. No token is needed.

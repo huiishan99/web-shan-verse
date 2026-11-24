@@ -2,85 +2,10 @@
   "schemaVersion": 1,
   "username": "huiishan99",
   "source": "https://github.com/users/huiishan99/contributions",
-  "fetchedAt": "2026-11-08T11:59:56.274Z",
-  "rangeStart": "2025-11-09",
-  "rangeEnd": "2026-11-08",
+  "fetchedAt": "2026-11-24T12:49:44.027Z",
+  "rangeStart": "2025-11-24",
+  "rangeEnd": "2026-11-24",
   "contributions": [
-    {
-      "date": "2025-11-09",
-      "count": 0,
-      "level": 0
-    },
-    {
-      "date": "2025-11-10",
-      "count": 0,
-      "level": 0
-    },
-    {
-      "date": "2025-11-11",
-      "count": 0,
-      "level": 0
-    },
-    {
-      "date": "2025-11-12",
-      "count": 0,
-      "level": 0
-    },
-    {
-      "date": "2025-11-13",
-      "count": 0,
-      "level": 0
-    },
-    {
-      "date": "2025-11-14",
-      "count": 1,
-      "level": 1
-    },
-    {
-      "date": "2025-11-15",
-      "count": 0,
-      "level": 0
-    },
-    {
-      "date": "2025-11-16",
-      "count": 0,
-      "level": 0
-    },
-    {
-      "date": "2025-11-17",
-      "count": 0,
-      "level": 0
-    },
-    {
-      "date": "2025-11-18",
-      "count": 0,
-      "level": 0
-    },
-    {
-      "date": "2025-11-19",
-      "count": 0,
-      "level": 0
-    },
-    {
-      "date": "2025-11-20",
-      "count": 0,
-      "level": 0
-    },
-    {
-      "date": "2025-11-21",
-      "count": 0,
-      "level": 0
-    },
-    {
-      "date": "2025-11-22",
-      "count": 0,
-      "level": 0
-    },
-    {
-      "date": "2025-11-23",
-      "count": 0,
-      "level": 0
-    },
     {
       "date": "2025-11-24",
       "count": 0,
@@ -1283,8 +1208,8 @@
     },
     {
       "date": "2026-07-22",
-      "count": 0,
-      "level": 0
+      "count": 1,
+      "level": 1
     },
     {
       "date": "2026-07-23",
@@ -1813,8 +1738,8 @@
     },
     {
       "date": "2026-11-05",
-      "count": 16,
-      "level": 1
+      "count": 31,
+      "level": 2
     },
     {
       "date": "2026-11-06",
@@ -1828,7 +1753,87 @@
     },
     {
       "date": "2026-11-08",
+      "count": 14,
+      "level": 1
+    },
+    {
+      "date": "2026-11-09",
+      "count": 79,
+      "level": 4
+    },
+    {
+      "date": "2026-11-10",
+      "count": 30,
+      "level": 2
+    },
+    {
+      "date": "2026-11-11",
+      "count": 2,
+      "level": 1
+    },
+    {
+      "date": "2026-11-12",
+      "count": 23,
+      "level": 1
+    },
+    {
+      "date": "2026-11-13",
       "count": 12,
+      "level": 1
+    },
+    {
+      "date": "2026-11-14",
+      "count": 37,
+      "level": 2
+    },
+    {
+      "date": "2026-11-15",
+      "count": 9,
+      "level": 1
+    },
+    {
+      "date": "2026-11-16",
+      "count": 2,
+      "level": 1
+    },
+    {
+      "date": "2026-11-17",
+      "count": 6,
+      "level": 1
+    },
+    {
+      "date": "2026-11-18",
+      "count": 4,
+      "level": 1
+    },
+    {
+      "date": "2026-11-19",
+      "count": 32,
+      "level": 2
+    },
+    {
+      "date": "2026-11-20",
+      "count": 4,
+      "level": 1
+    },
+    {
+      "date": "2026-11-21",
+      "count": 3,
+      "level": 1
+    },
+    {
+      "date": "2026-11-22",
+      "count": 16,
+      "level": 1
+    },
+    {
+      "date": "2026-11-23",
+      "count": 50,
+      "level": 3
+    },
+    {
+      "date": "2026-11-24",
+      "count": 9,
       "level": 1
     }
   ]

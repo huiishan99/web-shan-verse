@@ -3,7 +3,7 @@ import { mkdir, readFile, rename, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parse } from 'parse5';
-import { validateGithubSnapshot } from '../src/utils/github-contributions.js';
+import { validateGithubContributionDays, validateGithubSnapshot } from '../src/utils/github-contributions.js';
 
 const DEFAULT_USERNAME = 'huiishan99';
 const DEFAULT_OUTPUT = fileURLToPath(new URL('../public/data/github-contributions.json', import.meta.url));
@@ -79,15 +79,33 @@ export function parseGithubContributions(html, {
     };
   });
   contributions.sort((left, right) => (left.date || '').localeCompare(right.date || ''));
-  return validateGithubSnapshot({
-    schemaVersion: 1,
-    username,
-    source,
-    fetchedAt,
-    rangeStart: contributions[0].date,
-    rangeEnd: contributions.at(-1).date,
-    contributions,
-  }, username);
+  try {
+    // GitHub can align the start of the public rolling calendar to Sunday.
+    // Check the entire response before dropping dates outside our year window.
+    const maxSnapshotDays = 366;
+    if (contributions.length > maxSnapshotDays) {
+      if (contributions.length > maxSnapshotDays + 6) {
+        throw new SnapshotRefreshError('GitHub contribution calendar exceeds one year plus a partial week');
+      }
+      validateGithubContributionDays(contributions);
+      if (new Date(`${contributions[0].date}T00:00:00Z`).getUTCDay() !== 0) {
+        throw new SnapshotRefreshError('GitHub contribution calendar padding does not start on Sunday');
+      }
+    }
+    const days = contributions.slice(-maxSnapshotDays);
+    return validateGithubSnapshot({
+      schemaVersion: 1,
+      username,
+      source,
+      fetchedAt,
+      rangeStart: days[0].date,
+      rangeEnd: days.at(-1).date,
+      contributions: days,
+    }, username);
+  } catch (error) {
+    if (error instanceof SnapshotRefreshError) throw error;
+    throw new SnapshotRefreshError(`Invalid GitHub contribution data: ${error.message}`, { cause: error });
+  }
 }
 
 async function readSnapshot(outputPath, username) {
