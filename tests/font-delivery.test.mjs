@@ -135,6 +135,69 @@ test('the five existing Zhuque subsets stay byte-for-byte unchanged', async () =
   }
 });
 
+test('the complete Zhuque catalog declares every pinned source code point exactly once', async () => {
+  const catalog = JSON.parse(await readFile(new URL('../src/data/zhuque-font.json', import.meta.url), 'utf8'));
+  const catalogDirectory = path.join(publicDirectory, 'fonts', 'zhuque');
+  const pinnedCoverage = 'a1f4f2476066e3ae9af13636035a51c638fb0b9d30b6d2c99fbfdab5b4f6b8a4';
+  assert.equal(catalog.source.codepoints, 12_882);
+  assert.equal(catalog.source.codepointsSha256, pinnedCoverage);
+  assert.equal(catalog.source.variationSequences.length, 9);
+
+  async function readPinned(asset, extension) {
+    const name = path.basename(asset.href);
+    assert.equal(asset.href, `/fonts/zhuque/${name}`);
+    const bytes = await readFile(path.join(catalogDirectory, name));
+    assert.equal(hash(bytes), asset.sha256, asset.href);
+    assert.equal(bytes.byteLength, asset.bytes);
+    assert.ok(name.endsWith(`.${asset.sha256.slice(0, 16)}.${extension}`));
+    return bytes;
+  }
+
+  const faces = fontFaces((await readPinned(catalog.css, 'css')).toString());
+  assert.equal(faces.length, catalog.files.length);
+  assert.deepEqual((await readdir(catalogDirectory)).sort(),
+    [catalog.css, ...catalog.files].map(({ href }) => path.basename(href)).sort());
+
+  const selectors = new Set(catalog.source.variationSequences.map(([, selector]) => selector));
+  const covered = new Set();
+  const rangeByPoint = new Map();
+  for (const [index, asset] of catalog.files.entries()) {
+    const face = faces[index];
+    const font = await readPinned(asset, 'woff2');
+    assert.equal(font.toString('ascii', 0, 4), 'wOF2');
+    assert.equal(font.readUInt32BE(8), font.length);
+    assert.equal(sourceURL(face), asset.href);
+    assert.equal(face['font-family'], `'${catalog.family}'`);
+    assert.equal(face['font-weight'], '400');
+    assert.equal(face['font-style'], 'normal');
+    assert.equal(face['font-display'], 'swap');
+    assert.equal(face['unicode-range'], asset.unicodeRange);
+
+    let codepoints = 0;
+    for (const range of face['unicode-range'].split(', ')) {
+      assert.match(range, /^U\+[A-F0-9]{1,6}(?:-[A-F0-9]{1,6})?$/);
+      const [start, end = start] = range.slice(2).split('-').map((hex) => Number.parseInt(hex, 16));
+      assert.ok(start <= end && end <= 0x10ffff);
+      for (let point = start; point <= end; point++) {
+        assert.equal(rangeByPoint.has(point), false, `Duplicate code point U+${point.toString(16)}`);
+        rangeByPoint.set(point, asset.href);
+        if (!selectors.has(point)) {
+          codepoints++;
+          covered.add(point);
+        }
+      }
+    }
+    assert.equal(codepoints, asset.codepoints);
+  }
+  assert.equal(covered.size, catalog.source.codepoints);
+  const encoded = [...covered].sort((a, b) => a - b).map((point) => point.toString(16).toUpperCase()).join(',');
+  assert.equal(hash(encoded), pinnedCoverage);
+  for (const [base, selector] of catalog.source.variationSequences) {
+    assert.ok(rangeByPoint.has(base));
+    assert.equal(rangeByPoint.get(base), rangeByPoint.get(selector));
+  }
+});
+
 test('the Chinese About glyph supplement is bounded and matches its declared coverage', async () => {
   const supplement = JSON.parse(await readFile(new URL('../src/data/about-font-supplement.json', import.meta.url), 'utf8'));
   const aboutPage = await readFile(new URL('../src/components/pages/AboutPage.astro', import.meta.url), 'utf8');

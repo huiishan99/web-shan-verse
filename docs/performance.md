@@ -1,6 +1,52 @@
 # Loading and navigation performance
 
-## Chinese blog prose glyph coverage (active, 2026-11-24)
+## Complete Zhuque coverage for Chinese text (active, 2026-11-24)
+
+Chinese font stacks that already use Zhuque Fangsong now try the complete
+[v0.212](https://github.com/TrionesType/zhuque/releases/tag/v0.212) web family
+before falling through to Noto or the system. Latin, emoji, and Japanese keep
+their existing priorities. The small site subsets, including the existing About
+and blog supplements, are still tried first. Blog excerpts, prose and comments
+share the blog supplement. New Chinese content needs no hand-built supplement.
+
+The source contains 12,882 encoded code points and nine variation sequences.
+A single WOFF2 of this release measures 4,806,364 bytes. We use 38 same-origin
+WOFF2 files with disjoint `unicode-range` declarations to avoid loading the
+whole font on a rare-character miss. Their total size is 5,010,780 bytes. All
+non-Han code points and the variation bases stay together for shaping. The
+source has no multi-glyph OpenType rules that reference Han glyphs, so the
+remaining Han can be partitioned by code point. Two small groups keep the
+Chinese blog interface and constellation labels from requesting many large files
+on first paint. `src/data/zhuque-hot-characters.json` records those groups for
+performance only. It does not limit which characters can render. The original
+license stays at `public/fonts/ZhuqueFangsong-OFL.txt`.
+
+Regenerate from the exact source TTF recorded in `src/data/zhuque-font.json`
+using fontTools 4.62.1 and Brotli 1.2.0. Use `--check` to regenerate in memory
+and check every shipped byte. The generator verifies complete coverage, outlines,
+horizontal metrics and variation sequences against the source. Site builds and
+browser loads use the checked-in assets.
+
+```sh
+python scripts/vendor-zhuque-font.py /path/to/ZhuqueFangsong-Regular.ttf --check
+```
+
+The browser regressions distinguish an uncommon character supported by v0.212
+from text the original release does not cover. The latter still uses the existing
+fallbacks. In cold Chromium loads at 390 px, the Chinese home page and About
+requested no additional WOFF2 files, the November 23 post added 1,864 bytes, and
+the constellation added 152,740 bytes. The Chinese stylesheet is 63,712 bytes
+before compression. The English and Japanese checks made no requests for the
+complete catalog. The initial prototype's constellation requested almost 5 MB
+of new font files because its server-rendered labels used characters scattered
+across the catalog. The two small groups corrected that regression.
+
+Reverting the change restores the previous stacks and delivery without a content
+or database migration. This decision supersedes the previous
+page-specific supplement workflow and the font-stack parity rule for the affected
+Chinese stacks. The older measurements below refer to their own revisions.
+
+## Chinese blog prose glyph coverage (historical, 2026-11-24)
 
 The original blog subset lacked 56 unique Han characters in the November 23
 note. Chromium rendered 70 occurrences with Noto Serif SC. Chinese article
@@ -20,7 +66,7 @@ For new missing characters, extend the same supplement and update its hashed
 path and `unicode-range` in `BlogPostPage.astro`. The browser test checks actual
 Han glyph providers for every published Chinese post's prose.
 
-## Chinese About copy glyph coverage (active, 2026-11-14)
+## Chinese About copy glyph coverage (historical, 2026-11-14)
 
 New ALPS work-experience text exposed missing Han glyphs in the existing
 740-character Zhuque About subset. Those characters fell through to Noto Serif

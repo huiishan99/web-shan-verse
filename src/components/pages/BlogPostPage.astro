@@ -105,20 +105,6 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
 </BaseLayout>
 
 <style>
-  @font-face {
-    font-family: 'Zhuque Fangsong Blog Supplement';
-    src: url('/fonts/ZhuqueFangsong-Blog-Supplement.8337ca8ea1331a8d.woff2') format('woff2');
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    unicode-range: U+4E08, U+4E61, U+4EB2, U+4ED8, U+4F11, U+4F19, U+5077, U+517C, U+519C,
-      U+52C7, U+53E0, U+53EC, U+5435, U+5524, U+56F0, U+5723, U+575A, U+5907, U+592B,
-      U+59BB, U+5C0A, U+5F7C, U+5FE0, U+604D, U+60DA, U+623F, U+6323, U+638C, U+63E1,
-      U+653F, U+666E, U+6750, U+6D4E, U+73ED, U+75BC, U+79DF, U+7A0E, U+7CD5, U+8361,
-      U+852C, U+86CB, U+8BA2, U+8BDE, U+8BEF, U+8BFE, U+8DDD, U+8F88, U+8FDF, U+9000,
-      U+9014, U+949F, U+94B1, U+9633, U+96F6, U+98DF, U+9B42;
-  }
-
   .blog-post {
     max-width: 880px;
     margin: 0 auto;
@@ -289,11 +275,6 @@ const formattedDate = post.data.date.toLocaleDateString(dateLocale[lang], {
   .post-content {
     font-family: var(--font-blog-copy);
     line-height: 1.8;
-  }
-
-  :global(html[lang='zh']) .post-content {
-    --font-blog-copy: 'Crimson Pro', 'Zhuque Fangsong Blog', 'Zhuque Fangsong Blog Supplement', 'Noto Serif SC', 'Songti SC', SimSun;
-    --font-blog-heading: var(--font-blog-copy);
   }
 
   .blog-post--note .post-content {

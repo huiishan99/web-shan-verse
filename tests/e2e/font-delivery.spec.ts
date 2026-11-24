@@ -1,6 +1,13 @@
+import { readFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
 
+const zhuque = JSON.parse(readFileSync(new URL('../../src/data/zhuque-font.json', import.meta.url), 'utf8')) as {
+  css: { href: string };
+  files: { unicodeRange: string }[];
+};
+
 type FontProbe = { family: string; weight: number; style?: string; text: string };
+const completeZhuqueShardPath = /^\/fonts\/zhuque\/.+\.woff2$/;
 
 test('Chinese About copy renders Han glyphs without a second CJK typeface', async ({ page }) => {
   await page.goto('/zh/about/');
@@ -28,10 +35,18 @@ test('Chinese About copy renders Han glyphs without a second CJK typeface', asyn
   }
 });
 
-test('published Chinese blog prose uses Zhuque for every Han character', async ({ page }) => {
+test('published Chinese blog prose uses Zhuque for every Han character it covers', async ({ page }) => {
   await page.goto('/zh/blog/every-lifetime-with-you/');
   const postContent = page.locator('.post-content');
-  const probes = await postContent.evaluate(async (content) => {
+  const ranges = zhuque.files.flatMap(({ unicodeRange }) => unicodeRange.split(', ').map((range) => {
+    const [first, last = first] = range.slice(2).split('-').map((value) => Number.parseInt(value, 16));
+    return { first, last };
+  }));
+  const probes = await postContent.evaluate(async (content, ranges) => {
+    const zhuqueCodepoints = new Set<number>();
+    for (const { first, last } of ranges) {
+      for (let point = first; point <= last; point++) zhuqueCodepoints.add(point);
+    }
     const response = await fetch('/cli-index.json');
     if (!response.ok) throw new Error(`Could not read blog index: ${response.status}`);
     const index = await response.json() as { locales: { zh: { type: string; url: string }[] } };
@@ -43,10 +58,12 @@ test('published Chinese blog prose uses Zhuque for every Han character', async (
       const body = html.querySelector('.post-content');
       if (!body) throw new Error(`No article body at ${url}`);
       body.querySelectorAll('pre, code, .sync-note, script, style').forEach((node) => node.remove());
-      return { url, han: [...new Set(body.textContent?.match(/\p{Unified_Ideograph}/gu) ?? [])].join('') };
+      const han = [...new Set(body.textContent?.match(/\p{Script=Han}/gu) ?? [])]
+        .filter((character) => zhuqueCodepoints.has(character.codePointAt(0)!));
+      return { url, han: han.join('') };
     }));
-    // Probe only Han text inside the real article's font stack. Latin, code
-    // and emoji may legitimately use other faces.
+    // Probe only Han text covered by the pinned source. Unsupported Han, Latin
+    // text, code and emoji may legitimately use other faces.
     return probes.filter(({ han }) => han).map(({ url, han }, index) => {
       const probe = document.createElement('p');
       probe.id = `blog-han-probe-${index}`;
@@ -54,7 +71,7 @@ test('published Chinese blog prose uses Zhuque for every Han character', async (
       content.append(probe);
       return { url, selector: `#${probe.id}` };
     });
-  });
+  }, ranges);
   expect(probes.some(({ url }) => url === '/zh/blog/every-lifetime-with-you/')).toBe(true);
   await page.evaluate(() => document.fonts.ready.then(() => undefined));
   const session = await page.context().newCDPSession(page);
@@ -74,6 +91,67 @@ test('published Chinese blog prose uses Zhuque for every Han character', async (
   } finally {
     await session.detach();
   }
+});
+
+test('unfamiliar Chinese blog glyphs load Zhuque on demand within a byte budget', async ({ page }) => {
+  const assertDelivery = await observeActualFonts(page);
+  await page.goto('/zh/blog/every-lifetime-with-you/');
+  const body = page.locator('.post-content');
+  const completeShards = async () => (await assertDelivery())
+    .filter(({ url }) => completeZhuqueShardPath.test(new URL(url).pathname));
+  const initial = await completeShards();
+  expect(initial.reduce((bytes, file) => bytes + file.bytes, 0)).toBeLessThan(256 * 1024);
+
+  // The first three characters are in Zhuque v0.212 and absent from all old
+  // site subsets. The last Han character and emoji are outside the source font.
+  await body.evaluate((element) => {
+    const probe = document.createElement('p');
+    probe.id = 'new-blog-han';
+    probe.textContent = '龘髙鬱';
+    element.prepend(probe);
+    probe.getBoundingClientRect();
+  });
+  const loaded = await completeShards();
+  expect(loaded.length).toBeGreaterThan(0);
+  expect(loaded.reduce((bytes, file) => bytes + file.bytes, 0)).toBeLessThan(512 * 1024);
+
+  await body.evaluate((element) => {
+    const control = document.createElement('p');
+    const missingHan = document.createElement('span');
+    missingHan.id = 'unsupported-blog-han';
+    missingHan.textContent = '𠮷';
+    control.append(missingHan, '😂');
+    element.prepend(control);
+    control.getBoundingClientRect();
+  });
+  expect(await completeShards()).toEqual(loaded);
+
+  const session = await page.context().newCDPSession(page);
+  try {
+    await session.send('DOM.enable');
+    await session.send('CSS.enable');
+    const { root } = await session.send('DOM.getDocument');
+    const { nodeId } = await session.send('DOM.querySelector', { nodeId: root.nodeId, selector: '#new-blog-han' });
+    const { fonts } = await session.send('CSS.getPlatformFontsForNode', { nodeId });
+    expect(fonts.reduce((glyphs, font) => glyphs + font.glyphCount, 0)).toBe(3);
+    for (const font of fonts) {
+      expect(font.isCustomFont, JSON.stringify(font)).toBe(true);
+      expect(font.postScriptName, JSON.stringify(font)).toMatch(/^ZhuqueFangsong/);
+    }
+    const control = await session.send('DOM.querySelector', { nodeId: root.nodeId, selector: '#unsupported-blog-han' });
+    const fallback = await session.send('CSS.getPlatformFontsForNode', { nodeId: control.nodeId });
+    expect(fallback.fonts.some((font) => font.glyphCount > 0 && !font.postScriptName.startsWith('ZhuqueFangsong'))).toBe(true);
+  } finally {
+    await session.detach();
+  }
+});
+
+test('Chinese constellation labels do not download the whole Zhuque catalog', async ({ page }) => {
+  const assertDelivery = await observeActualFonts(page);
+  await page.goto('/zh/beyond-code/');
+  await expect(page.locator('[data-beyond]')).toHaveClass(/is-ready/);
+  const shards = (await assertDelivery()).filter(({ url }) => completeZhuqueShardPath.test(new URL(url).pathname));
+  expect(shards.reduce((bytes, file) => bytes + file.bytes, 0)).toBeLessThan(256 * 1024);
 });
 
 const latinProbes: FontProbe[] = [
@@ -132,6 +210,7 @@ async function observeActualFonts(page: Page) {
     expect(failures).toEqual([]);
     expect(await page.evaluate(() => (window as typeof window & { __fontLoadingErrors?: number }).__fontLoadingErrors)).toBe(0);
     await expect(page.locator('link[href*="fonts.googleapis.com"], link[href*="fonts.gstatic.com"]')).toHaveCount(0);
+    return responses;
   };
 }
 
@@ -188,7 +267,14 @@ for (const locale of ['en', 'zh', 'ja']) {
       await expect(preload).toHaveAttribute('href', /^\/fonts\/google\/.+\.woff2$/);
       expect(await preload.getAttribute('crossorigin')).not.toBeNull();
     }
-    await assertDelivery();
+    const completeShards = (await assertDelivery())
+      .filter(({ url }) => completeZhuqueShardPath.test(new URL(url).pathname));
+    if (locale === 'zh') {
+      expect(completeShards.reduce((bytes, file) => bytes + file.bytes, 0)).toBeLessThan(128 * 1024);
+    } else {
+      await expect(page.locator('link[rel="stylesheet"][href^="/fonts/zhuque/"]')).toHaveCount(0);
+      expect(completeShards).toEqual([]);
+    }
   });
 }
 

@@ -7,6 +7,7 @@ import ShanCli from '../components/ShanCli.astro';
 import SiteStats from '../components/SiteStats.astro';
 import AboutMenu from '../components/navigation/AboutMenu.astro';
 import fonts from '../data/google-fonts.json';
+import zhuque from '../data/zhuque-font.json';
 import { unlistedPagePaths } from '../data/site-navigation';
 import { defaultLocale, localeNames, localeShortNames, locales, localizePath, normalizePath, type Locale } from '../i18n/config';
 import { useTranslations } from '../i18n/ui';
@@ -75,6 +76,7 @@ const defaultAlternateUrl = new URL(
   <link rel="preload" href={fonts.preloads.cinzelLatin} as="font" type="font/woff2" crossorigin>
   <link rel="preload" href={fonts.preloads.crimsonProNormalLatin} as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href={fonts.css.href}>
+  {lang === 'zh' && <link rel="stylesheet" href={zhuque.css.href}>}
   
   <title>{pageTitle}</title>
   <ClientRouter fallback="swap" />
