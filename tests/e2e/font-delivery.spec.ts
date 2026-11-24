@@ -103,7 +103,8 @@ test('unfamiliar Chinese blog glyphs load Zhuque on demand within a byte budget'
   expect(initial.reduce((bytes, file) => bytes + file.bytes, 0)).toBeLessThan(256 * 1024);
 
   // The first three characters are in Zhuque v0.212 and absent from all old
-  // site subsets. The last Han character and emoji are outside the source font.
+  // site subsets. The later control uses a Han character covered by the site's
+  // Noto Serif SC and absent from Zhuque, regardless of installed system fonts.
   await body.evaluate((element) => {
     const probe = document.createElement('p');
     probe.id = 'new-blog-han';
@@ -119,7 +120,7 @@ test('unfamiliar Chinese blog glyphs load Zhuque on demand within a byte budget'
     const control = document.createElement('p');
     const missingHan = document.createElement('span');
     missingHan.id = 'unsupported-blog-han';
-    missingHan.textContent = '𠮷';
+    missingHan.textContent = '囍';
     control.append(missingHan, '😂');
     element.prepend(control);
     control.getBoundingClientRect();
@@ -140,7 +141,10 @@ test('unfamiliar Chinese blog glyphs load Zhuque on demand within a byte budget'
     }
     const control = await session.send('DOM.querySelector', { nodeId: root.nodeId, selector: '#unsupported-blog-han' });
     const fallback = await session.send('CSS.getPlatformFontsForNode', { nodeId: control.nodeId });
-    expect(fallback.fonts.some((font) => font.glyphCount > 0 && !font.postScriptName.startsWith('ZhuqueFangsong'))).toBe(true);
+    expect(fallback.fonts).toHaveLength(1);
+    expect(fallback.fonts[0].glyphCount).toBe(1);
+    expect(fallback.fonts[0].isCustomFont).toBe(true);
+    expect(fallback.fonts[0].postScriptName.replace(/[-\s]/g, '')).toMatch(/^NotoSerifSC/);
   } finally {
     await session.detach();
   }
